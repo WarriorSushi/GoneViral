@@ -164,7 +164,7 @@ async function insertInitialAttempt(
     ) values (
       ${`attempt-${suffix}`},
       ${`idempotency-${suffix}`},
-      'cashfree',
+      'test-provider',
       'sandbox',
       ${listingId},
       'initial_sponsorship',
@@ -337,7 +337,7 @@ describe("Phase 2 database constraints", () => {
           provider_event_type, signature_status, raw_body_digest,
           processing_state
         ) values (
-          'cashfree', 'sandbox', ${eventId}, 'PAYMENT_SUCCESS',
+          'test-provider', 'sandbox', ${eventId}, 'PAYMENT_SUCCESS',
           'verified', ${`digest-${randomUUID()}`}, 'received'
         )
       `;
@@ -351,7 +351,7 @@ describe("Phase 2 database constraints", () => {
             provider_event_type, signature_status, raw_body_digest,
             processing_state
           ) values (
-            'cashfree', 'sandbox', ${eventId}, 'PAYMENT_SUCCESS',
+            'test-provider', 'sandbox', ${eventId}, 'PAYMENT_SUCCESS',
             'verified', ${`digest-${randomUUID()}`}, 'received'
           )
         `,
@@ -363,7 +363,7 @@ describe("Phase 2 database constraints", () => {
           provider, provider_environment, provider_payment_id,
           provider_order_id, amount_paise, currency, status
         ) values (
-          'cashfree', 'sandbox', ${paymentId}, ${`order-${randomUUID()}`},
+          'test-provider', 'sandbox', ${paymentId}, ${`order-${randomUUID()}`},
           49900, 'INR', 'SUCCESS'
         )
       `;
@@ -376,7 +376,7 @@ describe("Phase 2 database constraints", () => {
             provider, provider_environment, provider_payment_id,
             provider_order_id, amount_paise, currency, status
           ) values (
-            'cashfree', 'sandbox', ${paymentId}, ${`order-${randomUUID()}`},
+            'test-provider', 'sandbox', ${paymentId}, ${`order-${randomUUID()}`},
             49900, 'INR', 'SUCCESS'
           )
         `,
@@ -389,7 +389,7 @@ describe("Phase 2 database constraints", () => {
           provider_payment_id, kind, status, amount_paise, currency,
           desired_effective_delta
         ) values (
-          'cashfree', 'sandbox', ${adjustmentId}, ${paymentId},
+          'test-provider', 'sandbox', ${adjustmentId}, ${paymentId},
           'refund', 'effective', 49900, 'INR', -49900
         )
       `;
@@ -403,7 +403,7 @@ describe("Phase 2 database constraints", () => {
             provider_payment_id, kind, status, amount_paise, currency,
             desired_effective_delta
           ) values (
-            'cashfree', 'sandbox', ${adjustmentId}, ${paymentId},
+            'test-provider', 'sandbox', ${adjustmentId}, ${paymentId},
             'refund', 'effective', 49900, 'INR', -49900
           )
         `,
@@ -632,5 +632,104 @@ describe("Phase 2 bigint driver boundary", () => {
 
     expect(selectedType).toBe("bigint");
     expect(selectedValue).toBe(maximumWholeRupeeBigintPaise);
+  });
+});
+
+describe("Phase 4 guest checkout constraints", () => {
+  it("requires Dodo contact and acceptance snapshots and keeps them immutable", async () => {
+    await inRollbackTransaction(directSql, async (transaction) => {
+      const listingId = await insertDraftListing(transaction);
+      const suffix = randomUUID();
+      const [owner] = await transaction<{ id: string }[]>`
+        insert into private.pending_listing_owners (
+          listing_id, canonical_email, email_hash, claim_state
+        ) values (${listingId}, 'owner@example.test', ${`hmac-${suffix}`}, 'pending')
+        returning id
+      `;
+
+      await expectDatabaseError(
+        transaction,
+        "23514",
+        (savepoint) => savepoint`
+          insert into private.payment_attempts (
+            public_id, application_idempotency_key, provider,
+            provider_environment, listing_id, purpose, state, amount_paise,
+            currency, policy_version, minimum_required_paise_snapshot,
+            listing_total_paise_snapshot, pending_owner_id,
+            provider_order_request_hash, customer_phone_e164,
+            checkout_expires_at
+          ) values (
+            ${`att_invalid_${suffix}`}, ${`idem-invalid-${suffix}`}, 'dodo',
+            'mock', ${listingId}, 'initial_sponsorship', 'provider_order_pending',
+            49900, 'INR', '2026-08-29-v2', 49900, 0, ${owner!.id},
+            ${`hash-invalid-${suffix}`}, '9876543210',
+            transaction_timestamp() + interval '30 minutes'
+          )
+        `,
+      );
+
+      await expectDatabaseError(
+        transaction,
+        "23514",
+        (savepoint) => savepoint`
+          insert into private.payment_attempts (
+            public_id, application_idempotency_key, provider,
+            provider_environment, listing_id, purpose, state, amount_paise,
+            currency, policy_version, minimum_required_paise_snapshot,
+            listing_total_paise_snapshot, pending_owner_id,
+            provider_order_request_hash, customer_phone_e164, terms_version,
+            privacy_version, refund_policy_version, content_policy_version,
+            checkout_expires_at
+          ) values (
+            ${`att_max_${suffix}`}, ${`idem-max-${suffix}`}, 'dodo', 'mock',
+            ${listingId}, 'initial_sponsorship', 'provider_order_pending',
+            2147483700, 'INR', '2026-08-29-v2', 49900, 0, ${owner!.id},
+            ${`hash-max-${suffix}`}, '+919876543210', '2026-08-28',
+            '2026-08-28', '2026-08-28', '2026-08-28',
+            transaction_timestamp() + interval '30 minutes'
+          )
+        `,
+      );
+
+      const [attempt] = await transaction<{ id: string }[]>`
+        insert into private.payment_attempts (
+          public_id, application_idempotency_key, provider,
+          provider_environment, listing_id, purpose, state, amount_paise,
+          currency, policy_version, minimum_required_paise_snapshot,
+          listing_total_paise_snapshot, pending_owner_id,
+          provider_order_request_hash, customer_phone_e164, terms_version,
+          privacy_version, refund_policy_version, content_policy_version,
+          checkout_expires_at
+        ) values (
+          ${`att_valid_${suffix}`}, ${`idem-valid-${suffix}`}, 'dodo', 'mock',
+          ${listingId}, 'initial_sponsorship', 'provider_order_pending', 49900,
+          'INR', '2026-08-29-v2', 49900, 0, ${owner!.id},
+          ${`hash-valid-${suffix}`}, '+919876543210', '2026-08-28',
+          '2026-08-28', '2026-08-28', '2026-08-28',
+          transaction_timestamp() + interval '30 minutes'
+        ) returning id
+      `;
+      expect(attempt).toBeDefined();
+
+      await expectDatabaseError(
+        transaction,
+        "55000",
+        (savepoint) =>
+          savepoint`
+          update private.payment_attempts
+          set customer_phone_e164 = '+919999999999'
+          where id = ${attempt!.id}
+        `,
+      );
+
+      await transaction`
+        update private.payment_attempts
+        set provider_order_id = ${`session-${suffix}`},
+            provider_checkout_session_id = ${`session-${suffix}`},
+            provider_checkout_url = 'https://checkout.dodopayments.com/session/test',
+            state = 'checkout_ready'
+        where id = ${attempt!.id}
+      `;
+    });
   });
 });

@@ -4,6 +4,7 @@ const menuLinks = [
   { href: "/", label: "Main board" },
   { href: "/today", label: "Today" },
   { href: "/how-it-works", label: "How it works" },
+  { href: "/join", label: "Join the list" },
 ] as const;
 
 export function SiteHeader() {
@@ -17,7 +18,7 @@ export function SiteHeader() {
           <Link href="/how-it-works">How it works</Link>
         </nav>
         <div className="header-actions">
-          <Link className="button button-primary" href="/how-it-works#join">
+          <Link className="button button-primary" href="/join">
             Join the list
           </Link>
         </div>

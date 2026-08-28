@@ -19,9 +19,9 @@ describe("public environment schema", () => {
   it("strips an accidental server secret from the public shape", () => {
     const result = publicEnvSchema.parse({
       NEXT_PUBLIC_SITE_URL: "https://goneviral.in",
-      CASHFREE_CLIENT_SECRET: "must-not-survive",
+      DODO_PAYMENTS_API_KEY: "must-not-survive",
     });
 
-    expect(result).not.toHaveProperty("CASHFREE_CLIENT_SECRET");
+    expect(result).not.toHaveProperty("DODO_PAYMENTS_API_KEY");
   });
 });

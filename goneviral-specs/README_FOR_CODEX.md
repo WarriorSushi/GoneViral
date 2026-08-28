@@ -1,6 +1,6 @@
 # GoneViral.in — README for Codex
 
-**Specification version:** `2026-08-28-v1`  
+**Specification version:** `2026-08-29-v2`
 **Business time zone:** `Asia/Kolkata`  
 **Implementation status:** blueprint only; do not assume application code exists
 
@@ -58,7 +58,7 @@ V1 uses an immutable cumulative financial ledger.
 | Payment authority            | Verified server-side provider state only; browser redirects never change rank         |
 | Public refresh               | Cached reads plus tag invalidation; no WebSockets                                     |
 | Infrastructure               | Vercel + Supabase only                                                                |
-| Production payment candidate | Cashfree hosted checkout, only after written approval of this exact advertising model |
+| Current payment provider      | Dodo Payments hosted checkout, only after written approval of this exact advertising model |
 
 ## Selected stack
 
@@ -70,7 +70,7 @@ V1 uses an immutable cumulative financial ledger.
 - Explicit parameterised PostgreSQL inside Drizzle transactions for payment, ledger and row-locking paths.
 - `postgres.js` through Supavisor transaction pooling with prepared statements disabled; direct connection for migrations.
 - Zod, Tailwind CSS 4 with bespoke components, Geist Sans/Mono.
-- Cashfree behind a narrow provider adapter; Resend; Cloudflare Turnstile; Sentry; Vercel Web Analytics.
+- Dodo Payments behind a narrow provider adapter; Resend; Cloudflare Turnstile; Sentry; Vercel Web Analytics.
 - Vitest, Playwright and axe-based accessibility checks.
 
 Do not add Redis, WebSockets, queues, GraphQL, microservices, a VPS, Supabase Realtime or a second backend unless a later measured bottleneck and approved specification change justify it.
@@ -123,9 +123,9 @@ Today ranks active listings by **net rank-affecting sponsorship applied since mi
 
 ### Payment provider
 
-Cashfree is the engineering candidate because it is India-native, supports hosted INR/UPI/card checkout, signed webhooks and idempotent order/payment handling. Merchant approval is not assumed. The founder must obtain written approval describing GoneViral truthfully as digital sponsored advertising placement with no prize, wager, participant payout or transferable balance.
+Dodo Payments is the selected V1 engineering provider and is isolated behind a narrow hosted-checkout adapter so another provider can be added or substituted later without changing ledger or ranking semantics. Phase 4 uses Dodo test mode or the deterministic local mock only. The Dodo product must be a one-time INR product with `pay_what_you_want` enabled; the customer-entered `amount` is sent in paise. The founder must still obtain written approval describing GoneViral truthfully as paid digital advertising placement with no prize, wager, participant payout, or transferable balance.
 
-Razorpay is not the default because its current public terms list bidding/auction houses among prohibited categories. Dodo Payments' Merchant-of-Record pricing and product positioning are less attractive for a low-ticket Indian advertising product. The provider adapter makes replacement possible without changing ledger/ranking semantics.
+Dodo's current public checkout-session API creates a provider-generated session ID and does not document an idempotency key or lookup by merchant request ID for a response-less create timeout. Therefore the real adapter performs no automatic create retry: an ambiguous POST remains safely pending for operator/provider reconciliation. Deterministic timeout recovery is exercised only by the mock until Dodo documents or confirms a safe recovery contract. Browser returns never confirm payment.
 
 ### Production cost reality
 
@@ -147,7 +147,7 @@ content/grievance duties, refunds, GST invoices and place-of-supply.
 Codex may build through sandbox phases, but production payments remain disabled until:
 
 - [ ] lawful merchant entity and bank account are ready;
-- [ ] Cashfree or replacement provider has approved the exact model in writing;
+- [ ] Dodo Payments or an approved replacement provider has approved the exact model in writing;
 - [ ] KYC and live credentials are approved;
 - [ ] Indian counsel has reviewed Terms, Privacy, sponsored-ranking disclosure, content and refund policy;
 - [ ] CA has approved GST/invoicing/accounting treatment;
@@ -167,9 +167,8 @@ Re-check all version/provider/legal sources immediately before implementation an
 - Supabase pricing/regions/connections/auth/RLS/storage: <https://supabase.com/pricing>, <https://supabase.com/docs/guides/platform/regions>, <https://supabase.com/docs/guides/database/connecting-to-postgres>, <https://supabase.com/docs/guides/auth/server-side/nextjs>, <https://supabase.com/docs/guides/database/postgres/row-level-security>, <https://supabase.com/docs/guides/storage/security/access-control>
 - Drizzle: <https://orm.drizzle.team/docs/get-started-postgresql>, <https://orm.drizzle.team/docs/transactions>, <https://orm.drizzle.team/docs/sql>, <https://orm.drizzle.team/docs/migrations>
 - PostgreSQL locks/isolation: <https://www.postgresql.org/docs/current/explicit-locking.html>, <https://www.postgresql.org/docs/current/transaction-iso.html>
-- Cashfree: <https://www.cashfree.com/payment-gateway-charges/>, <https://www.cashfree.com/docs/payments/webhooks>, <https://www.cashfree.com/docs/payments/online/webhooks/signature-verification>, <https://www.cashfree.com/docs/payments/online/webhooks/webhook-indempotency>, <https://www.cashfree.com/merchant-terms>
+- Dodo Payments checkout/API: <https://docs.dodopayments.com/developer-resources/integration-guide>, <https://docs.dodopayments.com/api-reference/checkout-sessions/create>, <https://docs.dodopayments.com/api-reference/checkout-sessions/retrieve>, <https://dodopayments.com/pricing>
 - Razorpay terms: <https://razorpay.com/terms/>
-- Dodo pricing: <https://dodopayments.com/pricing>
 - Resend, Turnstile, Sentry: <https://resend.com/pricing/>, <https://developers.cloudflare.com/turnstile/plans/>, <https://developers.cloudflare.com/turnstile/get-started/server-side-validation/>, <https://sentry.io/pricing/>
 - ASCI: <https://www.ascionline.in/the-asci-code/>, <https://www.ascionline.in/social/faqs/>
 - Indian privacy/platform materials: <https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa>, <https://www.meity.gov.in/documents/act-and-policies/promotion-andregulation-of-online-gaming-act-2025-and-its-corrigenda-kTMxQjMtQWa>, <https://consumeraffairs.nic.in/acts-and-rules/consumer-protection>
@@ -183,5 +182,5 @@ The completed specification set was checked for cross-file agreement. The follow
 3. **Tie time** is the database time the latest rank-affecting delta is applied; reversals give the lower total a new reached time.
 4. **Lifecycle and moderation** are separate axes, preventing suspension from rewriting money.
 5. **Production free-tier assumptions** were removed; Vercel/Supabase Pro are launch gates.
-6. **Provider approval** is explicit; Cashfree is a conditional adapter choice, not a guaranteed merchant acceptance.
+6. **Provider approval** is explicit; Dodo Payments is the selected adapter implementation, not guaranteed merchant acceptance, and can be replaced behind the interface.
 7. No obsolete fresh-bid/replacement model, client-confirmed ranking, writable rank or non-cumulative interpretation remains.

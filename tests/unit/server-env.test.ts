@@ -7,9 +7,30 @@ import { serverEnvSchema } from "@/config/env/server";
 describe("server environment schema", () => {
   it("does not require database credentials before database access", () => {
     expect(serverEnvSchema.parse({})).toMatchObject({
+      DODO_PAYMENTS_ENVIRONMENT: "mock",
       NODE_ENV: "development",
       PAYMENTS_ENABLED: "false",
+      TURNSTILE_MODE: "mock",
     });
+  });
+
+  it("requires Dodo credentials and product configuration together in test mode", () => {
+    expect(() =>
+      serverEnvSchema.parse({ DODO_PAYMENTS_ENVIRONMENT: "test_mode" }),
+    ).toThrow(/Dodo test mode/);
+    expect(
+      serverEnvSchema.parse({
+        DODO_PAYMENTS_API_KEY: "test-key",
+        DODO_PAYMENTS_ENVIRONMENT: "test_mode",
+        DODO_PAYMENTS_PRODUCT_ID: "product-id",
+      }),
+    ).toMatchObject({ DODO_PAYMENTS_ENVIRONMENT: "test_mode" });
+  });
+
+  it("does not accept a live Dodo environment in Phase 4", () => {
+    expect(() =>
+      serverEnvSchema.parse({ DODO_PAYMENTS_ENVIRONMENT: "live_mode" }),
+    ).toThrow();
   });
 
   it("requires runtime and direct database URLs together", () => {

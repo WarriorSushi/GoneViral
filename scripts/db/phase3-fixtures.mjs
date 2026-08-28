@@ -166,6 +166,7 @@ function istNoonForOffset(dayOffset, minutes) {
 try {
   await sql.begin(async (transaction) => {
     await transaction`truncate table app.listings cascade`;
+    await transaction`truncate table private.rate_limit_buckets`;
 
     if (command === "clear") {
       return;

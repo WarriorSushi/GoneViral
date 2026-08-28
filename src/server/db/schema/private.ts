@@ -108,6 +108,7 @@ export const paymentAttempts = privateSchema.table(
     providerEnvironment: text("provider_environment").notNull(),
     providerOrderId: text("provider_order_id"),
     providerCheckoutSessionId: text("provider_checkout_session_id"),
+    providerCheckoutUrl: text("provider_checkout_url"),
     listingId: uuid("listing_id")
       .notNull()
       .references(() => listings.id, { onDelete: "restrict" }),
@@ -137,6 +138,11 @@ export const paymentAttempts = privateSchema.table(
       { onDelete: "restrict" },
     ),
     providerOrderRequestHash: text("provider_order_request_hash").notNull(),
+    customerPhoneE164: text("customer_phone_e164"),
+    termsVersion: text("terms_version"),
+    privacyVersion: text("privacy_version"),
+    refundPolicyVersion: text("refund_policy_version"),
+    contentPolicyVersion: text("content_policy_version"),
     checkoutExpiresAt: timestamp("checkout_expires_at", {
       withTimezone: true,
       mode: "date",
@@ -185,6 +191,18 @@ export const paymentAttempts = privateSchema.table(
       sql`${table.amountPaise} > 0 and ${table.amountPaise} % 100 = 0`,
     ),
     check("payment_attempts_currency_inr", sql`${table.currency} = 'INR'`),
+    check(
+      "payment_attempts_phone_e164",
+      sql`${table.customerPhoneE164} is null or ${table.customerPhoneE164} ~ '^\+[1-9][0-9]{7,14}$'`,
+    ),
+    check(
+      "payment_attempts_dodo_initial_fields",
+      sql`${table.provider} <> 'dodo' or ${table.purpose} <> 'initial_sponsorship' or (${table.customerPhoneE164} is not null and ${table.termsVersion} is not null and ${table.privacyVersion} is not null and ${table.refundPolicyVersion} is not null and ${table.contentPolicyVersion} is not null)`,
+    ),
+    check(
+      "payment_attempts_dodo_initial_maximum",
+      sql`${table.provider} <> 'dodo' or ${table.purpose} <> 'initial_sponsorship' or ${table.amountPaise} <= 2147483600`,
+    ),
     check(
       "payment_attempts_minimum_valid",
       sql`${table.minimumRequiredPaiseSnapshot} > 0 and ${table.minimumRequiredPaiseSnapshot} % 100 = 0 and ${table.amountPaise} >= ${table.minimumRequiredPaiseSnapshot}`,

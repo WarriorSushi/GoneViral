@@ -40,7 +40,7 @@ The system is not optimised for theoretical hyperscale on day one. It is designe
 | Validation            | Zod                                        | Runtime validation at trust boundaries                                          |
 | Styling               | Tailwind CSS 4 + bespoke components        | Fast system implementation without generic kit aesthetic                        |
 | Fonts                 | Geist Sans/Mono via `next/font`            | Local optimised assets; strong numeric UI                                       |
-| Payment               | Cashfree hosted checkout adapter           | India/INR/UPI fit; conditional on written approval                              |
+| Payment               | Dodo Payments hosted checkout adapter      | Selected V1 provider; conditional on written approval                           |
 | Email                 | Resend                                     | Transactional API + Supabase custom SMTP                                        |
 | Bot protection        | Cloudflare Turnstile                       | Low-friction server-verified challenge                                          |
 | Error monitoring      | Sentry                                     | server/client error and tracing coverage                                        |
@@ -118,7 +118,7 @@ Public visitor / Owner / Admin
     Next.js on Vercel
        |     |     |
        |     |     +--> Resend (email)
-       |     +--------> Cashfree hosted checkout/API/webhooks
+       |     +--------> Dodo Payments hosted checkout/API/webhooks
        +--------------> Supabase
                          - PostgreSQL
                          - Auth
@@ -192,7 +192,7 @@ Recommended single app:
 │  │  ├─ (owner)/manage/**
 │  │  ├─ (admin)/admin/**
 │  │  ├─ api/
-│  │  │  ├─ payments/cashfree/webhook/route.ts
+│  │  │  ├─ payments/dodo/webhook/route.ts
 │  │  │  ├─ payments/status/[publicId]/route.ts
 │  │  │  ├─ uploads/logo/**
 │  │  │  ├─ reports/route.ts
@@ -227,7 +227,7 @@ Recommended single app:
 │  │  ├─ auth/**
 │  │  ├─ payments/
 │  │  │  ├─ provider.ts
-│  │  │  ├─ cashfree.ts
+│  │  │  ├─ dodo.ts
 │  │  │  ├─ normalize.ts
 │  │  │  └─ fulfillment.ts
 │  │  ├─ email/**
@@ -411,7 +411,7 @@ Do not rely solely on email domain or client-side route guards.
 
 ## 12. Payment provider adapter
 
-Define an internal interface rather than spreading Cashfree payloads through domain code.
+Define an internal interface rather than spreading Dodo Payments payloads through domain code. The interface is the replacement boundary for future providers.
 
 ```ts
 interface PaymentProvider {
@@ -483,9 +483,10 @@ A single long transaction that calls the provider is prohibited.
 ### Phase B — provider call
 
 1. Call provider outside DB transaction.
-2. Use deterministic provider order ID/idempotency key derived from internal attempt.
+2. Use a deterministic application request identity derived from the internal attempt. Pass a provider idempotency key only when the provider documents one for the endpoint; never invent a guarantee.
 3. Set amount/currency/return/webhook metadata from trusted server values.
-4. Supply the provider's currently required customer-contact fields from validated private input. Cashfree's current order contract requires a customer phone; use a real E.164 payment-contact number, never a fabricated placeholder. The phone is not an ownership credential and is never public.
+4. Supply Dodo's customer email, name, and real E.164 payment-contact number from validated private input. The phone is not an ownership credential and is never public. Use a one-time INR product configured with `pay_what_you_want`; pass the validated paise amount in the product cart.
+5. Dodo's public checkout-session API does not currently document idempotent create or retrieval by application request ID. Set client retries to zero. If the create response is ambiguous, leave the attempt pending and do not issue a second create call; reconcile through provider support or a future documented lookup.
 
 ### Phase C — persist checkout session
 
@@ -499,7 +500,7 @@ If provider call result is unknown due timeout, retrieve order by deterministic 
 
 ## 14. Webhook architecture
 
-Route: `POST /api/payments/cashfree/webhook`
+Route: `POST /api/payments/dodo/webhook`
 
 1. Capture raw body bytes/text exactly once.
 2. Verify signature/timestamp using provider's current official algorithm and secret.
@@ -661,7 +662,7 @@ Example error:
 
 At minimum:
 
-| Environment     | Vercel                     | Supabase                   | Cashfree | Resend              | Domain                    |
+| Environment     | Vercel                     | Supabase                   | Dodo Payments | Resend              | Domain                    |
 | --------------- | -------------------------- | -------------------------- | -------- | ------------------- | ------------------------- |
 | local           | local dev                  | local/separate dev project | sandbox  | test/safe recipient | localhost                 |
 | preview/staging | preview project/deployment | dedicated staging project  | sandbox  | test domain         | protected preview/staging |
@@ -693,9 +694,9 @@ NEXT_PUBLIC_SENTRY_DSN (if intentionally public)
 DATABASE_URL
 DATABASE_DIRECT_URL
 SUPABASE_SECRET_KEY / service-role equivalent
-CASHFREE_CLIENT_ID
-CASHFREE_CLIENT_SECRET
-CASHFREE_WEBHOOK_SECRET/config
+DODO_PAYMENTS_API_KEY
+DODO_PAYMENTS_PRODUCT_ID
+DODO_PAYMENTS_ENVIRONMENT
 RESEND_API_KEY
 TURNSTILE_SECRET_KEY
 CLICK_HMAC_SECRET_CURRENT
@@ -885,7 +886,7 @@ Rejected in V1 due SSRF/abuse complexity; display submitted text/approved logo i
 - [ ] Domain tables are not exposed to direct public Data API CRUD.
 - [ ] Public caches use strict public projections and tags.
 - [ ] Private routes/data are dynamic/no-store.
-- [ ] Cashfree is isolated behind an interface and live checkout feature flag.
+- [ ] Dodo Payments is isolated behind an interface and live checkout feature flag.
 - [ ] Browser return cannot fulfil payment.
 - [ ] External calls occur outside row-locking transactions.
 - [ ] Email is outbox-driven and non-blocking.

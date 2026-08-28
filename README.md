@@ -18,7 +18,7 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-Copy `.env.example` to `.env.local` for local database integration values. Phase 3 uses only local Supabase defaults and does not require hosted Supabase, Cashfree, Resend, Turnstile, Sentry, or Vercel credentials. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for the database, fixture, and security boundaries.
+Copy `.env.example` to `.env.local` for local database integration values. Phase 4 defaults to deterministic local Dodo and Turnstile adapters, so it does not require hosted Supabase, Dodo, Resend, Turnstile, Sentry, or Vercel credentials. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for the database, fixture, and security boundaries.
 
 ## Commands
 
@@ -47,5 +47,5 @@ The local app is available at `http://localhost:3000`. Seeded local board data u
 
 - No hosted Supabase development or production project exists yet; only the local Docker-backed stack is verified.
 - No Vercel project/deployment exists yet.
-- Cashfree is a conditional candidate only; no merchant approval or credentials are assumed.
+- Dodo Payments is the current hosted-checkout provider behind an adapter. Test credentials and a one-time INR `pay_what_you_want` product are optional locally; live credentials or approval are not assumed.
 - Legal, privacy, refund and accounting launch approvals remain open.

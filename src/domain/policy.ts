@@ -1,9 +1,13 @@
-export const POLICY_VERSION = "2026-08-28-v1" as const;
+export const POLICY_VERSION = "2026-08-29-v2" as const;
 export const BUSINESS_TIME_ZONE = "Asia/Kolkata" as const;
 export const CURRENCY = "INR" as const;
 
 export const PAYMENT_GRANULARITY_PAISE = 100n;
 export const INITIAL_SPONSORSHIP_MIN_PAISE = 49_900n;
+// Dodo checkout sessions accept a signed 32-bit amount in the currency's
+// smallest unit. Keeping this boundary in policy makes client and server
+// validation identical and prevents a provider-side overflow.
+export const INITIAL_SPONSORSHIP_MAX_PAISE = 2_147_483_600n;
 export const RAISE_PERCENT_NUMERATOR = 10n;
 export const RAISE_PERCENT_DENOMINATOR = 100n;
 export const RAISE_ABSOLUTE_FLOOR_PAISE = 100_000n;
@@ -22,6 +26,7 @@ export const SPONSORSHIP_POLICY = Object.freeze({
   currency: CURRENCY,
   paymentGranularityPaise: PAYMENT_GRANULARITY_PAISE,
   initialSponsorshipMinPaise: INITIAL_SPONSORSHIP_MIN_PAISE,
+  initialSponsorshipMaxPaise: INITIAL_SPONSORSHIP_MAX_PAISE,
   raisePercentNumerator: RAISE_PERCENT_NUMERATOR,
   raisePercentDenominator: RAISE_PERCENT_DENOMINATOR,
   raiseAbsoluteFloorPaise: RAISE_ABSOLUTE_FLOOR_PAISE,

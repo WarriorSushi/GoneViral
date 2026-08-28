@@ -328,7 +328,7 @@ Allow a guest to create a validated provisional listing and one idempotent sandb
 
 ## Provider gate
 
-Implement Cashfree adapter against current official sandbox docs. Keep a mock provider for deterministic tests. Live mode remains feature-disabled pending written approval.
+Implement the Dodo Payments checkout-session adapter against current official test-mode docs. The configured Dodo product is a one-time INR product with `pay_what_you_want` enabled. Keep a mock provider for deterministic tests. Live mode remains structurally unavailable pending written approval. Dodo currently documents retrieval only by a known provider session ID and does not document idempotent create or lookup by merchant request ID; disable automatic create retries and leave ambiguous real-provider attempts pending rather than fabricating recovery guarantees.
 
 ## Build
 
@@ -359,8 +359,8 @@ Implement Cashfree adapter against current official sandbox docs. Keep a mock pr
 - Transaction A for listing/pending owner/attempt;
 - provider creation outside DB transaction;
 - Transaction B storing provider order/session;
-- deterministic provider order ID/idempotency;
-- retry/resume logic after unknown timeout;
+- deterministic application request identity and adapter-level idempotency;
+- retrieve/reuse after unknown timeout where the provider contract supports it; fail safely without a second Dodo create call where it does not;
 - short-lived checkout expiry;
 - public safe attempt ID.
 

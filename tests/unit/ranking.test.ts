@@ -26,7 +26,7 @@ function inr(rupees: string) {
 
 describe("sponsorship and ranking policy", () => {
   it("locks the versioned initial sponsorship floor", () => {
-    expect(POLICY_VERSION).toBe("2026-08-28-v1");
+    expect(POLICY_VERSION).toBe("2026-08-29-v2");
     expect(INITIAL_SPONSORSHIP_MIN_PAISE).toBe(49_900n);
     expect(validateInitialSponsorship(inr("498"))).toEqual({
       ok: false,

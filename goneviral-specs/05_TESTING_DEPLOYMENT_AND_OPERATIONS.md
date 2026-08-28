@@ -30,7 +30,7 @@ Mock-only payment tests are insufficient. Browser-only “success” tests are a
 
 - local PostgreSQL/Supabase or isolated development project;
 - mock payment provider for deterministic tests;
-- Cashfree sandbox for integration testing;
+- Dodo Payments test mode for integration testing;
 - Resend safe/test recipient mode;
 - Turnstile test keys/current documented test mode;
 - no production credentials/data.
@@ -48,7 +48,7 @@ Mock-only payment tests are insufficient. Browser-only “success” tests are a
 
 - dedicated Vercel project/environment;
 - dedicated Supabase project/branch approved for staging;
-- Cashfree sandbox;
+- Dodo Payments test mode;
 - authenticated staging email domain or safe recipients;
 - protected from indexing/public confusion;
 - same architecture/config shape as production.
@@ -284,7 +284,7 @@ Two initial submissions for same canonical destination create one listing and sa
 
 ### Webhook signature
 
-Test exact raw body and headers against current official Cashfree algorithm. Include:
+Test exact raw body and headers against the current official Dodo Payments webhook algorithm. Include:
 
 - correct signature;
 - one-byte body change;
@@ -357,7 +357,7 @@ Fuzz/path tests for public IDs/slugs/UUIDs, oversized JSON, duplicate fields, ma
 
 ## 10. Browser end-to-end tests
 
-Use Playwright against a production build and deterministic provider mock. Use real Cashfree sandbox for a smaller manual/contract suite where automation is supported.
+Use Playwright against a production build and deterministic provider mock. Use real Dodo Payments test mode for a smaller manual/contract suite where automation is supported.
 
 ### Public
 
@@ -546,7 +546,7 @@ Recommended pull-request jobs:
 Main/release adds:
 
 - full e2e/concurrency suite;
-- optional Cashfree sandbox contract suite;
+- optional Dodo Payments test-mode contract suite;
 - realistic query performance regression checks;
 - deploy preview/staging and browser smoke;
 - release artifact/version metadata.
@@ -662,7 +662,7 @@ Free tier is development/private testing only. Use Pro before live money for non
 
 ---
 
-## 18. Cashfree/provider deployment
+## 18. Dodo Payments/provider deployment
 
 ### Before credentials
 
@@ -1016,7 +1016,7 @@ Expected fixed launch base, subject to current public prices/taxes:
 - gateway fee per transaction + GST;
 - possible company/legal/accounting costs.
 
-Do not model Cashfree promotional 0% pricing as permanent. Model standard public rate/negotiated written contract. Track contribution margin by amount because ₹499 transactions have percentage/tax/support/refund costs.
+Do not model Dodo Payments promotional or negotiated pricing as permanent. Model the standard public rate or a signed contract. Track contribution margin by amount because ₹499 transactions have percentage, tax, support, and refund costs.
 
 Set budget alerts on Vercel, Supabase, Resend, Sentry and provider where available. Review cache/egress/storage/function/database use monthly.
 

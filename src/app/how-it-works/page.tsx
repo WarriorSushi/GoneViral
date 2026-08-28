@@ -50,7 +50,8 @@ export default function HowItWorksPage() {
           <li>Payment gets you a spot. It does not promise clicks or sales.</li>
         </ul>
         <p id="manage">
-          Payments and tools to edit a listing are not open yet.
+          Ready to be seen? <Link href="/join">Join the list</Link>. Tools to
+          edit a listing will arrive later.
         </p>
       </section>
     </main>

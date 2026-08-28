@@ -143,7 +143,7 @@ describe("Phase 3 public read model", () => {
         "tagline": "Independent motion and identity practice from Mumbai.",
         "takeoverQuote": {
           "estimatedAt": "__ESTIMATED_AT__",
-          "policyVersion": "2026-08-28-v1",
+          "policyVersion": "2026-08-29-v2",
           "requiredPaymentPaise": "2500100",
           "targetRank": "1",
           "targetTotalPaise": "2500000",

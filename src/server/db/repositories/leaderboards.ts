@@ -21,6 +21,12 @@ import type {
   PublicTodayBoardEntry,
 } from "./public-types";
 
+function isoTimestamp(value: Date | string): string {
+  return value instanceof Date
+    ? value.toISOString()
+    : new Date(value).toISOString();
+}
+
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
 const decimalBigint = z.string().regex(/^\d+$/);
@@ -215,7 +221,7 @@ export async function listMainBoard(input: {
   const visibleRows = rows.slice(0, limit);
   const entries = visibleRows.map<PublicMainBoardEntry>((row) => ({
     ...identityFromRow(row),
-    currentTotalReachedAt: row.currentTotalReachedAt.toISOString(),
+    currentTotalReachedAt: isoTimestamp(row.currentTotalReachedAt),
     rank: row.rank.toString(),
     takeoverQuote: takeoverQuote({
       estimatedAt: generatedAt,
@@ -233,7 +239,7 @@ export async function listMainBoard(input: {
       rows.length > limit && last
         ? encodeCursor({
             totalPaise: last.confirmedTotalPaise.toString(),
-            reachedAt: last.currentTotalReachedAt.toISOString(),
+            reachedAt: isoTimestamp(last.currentTotalReachedAt),
             id: last.id,
           })
         : null,
@@ -318,7 +324,7 @@ export async function listTodayBoard(input: {
       targetTotalPaise: row.confirmedTotalPaise,
     }),
     todayNetPaise: row.todayNetPaise.toString(),
-    todayTotalReachedAt: row.todayTotalReachedAt.toISOString(),
+    todayTotalReachedAt: isoTimestamp(row.todayTotalReachedAt),
   }));
   const last = visibleRows.at(-1);
 
@@ -331,7 +337,7 @@ export async function listTodayBoard(input: {
         ? encodeCursor({
             businessDate: input.businessDate,
             netPaise: last.todayNetPaise.toString(),
-            reachedAt: last.todayTotalReachedAt.toISOString(),
+            reachedAt: isoTimestamp(last.todayTotalReachedAt),
             id: last.id,
           })
         : null,
@@ -442,14 +448,14 @@ export async function getPublicListingDetail(input: {
   const generatedAt = new Date().toISOString();
   const movements = movementRows.map<PublicMovement>((movement) => ({
     amountDeltaPaise: movement.amountDeltaPaise.toString(),
-    appliedAt: movement.appliedAt.toISOString(),
+    appliedAt: isoTimestamp(movement.appliedAt),
     kind: publicMovementKind(movement.entryType),
   }));
 
   return {
     ...identityFromRow(row),
     currentMainRank: row.rank.toString(),
-    currentTotalReachedAt: row.currentTotalReachedAt.toISOString(),
+    currentTotalReachedAt: isoTimestamp(row.currentTotalReachedAt),
     movements,
     takeoverQuote: takeoverQuote({
       estimatedAt: generatedAt,

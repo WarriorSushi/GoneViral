@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import postgres from "postgres";
 
 const directDatabaseUrl =
   "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
@@ -230,6 +231,97 @@ test("Main, Today, category, and listing navigation use real public projections"
   const howAccessibility = await new AxeBuilder({ page }).analyze();
   expect(howAccessibility.violations).toEqual([]);
   await capture(page, testInfo, `${testInfo.project.name}-how-it-works`);
+});
+
+test("guest join reaches only the honest pending flow", async ({
+  page,
+}, testInfo) => {
+  const consoleErrors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+
+  await page.goto("/join");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Put your link",
+  );
+  await page
+    .getByRole("button", { name: "Continue to secure checkout" })
+    .click();
+  await expect(
+    page.getByText("Enter a name of 80 characters or fewer."),
+  ).toBeVisible();
+  await expect(page.getByText("Enter a valid email address.")).toBeVisible();
+
+  const suffix = `${Date.now()}-${testInfo.project.name}`;
+  await page.getByLabel("Name").fill("Phase Four Studio");
+  await page.getByLabel("Category").selectOption("tech-apps");
+  await page
+    .getByLabel("Tagline")
+    .fill("A safe local checkout verification listing");
+  await page
+    .getByLabel("Website URL")
+    .fill(`https://${suffix}.example.com/path`);
+  await page.getByLabel("Email").fill(`phase4-${suffix}@example.com`);
+  await page.getByLabel("Phone").fill("+919876543210");
+  await page.getByLabel(/I accept the/).check();
+  await page
+    .getByRole("button", { name: "Continue to secure checkout" })
+    .click();
+
+  await expect(page).toHaveURL(/\/join\/att_[A-Za-z0-9_-]{24}\/mock-checkout$/);
+  await expect(
+    page.getByText("does not mark a payment successful"),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Return to GoneViral.in" }).click();
+  await expect(page).toHaveURL(/\/join\/att_[A-Za-z0-9_-]{24}\/pending$/);
+  const attemptPublicId = new URL(page.url()).pathname.split("/")[2]!;
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "We’re checking your payment.",
+  );
+  await expect(page.getByText("Your listing is not live yet.")).toBeVisible();
+  await expect(page.getByText(/payment successful/i)).toHaveCount(0);
+  await expectNoPrivateMarkers(await page.content());
+
+  const statusResponse = await page.request.get(
+    `/api/join/${attemptPublicId}/status`,
+  );
+  expect(statusResponse.status()).toBe(200);
+  expect(await statusResponse.json()).toEqual({ status: "pending" });
+
+  const verificationSql = postgres(directDatabaseUrl, {
+    max: 1,
+    prepare: false,
+    types: { bigint: postgres.BigInt },
+  });
+  try {
+    const [databaseState] = await verificationSql<
+      {
+        confirmed_total_paise: bigint;
+        ledger_count: bigint;
+        lifecycle_status: string;
+      }[]
+    >`
+      select l.lifecycle_status, l.confirmed_total_paise,
+             count(fl.id) as ledger_count
+      from private.payment_attempts pa
+      join app.listings l on l.id = pa.listing_id
+      left join private.financial_ledger fl on fl.payment_attempt_id = pa.id
+      where pa.public_id = ${attemptPublicId}
+      group by l.id
+    `;
+    expect(databaseState).toEqual({
+      confirmed_total_paise: 0n,
+      ledger_count: 0n,
+      lifecycle_status: "payment_pending",
+    });
+  } finally {
+    await verificationSql.end({ timeout: 5 });
+  }
+  await expectNoHorizontalOverflow(page);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(consoleErrors).toEqual([]);
+  await capture(page, testInfo, `${testInfo.project.name}-phase4-pending`);
 });
 
 test("keyboard focus, 200% zoom, and reduced motion remain usable", async ({

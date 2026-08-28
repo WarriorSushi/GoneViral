@@ -1,7 +1,7 @@
 # 00 — Decisions and Product Rules
 
 **Status:** canonical source of truth  
-**Policy version:** `2026-08-28-v1`  
+**Policy version:** `2026-08-29-v2`
 **Business time zone:** `Asia/Kolkata`
 
 This document defines GoneViral's product behaviour. When another document is less precise, this one wins.
@@ -46,7 +46,7 @@ V1 is not a voting site, quality ranking, closing-time auction, wager, game of c
 
 | Topic             | Rule                                                                                           |
 | ----------------- | ---------------------------------------------------------------------------------------------- |
-| First sponsorship | Minimum ₹499                                                                                   |
+| First sponsorship | ₹499 minimum; ₹2,14,74,836 current Dodo-checkout maximum                                      |
 | Later raise       | At least `MAX(10% of original successful sponsorship rounded upward to a whole rupee, ₹1,000)` |
 | Main ranking      | Current confirmed cumulative total, net of applied reversals                                   |
 | Tie               | Earlier attainment of the equal current total wins                                             |
@@ -59,7 +59,7 @@ V1 is not a voting site, quality ranking, closing-time auction, wager, game of c
 | Confirmation      | Authenticated server-to-server provider state processed transactionally                        |
 | Current rank      | Derived; never customer-writable and never mass-rewritten                                      |
 | Public freshness  | Cached reads + invalidation/manual refresh; no WebSockets                                      |
-| Provider          | Cashfree candidate behind an adapter, subject to written approval                              |
+| Provider          | Dodo Payments behind a narrow adapter; replacements remain possible                           |
 
 Any change needs a new policy version, migration impact analysis, tests and specification amendment.
 
@@ -107,11 +107,12 @@ direct website link are being explained. Do not imply guaranteed traffic.
 Implement these values once in a versioned domain module and mirror critical values with database checks. Never scatter literals.
 
 ```text
-POLICY_VERSION                         = "2026-08-28-v1"
+POLICY_VERSION                         = "2026-08-29-v2"
 BUSINESS_TIME_ZONE                     = "Asia/Kolkata"
 CURRENCY                               = "INR"
 PAYMENT_GRANULARITY_PAISE              = 100
 INITIAL_SPONSORSHIP_MIN_PAISE          = 49_900
+INITIAL_SPONSORSHIP_MAX_PAISE          = 2_147_483_600
 RAISE_PERCENT_NUMERATOR                = 10
 RAISE_PERCENT_DENOMINATOR              = 100
 RAISE_ABSOLUTE_FLOOR_PAISE             = 100_000
@@ -166,8 +167,14 @@ A new listing amount is valid only when:
 
 ```text
 amount_paise >= 49_900
+amount_paise <= 2_147_483_600
 amount_paise % 100 == 0
 ```
+
+The V1 maximum is the largest whole-rupee value that fits Dodo Payments'
+documented signed 32-bit minor-unit checkout amount. A later provider may use a
+different transport ceiling, but changing this customer-facing limit requires a
+new policy version and migration/test review.
 
 The check runs in the client for convenience, on the server at attempt creation, and again under authoritative transaction/constraints before fulfilment.
 

@@ -53,7 +53,8 @@ body {
 
 body,
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -63,10 +64,221 @@ a {
 
 a:focus-visible,
 button:focus-visible,
-summary:focus-visible {
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible {
   border-radius: 10px;
   outline: 3px solid var(--focus);
   outline-offset: 3px;
+}
+
+.join-main {
+  width: min(100%, 820px);
+  margin-inline: auto;
+  padding: 44px 0 72px;
+}
+
+.join-intro {
+  max-width: 680px;
+  margin-bottom: 24px;
+}
+
+.join-intro h1,
+.pending-card h1 {
+  margin: 4px 0 10px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.join-intro > p:last-child,
+.field-help,
+.provider-note,
+.pending-card > p {
+  color: var(--ink-soft);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--signal-hover);
+  font-size: 0.77rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.join-form {
+  display: grid;
+  gap: 14px;
+}
+
+.join-form fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.join-form legend {
+  padding: 0 8px;
+  font-size: 1rem;
+  font-weight: 780;
+}
+
+.join-form legend span {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  margin-right: 6px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--signal-soft);
+  color: var(--signal-hover);
+  font-size: 0.8rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.form-grid label,
+.amount-field {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 720;
+}
+
+.form-wide {
+  grid-column: 1 / -1;
+}
+
+.join-form input:not([type="checkbox"]),
+.join-form select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.field-help {
+  margin: -2px 0 14px;
+  font-size: 0.86rem;
+}
+
+.field-error {
+  margin: 0;
+  color: var(--signal-hover);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.check-row {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+  font-size: 0.88rem;
+}
+
+.check-row input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.form-notice {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.error-notice {
+  border-color: var(--signal-soft-strong);
+  background: var(--signal-soft);
+}
+
+.join-submit {
+  justify-self: start;
+  padding-inline: 22px;
+}
+
+.join-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.provider-note {
+  max-width: 600px;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.pending-main {
+  display: grid;
+  min-height: 70vh;
+  place-items: center;
+  padding: 40px 0 72px;
+}
+
+.pending-card {
+  width: min(100%, 620px);
+  padding: clamp(24px, 5vw, 48px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.pending-card .button {
+  margin-top: 14px;
+}
+
+.pending-mark {
+  display: inline-grid;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 14px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--warning-soft);
+  color: var(--warning);
+  letter-spacing: 0.16em;
+}
+
+@media (max-width: 560px) {
+  .join-main {
+    padding-top: 28px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-wide {
+    grid-column: auto;
+  }
+
+  .join-form fieldset {
+    padding: 16px;
+  }
+
+  .join-submit {
+    width: 100%;
+  }
 }
 
 .skip-link {
