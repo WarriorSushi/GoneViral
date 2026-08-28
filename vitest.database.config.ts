@@ -12,7 +12,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["tests/integration/database.test.ts"],
+    include: ["tests/integration/**/*.test.ts"],
     sequence: {
       concurrent: false,
     },

@@ -27,7 +27,9 @@
     "db:migrations:verify": "node scripts/db/verify-migrations.mjs",
     "db:schema:verify": "node scripts/db/verify-schema.mjs && node scripts/db/verify-data-api.mjs",
     "db:lint": "supabase db lint --local --schema app,private --level warning --fail-on error",
-    "db:advisors": "supabase db advisors --local --type all --level warn --fail-on error"
+    "db:advisors": "supabase db advisors --local --type all --level warn --fail-on error",
+    "db:fixtures:phase3": "node scripts/db/phase3-fixtures.mjs seed",
+    "db:fixtures:clear": "node scripts/db/phase3-fixtures.mjs clear"
   },
   "dependencies": {
     "@sentry/nextjs": "10.71.0",
@@ -42,6 +44,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.13.3",

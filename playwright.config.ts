@@ -1,8 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const runtimeDatabaseUrl =
+  "postgresql://postgres.pooler-dev:postgres@127.0.0.1:54329/postgres";
+const directDatabaseUrl =
+  "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+
 export default defineConfig({
   testDir: "./tests/e2e",
-  fullyParallel: true,
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",
@@ -13,6 +19,11 @@ export default defineConfig({
   },
   webServer: {
     command: "pnpm exec next start --hostname 127.0.0.1 --port 3100",
+    env: {
+      DATABASE_DIRECT_URL: directDatabaseUrl,
+      DATABASE_URL: runtimeDatabaseUrl,
+      PAYMENTS_ENABLED: "false",
+    },
     url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

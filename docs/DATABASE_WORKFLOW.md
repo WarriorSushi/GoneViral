@@ -1,6 +1,6 @@
 # Database workflow
 
-GoneViral's Phase 2 database foundation uses PostgreSQL 17 through the Supabase CLI, Drizzle ORM for typed schema and queries, and postgres.js for runtime connections. Supabase migration history is the only authority for applying migrations.
+GoneViral's database foundation uses PostgreSQL 17 through the Supabase CLI, Drizzle ORM for typed schema and queries, and postgres.js for runtime connections. Supabase migration history is the only authority for applying migrations.
 
 ## Local prerequisites
 
@@ -54,6 +54,23 @@ For every schema change:
 
 Do not use `drizzle-kit migrate`: it would create a second migration-history authority. The committed Phase 2 SQL was generated from the Drizzle schema, manually reviewed, supplemented with explicit constraints and permissions, and then tested through Supabase reset.
 
+## Phase 3 local fixtures
+
+The public read model works against real database projections and does not contain a fallback data array. To exercise populated, tie, Today, category, and hidden-state behavior locally:
+
+```powershell
+pnpm db:fixtures:phase3
+pnpm dev
+```
+
+Clear all synthetic listing activity when finished:
+
+```powershell
+pnpm db:fixtures:clear
+```
+
+Both commands are guarded against `NODE_ENV=production` and refuse any database host other than local Supabase on port `54322`. Seeding uses reserved `.example.test` destinations and creates private financial records solely to drive realistic public projections. The scripts truncate listing-owned fixture data, so they must never target a shared or hosted database. An empty database is the canonical production-safe baseline.
+
 ## Security and data invariants
 
 - Financial and ranking amounts use `bigint` paise only; floating-point SQL types are forbidden.
@@ -64,4 +81,4 @@ Do not use `drizzle-kit migrate`: it would create a second migration-history aut
 - Aggregate counters have schema defaults and nonnegative constraints, but later phases must update them only through reviewed transactional services.
 - Repository DTOs expose an explicit public-safe field allowlist. Private repository paths remain server-only.
 
-The local Data API verification makes real requests and requires both `app` and `private` schema selection to fail. Phase 2 does not create a public read API, hosted database, browser CRUD path, payment integration, auth flow, or production data.
+The local Data API verification makes real requests and requires both `app` and `private` schema selection to fail. Phase 3 adds server-only public queries and tagged Next.js caches, but does not create a public Data API, hosted database, browser CRUD path, payment integration, auth flow, or production data.

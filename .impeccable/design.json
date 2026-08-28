@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-28T00:00:00.000Z",
+  "title": "Design System: GoneViral.in",
+  "extensions": {
+    "colorMeta": {
+      "signal": {
+        "role": "primary",
+        "displayName": "Signal Vermilion",
+        "canonical": "#ff5a36",
+        "tonalRamp": [
+          "#43160d",
+          "#6b2417",
+          "#97311f",
+          "#c64027",
+          "#ea4322",
+          "#ff5a36",
+          "#ff9d87",
+          "#ffe0d7"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Warm Stone Canvas",
+        "canonical": "#f4f1ea",
+        "tonalRamp": [
+          "#282621",
+          "#4a4740",
+          "#6e6a61",
+          "#928d83",
+          "#b6b0a6",
+          "#d8d3ca",
+          "#ebe7df",
+          "#f4f1ea"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Hard Ink",
+        "canonical": "#14120f",
+        "tonalRamp": [
+          "#14120f",
+          "#302d28",
+          "#504c45",
+          "#726d64",
+          "#979187",
+          "#bbb5aa",
+          "#ddd8cf",
+          "#f4f1ea"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Board Headline",
+        "purpose": "Compact route and board headings."
+      },
+      "body": {
+        "displayName": "Interface Body",
+        "purpose": "Plain-language explanation and legal placeholder copy."
+      },
+      "label": {
+        "displayName": "Signal Label",
+        "purpose": "Ranks, amounts, categories, dates, and system labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "control-lift",
+        "value": "0 1px 2px rgb(20 18 15 / 0.08)",
+        "purpose": "Compact interactive controls only."
+      },
+      {
+        "name": "exceptional-panel-lift",
+        "value": "0 10px 30px rgb(20 18 15 / 0.1)",
+        "purpose": "Error or temporary overlay surfaces only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "micro-state",
+        "value": "160ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Hover, focus, and selected-state feedback."
+      }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "640px" },
+      { "name": "desktop-board", "value": "1024px" },
+      { "name": "wide", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single high-emphasis sponsorship action.",
+      "html": "<button class=\"ds-button-primary\">Sponsor your spot</button>",
+      "css": ".ds-button-primary { min-height: 44px; padding: 10px 16px; border: 1px solid var(--signal-hover); border-radius: 10px; background: var(--signal); color: var(--ink); font: 720 16px var(--font-geist-sans), sans-serif; transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1), transform 160ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-button-primary:hover { background: var(--signal-hover); color: var(--surface-raised); transform: translateY(-1px); } .ds-button-primary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+    },
+    {
+      "name": "Sponsored Disclosure",
+      "kind": "custom",
+      "refersTo": "disclosure",
+      "description": "The mandatory paid-ordering explanation adjacent to every board.",
+      "html": "<aside class=\"ds-disclosure\"><span>SPONSORED RANKING</span><strong>Positions are determined only by confirmed sponsorship amounts.</strong></aside>",
+      "css": ".ds-disclosure { display: grid; grid-template-columns: 160px 1fr; gap: 24px; padding: 16px 20px; border: 1px solid var(--line-strong); background: var(--signal-soft); color: var(--ink); } .ds-disclosure span { font: 700 12px var(--font-geist-mono), monospace; letter-spacing: 0.08em; }"
+    },
+    {
+      "name": "Board Row",
+      "kind": "custom",
+      "refersTo": "board-row",
+      "description": "A dense public ranking signal with exact amount.",
+      "html": "<div class=\"ds-board-row\"><strong>#1</strong><span>Example sponsor</span><b>₹10,001</b></div>",
+      "css": ".ds-board-row { display: grid; min-height: 80px; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: center; padding: 14px 18px; border-top: 1px solid var(--line); background: var(--surface); color: var(--ink); } .ds-board-row strong, .ds-board-row b { font-family: var(--font-geist-mono), monospace; font-variant-numeric: tabular-nums; } .ds-board-row:focus-within { outline: 3px solid var(--focus); outline-offset: -3px; }"
+    },
+    {
+      "name": "Status Label",
+      "kind": "chip",
+      "description": "A restrained system state label, never a decorative pill.",
+      "html": "<span class=\"ds-status\">CURRENT ESTIMATE</span>",
+      "css": ".ds-status { display: inline-flex; min-height: 32px; align-items: center; padding: 6px 9px; border: 1px solid currentColor; border-radius: 6px; background: var(--surface-muted); color: var(--ink-soft); font: 750 11px var(--font-geist-mono), monospace; letter-spacing: 0.03em; }"
+    },
+    {
+      "name": "Wordmark Navigation",
+      "kind": "nav",
+      "description": "Compact editorial identity with ordinary, trustworthy navigation.",
+      "html": "<nav class=\"ds-nav\"><strong>GONEVIRAL<span>.IN</span></strong><a href=\"#\">Main</a><a href=\"#\">Today</a></nav>",
+      "css": ".ds-nav { display: flex; min-height: 72px; align-items: center; gap: 24px; border-bottom: 1px solid var(--line-strong); color: var(--ink); font: 600 15px var(--font-geist-sans), sans-serif; } .ds-nav strong { margin-right: auto; font-size: 18px; letter-spacing: -0.04em; } .ds-nav strong span { color: var(--signal-hover); } .ds-nav a { color: inherit; text-underline-offset: 6px; } .ds-nav a:hover { text-decoration: underline; } .ds-nav a:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Editorial Signal Board",
+    "overview": "GoneViral feels like an independent magazine front page crossed with an airport departures board and a finely printed market index. The interface is warm, tactile, and information-dense. Money and movement are the visual signals; typography, whitespace, and rules provide trust. The system is restrained and light because it is read in ordinary daylight by people scanning exact public positions. It rejects casino spectacle, crypto-terminal darkness, fake auction pressure, generic SaaS polish, and decorative components that hide the board.",
+    "keyCharacteristics": [
+      "Warm stone canvas with sharp ink and one scarce signal accent.",
+      "Board-first density with exact tabular amounts.",
+      "Editorial rules and flat tonal layers before cards or shadows.",
+      "Honest empty, stale, estimate, disclosure, and legal states.",
+      "Familiar navigation and controls with visible keyboard focus."
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Signal orange-red is reserved for primary actions and active state. Inactive data remains neutral.",
+        "section": "colors"
+      },
+      {
+        "name": "The Gold Restraint Rule",
+        "body": "Gold may mark #1 with a small rule or wash. Crowns, podiums, and gold-filled themes are forbidden.",
+        "section": "colors"
+      },
+      {
+        "name": "The Exact Figure Rule",
+        "body": "Primary transactional amounts are always complete, Indian-grouped values. Compact lakh notation is secondary only.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Board Rule",
+        "body": "Leaderboard rows are separated by rules and tone, not floating cards or glass.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do begin the public board in the first desktop viewport.",
+      "Do keep exact money and rank readable without colour.",
+      "Do use the mandatory sponsored-ranking disclosure adjacent to every board.",
+      "Do show real empty and low-population states without inventing absent ranks.",
+      "Do preserve familiar keyboard, tab, link, table, and list semantics.",
+      "Do support 320px layouts, 200% text zoom, 44px targets, and reduced motion."
+    ],
+    "donts": [
+      "Don't resemble a casino, betting product, trading terminal, crypto product, purple or blue gradient SaaS dashboard, or neon dark-mode interface.",
+      "Don't use glassmorphism, gradient text, decorative side-stripe borders, or a hero-metric template.",
+      "Don't create identical card grids or wrap every board element in a card.",
+      "Don't use fake live dots, fake viewers, fabricated urgency, countdown pressure, excessive crowns, flames, confetti, or tricolour branding.",
+      "Don't copy Outbid or Million Dollar Homepage layouts.",
+      "Don't push the board below a giant hero section or hide essential action behind hover.",
+      "Don't use owner, provider, payment, report, ledger-source, or admin data in a public component or cache."
+    ]
+  }
+}
