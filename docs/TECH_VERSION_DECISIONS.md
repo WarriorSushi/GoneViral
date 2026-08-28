@@ -1,7 +1,7 @@
 # Technical version decisions
 
 **Verified:** 2026-08-28  
-**Phase:** 0 — repository, research verification and engineering guardrails
+**Phase:** 2 — database foundation (the Phase 0 dependency selection remains recorded below)
 
 All runtime and package versions are exact in `package.json`; the lockfile is the installation authority. Versions were queried from the npm registry on the verification date and checked against the official compatibility/release documentation below.
 
@@ -46,7 +46,7 @@ All runtime and package versions are exact in `package.json`; the lockfile is th
 ### Drizzle, postgres.js and Supabase connections
 
 - Drizzle supports an existing postgres.js client. postgres.js prepares statements by default; GoneViral will create the Phase 2 Supavisor transaction-pool client with `prepare: false`. See [Drizzle PostgreSQL](https://orm.drizzle.team/docs/get-started-postgresql).
-- Drizzle Kit generates reviewed SQL with `drizzle-kit generate` and applies committed migrations with `drizzle-kit migrate`. Phase 0 installs/pins it but creates no schema or migration. See [Drizzle migrations](https://orm.drizzle.team/docs/migrations).
+- Drizzle Kit generates reviewed SQL with `drizzle-kit generate`. Starting in Phase 2, committed Supabase migrations are the single apply/history authority; `drizzle-kit migrate` is intentionally not used. See [Drizzle migrations](https://orm.drizzle.team/docs/migrations).
 - Supabase recommends transaction-mode pooling for serverless/temporary clients and direct connections for migrations. Transaction mode does not support prepared statements. See [Supabase database connections](https://supabase.com/docs/guides/database/connecting-to-postgres).
 - The 2026 Supabase changelog was checked for breaking changes. New tables are no longer automatically exposed to the Data API by default; GoneViral still keeps domain tables in unexposed `app`/`private` schemas and grants no browser CRUD. See the [Supabase changelog](https://supabase.com/changelog).
 
@@ -68,3 +68,13 @@ All runtime and package versions are exact in `package.json`; the lockfile is th
 ## Deferred external evidence
 
 There is no Supabase project, database, Vercel deployment, payment-provider account, email domain, legal approval or production credential. Their runtime behaviour cannot be tested in Phase 0 and is not claimed here.
+
+## Phase 2 database verification
+
+Phase 2 was exercised locally with Supabase CLI `2.116.0`, its PostgreSQL `17.6.1.165` image, Docker Desktop's Linux engine, Drizzle ORM `0.45.2`, Drizzle Kit `0.31.10`, and postgres.js `3.4.9`.
+
+- Runtime queries use a Supavisor transaction-pool connection with postgres.js `prepare: false`; migration and administrative checks use a separate direct connection.
+- postgres.js's explicit `postgres.BigInt` mapping preserves 64-bit SQL integers as JavaScript `bigint` rather than strings.
+- The Supabase Data API allowlist contains only `public` and `graphql_public`; `app` and `private` are verified as unreachable through real local Data API requests.
+- Supabase database lint and all database advisors are required to pass after a clean reset.
+- No hosted Supabase project, dedicated hosted login, production credential, or production behaviour is represented as verified.

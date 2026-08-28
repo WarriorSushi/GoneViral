@@ -19,7 +19,15 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:database": "vitest run --config vitest.database.config.ts",
+    "db:start": "supabase start --exclude edge-runtime,imgproxy,logflare,mailpit,postgres-meta,realtime,storage-api,studio,vector",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset --local",
+    "db:migrations:verify": "node scripts/db/verify-migrations.mjs",
+    "db:schema:verify": "node scripts/db/verify-schema.mjs && node scripts/db/verify-data-api.mjs",
+    "db:lint": "supabase db lint --local --schema app,private --level warning --fail-on error",
+    "db:advisors": "supabase db advisors --local --type all --level warn --fail-on error"
   },
   "dependencies": {
     "@sentry/nextjs": "10.71.0",
