@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import { createServerClient } from "@supabase/ssr";
 import postgres from "postgres";
 
 const directDatabaseUrl =
@@ -80,6 +81,36 @@ test("production build renders a truthful empty board", async ({
   await expectNoPrivateMarkers(await page.content());
   expect(consoleErrors).toEqual([]);
   await capture(page, testInfo, `${testInfo.project.name}-empty`);
+});
+
+test("signed-out management is generic, same-origin, and not publicly cached", async ({
+  page,
+}, testInfo) => {
+  const response = await page.goto("/manage");
+  expect(response?.ok()).toBe(true);
+  expect(response?.headers()["cache-control"] ?? "").not.toMatch(
+    /public|max-age=[1-9]/i,
+  );
+  await expect(
+    page.getByRole("heading", { name: "Manage your GoneViral listing" }),
+  ).toBeVisible();
+  const applicationOrigin = new URL(page.url()).origin;
+  await page
+    .getByLabel("Email used to sponsor")
+    .fill(`not-associated-${Date.now()}@example.com`);
+  await page.getByRole("button", { name: "Send secure link" }).click();
+  await expect(
+    page.getByText(
+      "If that email can manage a listing, a secure link is on its way.",
+    ),
+  ).toBeVisible();
+
+  await page.goto("/auth/callback?next=https%3A%2F%2Fevil.example%2Fmanage");
+  await expect(page).toHaveURL(/\/manage\?error=auth$/);
+  expect(new URL(page.url()).origin).toBe(applicationOrigin);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, `${testInfo.project.name}-manage-signed-out`);
 });
 
 test("low-population Main board is first-viewport, accessible, and private-data safe", async ({
@@ -414,6 +445,108 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
   await expectNoHorizontalOverflow(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await capture(page, testInfo, `${testInfo.project.name}-phase5-confirmed`);
+});
+
+test("verified local Supabase user claims once and IDOR/revocation stay blocked", async ({
+  context,
+  page,
+}, testInfo) => {
+  const fixtureSql = postgres(directDatabaseUrl, {
+    max: 1,
+    prepare: false,
+    types: { bigint: postgres.BigInt },
+  });
+  const ownerRows = await fixtureSql<
+    { canonical_email: string; id: string; slug: string }[]
+  >`
+    SELECT pending.canonical_email, listing.id, listing.slug
+    FROM app.listings AS listing
+    JOIN private.pending_listing_owners AS pending
+      ON pending.listing_id = listing.id
+    JOIN private.payment_attempts AS attempt
+      ON attempt.id = pending.created_from_attempt_id
+    WHERE listing.name = 'Phase Five Studio'
+      AND attempt.state = 'succeeded'
+    ORDER BY listing.created_at DESC
+    LIMIT 1
+  `;
+  const ownerFixture = ownerRows[0];
+  if (!ownerFixture) throw new Error("Confirmed owner fixture was not found.");
+  const { canonical_email: email, id: listingId, slug } = ownerFixture;
+  const foreignRows = await fixtureSql<{ slug: string }[]>`
+    SELECT slug FROM app.listings
+    WHERE id <> ${listingId} AND lifecycle_status = 'active'
+    ORDER BY confirmed_total_paise DESC LIMIT 1
+  `;
+  const foreignSlug = foreignRows[0]?.slug;
+  if (!foreignSlug) throw new Error("Foreign listing fixture was not found.");
+
+  const cookieJar = new Map<string, string>();
+  const supabase = createServerClient(
+    "http://127.0.0.1:54321",
+    "local-publishable-key",
+    {
+      cookies: {
+        getAll: () => [...cookieJar].map(([name, value]) => ({ name, value })),
+        setAll: (items) => {
+          for (const item of items) cookieJar.set(item.name, item.value);
+        },
+      },
+    },
+  );
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password: `local-${Date.now()}-${testInfo.project.name}-password`,
+  });
+  expect(error).toBeNull();
+  expect(data.user?.email_confirmed_at).toBeTruthy();
+  await page.goto("/");
+  const applicationOrigin = new URL(page.url()).origin;
+  await context.addCookies(
+    [...cookieJar].map(([name, value]) => ({
+      name,
+      url: applicationOrigin,
+      value,
+    })),
+  );
+
+  await page.goto("/manage");
+  await expect(
+    page.getByRole("heading", { name: "Your listings" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Phase Five Studio" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "View listing" }).click();
+  await expect(page).toHaveURL(new RegExp(`/manage/${slug}$`));
+  await expect(
+    page.getByRole("heading", { name: "Payment history" }),
+  ).toBeVisible();
+  const initialPayment = page.getByRole("row", {
+    name: /Initial sponsorship/,
+  });
+  await expect(initialPayment).toBeVisible();
+  await expect(initialPayment.getByLabel("₹499 Indian rupees")).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await expectNoHorizontalOverflow(page);
+
+  await page.goto(`/manage/${foreignSlug}`);
+  await expect(
+    page.getByRole("heading", { name: "Page not found." }),
+  ).toBeVisible();
+  await expect(page.getByText("Private listing overview")).toHaveCount(0);
+
+  await fixtureSql`
+    UPDATE private.listing_owners SET revoked_at = now()
+    WHERE listing_id = ${listingId} AND user_id = ${data.user!.id}
+  `;
+  await page.goto(`/manage/${slug}`);
+  await expect(
+    page.getByRole("heading", { name: "Page not found." }),
+  ).toBeVisible();
+  await expect(page.getByText("Private listing overview")).toHaveCount(0);
+  await fixtureSql.end({ timeout: 5 });
+  await capture(page, testInfo, `${testInfo.project.name}-manage-revoked`);
 });
 
 test("keyboard focus, 200% zoom, and reduced motion remain usable", async ({

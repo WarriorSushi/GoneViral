@@ -24,6 +24,8 @@ export default defineConfig({
       DATABASE_URL: runtimeDatabaseUrl,
       DODO_PAYMENTS_ENVIRONMENT: "mock",
       NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3100",
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "local-publishable-key",
+      NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
       PAYMENTS_ENABLED: "false",
       PRIVATE_DATA_ENCRYPTION_KEY:
         "xtMT1+ly4wVTnz5uDGwQk21jGl4/Ro/GV6z9/imDAdg=",

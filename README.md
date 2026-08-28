@@ -1,6 +1,6 @@
 # GoneViral.in
 
-GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 5**: Dodo Payments guest checkout and authoritative server-to-server webhook confirmation are implemented behind replaceable provider adapters, with exact-once fulfilment on the immutable PostgreSQL ledger. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
+GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 6**: Dodo Payments guest checkout and authoritative server-to-server webhook confirmation are implemented behind replaceable provider adapters, with exact-once fulfilment on the immutable PostgreSQL ledger. Verified sponsors can claim and privately view their listings through Supabase passwordless Auth; every owner read is constrained by the active database ownership relationship. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
 
 The authoritative specification pack starts at [`goneviral-specs/README_FOR_CODEX.md`](./goneviral-specs/README_FOR_CODEX.md). `00_DECISIONS_AND_PRODUCT_RULES.md` is canonical product law.
 
@@ -18,7 +18,7 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-Copy `.env.example` to `.env.local` for local database integration values. Phase 4 defaults to deterministic local Dodo and Turnstile adapters, so it does not require hosted Supabase, Dodo, Resend, Turnstile, Sentry, or Vercel credentials. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for the database, fixture, and security boundaries.
+Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters. Phase 6 owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries and [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates.
 
 ## Commands
 
@@ -48,4 +48,5 @@ The local app is available at `http://localhost:3000`. Seeded local board data u
 - No hosted Supabase development or production project exists yet; only the local Docker-backed stack is verified.
 - No Vercel project/deployment exists yet.
 - Dodo Payments is the current hosted-checkout and webhook provider behind replaceable checkout and event adapters. Test mode requires a Dodo test API key, business ID, webhook key, and a one-time INR `pay_what_you_want` product. The local mock signs exact raw payloads with Standard Webhooks. Live credentials or approval are not assumed.
+- Resend custom SMTP, sender-domain DNS verification, and a genuine hosted staging magic-link delivery/replay test are not yet available and are not represented as complete.
 - Legal, privacy, refund and accounting launch approvals remain open.

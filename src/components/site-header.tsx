@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 const menuLinks = [
@@ -5,6 +6,7 @@ const menuLinks = [
   { href: "/today", label: "Today" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/join", label: "Join the list" },
+  { href: "/manage", label: "Manage my listing" },
 ] as const;
 
 export function SiteHeader() {
@@ -16,6 +18,7 @@ export function SiteHeader() {
         </Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
           <Link href="/how-it-works">How it works</Link>
+          <Link href={"/manage" as Route}>Manage</Link>
         </nav>
         <div className="header-actions">
           <Link className="button button-primary" href="/join">
@@ -26,11 +29,10 @@ export function SiteHeader() {
           <summary>Menu</summary>
           <nav aria-label="Mobile navigation">
             {menuLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
+              <Link key={link.href} href={link.href as Route}>
                 {link.label}
               </Link>
             ))}
-            <Link href="/how-it-works#manage">Manage my listing</Link>
           </nav>
         </details>
       </div>
