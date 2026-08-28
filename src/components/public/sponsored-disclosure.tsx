@@ -4,10 +4,9 @@ export function SponsoredDisclosure() {
       className="sponsored-disclosure"
       aria-label="Sponsored ranking disclosure"
     >
-      <span>SPONSORED RANKING</span>
-      <strong>
-        Positions are determined only by confirmed sponsorship amounts.
-      </strong>
+      <span aria-hidden="true">●</span>
+      <strong>Sponsored ranking</strong>
+      <p>Confirmed sponsorship amounts alone decide every position.</p>
     </aside>
   );
 }

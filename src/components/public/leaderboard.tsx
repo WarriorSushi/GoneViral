@@ -123,52 +123,15 @@ export function Leaderboard({
 
   return (
     <div className="leaderboard" data-testid="leaderboard">
-      <div
-        className="leaderboard-desktop"
-        role="table"
-        aria-label="Sponsored leaderboard"
-      >
-        <div className="leaderboard-header" role="row">
-          <span role="columnheader">Rank</span>
-          <span role="columnheader">Sponsor</span>
-          <span role="columnheader">
-            {today ? "Added today" : "Confirmed total"}
-          </span>
-          <span role="columnheader">Current estimate</span>
-        </div>
-        {entries.map((entry) => (
-          <div
-            className={`leaderboard-row rank-${entry.rank}`}
-            role="row"
-            key={entry.publicId}
-          >
-            <span className="rank" role="cell">
-              #{entry.rank}
-            </span>
-            <div role="cell">
-              <ListingIdentity entry={entry} />
-            </div>
-            <div role="cell">
-              <BoardAmount entry={entry} />
-            </div>
-            <div role="cell">
-              <TakePositionLink entry={entry} />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <ol className="leaderboard-mobile" aria-label="Sponsored leaderboard">
+      <ol className="leaderboard-list" aria-label="Sponsored leaderboard">
         {entries.map((entry) => (
           <li
             className={`leaderboard-card rank-${entry.rank}`}
             key={entry.publicId}
           >
-            <div className="mobile-row-top">
-              <span className="rank">#{entry.rank}</span>
-              <BoardAmount entry={entry} />
-            </div>
+            <span className="rank">#{entry.rank}</span>
             <ListingIdentity entry={entry} />
+            <BoardAmount entry={entry} />
             <TakePositionLink entry={entry} />
           </li>
         ))}

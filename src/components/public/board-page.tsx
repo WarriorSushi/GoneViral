@@ -42,11 +42,11 @@ export function BoardPage({
   return (
     <main id="main-content" className="public-main">
       <section className="board-intro" aria-labelledby="board-title">
-        <div>
+        <div className="board-hero-copy">
           <p className="eyebrow">{eyebrow}</p>
           <h1 id="board-title">{title}</h1>
+          <p>{helper}</p>
         </div>
-        <p>{helper}</p>
       </section>
 
       <SponsoredDisclosure />
@@ -78,8 +78,12 @@ export function BoardPage({
             {refreshContext.kind === "category" ? (
               <input type="hidden" name="slug" value={refreshContext.slug} />
             ) : null}
-            <button className="refresh-button" type="submit">
-              Refresh board
+            <button
+              aria-label="Refresh board"
+              className="refresh-button"
+              type="submit"
+            >
+              Refresh
             </button>
           </form>
         </div>
