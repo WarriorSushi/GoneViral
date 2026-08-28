@@ -11,12 +11,8 @@ export default function GlobalError({
       <body>
         <main className="error-shell">
           <section className="error-panel">
-            <p className="eyebrow">APPLICATION ERROR</p>
-            <h1>GoneViral is temporarily unavailable.</h1>
-            <p>
-              No payment or ranking state is shown unless it is confirmed by the
-              server.
-            </p>
+            <h1>GoneViral is down for now.</h1>
+            <p>Please try again.</p>
             <button type="button" onClick={() => reset()}>
               Retry
             </button>

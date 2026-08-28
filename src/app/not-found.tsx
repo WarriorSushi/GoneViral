@@ -4,11 +4,10 @@ export default function NotFound() {
   return (
     <main className="error-shell">
       <section className="error-panel">
-        <p className="eyebrow">404 · NOT FOUND</p>
-        <h1>This signal is off the board.</h1>
-        <p>The requested page does not exist or is not publicly available.</p>
-        <Link className="primary-action" href="/">
-          Return to the foundation
+        <h1>Page not found.</h1>
+        <p>We could not find this page.</p>
+        <Link className="text-link" href="/">
+          Go to the list
         </Link>
       </section>
     </main>

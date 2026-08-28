@@ -68,11 +68,9 @@ test("production build renders a truthful empty board", async ({
   expect(response?.ok()).toBe(true);
   await expect(page.getByTestId("board-empty")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2 })).toContainText(
-    "No one owns the board yet",
+    "The first spot is open",
   );
-  await expect(
-    page.getByText("The first confirmed sponsorship starts at ₹499."),
-  ).toBeVisible();
+  await expect(page.getByText("Get on the list from ₹499.")).toBeVisible();
   await expect(page.getByText("NOT LIVE DATA")).toHaveCount(0);
   await expect(page.getByTestId("leaderboard")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
@@ -92,7 +90,7 @@ test("low-population Main board is first-viewport, accessible, and private-data 
     page.getByRole("link", { name: /Monsoon Studio/ }).first(),
   ).toBeVisible();
   await expect(page.getByTestId("invitation-row")).toContainText(
-    "This position could be yours",
+    "Your work could be here",
   );
   await expect(
     page
@@ -103,7 +101,7 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await expect(
     page
       .getByTestId("leaderboard")
-      .locator('small:visible:text-is("Current estimate, not reserved")')
+      .locator('small:visible:text-is("Estimate. Spot not held.")')
       .first(),
   ).toBeVisible();
 
@@ -116,6 +114,7 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   }
   await expectNoHorizontalOverflow(page);
   await expectNoPrivateMarkers(await page.content());
+  await expect(page).toHaveTitle("Main board");
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
@@ -136,7 +135,7 @@ test("Main, Today, category, and listing navigation use real public projections"
   const todayResponse = await todayResponsePromise;
   await expect(page).toHaveURL(/\/today$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Today’s signal.",
+    "Who moved up today?",
   );
   await expect(
     page.locator('.money:visible:text-is("₹12,500")').first(),
@@ -162,11 +161,21 @@ test("Main, Today, category, and listing navigation use real public projections"
     "Monsoon Studio",
   );
   await expect(
-    page.getByRole("heading", { name: "Confirmed movement" }),
+    page.getByRole("heading", { name: "Payment history" }),
   ).toBeVisible();
-  await expect(page.getByText("Joined the board")).toBeVisible();
+  await expect(page.getByText("Joined the list")).toBeVisible();
   await expectNoPrivateMarkers(await page.content());
   await capture(page, testInfo, `${testInfo.project.name}-listing`);
+
+  await page.goto("/how-it-works");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "How it works" }),
+  ).toBeVisible();
+  await expect(page.getByRole("region", { name: "Three steps" })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  const howAccessibility = await new AxeBuilder({ page }).analyze();
+  expect(howAccessibility.violations).toEqual([]);
+  await capture(page, testInfo, `${testInfo.project.name}-how-it-works`);
 });
 
 test("keyboard focus, 200% zoom, and reduced motion remain usable", async ({

@@ -9,11 +9,8 @@ export default function ErrorPage({
   return (
     <main className="error-shell">
       <section className="error-panel">
-        <p className="eyebrow">REQUEST ERROR</p>
-        <h1>The signal dropped.</h1>
-        <p>
-          Nothing financial is inferred from this error. Try the request again.
-        </p>
+        <h1>Something went wrong.</h1>
+        <p>Please try again.</p>
         <button type="button" onClick={() => reset()}>
           Try again
         </button>

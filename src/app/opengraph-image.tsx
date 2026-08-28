@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "GoneViral.in sponsored internet leaderboard";
+export const alt = "GoneViral.in paid list for makers";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -9,7 +9,7 @@ export default function OpenGraphImage() {
     <div
       style={{
         alignItems: "stretch",
-        background: "#f4f1ea",
+        background: "#fbfaf7",
         color: "#14120f",
         display: "flex",
         flexDirection: "column",
@@ -21,14 +21,14 @@ export default function OpenGraphImage() {
       }}
     >
       <div style={{ display: "flex", fontSize: 32, fontWeight: 800 }}>
-        GONEVIRAL<span style={{ color: "#ea4322" }}>.IN</span>
+        Gone<span style={{ color: "#8f2430" }}>Viral</span>.in
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ fontSize: 86, fontWeight: 800, letterSpacing: "-4px" }}>
-          Pay more. Rank higher.
+          Show your work. Move up.
         </div>
         <div style={{ fontSize: 30, marginTop: 24 }}>
-          Sponsored rankings ordered only by confirmed sponsorship amounts.
+          Add your work. Pay more to move it up.
         </div>
       </div>
       <div
@@ -40,8 +40,8 @@ export default function OpenGraphImage() {
           paddingTop: 24,
         }}
       >
-        <span>No votes. No algorithm.</span>
-        <span>goneviral.in</span>
+        <span>A paid list for people who make things.</span>
+        <span>GoneViral.in</span>
       </div>
     </div>,
     size,

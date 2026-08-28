@@ -38,13 +38,12 @@ export default async function TodayPage(props: PageProps<"/today">) {
       activeBoard="today"
       categories={categories}
       entries={board.entries}
-      eyebrow={`${businessDate} · ASIA/KOLKATA`}
       generatedAt={board.generatedAt}
-      helper="Confirmed sponsorship added today, net of reversals posted today. Resets at midnight IST."
+      helper="See who moved up today. The list starts over at midnight IST."
       nextCursor={board.nextCursor}
       pageHref="/today"
       refreshContext={{ kind: "today", businessDate }}
-      title="Today’s signal."
+      title="Who moved up today?"
     />
   );
 }

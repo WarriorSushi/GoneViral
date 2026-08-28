@@ -6,7 +6,7 @@ export default function Loading() {
       aria-label="Loading GoneViral"
     >
       <div>
-        <p className="eyebrow">LOADING FOUNDATION</p>
+        <p>Loading…</p>
         <div className="loading-bar" aria-hidden="true" />
       </div>
     </main>

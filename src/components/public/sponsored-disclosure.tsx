@@ -1,12 +1,10 @@
 export function SponsoredDisclosure() {
   return (
-    <aside
-      className="sponsored-disclosure"
-      aria-label="Sponsored ranking disclosure"
-    >
+    <aside className="sponsored-disclosure" aria-label="Paid ranking note">
       <span aria-hidden="true">●</span>
-      <strong>Sponsored ranking</strong>
-      <p>Confirmed sponsorship amounts alone decide every position.</p>
+      <p>
+        <strong>Paid list.</strong> Money decides the order.
+      </p>
     </aside>
   );
 }

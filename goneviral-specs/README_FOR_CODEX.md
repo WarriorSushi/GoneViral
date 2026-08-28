@@ -12,9 +12,9 @@ GoneViral.in is a paid public sponsored leaderboard for the Indian internet.
 
 People, creators, startups, products and legitimate organisations purchase sponsored placement. Public ordering is determined only by cumulative server-confirmed sponsorship amounts, net of applied reversals. There are no votes, prizes, participant payouts or ranking algorithm.
 
-Every public board must visibly disclose:
+Every public board must visibly disclose in plain language:
 
-> **Sponsored rankings. Positions are determined only by confirmed sponsorship amounts.**
+> **Paid list. Money decides the order.**
 
 ## Read in this order
 
@@ -133,7 +133,14 @@ Free tiers are suitable for development/private testing. A commercial payment la
 
 ### Legal/product language
 
-Customer-facing terms are **sponsor**, **sponsorship**, **raise**, **take #N** and **sponsored rank**. Avoid defining the transaction as an auction, game, bet, prize or investment. Every board/checkout discloses paid ordering and no guarantee of impressions, clicks, sales or virality. Indian counsel and a chartered accountant are launch gates for Terms, DPDP/privacy, content/grievance duties, refunds, GST invoices and place-of-supply.
+Customer-facing copy uses **add your work**, **pay**, **move up**, **paid list**,
+**current total**, and **confirmed**. Public UI must not use **sponsor**,
+**sponsorship**, or **sponsored rank**; those remain internal business, provider,
+database, and legal terms. Avoid defining the transaction as an auction, game,
+bet, prize or investment. Every board and checkout discloses paid ordering and
+no guarantee of impressions, clicks, sales or virality. Indian counsel and a
+chartered accountant are launch gates for Terms, DPDP/privacy,
+content/grievance duties, refunds, GST invoices and place-of-supply.
 
 ## Commercial launch gates
 

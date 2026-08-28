@@ -33,13 +33,12 @@ export default async function Home(props: PageProps<"/">) {
       activeBoard="main"
       categories={categories}
       entries={board.entries}
-      eyebrow="THE SPONSORED INTERNET LEADERBOARD"
       generatedAt={board.generatedAt}
-      helper="All-time confirmed cumulative sponsorship. Higher confirmed totals rank first; ties favour the listing that reached the total earlier."
+      helper="Add your work. Pay more to move it up."
       nextCursor={board.nextCursor}
       pageHref="/"
       refreshContext={{ kind: "main" }}
-      title="Pay more. Rank higher."
+      title="Show your work. Move up."
     />
   );
 }

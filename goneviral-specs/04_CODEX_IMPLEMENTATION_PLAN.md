@@ -279,7 +279,7 @@ Ship the truthful, fast, accessible product shell using database-backed public p
 
 - `/`, `/today`, `/category/[slug]`, `/l/[slug]`.
 - compact header/navigation/footer.
-- mandatory sponsored disclosure.
+- mandatory plain paid-ranking disclosure.
 - responsive board/table/cards.
 - exact INR amounts and takeover CTAs.
 - real empty/low-population states.
@@ -320,7 +320,7 @@ Synthetic fixture seeding is local/test only. The production path with empty dat
 
 ---
 
-# Phase 4 — Guest sponsor intent, destination safety and hosted sandbox checkout
+# Phase 4 — Guest listing intent, destination safety and hosted sandbox checkout
 
 ## Objective
 
@@ -332,7 +332,7 @@ Implement Cashfree adapter against current official sandbox docs. Keep a mock pr
 
 ## Build
 
-### Sponsor form
+### Join form
 
 - listing/name/tagline/destination/category/email;
 - optional logo deferred to Phase 8 if desired;
@@ -363,9 +363,9 @@ Implement Cashfree adapter against current official sandbox docs. Keep a mock pr
 
 ### Routes
 
-- `/sponsor` and attempt context route;
+- public `/join` and attempt context route;
 - create checkout mutation/route;
-- provider return to `/sponsor/[publicId]/pending` only;
+- provider return to `/join/[publicId]/pending` only;
 - minimal no-store status endpoint returning pending/failed-safe states, with no fulfilment yet.
 
 ## Required tests

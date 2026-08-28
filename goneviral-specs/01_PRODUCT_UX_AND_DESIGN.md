@@ -164,10 +164,10 @@ Use content-driven Tailwind breakpoints, with behaviour roughly:
 /category/[slug]
 /l/[listingSlug]
 /go/[listingSlug]
-/sponsor
-/sponsor/[attemptPublicId]
-/sponsor/[attemptPublicId]/pending
-/sponsor/[attemptPublicId]/confirmed
+/join
+/join/[attemptPublicId]
+/join/[attemptPublicId]/pending
+/join/[attemptPublicId]/confirmed
 /manage
 /manage/[listingSlug]
 /manage/[listingSlug]/raise
@@ -190,12 +190,17 @@ Use content-driven Tailwind breakpoints, with behaviour roughly:
 
 ## 6. Global header
 
+Public copy amendment (approved 2026-08-28): all customer-facing examples in
+this document must be rendered with the plain-language vocabulary from `00`.
+Do not expose the internal words `sponsor`, `sponsorship`, or `sponsored rank`
+in navigation, headings, forms, status messages, or legal placeholders.
+
 ### Desktop
 
 Left:
 
 - GoneViral wordmark;
-- optional tiny descriptor: `India's sponsored internet leaderboard`.
+- no descriptor beside the wordmark.
 
 Centre/primary nav:
 
@@ -207,12 +212,12 @@ Centre/primary nav:
 Right:
 
 - Manage my listing;
-- primary `Sponsor your spot`.
+- primary `Join the list`.
 
 ### Mobile
 
 - compact wordmark;
-- `Sponsor` CTA;
+- `Join` CTA;
 - menu button opening navigation/manage/legal links.
 
 ### Header behaviour
@@ -229,10 +234,10 @@ Right:
 ### First viewport hierarchy
 
 1. Compact masthead:
-   - eyebrow: `THE SPONSORED INTERNET LEADERBOARD`;
-   - headline: `Pay more. Rank higher.`;
-   - one-line explanation: `Sponsor a public spot for your name, product or company. Confirmed cumulative sponsorship decides the order.`
-2. Mandatory disclosure.
+   - no eyebrow or decorative pre-heading;
+   - headline: `Show your work. Move up.`;
+   - one-line explanation: `Add your work. Pay more to move it up.`
+2. Plain disclosure: `Paid list. Money decides the order.`
 3. Board switcher: Main / Today.
 4. Category filters.
 5. Live board.
@@ -244,9 +249,9 @@ The first board rows should be visible without scrolling on a typical laptop.
 Never seed production with pretend entries.
 
 ```text
-No one owns the board yet.
-The first confirmed sponsorship starts at ₹499.
-[Take the first spot]
+The first spot is open.
+Get on the list from ₹499.
+[See how it works]
 ```
 
 Optional secondary explanation: `Real payments only. No votes. No algorithm.`
@@ -388,7 +393,7 @@ A suspended/removed listing returns not-found/public-unavailable and never redir
 
 ---
 
-## 12. Sponsor flow
+## 12. Join flow
 
 Use a focused multi-step form. Desktop may be a centred panel; mobile is a page, not a cramped modal.
 
@@ -481,7 +486,7 @@ Checkbox wording must not claim legally invalid waiver; use reviewed consent cop
 
 ## 13. Payment return and pending experience
 
-Route: `/sponsor/[attemptPublicId]/pending`
+Route: `/join/[attemptPublicId]/pending`
 
 Heading:
 
@@ -529,7 +534,7 @@ After active polling window:
 
 ## 14. Confirmed result
 
-Route: `/sponsor/[attemptPublicId]/confirmed`
+Route: `/join/[attemptPublicId]/confirmed`
 
 Render only after owner-authorised or possession-safe status lookup proves confirmed.
 
@@ -751,19 +756,15 @@ Every sensitive action requires reason, confirmation and immutable audit. High-i
 
 ### How it works
 
-Explain in this order:
+Keep the public page short enough to scan in one desktop viewport. Explain only:
 
-1. sponsor a listing starting at ₹499;
-2. confirmed amounts accumulate;
-3. Main ranks cumulative total;
-4. raises have original-based minimum;
-5. ties favour earlier attainment;
-6. Today resets at midnight IST;
-7. position is sponsored, not editorial;
-8. no guaranteed traffic/virality;
-9. moderation/reversals can affect visibility/total.
+1. add your work;
+2. add money, starting at ₹499;
+3. more money moves it up.
 
-Use arithmetic examples from `00`.
+Add a short `Good to know` list for the Today reset, no click/sales promise,
+server confirmation, and unavailable pre-launch features. Put detailed rules in
+the relevant transaction UI and counsel-reviewed legal pages, not on this page.
 
 ### Terms / Privacy / Refund / Content policy
 
@@ -775,7 +776,7 @@ Use counsel-reviewed content. Product UI must link them from footer, checkout, r
 
 Compact, not a mega sitemap.
 
-- sponsored-ranking disclosure;
+- plain paid-ranking disclosure;
 - How it works;
 - Terms, Privacy, Refunds, Content policy;
 - Contact/report abuse;
@@ -789,14 +790,13 @@ Do not claim “India's #1” without substantiation.
 
 ### Preferred
 
-- `Sponsor your spot`
-- `Take #3 for ₹2,001`
-- `Raise your position`
-- `Confirmed sponsorship`
+- `Join the list`
+- `Move to #3 · ₹2,001`
+- `Move up`
+- `Payment confirmed`
 - `Current estimate`
-- `The board moved while payment was confirmed`
-- `Sponsored ranking`
-- `No votes. No algorithm.`
+- `The list moved while we checked the payment`
+- `Paid list. Money decides the order.`
 
 ### Prohibited/misleading
 

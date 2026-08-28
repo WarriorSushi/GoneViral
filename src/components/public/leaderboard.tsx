@@ -34,11 +34,11 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
 function TakePositionLink({ entry }: { readonly entry: BoardEntry }) {
   return (
     <div className="take-position">
-      <Link className="button button-quote" href={`/how-it-works#sponsoring`}>
-        Take #{entry.rank} for{" "}
+      <Link className="button button-quote" href={`/how-it-works#join`}>
+        Move to #{entry.rank} ·{" "}
         <Money paise={entry.takeoverQuote.requiredPaymentPaise} />
       </Link>
-      <small>Current estimate, not reserved</small>
+      <small>Estimate. Spot not held.</small>
     </div>
   );
 }
@@ -49,7 +49,7 @@ function BoardAmount({ entry }: { readonly entry: BoardEntry }) {
       <div className="board-amount">
         <Money paise={entry.todayNetPaise} />
         <small>
-          <Money paise={entry.confirmedTotalPaise} /> lifetime
+          <Money paise={entry.confirmedTotalPaise} /> all time
         </small>
       </div>
     );
@@ -58,7 +58,7 @@ function BoardAmount({ entry }: { readonly entry: BoardEntry }) {
   return (
     <div className="board-amount">
       <Money paise={entry.confirmedTotalPaise} />
-      <small>confirmed cumulative</small>
+      <small>current total</small>
     </div>
   );
 }
@@ -68,11 +68,11 @@ function InvitationRow({ rank }: { readonly rank: string }) {
     <div className="invitation-row" data-testid="invitation-row">
       <span className="rank">#{rank}</span>
       <div>
-        <strong>This position could be yours</strong>
-        <p>Real confirmation only. Checkout is not enabled yet.</p>
+        <strong>Your work could be here</strong>
+        <p>Payments open soon.</p>
       </div>
       <div className="invitation-action">
-        <span>Current minimum</span>
+        <span>Starts at</span>
         <Money paise={INITIAL_SPONSORSHIP_MIN_PAISE.toString()} />
       </div>
     </div>
@@ -86,19 +86,18 @@ function EmptyBoard({ today }: { readonly today: boolean }) {
       data-testid="board-empty"
       aria-labelledby="empty-title"
     >
-      <p className="eyebrow">THE FIRST REAL SIGNAL STARTS HERE</p>
       <h2 id="empty-title">
-        {today ? "Today’s board is wide open." : "No one owns the board yet."}
+        {today ? "Be first today." : "The first spot is open."}
       </h2>
       <p>
         {today
-          ? "The first confirmed sponsorship today takes #1 here."
-          : "The first confirmed sponsorship starts at ₹499."}
+          ? "The first payment today gets the top spot."
+          : "Get on the list from ₹499."}
       </p>
-      <Link className="button button-primary" href="/how-it-works#sponsoring">
-        See how to take the first spot
+      <Link className="button button-primary" href="/how-it-works#join">
+        See how it works
       </Link>
-      <small>Real payments only. No votes. No algorithm.</small>
+      <small>Payments are not open yet.</small>
     </section>
   );
 }
@@ -123,7 +122,7 @@ export function Leaderboard({
 
   return (
     <div className="leaderboard" data-testid="leaderboard">
-      <ol className="leaderboard-list" aria-label="Sponsored leaderboard">
+      <ol className="leaderboard-list" aria-label="Paid leaderboard">
         {entries.map((entry) => (
           <li
             className={`leaderboard-card rank-${entry.rank}`}

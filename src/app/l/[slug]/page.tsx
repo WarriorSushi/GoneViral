@@ -10,13 +10,13 @@ import { toIstBusinessDate } from "@/domain/today";
 import { getCachedPublicListingDetail } from "@/server/cache/public-read-model";
 import type { PublicMovementKind } from "@/server/db/repositories/public-types";
 
-export const metadata: Metadata = { title: "Sponsored listing" };
+export const metadata: Metadata = { title: "Listing" };
 
 const movementLabels: Record<PublicMovementKind, string> = {
-  added: "Added confirmed sponsorship",
-  adjusted: "Confirmed total adjusted",
-  joined: "Joined the board",
-  restored: "Confirmed sponsorship restored",
+  added: "Money added",
+  adjusted: "Total changed",
+  joined: "Joined the list",
+  restored: "Money restored",
 };
 
 export default async function ListingPage(props: PageProps<"/l/[slug]">) {
@@ -37,9 +37,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           {listing.name.trim().charAt(0).toUpperCase()}
         </div>
         <div className="listing-heading">
-          <p className="eyebrow">
-            SPONSORED PLACEMENT · {listing.category.name}
-          </p>
+          <p className="listing-category">{listing.category.name}</p>
           <h1>{listing.name}</h1>
           <p>{listing.tagline}</p>
           <span className="destination-label">
@@ -49,21 +47,21 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
         <div className="listing-rank-block">
           <span className="rank">#{listing.currentMainRank}</span>
           <Money paise={listing.confirmedTotalPaise} />
-          <small>confirmed cumulative</small>
+          <small>current total</small>
         </div>
       </section>
 
       <section
         className="listing-signal-grid"
-        aria-label="Current listing signal"
+        aria-label="Current listing details"
       >
         <article>
-          <p className="eyebrow">MAIN</p>
+          <p className="signal-label">All time</p>
           <strong>#{listing.currentMainRank}</strong>
-          <span>Current sponsored rank</span>
+          <span>Current spot</span>
         </article>
         <article>
-          <p className="eyebrow">TODAY</p>
+          <p className="signal-label">Today</p>
           {listing.todayRank && listing.todayNetPaise ? (
             <>
               <strong>#{listing.todayRank}</strong>
@@ -74,21 +72,18 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           ) : (
             <>
               <strong>—</strong>
-              <span>No positive net sponsorship today</span>
+              <span>No move today</span>
             </>
           )}
         </article>
         <article className="listing-quote">
-          <p className="eyebrow">CURRENT ESTIMATE</p>
+          <p className="signal-label">Move up</p>
           <strong>
             <Money paise={listing.takeoverQuote.requiredPaymentPaise} />
           </strong>
-          <span>currently passes #{listing.currentMainRank}</span>
-          <Link
-            className="button button-primary"
-            href="/how-it-works#sponsoring"
-          >
-            Take #{listing.currentMainRank}
+          <span>to pass #{listing.currentMainRank}</span>
+          <Link className="button button-primary" href="/how-it-works#join">
+            Move to #{listing.currentMainRank}
           </Link>
         </article>
       </section>
@@ -102,14 +97,13 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           )}{" "}
           IST
         </time>
-        . It is not a reservation or guarantee. Checkout is not enabled yet.
+        . This is an estimate. The spot is not held. Payments are not open yet.
       </p>
 
       <section className="movement-section" aria-labelledby="movement-title">
         <div className="section-title-row">
           <div>
-            <p className="eyebrow">PUBLIC-SAFE HISTORY</p>
-            <h2 id="movement-title">Confirmed movement</h2>
+            <h2 id="movement-title">Payment history</h2>
           </div>
           <form action={refreshPublicBoard}>
             <input type="hidden" name="kind" value="listing" />
@@ -137,18 +131,13 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
             ))}
           </ol>
         ) : (
-          <p className="quiet-empty">
-            No public movement records are available.
-          </p>
+          <p className="quiet-empty">No payment history yet.</p>
         )}
       </section>
 
       <aside className="listing-safety-note">
-        <strong>Destination visits are not enabled yet.</strong>
-        <p>
-          The approved host is shown above. A safety-checked outbound redirect
-          and reporting flow will be added before public launch.
-        </p>
+        <strong>Links do not open yet.</strong>
+        <p>We will check each link before launch.</p>
       </aside>
     </main>
   );

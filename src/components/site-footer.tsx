@@ -13,12 +13,9 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div>
         <Link className="wordmark footer-wordmark" href="/">
-          GONEVIRAL<span>.IN</span>
+          Gone<span>Viral</span>.in
         </Link>
-        <p>
-          Sponsored rankings. Positions are determined only by confirmed
-          sponsorship amounts.
-        </p>
+        <p>A paid list for people who make things.</p>
       </div>
       <nav aria-label="Legal and trust links">
         <Link href="/how-it-works">How it works</Link>
@@ -28,7 +25,7 @@ export function SiteFooter() {
           </Link>
         ))}
       </nav>
-      <p className="footer-meta">© GoneViral.in · No votes. No algorithm.</p>
+      <p className="footer-meta">© GoneViral.in</p>
     </footer>
   );
 }

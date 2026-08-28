@@ -19,7 +19,6 @@ export function BoardPage({
   activeCategorySlug,
   categories,
   entries,
-  eyebrow,
   generatedAt,
   helper,
   nextCursor,
@@ -31,7 +30,6 @@ export function BoardPage({
   readonly activeCategorySlug?: string;
   readonly categories: readonly PublicCategory[];
   readonly entries: readonly (PublicMainBoardEntry | PublicTodayBoardEntry)[];
-  readonly eyebrow: string;
   readonly generatedAt: string;
   readonly helper: string;
   readonly nextCursor: string | null;
@@ -43,7 +41,6 @@ export function BoardPage({
     <main id="main-content" className="public-main">
       <section className="board-intro" aria-labelledby="board-title">
         <div className="board-hero-copy">
-          <p className="eyebrow">{eyebrow}</p>
           <h1 id="board-title">{title}</h1>
           <p>{helper}</p>
         </div>
@@ -96,9 +93,8 @@ export function BoardPage({
         today={activeBoard === "today"}
       />
       <p className="estimate-note">
-        Takeover amounts are current estimates. They do not reserve a rank or
-        guarantee a position while payment is being confirmed. Checkout is not
-        enabled yet.
+        Prices can change. We do not hold a spot before payment. Payments are
+        not open yet.
       </p>
     </main>
   );

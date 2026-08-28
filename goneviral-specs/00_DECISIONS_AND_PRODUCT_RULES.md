@@ -16,9 +16,12 @@ GoneViral.in is a public paid sponsored leaderboard for legitimate people, creat
 
 A customer purchases advertising placement. The current public order is determined only by cumulative server-confirmed sponsorship amounts, net of applied refunds, chargebacks and restorations.
 
-Mandatory board disclosure:
+Mandatory plain-language board disclosure:
 
-> **Sponsored rankings. Positions are determined only by confirmed sponsorship amounts.**
+> **Paid list. Money decides the order.**
+
+This copy change does not change the advertising product, payment rules, ledger
+semantics, or the internal canonical terms below.
 
 ### What the customer does and does not buy
 
@@ -86,7 +89,11 @@ Any change needs a new policy version, migration impact analysis, tests and spec
 | Removed                         | Admin delisting; records remain.                                                                                                   |
 | Inactive reversed               | Confirmed total is zero after reversal.                                                                                            |
 
-Customer copy should say **sponsor**, **raise your position**, **take #N**, **sponsored rank** and **confirmed** rather than auction/bet/win language.
+Customer copy should use plain verbs: **add your work**, **pay**, **move up**,
+**paid list**, **current total**, and **confirmed**. Do not use **sponsor**,
+**sponsorship**, or **sponsored rank** in the public UI. Those remain internal
+business, provider, database, and legal terms. Continue to avoid
+auction/bet/win language.
 
 ---
 

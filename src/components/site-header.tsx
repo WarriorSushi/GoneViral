@@ -11,17 +11,14 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header-inner">
         <Link className="wordmark" href="/" aria-label="GoneViral.in home">
-          GONEVIRAL<span>.IN</span>
+          Gone<span>Viral</span>.in
         </Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
           <Link href="/how-it-works">How it works</Link>
         </nav>
         <div className="header-actions">
-          <Link
-            className="button button-primary"
-            href="/how-it-works#sponsoring"
-          >
-            Get a spot
+          <Link className="button button-primary" href="/how-it-works#join">
+            Join the list
           </Link>
         </div>
         <details className="mobile-menu">

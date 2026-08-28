@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import { LegalPlaceholder } from "@/components/public/legal-placeholder";
 
-export const metadata: Metadata = { title: "Privacy placeholder" };
+export const metadata: Metadata = { title: "Privacy" };
 export default function PrivacyPage() {
   return (
     <LegalPlaceholder
       title="Privacy"
-      description="A DPDP-aligned privacy notice will appear here after counsel review."
+      description="Our final privacy note will appear here after a lawyer checks it."
     >
       <section>
         <h2>Required review</h2>
         <p>
-          The final notice must explain public listing data, confidential owner
-          and payment data, purpose, retention, rights, security, processors,
-          grievance contact, and lawful financial record preservation.
+          The final note must explain what we collect, why we need it, how we
+          protect it, how long we keep it, and how you can ask for help.
         </p>
       </section>
     </LegalPlaceholder>

@@ -45,9 +45,8 @@ export default async function CategoryPage(
       activeCategorySlug={slug}
       categories={categories}
       entries={board.entries}
-      eyebrow="CATEGORY BOARD · MAIN ORDER"
       generatedAt={board.generatedAt}
-      helper={`The same cumulative Main ranking, filtered to ${category.name}. No separate category ledger or score.`}
+      helper={`See paid spots in ${category.name}.`}
       nextCursor={board.nextCursor}
       pageHref={`/category/${slug}`}
       refreshContext={{ kind: "category", slug }}
