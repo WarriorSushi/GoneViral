@@ -16,7 +16,11 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],
-      include: ["src/config/**/*.ts", "src/server/telemetry/**/*.ts"],
+      include: [
+        "src/config/**/*.ts",
+        "src/domain/**/*.ts",
+        "src/server/telemetry/**/*.ts",
+      ],
     },
   },
 });

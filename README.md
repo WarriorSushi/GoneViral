@@ -1,6 +1,6 @@
 # GoneViral.in
 
-GoneViral.in is a paid public sponsored leaderboard for the Indian internet. The repository is currently complete through **Phase 0 only**: reproducible engineering foundation and guardrails. Ranking, database, payment, ownership and moderation behaviour have not been implemented yet.
+GoneViral.in is a paid public sponsored leaderboard for the Indian internet. The repository is currently complete through **Phase 1**: the reproducible engineering foundation plus pure, versioned domain policy and calculations. Database transactions, provider integrations, ownership flows, moderation operations and public leaderboard data have not been implemented yet.
 
 The authoritative specification pack starts at [`goneviral-specs/README_FOR_CODEX.md`](./goneviral-specs/README_FOR_CODEX.md). `00_DECISIONS_AND_PRODUCT_RULES.md` is canonical product law.
 
@@ -16,7 +16,7 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-Copy `.env.example` to `.env.local` only when a later phase needs local integration values. Phase 0 does not require Supabase, Cashfree, Resend, Turnstile, Sentry or Vercel credentials.
+Copy `.env.example` to `.env.local` only when a later phase needs local integration values. Phases 0–1 do not require Supabase, Cashfree, Resend, Turnstile, Sentry or Vercel credentials.
 
 ## Commands
 
