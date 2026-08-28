@@ -2,6 +2,8 @@ import "server-only";
 
 import { and, eq, isNull } from "drizzle-orm";
 
+import { readPublicEnv } from "@/config/env/public";
+
 import { getDatabase } from "../../client";
 import { getSqlClient } from "../../client";
 import { listingOwners } from "../../schema";
@@ -37,8 +39,11 @@ export type OwnerListingSummary = Readonly<{
 
 export type OwnerListingDetail = OwnerListingSummary &
   Readonly<{
+    categoryName: string;
+    categorySlug: string;
     destinationHost: string;
     destinationUrl: string;
+    logoUrl: string | null;
     originalSponsorshipPaise: string;
     tagline: string;
   }>;
@@ -50,10 +55,14 @@ export type OwnerPaymentHistoryItem = Readonly<{
 }>;
 
 type OwnerListingRow = {
+  category_name?: string;
+  category_slug?: string;
   confirmed_total_paise: bigint;
   destination_host?: string;
   destination_url?: string;
   lifecycle_status: string;
+  logo_public_bucket?: string | null;
+  logo_public_object_key?: string | null;
   moderation_status: string;
   name: string;
   original_sponsorship_paise?: bigint;
@@ -123,6 +132,9 @@ export async function requireOwnerListingBySlug(
     )
     SELECT listing.name, listing.slug, listing.tagline,
            listing.destination_url, listing.destination_host,
+           category.name AS category_name, category.slug AS category_slug,
+           asset.public_bucket AS logo_public_bucket,
+           asset.public_object_key AS logo_public_object_key,
            listing.lifecycle_status, listing.moderation_status,
            listing.confirmed_total_paise,
            listing.original_sponsorship_paise, ranked.rank,
@@ -132,6 +144,10 @@ export async function requireOwnerListingBySlug(
       ON ownership.listing_id = listing.id
      AND ownership.user_id = ${userId}
      AND ownership.revoked_at IS NULL
+    JOIN app.categories AS category ON category.id = listing.category_id
+    LEFT JOIN app.listing_assets AS asset
+      ON asset.id = listing.logo_asset_id AND asset.listing_id = listing.id
+     AND asset.state = 'ready'
     LEFT JOIN ranked ON ranked.id = listing.id
     LEFT JOIN app.listing_daily_totals AS today
       ON today.listing_id = listing.id
@@ -142,6 +158,8 @@ export async function requireOwnerListingBySlug(
   const row = rows[0];
   if (
     !row ||
+    row.category_name === undefined ||
+    row.category_slug === undefined ||
     row.destination_host === undefined ||
     row.destination_url === undefined ||
     row.original_sponsorship_paise === undefined ||
@@ -149,13 +167,50 @@ export async function requireOwnerListingBySlug(
   ) {
     return null;
   }
+  const publicSupabaseUrl = readPublicEnv().NEXT_PUBLIC_SUPABASE_URL?.replace(
+    /\/$/,
+    "",
+  );
   return {
     ...summary(row),
+    categoryName: row.category_name,
+    categorySlug: row.category_slug,
     destinationHost: row.destination_host,
     destinationUrl: row.destination_url,
+    logoUrl:
+      row.logo_public_bucket && row.logo_public_object_key && publicSupabaseUrl
+        ? `${publicSupabaseUrl}/storage/v1/object/public/${encodeURIComponent(row.logo_public_bucket)}/${row.logo_public_object_key.split("/").map(encodeURIComponent).join("/")}`
+        : null,
     originalSponsorshipPaise: row.original_sponsorship_paise.toString(),
     tagline: row.tagline,
   };
+}
+
+export type OwnerPendingChange = Readonly<{
+  changeType: string;
+  createdAt: string;
+}>;
+
+export async function listOwnerPendingChanges(
+  slug: string,
+  userId: string,
+): Promise<readonly OwnerPendingChange[]> {
+  const rows = await getSqlClient()<
+    { change_type: string; created_at: Date | string }[]
+  >`
+    SELECT request.change_type, request.created_at
+    FROM private.listing_change_requests AS request
+    JOIN app.listings AS listing ON listing.id = request.listing_id
+    JOIN private.listing_owners AS ownership
+      ON ownership.listing_id = listing.id
+     AND ownership.user_id = ${userId} AND ownership.revoked_at IS NULL
+    WHERE listing.slug = ${slug} AND request.state = 'pending'
+    ORDER BY request.created_at DESC, request.id DESC
+  `;
+  return rows.map((row) => ({
+    changeType: row.change_type,
+    createdAt: new Date(row.created_at).toISOString(),
+  }));
 }
 
 export async function listOwnerPaymentHistory(

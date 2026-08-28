@@ -486,6 +486,71 @@ select:focus-visible {
   margin: 0 0 18px;
 }
 
+.owner-edit-link {
+  margin: 0 0 18px 8px;
+}
+
+.owner-edit-page > h1 {
+  margin: 6px 0 10px;
+  font-size: clamp(2rem, 6vw, 3.7rem);
+  letter-spacing: -0.055em;
+}
+
+.owner-edit-page > p:not(.eyebrow) {
+  max-width: 720px;
+  color: var(--ink-soft);
+}
+
+.owner-edit-section {
+  margin-top: 24px;
+  padding: clamp(20px, 4vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.owner-edit-section h2 {
+  margin: 0 0 18px;
+}
+
+.owner-edit-form,
+.owner-logo-form {
+  display: grid;
+  gap: 10px;
+}
+
+.owner-edit-form label,
+.owner-logo-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 720;
+}
+
+.owner-edit-form input,
+.owner-edit-form select,
+.owner-edit-form textarea,
+.owner-logo-form input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.owner-edit-form textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.owner-edit-form .button,
+.owner-logo-form .button {
+  width: fit-content;
+  margin-top: 6px;
+}
+
 .owner-raise-card {
   margin: 0;
 }
@@ -973,6 +1038,10 @@ select:focus-visible {
   background: var(--surface);
   font-family: var(--font-geist-mono), monospace;
   font-weight: 800;
+}
+
+.listing-logo {
+  object-fit: contain;
 }
 
 .listing-identity strong {

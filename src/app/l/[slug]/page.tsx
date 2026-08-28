@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
@@ -33,9 +34,20 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
     <main id="main-content" className="public-main listing-page">
       <SponsoredDisclosure />
       <section className="listing-hero">
-        <div className="listing-mark listing-mark-large" aria-hidden="true">
-          {listing.name.trim().charAt(0).toUpperCase()}
-        </div>
+        {listing.logoUrl ? (
+          <Image
+            alt={`${listing.name} logo`}
+            className="listing-mark listing-mark-large listing-logo"
+            height={96}
+            priority
+            src={listing.logoUrl}
+            width={96}
+          />
+        ) : (
+          <div className="listing-mark listing-mark-large" aria-hidden="true">
+            {listing.name.trim().charAt(0).toUpperCase()}
+          </div>
+        )}
         <div className="listing-heading">
           <p className="listing-category">{listing.category.name}</p>
           <h1>{listing.name}</h1>

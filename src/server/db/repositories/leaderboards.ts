@@ -7,6 +7,7 @@ import { z } from "zod";
 import { moneyPaise } from "@/domain/money";
 import { INITIAL_SPONSORSHIP_MIN_PAISE, POLICY_VERSION } from "@/domain/policy";
 import { calculateTakeoverQuote } from "@/domain/ranking";
+import { readPublicEnv } from "@/config/env/public";
 
 import { getSqlClient } from "../client";
 import type {
@@ -127,6 +128,8 @@ type MainBoardRow = Readonly<{
   currentTotalReachedAt: Date;
   destinationUrl: string;
   id: string;
+  logoPublicBucket: string | null;
+  logoPublicObjectKey: string | null;
   name: string;
   publicId: string;
   rank: bigint;
@@ -140,6 +143,16 @@ type TodayBoardRow = MainBoardRow &
     todayTotalReachedAt: Date;
   }>;
 
+function publicLogoUrl(row: MainBoardRow): string | null {
+  const base = readPublicEnv().NEXT_PUBLIC_SUPABASE_URL;
+  if (!base || !row.logoPublicBucket || !row.logoPublicObjectKey) return null;
+  const encodedPath = row.logoPublicObjectKey
+    .split("/")
+    .map(encodeURIComponent)
+    .join("/");
+  return `${base.replace(/\/$/, "")}/storage/v1/object/public/${encodeURIComponent(row.logoPublicBucket)}/${encodedPath}`;
+}
+
 function identityFromRow(row: MainBoardRow) {
   return {
     category: {
@@ -149,7 +162,7 @@ function identityFromRow(row: MainBoardRow) {
     },
     confirmedTotalPaise: row.confirmedTotalPaise.toString(),
     destinationUrl: row.destinationUrl,
-    logoUrl: null,
+    logoUrl: publicLogoUrl(row),
     name: row.name,
     publicId: row.publicId,
     slug: row.slug,
@@ -193,6 +206,8 @@ export async function listMainBoard(input: {
         l.destination_url as "destinationUrl",
         l.confirmed_total_paise as "confirmedTotalPaise",
         l.current_total_reached_at as "currentTotalReachedAt",
+        asset.public_bucket as "logoPublicBucket",
+        asset.public_object_key as "logoPublicObjectKey",
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
@@ -203,6 +218,9 @@ export async function listMainBoard(input: {
         ) as rank
       from app.listings l
       inner join app.categories c on c.id = l.category_id
+      left join app.listing_assets asset
+        on asset.id = l.logo_asset_id and asset.listing_id = l.id
+       and asset.state = 'ready' and asset.kind = 'logo'
       where l.lifecycle_status = 'active'
         and l.moderation_status = 'clear'
         and l.confirmed_total_paise > 0
@@ -284,6 +302,8 @@ export async function listTodayBoard(input: {
         l.destination_url as "destinationUrl",
         l.confirmed_total_paise as "confirmedTotalPaise",
         l.current_total_reached_at as "currentTotalReachedAt",
+        asset.public_bucket as "logoPublicBucket",
+        asset.public_object_key as "logoPublicObjectKey",
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
@@ -297,6 +317,9 @@ export async function listTodayBoard(input: {
       from app.listing_daily_totals d
       inner join app.listings l on l.id = d.listing_id
       inner join app.categories c on c.id = l.category_id
+      left join app.listing_assets asset
+        on asset.id = l.logo_asset_id and asset.listing_id = l.id
+       and asset.state = 'ready' and asset.kind = 'logo'
       where d.business_date = ${input.businessDate}
         and d.net_amount_paise > 0
         and l.lifecycle_status = 'active'
@@ -386,6 +409,8 @@ export async function getPublicListingDetail(input: {
         l.destination_url as "destinationUrl",
         l.confirmed_total_paise as "confirmedTotalPaise",
         l.current_total_reached_at as "currentTotalReachedAt",
+        asset.public_bucket as "logoPublicBucket",
+        asset.public_object_key as "logoPublicObjectKey",
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
@@ -396,6 +421,9 @@ export async function getPublicListingDetail(input: {
         ) as rank
       from app.listings l
       inner join app.categories c on c.id = l.category_id
+      left join app.listing_assets asset
+        on asset.id = l.logo_asset_id and asset.listing_id = l.id
+       and asset.state = 'ready' and asset.kind = 'logo'
       where l.lifecycle_status = 'active'
         and l.moderation_status = 'clear'
         and l.confirmed_total_paise > 0

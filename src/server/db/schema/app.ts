@@ -216,6 +216,18 @@ export const listingAssets = appSchema.table(
       "listing_assets_dimensions_positive",
       sql`(${table.width} is null or ${table.width} > 0) and (${table.height} is null or ${table.height} > 0)`,
     ),
+    check(
+      "listing_assets_staged_storage_complete",
+      sql`${table.state} not in ('staged', 'processing') or (${table.listingId} is not null and ${table.stagingBucket} is not null and ${table.stagingObjectKey} is not null and ${table.expiresAt} is not null)`,
+    ),
+    check(
+      "listing_assets_ready_storage_complete",
+      sql`${table.state} <> 'ready' or (${table.listingId} is not null and ${table.publicBucket} = 'goneviral-logo-public' and ${table.publicObjectKey} is not null and ${table.contentType} = 'image/webp' and ${table.byteSize} is not null and ${table.byteSize} > 0 and ${table.width} = 128 and ${table.height} = 128 and ${table.sha256} is not null and ${table.processedAt} is not null)`,
+    ),
+    check(
+      "listing_assets_rejected_has_reason",
+      sql`${table.state} <> 'rejected' or ${table.rejectionCode} is not null`,
+    ),
     index("listing_assets_listing_created_idx").on(
       table.listingId,
       table.createdAt.desc(),

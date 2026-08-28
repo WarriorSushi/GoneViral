@@ -43,6 +43,14 @@ const config = await readFile("supabase/config.toml", "utf8");
 assert.match(config, /schemas = \["public", "graphql_public"\]/);
 assert.match(config, /auto_expose_new_tables = false/);
 assert.doesNotMatch(config, /schemas = \[[^\]]*"(?:app|private)"/);
+assert.match(
+  config,
+  /\[storage\.buckets\.goneviral-logo-staging\][\s\S]*?public = false/,
+);
+assert.match(
+  config,
+  /\[storage\.buckets\.goneviral-logo-public\][\s\S]*?public = true/,
+);
 
 const databaseUrl =
   process.env.DATABASE_DIRECT_URL ??
@@ -87,11 +95,13 @@ try {
       'admin_audit_events_append_only',
       'listing_screenings_append_only',
       'listings_original_sponsorship_immutable',
-      'payment_attempts_intent_immutable'
+      'payment_attempts_intent_immutable',
+      'listing_assets_ready_payload_immutable',
+      'listings_selected_logo_ready'
     )
     order by trigger_name
   `;
-  assert.equal(protections.length, 6);
+  assert.equal(protections.length, 8);
 
   const unsafeFunctions = await sql`
     select p.oid::regprocedure::text as function_name
@@ -109,11 +119,13 @@ try {
       has_table_privilege('goneviral_app', 'app.categories', 'SELECT') as app_category_select,
       has_table_privilege('goneviral_app', 'private.financial_ledger', 'INSERT') as app_ledger_insert,
       has_table_privilege('goneviral_app', 'private.financial_ledger', 'UPDATE') as app_ledger_update,
+      has_table_privilege('goneviral_app', 'app.listing_assets', 'DELETE') as app_asset_delete,
       has_table_privilege('goneviral_app', 'private.admin_audit_events', 'DELETE') as app_audit_delete
   `;
   assert.deepEqual(privilegeRows[0], {
     anon_app_usage: false,
     authenticated_private_usage: false,
+    app_asset_delete: true,
     app_category_select: true,
     app_ledger_insert: true,
     app_ledger_update: false,
@@ -142,7 +154,7 @@ try {
   assert.equal(publicPrivileges.length, 0);
 
   console.log(
-    `Schema verification passed: ${expectedTables.length} private/domain tables, six canonical categories, no SECURITY DEFINER functions, and no PUBLIC/browser-role access.`,
+    `Schema verification passed: ${expectedTables.length} private/domain tables, six canonical categories, eight immutable/sanitized-state triggers, no SECURITY DEFINER functions, and no PUBLIC/browser-role access.`,
   );
 } finally {
   await sql.end({ timeout: 5 });

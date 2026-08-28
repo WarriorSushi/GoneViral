@@ -534,6 +534,55 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await expectNoHorizontalOverflow(page);
 
+  await page.getByRole("link", { name: "Edit listing" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Edit Phase Five Studio" }),
+  ).toBeVisible();
+  const websiteInput = page.getByLabel("Website URL");
+  const approvedWebsite = new URL(await websiteInput.inputValue());
+  await page.getByLabel("Display name").fill("Phase Eight Reviewed Name");
+  await page.getByLabel("Tagline").fill("Phase Eight safe tagline");
+  await websiteInput.fill(`${approvedWebsite.origin}/safe-owner-path`);
+  await page.getByLabel("Category").selectOption("brands-d2c");
+  await page.getByRole("button", { name: "Save safe changes" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "2 safe changes published.",
+  );
+  await expect(page.getByRole("status")).toContainText(
+    "2 sensitive changes sent for review",
+  );
+  await expect(page.getByLabel("Logo image")).toBeVisible();
+  await expect(page.getByText(/strip metadata/i)).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await expectNoHorizontalOverflow(page);
+
+  const [editState] = await fixtureSql<
+    {
+      category_slug: string;
+      destination_url: string;
+      name: string;
+      pending_count: bigint;
+      tagline: string;
+    }[]
+  >`
+    SELECT listing.name, listing.tagline, listing.destination_url,
+           category.slug AS category_slug,
+           (SELECT count(*) FROM private.listing_change_requests request
+            WHERE request.listing_id = listing.id AND request.state = 'pending')
+             AS pending_count
+    FROM app.listings AS listing
+    JOIN app.categories AS category ON category.id = listing.category_id
+    WHERE listing.id = ${listingId}
+  `;
+  expect(editState).toEqual({
+    category_slug: "tech-apps",
+    destination_url: `${approvedWebsite.origin}/safe-owner-path`,
+    name: "Phase Five Studio",
+    pending_count: 2n,
+    tagline: "Phase Eight safe tagline",
+  });
+  await page.getByRole("link", { name: "Listing overview" }).click();
+
   await page.getByRole("link", { name: "Raise this listing" }).click();
   await expect(
     page.getByRole("heading", { name: "Raise Phase Five Studio" }),

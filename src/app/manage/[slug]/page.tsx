@@ -114,6 +114,15 @@ export default async function OwnerListingPage({
         </Link>
       ) : null}
 
+      {listing.lifecycleStatus !== "removed" ? (
+        <Link
+          className="button button-secondary owner-edit-link"
+          href={`/manage/${slug}/edit` as Route}
+        >
+          Edit listing
+        </Link>
+      ) : null}
+
       <section
         className="owner-history"
         aria-labelledby="payment-history-title"
@@ -156,10 +165,6 @@ export default async function OwnerListingPage({
           </div>
         )}
       </section>
-
-      <p className="owner-phase-note">
-        Listing edits are intentionally not part of this phase.
-      </p>
     </main>
   );
 }

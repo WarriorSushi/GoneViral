@@ -1,6 +1,6 @@
 # GoneViral.in
 
-GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 7**: Dodo Payments guest sponsorship and owner-only raise checkout are implemented behind replaceable provider adapters, with authoritative server-to-server webhook confirmation and exact-once fulfilment on the immutable PostgreSQL ledger. Verified sponsors can claim, privately view, and raise their listings through Supabase passwordless Auth; every owner operation is constrained by the active database ownership relationship. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
+GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 8**: Dodo Payments guest sponsorship and owner-only raise checkout are implemented behind replaceable provider adapters, with authoritative server-to-server webhook confirmation and exact-once fulfilment on the immutable PostgreSQL ledger. Verified sponsors can claim, privately view, raise, and safely edit their listings through Supabase passwordless Auth. Optional logos use private signed staging, strict Sharp sanitization, and sanitized-only public projection; sensitive identity, host, and category changes wait for review while current values stay live. Every owner operation is constrained by the active database ownership relationship. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
 
 The authoritative specification pack starts at [`goneviral-specs/README_FOR_CODEX.md`](./goneviral-specs/README_FOR_CODEX.md). `00_DECISIONS_AND_PRODUCT_RULES.md` is canonical product law.
 
@@ -18,7 +18,7 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters. Owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries, [`docs/PAYMENTS_AND_RAISES.md`](./docs/PAYMENTS_AND_RAISES.md) for sponsorship and raise semantics, and [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates.
+Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters. Owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries, [`docs/PAYMENTS_AND_RAISES.md`](./docs/PAYMENTS_AND_RAISES.md) for sponsorship and raise semantics, [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates, and [`docs/LOGOS_AND_EDITS.md`](./docs/LOGOS_AND_EDITS.md) for the private staging, sanitization, cleanup, and review policy.
 
 ## Commands
 
@@ -47,6 +47,7 @@ The local app is available at `http://localhost:3000`. Seeded local board data u
 
 - No hosted Supabase development or production project exists yet; only the local Docker-backed stack is verified.
 - No Vercel project/deployment exists yet.
+- The local Supabase Storage service is unavailable in the current environment. Logo security and lifecycle tests use deterministic Storage doubles; a real signed private upload/public derivative test remains an explicit hosted or repaired-local-infrastructure gate.
 - Dodo Payments is the current hosted-checkout and webhook provider behind replaceable checkout and event adapters. Test mode requires a Dodo test API key, business ID, webhook key, and a one-time INR `pay_what_you_want` product. The local mock signs exact raw payloads with Standard Webhooks. Live credentials or approval are not assumed.
 - Resend custom SMTP, sender-domain DNS verification, and a genuine hosted staging magic-link delivery/replay test are not yet available and are not represented as complete.
 - Legal, privacy, refund and accounting launch approvals remain open.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Route } from "next";
 
 import { INITIAL_SPONSORSHIP_MIN_PAISE } from "@/domain/policy";
@@ -27,9 +28,19 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
       className="listing-identity"
       href={entry.destinationUrl}
     >
-      <span className="listing-mark" aria-hidden="true">
-        {initial}
-      </span>
+      {entry.logoUrl ? (
+        <Image
+          alt={`${entry.name} logo`}
+          className="listing-mark listing-logo"
+          height={48}
+          src={entry.logoUrl}
+          width={48}
+        />
+      ) : (
+        <span className="listing-mark" aria-hidden="true">
+          {initial}
+        </span>
+      )}
       <span>
         <strong>
           {entry.name}{" "}
