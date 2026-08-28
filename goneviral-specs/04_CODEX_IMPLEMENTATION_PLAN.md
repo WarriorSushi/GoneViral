@@ -715,6 +715,10 @@ Give the founder safe, auditable control over public eligibility and payment exc
 
 ## Objective
 
+Add real privacy-safe click counts to every public leaderboard card and listing
+detail only after the safe redirect and aggregation path below is live. Earlier
+phases must not display placeholders, fixture counts or inferred clicks.
+
 Add honest engagement signals and viral sharing without affecting ranking or fabricating activity.
 
 ## Build

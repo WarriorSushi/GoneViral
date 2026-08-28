@@ -318,6 +318,18 @@ Action line:
 - keyboard focus state is obvious;
 - hover never contains essential-only information.
 
+### Row density and detail
+
+- Keep the board slightly narrower than the full page on wide screens so rank,
+  identity, actions and amount read as one unit rather than four distant islands.
+- Show the product name, up to two lines of description, category and destination
+  host on every card, including mobile.
+- Keep the confirmed amount visually clear but smaller than the product name and
+  rank action.
+- Do not show click counts until Phase 11's first-party redirect, human/bot
+  filtering, dedupe and privacy-safe aggregate are implemented. Never seed or
+  invent a public click number.
+
 ### Loading
 
 Server-render the board. Use route-level skeleton only during navigation/revalidation; rows have stable dimensions. Never replace visible data with a full-screen spinner.

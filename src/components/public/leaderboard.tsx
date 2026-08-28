@@ -17,6 +17,10 @@ function isTodayEntry(entry: BoardEntry): entry is PublicTodayBoardEntry {
 
 function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
   const initial = entry.name.trim().charAt(0).toUpperCase();
+  const destinationHost = new URL(entry.destinationUrl).hostname.replace(
+    /^www\./,
+    "",
+  );
   return (
     <a
       aria-label={`Visit ${entry.name} website`}
@@ -34,7 +38,11 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
           </span>
         </strong>
         <small>{entry.tagline}</small>
-        <em>{entry.category.name}</em>
+        <span className="listing-meta">
+          <em>{entry.category.name}</em>
+          <span aria-hidden="true">·</span>
+          <span className="listing-host">{destinationHost}</span>
+        </span>
       </span>
     </a>
   );

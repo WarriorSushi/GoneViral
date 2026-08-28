@@ -377,14 +377,19 @@ summary:focus-visible {
   list-style: none;
 }
 
+.leaderboard {
+  width: min(100%, 1080px);
+  margin-inline: auto;
+}
+
 .leaderboard-card {
   position: relative;
   display: grid;
-  min-height: 96px;
-  grid-template-columns: 54px minmax(210px, 1fr) auto minmax(140px, 0.3fr);
-  gap: 18px;
+  min-height: 100px;
+  grid-template-columns: 50px minmax(210px, 1fr) auto minmax(118px, 0.24fr);
+  gap: 14px;
   align-items: center;
-  padding: 15px 18px;
+  padding: 14px 16px;
   border: 1px solid #e8cfd0;
   border-radius: 26px;
   background: #fdf8f6;
@@ -417,7 +422,7 @@ summary:focus-visible {
 
 .rank {
   display: grid;
-  width: 46px;
+  width: 44px;
   height: 38px;
   place-items: center;
   border-radius: 999px;
@@ -436,8 +441,8 @@ summary:focus-visible {
 .listing-identity {
   display: grid;
   min-width: 0;
-  grid-template-columns: 46px minmax(0, 1fr);
-  gap: 13px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
   padding-block: 2px;
   text-decoration: none;
@@ -465,8 +470,8 @@ summary:focus-visible {
 
 .listing-mark {
   display: grid;
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -475,8 +480,7 @@ summary:focus-visible {
   font-weight: 800;
 }
 
-.listing-identity strong,
-.listing-identity small {
+.listing-identity strong {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -495,24 +499,38 @@ summary:focus-visible {
 }
 
 .listing-identity small {
-  margin-top: 1px;
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 2px;
   color: var(--ink-soft);
   font-size: 0.78rem;
+  line-height: 1.32;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
-.listing-identity em {
-  display: inline-block;
-  max-width: 100%;
+.listing-meta {
+  display: flex;
+  min-width: 0;
+  gap: 5px;
+  align-items: center;
   overflow: hidden;
-  margin-top: 4px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--surface-soft);
+  margin-top: 5px;
   color: var(--ink-faint);
   font-size: 0.64rem;
-  font-style: normal;
-  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.listing-meta em {
+  color: var(--signal-hover);
+  font-weight: 700;
+  font-style: normal;
+}
+
+.listing-host {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .board-amount {
@@ -524,7 +542,7 @@ summary:focus-visible {
 }
 
 .board-amount > .money {
-  font-size: clamp(1.12rem, 2vw, 1.45rem);
+  font-size: clamp(1rem, 1.55vw, 1.24rem);
   font-weight: 760;
   letter-spacing: -0.055em;
 }
@@ -1140,7 +1158,7 @@ summary:focus-visible {
 
 @media (max-width: 1023px) {
   .leaderboard-card {
-    grid-template-columns: 50px minmax(180px, 1fr) auto minmax(130px, auto);
+    grid-template-columns: 48px minmax(180px, 1fr) auto minmax(112px, auto);
   }
 }
 
@@ -1304,10 +1322,6 @@ summary:focus-visible {
     width: 42px;
     height: 42px;
     border-radius: 13px;
-  }
-
-  .listing-identity em {
-    display: none;
   }
 
   .leaderboard-card .board-amount {

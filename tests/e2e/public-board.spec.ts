@@ -109,6 +109,12 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   const firstCard = page
     .locator(".leaderboard-card")
     .filter({ has: monsoonWebsite });
+  await expect(
+    firstCard.getByText("B2B & Services", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    firstCard.getByText("monsoon-studio.example.test", { exact: true }),
+  ).toBeVisible();
   const rankAction = firstCard.getByRole("link", { name: /Take #1/ });
   const rankActionWrap = rankAction.locator("..");
 
@@ -130,6 +136,13 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   const boardBox = await page.getByTestId("leaderboard").boundingBox();
   expect(boardBox).not.toBeNull();
   if (testInfo.project.name === "desktop-1440") {
+    expect(boardBox!.width).toBeLessThanOrEqual(1081);
+    const amountFontSize = await firstCard
+      .locator(".board-amount > .money")
+      .evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).fontSize),
+      );
+    expect(amountFontSize).toBeLessThanOrEqual(20);
     expect(boardBox!.y).toBeLessThan(
       testInfo.project.use.viewport?.height ?? 900,
     );
