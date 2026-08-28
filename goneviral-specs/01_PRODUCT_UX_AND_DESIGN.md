@@ -235,9 +235,9 @@ Right:
 
 1. Compact masthead:
    - no eyebrow or decorative pre-heading;
-   - headline: `Show your work. Move up.`;
-   - one-line explanation: `Add your work. Pay more to move it up.`
-2. Plain disclosure: `Paid list. Money decides the order.`
+   - headline: `Pay. Get seen.`;
+   - one-line explanation: `Get on the GoneViral.in leaderboard. No sign-up. No API. No nonsense.`
+2. Plain disclosure: `Paid leaderboard. More money gets a higher spot.`
 3. Board switcher: Main / Today.
 4. Category filters.
 5. Live board.
@@ -249,8 +249,8 @@ The first board rows should be visible without scrolling on a typical laptop.
 Never seed production with pretend entries.
 
 ```text
-The first spot is open.
-Get on the list from ₹499.
+No one is here. Yet.
+Get on the leaderboard from ₹499.
 [See how it works]
 ```
 
@@ -312,7 +312,9 @@ Action line:
 - clicking anywhere on a listing row, except its action buttons, opens the
   listing's approved HTTPS website in the same tab;
 - a clear `More info` button opens the GoneViral listing-detail route;
-- the move-up button opens the join flow with a target snapshot;
+- on hover or keyboard focus, the `Take #N · ₹X` action sits across the card's
+  top border; it stays visible on touch devices where hover does not exist;
+- the take-rank button opens the join flow with a target snapshot;
 - keyboard focus state is obvious;
 - hover never contains essential-only information.
 
@@ -760,8 +762,8 @@ Every sensitive action requires reason, confirmation and immutable audit. High-i
 Keep the public page short enough to scan in one desktop viewport. Explain only:
 
 1. add your work;
-2. add money, starting at ₹499;
-3. more money moves it up.
+2. pay ₹499 or more to be on the leaderboard;
+3. pay more to move up.
 
 Add a short `Good to know` list for the Today reset, no click/sales promise,
 server confirmation, and unavailable pre-launch features. Put detailed rules in
@@ -792,12 +794,12 @@ Do not claim “India's #1” without substantiation.
 ### Preferred
 
 - `Join the list`
-- `Move to #3 · ₹2,001`
+- `Take #3 · ₹2,001`
 - `Move up`
 - `Payment confirmed`
 - `Current estimate`
 - `The list moved while we checked the payment`
-- `Paid list. Money decides the order.`
+- `Paid leaderboard. More money gets a higher spot.`
 
 ### Prohibited/misleading
 

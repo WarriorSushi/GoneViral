@@ -93,8 +93,8 @@ export function BoardPage({
         today={activeBoard === "today"}
       />
       <p className="estimate-note">
-        Prices can change. We do not hold a spot before payment. Payments are
-        not open yet.
+        Rank can change. We move you only after payment is confirmed. Payments
+        are not open yet.
       </p>
     </main>
   );

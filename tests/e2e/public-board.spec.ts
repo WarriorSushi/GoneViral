@@ -68,9 +68,11 @@ test("production build renders a truthful empty board", async ({
   expect(response?.ok()).toBe(true);
   await expect(page.getByTestId("board-empty")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2 })).toContainText(
-    "The first spot is open",
+    "No one is here. Yet.",
   );
-  await expect(page.getByText("Get on the list from ₹499.")).toBeVisible();
+  await expect(
+    page.getByText("Get on the leaderboard from ₹499."),
+  ).toBeVisible();
   await expect(page.getByText("NOT LIVE DATA")).toHaveCount(0);
   await expect(page.getByTestId("leaderboard")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
@@ -97,21 +99,33 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await expect(
     page.getByRole("link", { name: "More info about Monsoon Studio" }),
   ).toBeVisible();
-  await expect(page.getByTestId("invitation-row")).toContainText(
-    "Your work could be here",
-  );
+  await expect(page.getByTestId("invitation-row")).toContainText("Want in?");
   await expect(
     page
       .getByTestId("leaderboard")
       .locator('.money:visible:text-is("₹25,000")')
       .first(),
   ).toBeVisible();
-  await expect(
-    page
-      .getByTestId("leaderboard")
-      .locator('small:visible:text-is("Estimate. Spot not held.")')
-      .first(),
-  ).toBeVisible();
+  const firstCard = page
+    .locator(".leaderboard-card")
+    .filter({ has: monsoonWebsite });
+  const rankAction = firstCard.getByRole("link", { name: /Take #1/ });
+  const rankActionWrap = rankAction.locator("..");
+
+  if (testInfo.project.name === "desktop-1440") {
+    await expect(rankActionWrap).toHaveCSS("opacity", "0");
+    await firstCard.hover();
+    await expect(rankActionWrap).toHaveCSS("opacity", "1");
+    const cardBox = await firstCard.boundingBox();
+    const actionBox = await rankAction.boundingBox();
+    expect(cardBox).not.toBeNull();
+    expect(actionBox).not.toBeNull();
+    expect(
+      Math.abs(actionBox!.y + actionBox!.height / 2 - cardBox!.y),
+    ).toBeLessThan(3);
+  } else {
+    await expect(rankAction).toBeVisible();
+  }
 
   const boardBox = await page.getByTestId("leaderboard").boundingBox();
   expect(boardBox).not.toBeNull();
@@ -193,7 +207,10 @@ test("Main, Today, category, and listing navigation use real public projections"
 
   await page.goto("/how-it-works");
   await expect(
-    page.getByRole("heading", { level: 1, name: "How it works" }),
+    page.getByRole("heading", { level: 1, name: "Pay. Get seen." }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("No sign-up. No API. No nonsense."),
   ).toBeVisible();
   await expect(page.getByRole("region", { name: "Three steps" })).toBeVisible();
   await expectNoHorizontalOverflow(page);

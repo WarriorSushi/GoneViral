@@ -7,10 +7,12 @@ export default function HowItWorksPage() {
   return (
     <main id="main-content" className="how-main">
       <section className="how-hero">
-        <h1>How it works</h1>
-        <p>Add your work. Pay to move it up.</p>
+        <h1>Pay. Get seen.</h1>
+        <p>
+          Get on the GoneViral.in leaderboard. No sign-up. No API. No nonsense.
+        </p>
         <Link className="text-link" href="/">
-          View the list
+          See the leaderboard
         </Link>
       </section>
 
@@ -19,22 +21,22 @@ export default function HowItWorksPage() {
           <li>
             <span aria-hidden="true">1</span>
             <div>
-              <h2>Add your work</h2>
-              <p>Share its name and link. Clicks go straight to your site.</p>
+              <h2>Share your link</h2>
+              <p>Name, link, category. That is it.</p>
             </div>
           </li>
           <li>
             <span aria-hidden="true">2</span>
             <div>
-              <h2>Add money</h2>
-              <p>Start at ₹499. Each payment adds to your total.</p>
+              <h2>Pay ₹499 or more</h2>
+              <p>You are on the leaderboard. People can find you.</p>
             </div>
           </li>
           <li>
             <span aria-hidden="true">3</span>
             <div>
-              <h2>Move up</h2>
-              <p>More money gets a higher spot.</p>
+              <h2>Want a higher spot?</h2>
+              <p>Pay more. Move up. Very advanced maths.</p>
             </div>
           </li>
         </ol>
@@ -43,9 +45,9 @@ export default function HowItWorksPage() {
       <section className="how-facts" aria-labelledby="facts-title">
         <h2 id="facts-title">Good to know</h2>
         <ul>
+          <li>A click on your card goes straight to your website.</li>
           <li>Today starts over at midnight IST.</li>
-          <li>Paying does not promise clicks or sales.</li>
-          <li>The list changes only after we confirm a payment.</li>
+          <li>Payment gets you a spot. It does not promise clicks or sales.</li>
         </ul>
         <p id="manage">
           Payments and tools to edit a listing are not open yet.

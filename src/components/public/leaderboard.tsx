@@ -44,7 +44,7 @@ function TakePositionLink({ entry }: { readonly entry: BoardEntry }) {
   return (
     <div className="take-position">
       <Link className="button button-quote" href={`/how-it-works#join`}>
-        Move to #{entry.rank} ·{" "}
+        Take #{entry.rank} ·{" "}
         <Money paise={entry.takeoverQuote.requiredPaymentPaise} />
       </Link>
       <small>Estimate. Spot not held.</small>
@@ -92,8 +92,8 @@ function InvitationRow({ rank }: { readonly rank: string }) {
     <div className="invitation-row" data-testid="invitation-row">
       <span className="rank">#{rank}</span>
       <div>
-        <strong>Your work could be here</strong>
-        <p>Payments open soon.</p>
+        <strong>Want in?</strong>
+        <p>We open soon.</p>
       </div>
       <div className="invitation-action">
         <span>Starts at</span>
@@ -111,12 +111,12 @@ function EmptyBoard({ today }: { readonly today: boolean }) {
       aria-labelledby="empty-title"
     >
       <h2 id="empty-title">
-        {today ? "Be first today." : "The first spot is open."}
+        {today ? "Be first today." : "No one is here. Yet."}
       </h2>
       <p>
         {today
-          ? "The first payment today gets the top spot."
-          : "Get on the list from ₹499."}
+          ? "Pay first. Take the top spot."
+          : "Get on the leaderboard from ₹499."}
       </p>
       <Link className="button button-primary" href="/how-it-works#join">
         See how it works
@@ -154,8 +154,8 @@ export function Leaderboard({
           >
             <span className="rank">#{entry.rank}</span>
             <ListingIdentity entry={entry} />
-            <BoardAmount entry={entry} />
             <ListingActions entry={entry} />
+            <BoardAmount entry={entry} />
           </li>
         ))}
       </ol>

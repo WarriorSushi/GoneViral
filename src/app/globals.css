@@ -371,42 +371,39 @@ summary:focus-visible {
 
 .leaderboard-list {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   margin: 0;
-  padding: 0;
+  padding: 10px 0 0;
   list-style: none;
 }
 
 .leaderboard-card {
   position: relative;
   display: grid;
-  min-height: 80px;
-  grid-template-columns: 54px minmax(210px, 1fr) minmax(140px, 0.32fr) minmax(
-      260px,
-      0.5fr
-    );
+  min-height: 96px;
+  grid-template-columns: 54px minmax(210px, 1fr) auto minmax(140px, 0.3fr);
   gap: 18px;
   align-items: center;
-  padding: 12px 16px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: rgb(255 255 255 / 0.92);
-  box-shadow: 0 4px 18px rgb(55 41 31 / 0.045);
+  padding: 15px 18px;
+  border: 1px solid #e8cfd0;
+  border-radius: 26px;
+  background: #fdf8f6;
+  box-shadow: 0 4px 16px rgb(86 25 34 / 0.035);
   transition:
     border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+    background 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.leaderboard-card:hover {
-  border-color: var(--line-strong);
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-1px);
+.leaderboard-card:is(:hover, :focus-within) {
+  border-color: #cf8e94;
+  background: var(--signal-soft);
+  box-shadow: 0 12px 30px rgb(86 25 34 / 0.09);
 }
 
 .leaderboard-card.rank-1 {
-  border-color: var(--signal-soft-strong);
-  background: linear-gradient(110deg, var(--signal-soft), #fff);
+  border-color: var(--signal);
+  background: #f9e6e5;
 }
 
 .rank,
@@ -473,7 +470,7 @@ summary:focus-visible {
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--surface-soft);
+  background: var(--surface);
   font-family: var(--font-geist-mono), monospace;
   font-weight: 800;
 }
@@ -522,7 +519,8 @@ summary:focus-visible {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
+  text-align: right;
 }
 
 .board-amount > .money {
@@ -557,9 +555,12 @@ summary:focus-visible {
   grid-template-columns: auto minmax(0, 1fr);
   gap: 8px;
   align-items: start;
+  justify-self: end;
 }
 
 .button-more-info {
+  position: relative;
+  z-index: 3;
   min-height: 36px;
   padding: 8px 11px;
   font-size: 0.74rem;
@@ -569,9 +570,15 @@ summary:focus-visible {
 .button-quote {
   gap: 5px;
   padding: 9px 13px;
-  background: var(--signal-soft-strong);
-  color: #561922;
+  background: var(--signal);
+  box-shadow: 0 4px 12px rgb(86 25 34 / 0.2);
+  color: #fff;
   font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.button-quote:hover {
+  background: var(--signal-hover);
 }
 
 .button-quote .money {
@@ -582,6 +589,42 @@ summary:focus-visible {
   color: var(--ink-faint);
   font-size: 0.63rem;
   text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 821px) {
+  .listing-actions {
+    position: static;
+    display: block;
+  }
+
+  .take-position {
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.96);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease;
+  }
+
+  .leaderboard-card:is(:hover, :focus-within) .take-position {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .take-position small {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 .invitation-row {
@@ -1097,13 +1140,7 @@ summary:focus-visible {
 
 @media (max-width: 1023px) {
   .leaderboard-card {
-    grid-template-columns: 50px minmax(180px, 1fr) minmax(130px, auto);
-  }
-
-  .leaderboard-card .listing-actions {
-    grid-column: 2 / -1;
-    justify-self: end;
-    width: min(100%, 360px);
+    grid-template-columns: 50px minmax(180px, 1fr) auto minmax(130px, auto);
   }
 }
 
@@ -1249,8 +1286,8 @@ summary:focus-visible {
     min-height: 0;
     grid-template-columns: 44px minmax(0, 1fr) auto;
     gap: 12px;
-    padding: 14px;
-    border-radius: 16px;
+    padding: 16px 14px;
+    border-radius: 22px;
   }
 
   .rank {
@@ -1274,11 +1311,14 @@ summary:focus-visible {
   }
 
   .leaderboard-card .board-amount {
+    grid-row: 1;
+    grid-column: 3;
     align-items: flex-end;
     text-align: right;
   }
 
   .leaderboard-card .listing-actions {
+    grid-row: 2;
     grid-column: 2 / -1;
     justify-self: stretch;
     width: 100%;
@@ -1412,12 +1452,14 @@ summary:focus-visible {
   }
 
   .leaderboard-card .board-amount {
+    grid-row: 2;
     grid-column: 2;
     align-items: flex-start;
     text-align: left;
   }
 
   .leaderboard-card .listing-actions {
+    grid-row: 3;
     grid-column: 1 / -1;
   }
 

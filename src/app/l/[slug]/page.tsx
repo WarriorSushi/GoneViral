@@ -90,7 +90,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           </strong>
           <span>to pass #{listing.currentMainRank}</span>
           <Link className="button button-primary" href="/how-it-works#join">
-            Move to #{listing.currentMainRank}
+            Take #{listing.currentMainRank}
           </Link>
         </article>
       </section>

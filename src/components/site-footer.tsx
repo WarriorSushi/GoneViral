@@ -15,7 +15,7 @@ export function SiteFooter() {
         <Link className="wordmark footer-wordmark" href="/">
           Gone<span>Viral</span>.in
         </Link>
-        <p>A paid list for people who make things.</p>
+        <p>A paid leaderboard for people who make things.</p>
       </div>
       <nav aria-label="Legal and trust links">
         <Link href="/how-it-works">How it works</Link>

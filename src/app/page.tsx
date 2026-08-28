@@ -34,11 +34,11 @@ export default async function Home(props: PageProps<"/">) {
       categories={categories}
       entries={board.entries}
       generatedAt={board.generatedAt}
-      helper="People click your listing and go straight to your site."
+      helper="Get on the GoneViral.in leaderboard. No sign-up. No API. No nonsense."
       nextCursor={board.nextCursor}
       pageHref="/"
       refreshContext={{ kind: "main" }}
-      title="Show your work. Move up."
+      title="Pay. Get seen."
     />
   );
 }

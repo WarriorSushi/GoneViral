@@ -95,6 +95,11 @@ Customer copy should use plain verbs: **add your work**, **pay**, **move up**,
 business, provider, database, and legal terms. Continue to avoid
 auction/bet/win language.
 
+Marketing copy should be short, confident, friendly, and lightly dry. The core
+public promise is: **Pay to be on the GoneViral.in leaderboard. Get seen.** Use
+**No sign-up. No API. No nonsense.** where the no-account first checkout and
+direct website link are being explained. Do not imply guaranteed traffic.
+
 ---
 
 ## 4. Authoritative policy configuration

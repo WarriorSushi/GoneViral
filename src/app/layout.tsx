@@ -19,15 +19,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://goneviral.in"),
   title: {
-    default: "GoneViral.in | A paid list for makers",
+    default: "GoneViral.in | Pay. Get seen.",
     template: "%s | GoneViral.in",
   },
-  description: "Show your work. Pay to move up the list.",
+  description: "Pay to be on the GoneViral.in leaderboard. Get seen.",
   openGraph: {
-    description: "Show your work. Pay to move up the list.",
+    description: "Pay to be on the GoneViral.in leaderboard. Get seen.",
     locale: "en_IN",
     siteName: "GoneViral.in",
-    title: "GoneViral.in | A paid list for makers",
+    title: "GoneViral.in | Pay. Get seen.",
     type: "website",
   },
 };
