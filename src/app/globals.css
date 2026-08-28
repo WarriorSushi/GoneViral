@@ -378,11 +378,12 @@ summary:focus-visible {
 }
 
 .leaderboard-card {
+  position: relative;
   display: grid;
   min-height: 80px;
   grid-template-columns: 54px minmax(210px, 1fr) minmax(140px, 0.32fr) minmax(
-      190px,
-      0.38fr
+      260px,
+      0.5fr
     );
   gap: 18px;
   align-items: center;
@@ -449,6 +450,22 @@ summary:focus-visible {
   color: var(--signal-hover);
 }
 
+.listing-identity::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+}
+
+.listing-identity:focus-visible {
+  outline: 0;
+}
+
+.listing-identity:focus-visible::after {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
 .listing-mark {
   display: grid;
   width: 46px;
@@ -472,6 +489,12 @@ summary:focus-visible {
 .listing-identity strong {
   font-size: 1rem;
   letter-spacing: -0.02em;
+}
+
+.listing-identity .external-arrow {
+  color: var(--signal);
+  font-family: Arial, sans-serif;
+  font-size: 0.78em;
 }
 
 .listing-identity small {
@@ -524,6 +547,23 @@ summary:focus-visible {
   flex-direction: column;
   align-items: stretch;
   gap: 4px;
+}
+
+.listing-actions {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.button-more-info {
+  min-height: 36px;
+  padding: 8px 11px;
+  font-size: 0.74rem;
+  white-space: nowrap;
 }
 
 .button-quote {
@@ -766,6 +806,11 @@ summary:focus-visible {
   color: var(--ink-faint);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.7rem;
+}
+
+.listing-visit {
+  width: fit-content;
+  margin-top: 12px;
 }
 
 .listing-rank-block {
@@ -1055,10 +1100,10 @@ summary:focus-visible {
     grid-template-columns: 50px minmax(180px, 1fr) minmax(130px, auto);
   }
 
-  .leaderboard-card .take-position {
+  .leaderboard-card .listing-actions {
     grid-column: 2 / -1;
     justify-self: end;
-    width: min(100%, 250px);
+    width: min(100%, 360px);
   }
 }
 
@@ -1233,7 +1278,7 @@ summary:focus-visible {
     text-align: right;
   }
 
-  .leaderboard-card .take-position {
+  .leaderboard-card .listing-actions {
     grid-column: 2 / -1;
     justify-self: stretch;
     width: 100%;
@@ -1372,7 +1417,7 @@ summary:focus-visible {
     text-align: left;
   }
 
-  .leaderboard-card .take-position {
+  .leaderboard-card .listing-actions {
     grid-column: 1 / -1;
   }
 

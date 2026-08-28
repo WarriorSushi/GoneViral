@@ -34,7 +34,7 @@ export default async function Home(props: PageProps<"/">) {
       categories={categories}
       entries={board.entries}
       generatedAt={board.generatedAt}
-      helper="Add your work. Pay more to move it up."
+      helper="People click your listing and go straight to your site."
       nextCursor={board.nextCursor}
       pageHref="/"
       refreshContext={{ kind: "main" }}

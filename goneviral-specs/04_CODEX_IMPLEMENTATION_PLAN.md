@@ -338,6 +338,7 @@ Implement Cashfree adapter against current official sandbox docs. Keep a mock pr
 - optional logo deferred to Phase 8 if desired;
 - amount presets/custom whole INR;
 - target snapshot and disclosures;
+- concise benefit copy: `People click your listing and go straight to your website.`;
 - accessible multi-step UI with preserved validation state.
 
 ### Safety

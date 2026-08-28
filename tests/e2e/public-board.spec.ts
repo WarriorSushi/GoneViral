@@ -86,8 +86,16 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await page.goto("/");
   await page.getByRole("button", { name: "Refresh board" }).click();
   await expect(page.getByTestId("leaderboard")).toBeVisible();
+  const monsoonWebsite = page.getByRole("link", {
+    name: "Visit Monsoon Studio website",
+  });
+  await expect(monsoonWebsite).toBeVisible();
+  await expect(monsoonWebsite).toHaveAttribute(
+    "href",
+    "https://monsoon-studio.example.test",
+  );
   await expect(
-    page.getByRole("link", { name: /Monsoon Studio/ }).first(),
+    page.getByRole("link", { name: "More info about Monsoon Studio" }),
   ).toBeVisible();
   await expect(page.getByTestId("invitation-row")).toContainText(
     "Your work could be here",
@@ -148,13 +156,26 @@ test("Main, Today, category, and listing navigation use real public projections"
     "Tech & Apps",
   );
   await expect(
-    page.getByRole("link", { name: /Plotline/ }).first(),
+    page.getByRole("link", { name: "Visit Plotline website" }).first(),
   ).toBeVisible();
 
   await page.getByRole("link", { name: "All", exact: true }).click();
+  await page.route("https://monsoon-studio.example.test/", async (route) => {
+    await route.fulfill({
+      body: "<!doctype html><title>Monsoon Studio</title><h1>Advertiser site</h1>",
+      contentType: "text/html",
+    });
+  });
   await page
-    .getByRole("link", { name: /Monsoon Studio/ })
-    .first()
+    .getByRole("link", { name: "Visit Monsoon Studio website" })
+    .click();
+  await expect(page).toHaveURL("https://monsoon-studio.example.test/");
+  await expect(
+    page.getByRole("heading", { name: "Advertiser site" }),
+  ).toBeVisible();
+  await page.goBack();
+  await page
+    .getByRole("link", { name: "More info about Monsoon Studio" })
     .click();
   await expect(page).toHaveURL(/\/l\/monsoon-studio$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -164,6 +185,9 @@ test("Main, Today, category, and listing navigation use real public projections"
     page.getByRole("heading", { name: "Payment history" }),
   ).toBeVisible();
   await expect(page.getByText("Joined the list")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Visit Monsoon Studio website" }),
+  ).toHaveAttribute("href", "https://monsoon-studio.example.test");
   await expectNoPrivateMarkers(await page.content());
   await capture(page, testInfo, `${testInfo.project.name}-listing`);
 

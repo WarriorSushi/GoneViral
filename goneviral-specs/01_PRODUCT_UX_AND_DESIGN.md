@@ -309,9 +309,10 @@ Action line:
 
 ### Row interactions
 
-- whole identity area opens listing detail;
-- outbound visit uses explicit `Visit sponsor ↗` via safe redirect;
-- takeover button opens sponsor flow with target snapshot;
+- clicking anywhere on a listing row, except its action buttons, opens the
+  listing's approved HTTPS website in the same tab;
+- a clear `More info` button opens the GoneViral listing-detail route;
+- the move-up button opens the join flow with a target snapshot;
 - keyboard focus state is obvious;
 - hover never contains essential-only information.
 

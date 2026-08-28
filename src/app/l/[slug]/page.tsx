@@ -43,6 +43,13 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           <span className="destination-label">
             {new URL(listing.destinationUrl).host}
           </span>
+          <a
+            aria-label={`Visit ${listing.name} website`}
+            className="button button-secondary listing-visit"
+            href={listing.destinationUrl}
+          >
+            Visit website →
+          </a>
         </div>
         <div className="listing-rank-block">
           <span className="rank">#{listing.currentMainRank}</span>
@@ -136,8 +143,8 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
       </section>
 
       <aside className="listing-safety-note">
-        <strong>Links do not open yet.</strong>
-        <p>We will check each link before launch.</p>
+        <strong>Direct link</strong>
+        <p>People click your listing and go straight to your website.</p>
       </aside>
     </main>
   );

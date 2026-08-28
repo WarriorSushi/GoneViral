@@ -20,7 +20,7 @@ export default function HowItWorksPage() {
             <span aria-hidden="true">1</span>
             <div>
               <h2>Add your work</h2>
-              <p>Share its name, link, and type.</p>
+              <p>Share its name and link. Clicks go straight to your site.</p>
             </div>
           </li>
           <li>

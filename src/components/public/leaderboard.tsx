@@ -18,16 +18,25 @@ function isTodayEntry(entry: BoardEntry): entry is PublicTodayBoardEntry {
 function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
   const initial = entry.name.trim().charAt(0).toUpperCase();
   return (
-    <Link className="listing-identity" href={`/l/${entry.slug}`}>
+    <a
+      aria-label={`Visit ${entry.name} website`}
+      className="listing-identity"
+      href={entry.destinationUrl}
+    >
       <span className="listing-mark" aria-hidden="true">
         {initial}
       </span>
       <span>
-        <strong>{entry.name}</strong>
+        <strong>
+          {entry.name}{" "}
+          <span className="external-arrow" aria-hidden="true">
+            ↗
+          </span>
+        </strong>
         <small>{entry.tagline}</small>
         <em>{entry.category.name}</em>
       </span>
-    </Link>
+    </a>
   );
 }
 
@@ -39,6 +48,21 @@ function TakePositionLink({ entry }: { readonly entry: BoardEntry }) {
         <Money paise={entry.takeoverQuote.requiredPaymentPaise} />
       </Link>
       <small>Estimate. Spot not held.</small>
+    </div>
+  );
+}
+
+function ListingActions({ entry }: { readonly entry: BoardEntry }) {
+  return (
+    <div className="listing-actions">
+      <Link
+        aria-label={`More info about ${entry.name}`}
+        className="button button-secondary button-more-info"
+        href={`/l/${entry.slug}`}
+      >
+        More info
+      </Link>
+      <TakePositionLink entry={entry} />
     </div>
   );
 }
@@ -131,7 +155,7 @@ export function Leaderboard({
             <span className="rank">#{entry.rank}</span>
             <ListingIdentity entry={entry} />
             <BoardAmount entry={entry} />
-            <TakePositionLink entry={entry} />
+            <ListingActions entry={entry} />
           </li>
         ))}
       </ol>
