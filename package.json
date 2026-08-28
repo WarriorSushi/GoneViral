@@ -28,6 +28,7 @@
     "db:schema:verify": "node scripts/db/verify-schema.mjs && node scripts/db/verify-data-api.mjs",
     "db:lint": "supabase db lint --local --schema app,private --level warning --fail-on error",
     "db:advisors": "supabase db advisors --local --type all --level warn --fail-on error",
+    "db:repair-projections": "node scripts/db/repair-projections.mjs",
     "db:fixtures:phase3": "node scripts/db/phase3-fixtures.mjs seed",
     "db:fixtures:clear": "node scripts/db/phase3-fixtures.mjs clear"
   },

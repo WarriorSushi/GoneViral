@@ -1,7 +1,6 @@
-import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
-import { PUBLIC_CACHE_TAGS } from "@/server/cache/tags";
+import { revalidatePaymentResult } from "@/server/cache/revalidate-payment-result";
 import {
   getDodoWebhookConfiguration,
   verifyAndNormalizeDodoWebhook,
@@ -58,26 +57,7 @@ export async function handleDodoWebhook(request: Request): Promise<Response> {
 
     if (result.kind === "processed" && result.listingPublicId) {
       try {
-        revalidateTag(PUBLIC_CACHE_TAGS.main, { expire: 0 });
-        revalidateTag(PUBLIC_CACHE_TAGS.activity, { expire: 0 });
-        revalidateTag(PUBLIC_CACHE_TAGS.listing(result.listingPublicId), {
-          expire: 0,
-        });
-        if (result.listingSlug) {
-          revalidateTag(PUBLIC_CACHE_TAGS.listingSlug(result.listingSlug), {
-            expire: 0,
-          });
-        }
-        if (result.categorySlug) {
-          revalidateTag(PUBLIC_CACHE_TAGS.category(result.categorySlug), {
-            expire: 0,
-          });
-        }
-        if (result.businessDate) {
-          revalidateTag(PUBLIC_CACHE_TAGS.today(result.businessDate), {
-            expire: 0,
-          });
-        }
+        revalidatePaymentResult(result);
       } catch (cacheError) {
         console.error("payment_cache_invalidation_failed", {
           eventId,

@@ -29,6 +29,32 @@ const paymentSchema = z.object({
   updated_at: z.iso.datetime({ offset: true }).nullable().optional(),
 });
 
+const refundSchema = z.object({
+  amount: z.number().int().positive().safe().nullable(),
+  created_at: z.iso.datetime({ offset: true }),
+  currency: z.string().length(3).nullable(),
+  payment_id: z.string().min(1).max(200),
+  refund_id: z.string().min(1).max(200),
+  status: z.enum(["succeeded", "failed", "pending", "review"]),
+});
+
+const disputeSchema = z.object({
+  amount: z.string().regex(/^[1-9][0-9]*$/),
+  created_at: z.iso.datetime({ offset: true }),
+  currency: z.string().length(3),
+  dispute_id: z.string().min(1).max(200),
+  dispute_status: z.enum([
+    "dispute_opened",
+    "dispute_expired",
+    "dispute_accepted",
+    "dispute_cancelled",
+    "dispute_challenged",
+    "dispute_won",
+    "dispute_lost",
+  ]),
+  payment_id: z.string().min(1).max(200),
+});
+
 const envelopeSchema = z.object({
   business_id: z.string().min(1).max(200),
   data: z.unknown(),
@@ -41,6 +67,24 @@ const knownPaymentEvents = new Set([
   "payment.failed",
   "payment.processing",
   "payment.succeeded",
+]);
+
+const knownDisputeEvents = new Set([
+  "dispute.opened",
+  "dispute.expired",
+  "dispute.accepted",
+  "dispute.cancelled",
+  "dispute.challenged",
+  "dispute.won",
+  "dispute.lost",
+]);
+
+const effectiveDisputeStatuses = new Set([
+  "dispute_opened",
+  "dispute_expired",
+  "dispute_accepted",
+  "dispute_challenged",
+  "dispute_lost",
 ]);
 
 const pendingStatuses = new Set([
@@ -56,10 +100,23 @@ const pendingStatuses = new Set([
 
 export type DodoPaymentStatus = "dropped" | "failed" | "pending" | "succeeded";
 
+export type NormalizedProviderAdjustment = Readonly<{
+  adjustmentId: string;
+  amountPaise: bigint;
+  currency: string;
+  desiredEffectiveDelta: bigint;
+  kind: "chargeback" | "refund";
+  paymentId: string;
+  providerCreatedAt: Date;
+  providerUpdatedAt: Date;
+  status: string;
+}>;
+
 export type NormalizedDodoEvent = Readonly<{
+  adjustment?: NormalizedProviderAdjustment | null;
   businessId: string;
   eventType: string;
-  normalizedType: "payment_status" | "unknown";
+  normalizedType: "adjustment_status" | "payment_status" | "unknown";
   payment: null | Readonly<{
     amountPaise: bigint;
     attemptPublicId: string | null;
@@ -109,7 +166,24 @@ export function verifyAndNormalizeDodoWebhook(
   const providerCreatedAt = new Date(envelope.timestamp);
 
   if (!knownPaymentEvents.has(envelope.type)) {
+    const adjustment = normalizeAdjustment(
+      envelope.type,
+      envelope.data,
+      providerCreatedAt,
+    );
+    if (adjustment) {
+      return {
+        adjustment,
+        businessId: envelope.business_id,
+        eventType: envelope.type,
+        normalizedType: "adjustment_status",
+        payment: null,
+        providerCreatedAt,
+        rawBodyDigest,
+      };
+    }
     return {
+      adjustment: null,
       businessId: envelope.business_id,
       eventType: envelope.type,
       normalizedType: "unknown",
@@ -123,6 +197,7 @@ export function verifyAndNormalizeDodoWebhook(
   const status = normalizeDodoStatus(envelope.type, payment.status);
   const attemptPublicId = payment.metadata.attempt_public_id;
   return {
+    adjustment: null,
     businessId: envelope.business_id,
     eventType: envelope.type,
     normalizedType: "payment_status",
@@ -143,6 +218,49 @@ export function verifyAndNormalizeDodoWebhook(
     },
     providerCreatedAt,
     rawBodyDigest,
+  };
+}
+
+function normalizeAdjustment(
+  eventType: string,
+  data: unknown,
+  observedAt: Date,
+): NormalizedProviderAdjustment | null {
+  if (eventType === "refund.succeeded" || eventType === "refund.failed") {
+    const refund = refundSchema.parse(data);
+    if (!refund.amount || !refund.currency) return null;
+    if (eventType !== `refund.${refund.status}`) return null;
+    const effective =
+      eventType === "refund.succeeded" && refund.status === "succeeded";
+    return {
+      adjustmentId: refund.refund_id,
+      amountPaise: BigInt(refund.amount),
+      currency: refund.currency.toUpperCase(),
+      desiredEffectiveDelta: effective ? -BigInt(refund.amount) : 0n,
+      kind: "refund",
+      paymentId: refund.payment_id,
+      providerCreatedAt: new Date(refund.created_at),
+      providerUpdatedAt: observedAt,
+      status: refund.status,
+    };
+  }
+  if (!knownDisputeEvents.has(eventType)) return null;
+  const dispute = disputeSchema.parse(data);
+  if (eventType !== dispute.dispute_status.replace("dispute_", "dispute."))
+    return null;
+  const amountPaise = BigInt(dispute.amount);
+  return {
+    adjustmentId: dispute.dispute_id,
+    amountPaise,
+    currency: dispute.currency.toUpperCase(),
+    desiredEffectiveDelta: effectiveDisputeStatuses.has(dispute.dispute_status)
+      ? -amountPaise
+      : 0n,
+    kind: "chargeback",
+    paymentId: dispute.payment_id,
+    providerCreatedAt: new Date(dispute.created_at),
+    providerUpdatedAt: observedAt,
+    status: dispute.dispute_status,
   };
 }
 

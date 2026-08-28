@@ -1,6 +1,6 @@
 # GoneViral.in
 
-GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 8**: Dodo Payments guest sponsorship and owner-only raise checkout are implemented behind replaceable provider adapters, with authoritative server-to-server webhook confirmation and exact-once fulfilment on the immutable PostgreSQL ledger. Verified sponsors can claim, privately view, raise, and safely edit their listings through Supabase passwordless Auth. Optional logos use private signed staging, strict Sharp sanitization, and sanitized-only public projection; sensitive identity, host, and category changes wait for review while current values stay live. Every owner operation is constrained by the active database ownership relationship. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
+GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 9**: Dodo Payments is the current provider behind replaceable checkout, event, and reconciliation adapters, with authoritative server-to-server confirmation and exact-once fulfilment on the immutable PostgreSQL ledger. Refunds, chargebacks, and restorations append deltas without rewriting successful payments; hourly reconciliation records provider/projection exceptions and an explicit dry-run-first command can rebuild projections solely from ledger authority. Verified sponsors can claim, privately view, raise, and safely edit their listings through Supabase passwordless Auth. Optional logos use private signed staging, strict Sharp sanitization, and sanitized-only public projection; sensitive identity, host, and category changes wait for review while current values stay live. Every owner operation is constrained by the active database ownership relationship. Synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
 
 The authoritative specification pack starts at [`goneviral-specs/README_FOR_CODEX.md`](./goneviral-specs/README_FOR_CODEX.md). `00_DECISIONS_AND_PRODUCT_RULES.md` is canonical product law.
 
@@ -18,7 +18,7 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters. Owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries, [`docs/PAYMENTS_AND_RAISES.md`](./docs/PAYMENTS_AND_RAISES.md) for sponsorship and raise semantics, [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates, and [`docs/LOGOS_AND_EDITS.md`](./docs/LOGOS_AND_EDITS.md) for the private staging, sanitization, cleanup, and review policy.
+Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters. Owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries, [`docs/PAYMENTS_AND_RAISES.md`](./docs/PAYMENTS_AND_RAISES.md) for sponsorship and raise semantics, [`docs/FINANCIAL_ADJUSTMENTS_AND_RECONCILIATION.md`](./docs/FINANCIAL_ADJUSTMENTS_AND_RECONCILIATION.md) for Dodo adjustment mapping, reconciliation, and ledger-authoritative repair, [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates, and [`docs/LOGOS_AND_EDITS.md`](./docs/LOGOS_AND_EDITS.md) for the private staging, sanitization, cleanup, and review policy.
 
 ## Commands
 
@@ -36,6 +36,7 @@ pnpm db:migrations:verify
 pnpm db:schema:verify
 pnpm db:lint
 pnpm db:advisors
+pnpm db:repair-projections -- --listing <uuid> --reason "incident reason"
 pnpm test:database
 pnpm db:fixtures:phase3
 pnpm db:fixtures:clear

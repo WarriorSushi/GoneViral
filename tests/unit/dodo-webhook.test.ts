@@ -87,4 +87,88 @@ describe("Dodo Standard Webhooks contract", () => {
       verifyAndNormalizeDodoWebhook(body, signedHeaders(body)),
     ).toMatchObject({ normalizedType: "unknown", payment: null });
   });
+
+  it("normalizes successful and failed refunds into desired ledger state", () => {
+    const createdAt = new Date().toISOString();
+    for (const status of ["succeeded", "failed"] as const) {
+      const body = JSON.stringify({
+        business_id: "mock_business",
+        data: {
+          amount: 20_000,
+          created_at: createdAt,
+          currency: "INR",
+          payment_id: "pay_refund_contract",
+          refund_id: `ref_${status}`,
+          status,
+        },
+        timestamp: createdAt,
+        type: `refund.${status}`,
+      });
+      expect(
+        verifyAndNormalizeDodoWebhook(body, signedHeaders(body)),
+      ).toMatchObject({
+        adjustment: {
+          adjustmentId: `ref_${status}`,
+          amountPaise: 20_000n,
+          desiredEffectiveDelta: status === "succeeded" ? -20_000n : 0n,
+          kind: "refund",
+          paymentId: "pay_refund_contract",
+          status,
+        },
+        normalizedType: "adjustment_status",
+      });
+    }
+  });
+
+  it("maps Dodo dispute loss states and restoration states", () => {
+    const createdAt = new Date().toISOString();
+    for (const [eventName, status, desired] of [
+      ["dispute.opened", "dispute_opened", -49_900n],
+      ["dispute.won", "dispute_won", 0n],
+    ] as const) {
+      const body = JSON.stringify({
+        business_id: "mock_business",
+        data: {
+          amount: "49900",
+          created_at: createdAt,
+          currency: "INR",
+          dispute_id: "dp_contract",
+          dispute_status: status,
+          payment_id: "pay_dispute_contract",
+        },
+        timestamp: createdAt,
+        type: eventName,
+      });
+      expect(
+        verifyAndNormalizeDodoWebhook(body, signedHeaders(body)),
+      ).toMatchObject({
+        adjustment: {
+          amountPaise: 49_900n,
+          desiredEffectiveDelta: desired,
+          kind: "chargeback",
+          status,
+        },
+      });
+    }
+  });
+
+  it("quarantines an authentic adjustment whose event and payload disagree", () => {
+    const createdAt = new Date().toISOString();
+    const body = JSON.stringify({
+      business_id: "mock_business",
+      data: {
+        amount: 20_000,
+        created_at: createdAt,
+        currency: "INR",
+        payment_id: "pay_refund_contract",
+        refund_id: "ref_mismatch",
+        status: "failed",
+      },
+      timestamp: createdAt,
+      type: "refund.succeeded",
+    });
+    expect(
+      verifyAndNormalizeDodoWebhook(body, signedHeaders(body)),
+    ).toMatchObject({ adjustment: null, normalizedType: "unknown" });
+  });
 });

@@ -11,6 +11,10 @@ import { moneyPaise } from "@/domain/money";
 import { calculateMinimumRaise } from "@/domain/ranking";
 
 import type { NormalizedDodoEvent } from "./dodo-webhook";
+import {
+  applyPendingAdjustmentsForPayment,
+  processProviderAdjustment,
+} from "./process-provider-adjustment";
 
 export type DodoWebhookResult = Readonly<{
   businessDate?: string;
@@ -155,6 +159,32 @@ export async function processDodoWebhook(input: {
 
     if (input.event.businessId !== input.expectedBusinessId) {
       return quarantineEvent("business_mismatch");
+    }
+    const providerPaymentIdentity =
+      input.event.adjustment?.paymentId ?? input.event.payment?.paymentId;
+    if (providerPaymentIdentity) {
+      // Webhooks and reconciliation can observe payment and adjustment records in
+      // either order. A transaction-scoped identity lock gives every path the same
+      // outer lock and prevents payment/attempt/adjustment row-lock inversions.
+      await transactionSql`
+        SELECT pg_advisory_xact_lock(
+          hashtextextended(
+            ${`dodo:${input.providerEnvironment}:${providerPaymentIdentity}`}, 0
+          )
+        )
+      `;
+    }
+    if (
+      input.event.normalizedType === "adjustment_status" &&
+      input.event.adjustment
+    ) {
+      return processProviderAdjustment({
+        adjustment: input.event.adjustment,
+        eventId: input.eventId,
+        eventRowId: eventRow.id,
+        providerEnvironment: input.providerEnvironment,
+        transaction: transactionSql,
+      });
     }
     if (input.event.normalizedType === "unknown" || !input.event.payment) {
       return quarantineEvent("unknown_event_type");
@@ -474,6 +504,12 @@ export async function processDodoWebhook(input: {
       WHERE id = ${eventRow.id}
     `;
 
+    const adjustmentResult = await applyPendingAdjustmentsForPayment({
+      paymentId: payment.paymentId,
+      providerEnvironment: input.providerEnvironment,
+      transaction: transactionSql,
+    });
+
     const [owner] = isInitial
       ? await transactionSql<{ canonical_email: string; email_hash: string }[]>`
       SELECT canonical_email, email_hash
@@ -547,7 +583,8 @@ export async function processDodoWebhook(input: {
         `;
 
     return {
-      businessDate: ledger.applied_business_date,
+      businessDate:
+        adjustmentResult?.businessDate ?? ledger.applied_business_date,
       categorySlug: listing.category_slug,
       kind: "processed",
       listingPublicId: listing.public_id,
