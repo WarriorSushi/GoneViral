@@ -25,6 +25,8 @@ export default defineConfig({
       DODO_PAYMENTS_ENVIRONMENT: "mock",
       NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3100",
       PAYMENTS_ENABLED: "false",
+      PRIVATE_DATA_ENCRYPTION_KEY:
+        "xtMT1+ly4wVTnz5uDGwQk21jGl4/Ro/GV6z9/imDAdg=",
       SUBMISSION_HMAC_SECRET: "phase4-e2e-local-only-hmac-secret",
       TURNSTILE_MODE: "mock",
     },

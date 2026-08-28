@@ -24,13 +24,22 @@ export default async function MockCheckoutPage({
     <main id="main-content" className="pending-main">
       <div className="pending-card">
         <p className="eyebrow">Local checkout simulator</p>
-        <h1>Return from checkout</h1>
+        <h1>Complete a mock payment</h1>
         <p>
-          This local page does not mark a payment successful. It only exercises
-          the safe return and pending flow.
+          This local-only simulator sends a correctly signed Standard Webhooks
+          event through the same Dodo webhook path used by test mode.
         </p>
-        <a className="button button-primary" href={`/join/${publicId}/return`}>
-          Return to GoneViral.in
+        <form action="/api/mock/dodo/complete" method="post">
+          <input name="publicId" type="hidden" value={publicId} />
+          <button className="button button-primary" type="submit">
+            Complete mock payment
+          </button>
+        </form>
+        <a
+          className="button button-secondary"
+          href={`/join/${publicId}/return`}
+        >
+          Return without paying
         </a>
       </div>
     </main>

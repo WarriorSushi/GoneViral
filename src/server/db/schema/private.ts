@@ -310,6 +310,10 @@ export const providerEvents = privateSchema.table(
       "provider_events_attempt_count_nonnegative",
       sql`${table.attemptCount} >= 0`,
     ),
+    check(
+      "provider_events_terminal_fields_valid",
+      sql`${table.processingState} not in ('processed', 'quarantined') or (${table.signatureStatus} = 'verified' and ${table.processedAt} is not null)`,
+    ),
     index("provider_events_attempt_received_idx").on(
       table.paymentAttemptId,
       table.receivedAt.desc(),
@@ -372,6 +376,9 @@ export const providerPayments = privateSchema.table(
     ),
     uniqueIndex("provider_payments_fulfilled_ledger_unique")
       .on(table.fulfilledLedgerEntryId)
+      .where(sql`${table.fulfilledLedgerEntryId} is not null`),
+    uniqueIndex("provider_payments_fulfilled_attempt_unique")
+      .on(table.paymentAttemptId)
       .where(sql`${table.fulfilledLedgerEntryId} is not null`),
     check(
       "provider_payments_amount_valid",

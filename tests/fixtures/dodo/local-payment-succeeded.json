@@ -1,0 +1,17 @@
+{
+  "business_id": "mock_business",
+  "data": {
+    "checkout_session_id": "mock_session_fixture",
+    "created_at": "2026-08-29T00:00:00.000Z",
+    "currency": "INR",
+    "metadata": { "attempt_public_id": "att_abcdefghijklmnopqrstuvwx" },
+    "payment_id": "mock_payment_fixture",
+    "payment_method": "mock",
+    "payload_type": "Payment",
+    "status": "succeeded",
+    "total_amount": 49900,
+    "updated_at": "2026-08-29T00:00:00.000Z"
+  },
+  "timestamp": "2026-08-29T00:00:00.000Z",
+  "type": "payment.succeeded"
+}

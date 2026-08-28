@@ -1,6 +1,6 @@
 # GoneViral.in
 
-GoneViral.in is a paid public sponsored leaderboard for the Indian internet. The repository is currently complete through **Phase 3**: the reproducible engineering foundation, versioned domain policy, private PostgreSQL foundation, strict public read model, and responsive public board shell. The board uses database projections; synthetic activity is restricted to the local fixture command and the real empty database renders an honest empty state. Provider integrations, checkout, ownership, and moderation operations have not been implemented yet.
+GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 5**: Dodo Payments guest checkout and authoritative server-to-server webhook confirmation are implemented behind replaceable provider adapters, with exact-once fulfilment on the immutable PostgreSQL ledger. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
 
 The authoritative specification pack starts at [`goneviral-specs/README_FOR_CODEX.md`](./goneviral-specs/README_FOR_CODEX.md). `00_DECISIONS_AND_PRODUCT_RULES.md` is canonical product law.
 
@@ -47,5 +47,5 @@ The local app is available at `http://localhost:3000`. Seeded local board data u
 
 - No hosted Supabase development or production project exists yet; only the local Docker-backed stack is verified.
 - No Vercel project/deployment exists yet.
-- Dodo Payments is the current hosted-checkout provider behind an adapter. Test credentials and a one-time INR `pay_what_you_want` product are optional locally; live credentials or approval are not assumed.
+- Dodo Payments is the current hosted-checkout and webhook provider behind replaceable checkout and event adapters. Test mode requires a Dodo test API key, business ID, webhook key, and a one-time INR `pay_what_you_want` product. The local mock signs exact raw payloads with Standard Webhooks. Live credentials or approval are not assumed.
 - Legal, privacy, refund and accounting launch approvals remain open.

@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 
 import { formatInr, moneyPaise } from "@/domain/money";
+import { PendingPaymentPoller } from "@/components/join/pending-payment-poller";
 import { getPublicAttemptStatus } from "@/server/db/repositories/private/guest-checkout";
 
 export const metadata: Metadata = { title: "Checking payment" };
@@ -16,6 +17,9 @@ export default async function PendingPage({
   const { publicId } = await params;
   const attempt = await getPublicAttemptStatus(publicId);
   if (!attempt) notFound();
+  if (attempt.state === "confirmed") {
+    redirect(`/join/${publicId}/confirmed` as Route);
+  }
 
   return (
     <main id="main-content" className="pending-main">
@@ -35,6 +39,9 @@ export default async function PendingPage({
           <strong>{attempt.listingName}</strong> ·{" "}
           {formatInr(moneyPaise(attempt.amountPaise))}
         </p>
+        {attempt.state === "pending" ? (
+          <PendingPaymentPoller publicId={publicId} />
+        ) : null}
         <p>
           {attempt.state === "failed"
             ? "No listing has been activated. You can start a new submission when ready."

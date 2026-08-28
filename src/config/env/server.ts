@@ -20,7 +20,9 @@ export const serverEnvSchema = z
     DATABASE_DIRECT_URL: optionalDatabaseUrl,
     SUPABASE_SECRET_KEY: optionalSecret,
     DODO_PAYMENTS_API_KEY: optionalSecret,
+    DODO_PAYMENTS_BUSINESS_ID: optionalSecret,
     DODO_PAYMENTS_PRODUCT_ID: optionalSecret,
+    DODO_PAYMENTS_WEBHOOK_KEY: optionalSecret,
     DODO_PAYMENTS_ENVIRONMENT: z.enum(["mock", "test_mode"]).default("mock"),
     RESEND_API_KEY: optionalSecret,
     TURNSTILE_SECRET_KEY: optionalSecret,
@@ -31,6 +33,7 @@ export const serverEnvSchema = z
     SENTRY_AUTH_TOKEN: optionalSecret,
     CRON_SECRET: optionalSecret,
     PAYMENTS_ENABLED: z.enum(["true", "false"]).default("false"),
+    PRIVATE_DATA_ENCRYPTION_KEY: optionalSecret,
   })
   .superRefine((environment, context) => {
     if (
@@ -50,12 +53,14 @@ export const serverEnvSchema = z
     if (
       environment.DODO_PAYMENTS_ENVIRONMENT === "test_mode" &&
       (!environment.DODO_PAYMENTS_API_KEY ||
-        !environment.DODO_PAYMENTS_PRODUCT_ID)
+        !environment.DODO_PAYMENTS_BUSINESS_ID ||
+        !environment.DODO_PAYMENTS_PRODUCT_ID ||
+        !environment.DODO_PAYMENTS_WEBHOOK_KEY)
     ) {
       context.addIssue({
         code: "custom",
         message:
-          "Dodo test mode requires DODO_PAYMENTS_API_KEY and DODO_PAYMENTS_PRODUCT_ID.",
+          "Dodo test mode requires API, business, product, and webhook credentials.",
         path: ["DODO_PAYMENTS_API_KEY"],
       });
     }

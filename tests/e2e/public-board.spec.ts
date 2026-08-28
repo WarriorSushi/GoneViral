@@ -233,7 +233,7 @@ test("Main, Today, category, and listing navigation use real public projections"
   await capture(page, testInfo, `${testInfo.project.name}-how-it-works`);
 });
 
-test("guest join reaches only the honest pending flow", async ({
+test("guest join reaches an honest pending flow without browser authority", async ({
   page,
 }, testInfo) => {
   const consoleErrors: string[] = [];
@@ -271,9 +271,9 @@ test("guest join reaches only the honest pending flow", async ({
 
   await expect(page).toHaveURL(/\/join\/att_[A-Za-z0-9_-]{24}\/mock-checkout$/);
   await expect(
-    page.getByText("does not mark a payment successful"),
+    page.getByText("same Dodo webhook path used by test mode"),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Return to GoneViral.in" }).click();
+  await page.getByRole("link", { name: "Return without paying" }).click();
   await expect(page).toHaveURL(/\/join\/att_[A-Za-z0-9_-]{24}\/pending$/);
   const attemptPublicId = new URL(page.url()).pathname.split("/")[2]!;
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -322,6 +322,98 @@ test("guest join reaches only the honest pending flow", async ({
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(consoleErrors).toEqual([]);
   await capture(page, testInfo, `${testInfo.project.name}-phase4-pending`);
+});
+
+test("signed mock webhook moves pending to confirmed and updates the board", async ({
+  page,
+}, testInfo) => {
+  const suffix = `confirmed-${Date.now()}-${testInfo.project.name}`;
+  await page.goto("/join");
+  await page.getByLabel("Name").fill("Phase Five Studio");
+  await page.getByLabel("Category").selectOption("tech-apps");
+  await page
+    .getByLabel("Tagline")
+    .fill("A signed webhook confirmation verification listing");
+  await page
+    .getByLabel("Website URL")
+    .fill(`https://${suffix}.example.com/path`);
+  await page.getByLabel("Email").fill(`${suffix}@example.com`);
+  await page.getByLabel("Phone").fill("+919876543210");
+  await page.getByLabel(/I accept the/).check();
+  await page
+    .getByRole("button", { name: "Continue to secure checkout" })
+    .click();
+
+  await page.getByRole("link", { name: "Return without paying" }).click();
+  await expect(page.getByText("Your listing is not live yet.")).toBeVisible();
+  await expect(page.getByText(/Payment confirmed/i)).toHaveCount(0);
+  const attemptPublicId = new URL(page.url()).pathname.split("/")[2]!;
+
+  const completion = await page.request.post("/api/mock/dodo/complete", {
+    form: { publicId: attemptPublicId },
+    maxRedirects: 0,
+  });
+  expect(completion.status()).toBe(303);
+  await expect(page).toHaveURL(
+    new RegExp(`/join/${attemptPublicId}/confirmed$`),
+    { timeout: 12_000 },
+  );
+  await expect(
+    page.getByRole("heading", { name: "Phase Five Studio is confirmed." }),
+  ).toBeVisible();
+  await expect(page.getByText("actual leaderboard position")).toContainText(
+    "#6",
+  );
+  await expect(page.getByText(/only an estimate/)).toBeVisible();
+  await expect(page.getByText(/queued a confirmation/)).toBeVisible();
+  await expect(page.getByText(/already arrived/)).toBeVisible();
+
+  const verificationSql = postgres(directDatabaseUrl, {
+    max: 1,
+    prepare: false,
+    types: { bigint: postgres.BigInt },
+  });
+  try {
+    const [databaseState] = await verificationSql<
+      {
+        event_count: bigint;
+        ledger_count: bigint;
+        outbox_count: bigint;
+        total: bigint;
+      }[]
+    >`
+      SELECT l.confirmed_total_paise AS total,
+             (SELECT count(*) FROM private.financial_ledger fl
+              WHERE fl.payment_attempt_id = pa.id) AS ledger_count,
+             (SELECT count(*) FROM private.provider_events pe
+              WHERE pe.payment_attempt_id = pa.id
+                AND pe.processing_state = 'processed') AS event_count,
+             (SELECT count(*) FROM private.email_outbox eo
+              WHERE eo.idempotency_key LIKE 'sponsorship-confirmed:' || pa.id || '%')
+               AS outbox_count
+      FROM private.payment_attempts pa
+      JOIN app.listings l ON l.id = pa.listing_id
+      WHERE pa.public_id = ${attemptPublicId}
+    `;
+    expect(databaseState).toEqual({
+      event_count: 1n,
+      ledger_count: 1n,
+      outbox_count: 1n,
+      total: 49_900n,
+    });
+  } finally {
+    await verificationSql.end({ timeout: 5 });
+  }
+
+  await page.getByRole("link", { name: "See the leaderboard" }).click();
+  await page.getByRole("button", { name: "Refresh board" }).click();
+  await expect(
+    page.getByRole("link", { name: "Visit Phase Five Studio" }),
+  ).toBeVisible();
+  await expectNoPrivateMarkers(await page.content());
+  await expectNoHorizontalOverflow(page);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await capture(page, testInfo, `${testInfo.project.name}-phase5-confirmed`);
 });
 
 test("keyboard focus, 200% zoom, and reduced motion remain usable", async ({

@@ -26,7 +26,15 @@ export async function GET(
   }
   const status = await getPublicAttemptStatus(publicId);
   return NextResponse.json(
-    status ? { status: status.state } : { status: "not_found" },
+    status
+      ? {
+          resultPath:
+            status.state === "confirmed"
+              ? `/join/${encodeURIComponent(publicId)}/confirmed`
+              : undefined,
+          status: status.state,
+        }
+      : { status: "not_found" },
     {
       headers: { "Cache-Control": "private, no-store, max-age=0" },
       status: status ? 200 : 404,

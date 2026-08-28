@@ -21,8 +21,10 @@ describe("server environment schema", () => {
     expect(
       serverEnvSchema.parse({
         DODO_PAYMENTS_API_KEY: "test-key",
+        DODO_PAYMENTS_BUSINESS_ID: "business-id",
         DODO_PAYMENTS_ENVIRONMENT: "test_mode",
         DODO_PAYMENTS_PRODUCT_ID: "product-id",
+        DODO_PAYMENTS_WEBHOOK_KEY: "whsec_dGVzdA==",
       }),
     ).toMatchObject({ DODO_PAYMENTS_ENVIRONMENT: "test_mode" });
   });
