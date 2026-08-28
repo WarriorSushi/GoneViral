@@ -19,17 +19,33 @@ export function JoinForm({
   idempotencyKey,
   localTurnstileToken,
   turnstileSiteKey,
+  initialAmountRupees = "499",
+  takeoverTarget,
 }: {
   categories: PublicCategory[];
   idempotencyKey: string;
   localTurnstileToken: string | undefined;
   turnstileSiteKey: string | undefined;
+  initialAmountRupees?: string;
+  takeoverTarget?: Readonly<{ name: string; rank: string; slug: string }>;
 }) {
   const [state, action, pending] = useActionState(submitJoinForm, initialState);
 
   return (
     <form action={action} className="join-form" noValidate>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+      <input
+        type="hidden"
+        name="targetSlug"
+        value={takeoverTarget?.slug ?? ""}
+      />
+      {takeoverTarget ? (
+        <p className="form-notice">
+          Current quote to exceed #{takeoverTarget.rank} ({takeoverTarget.name})
+          by ₹1: <strong>₹{initialAmountRupees}</strong>. The position is not
+          reserved.
+        </p>
+      ) : null}
       {localTurnstileToken ? (
         <input
           type="hidden"
@@ -117,10 +133,10 @@ export function JoinForm({
               name="amount"
               type="number"
               inputMode="numeric"
-              min="499"
+              min={initialAmountRupees}
               max="21474836"
               step="1"
-              defaultValue="499"
+              defaultValue={initialAmountRupees}
               required
             />
             <FieldError message={state.errors?.amount} />

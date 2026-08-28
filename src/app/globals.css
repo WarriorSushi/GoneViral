@@ -482,6 +482,31 @@ select:focus-visible {
   color: var(--ink-soft);
 }
 
+.owner-raise-link {
+  margin: 0 0 18px;
+}
+
+.owner-raise-card {
+  margin: 0;
+}
+
+.owner-raise-form > label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 720;
+}
+
+.owner-raise-form input,
+.owner-raise-form select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 11px;
+  background: var(--surface);
+}
+
 .manage-link-form {
   display: grid;
   gap: 10px;

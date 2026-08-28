@@ -44,6 +44,7 @@ function joinInput(
     phone: "+919876543210",
     policyVersion: POLICY_VERSION,
     tagline: "A deterministic guest checkout integration test",
+    targetSlug: null,
     turnstileToken: `local-pass-${randomUUID()}`,
   };
 }

@@ -93,8 +93,8 @@ export function BoardPage({
         today={activeBoard === "today"}
       />
       <p className="estimate-note">
-        Rank can change. We move you only after payment is confirmed. Payments
-        are not open yet.
+        Rank can change. Quotes add exactly the amount shown and do not reserve
+        a position. We move you only after Dodo Payments confirms payment.
       </p>
     </main>
   );

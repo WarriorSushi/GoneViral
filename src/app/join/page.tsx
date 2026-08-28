@@ -7,19 +7,28 @@ import { JoinForm } from "@/components/join/join-form";
 import { readPublicEnv } from "@/config/env/public";
 import { readServerEnv } from "@/config/env/server";
 import { listActiveCategories } from "@/server/db/repositories/categories";
+import { listMainBoard } from "@/server/db/repositories/leaderboards";
 
 export const metadata: Metadata = { title: "Join the list" };
-export default async function JoinPage() {
+export default async function JoinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ target?: string }>;
+}) {
   await connection();
-  const [categories, publicEnvironment, serverEnvironment] = await Promise.all([
-    listActiveCategories(),
-    Promise.resolve(readPublicEnv()),
-    Promise.resolve(readServerEnv()),
-  ]);
+  const [categories, publicEnvironment, serverEnvironment, query, board] =
+    await Promise.all([
+      listActiveCategories(),
+      Promise.resolve(readPublicEnv()),
+      Promise.resolve(readServerEnv()),
+      searchParams,
+      listMainBoard({ cursor: null, limit: 50 }),
+    ]);
   const localTurnstileToken =
     serverEnvironment.TURNSTILE_MODE === "mock"
       ? `local-pass-${randomUUID()}`
       : undefined;
+  const target = board.entries.find((entry) => entry.slug === query.target);
 
   return (
     <main id="main-content" className="join-main">
@@ -36,6 +45,22 @@ export default async function JoinPage() {
         idempotencyKey={randomUUID()}
         localTurnstileToken={localTurnstileToken}
         turnstileSiteKey={publicEnvironment.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+        initialAmountRupees={
+          target
+            ? (
+                BigInt(target.takeoverQuote.requiredPaymentPaise) / 100n
+              ).toString()
+            : "499"
+        }
+        {...(target
+          ? {
+              takeoverTarget: {
+                name: target.name,
+                rank: target.rank,
+                slug: target.slug,
+              },
+            }
+          : {})}
       />
     </main>
   );

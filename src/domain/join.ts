@@ -45,6 +45,7 @@ export type JoinInput = Readonly<{
   phone: string;
   policyVersion: typeof POLICY_VERSION;
   tagline: string;
+  targetSlug: string | null;
   turnstileToken: string;
 }>;
 
@@ -69,6 +70,7 @@ export function validateJoinForm(formData: FormData): JoinValidation {
   const categorySlug = value(formData, "category");
   const applicationIdempotencyKey = value(formData, "idempotencyKey");
   const turnstileToken = value(formData, "turnstileToken");
+  const targetSlug = value(formData, "targetSlug") || null;
   const amount = parseWholeInr(value(formData, "amount"));
   const destination = canonicalizeDestination(value(formData, "destination"));
   const errors: Partial<Record<JoinField, string>> = {};
@@ -87,6 +89,9 @@ export function validateJoinForm(formData: FormData): JoinValidation {
   }
   if (!categorySlugs.has(categorySlug)) {
     errors.category = "Choose a category.";
+  }
+  if (targetSlug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(targetSlug)) {
+    errors.form = "That takeover target is invalid.";
   }
   if (!destination.ok) {
     errors.destination =
@@ -129,6 +134,7 @@ export function validateJoinForm(formData: FormData): JoinValidation {
       phone,
       policyVersion: POLICY_VERSION,
       tagline,
+      targetSlug,
       turnstileToken,
     },
   };

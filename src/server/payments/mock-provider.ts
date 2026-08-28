@@ -20,8 +20,12 @@ export class MockDodoProvider implements PaymentProvider {
     const existing = sessions.get(request.requestId);
     if (existing) return { kind: "recovered", session: existing };
 
+    const returnUrl = new URL(request.returnUrl);
+    const checkoutPath = returnUrl.pathname.startsWith("/manage/")
+      ? returnUrl.pathname.replace(/\/return$/, "/mock-checkout")
+      : `/join/${encodeURIComponent(request.publicAttemptId)}/mock-checkout`;
     const session: CheckoutSession = {
-      checkoutUrl: `${this.siteUrl}/join/${encodeURIComponent(request.publicAttemptId)}/mock-checkout`,
+      checkoutUrl: `${this.siteUrl}${checkoutPath}`,
       createdAt: new Date(),
       sessionId: `mock_${request.requestId}`,
     };

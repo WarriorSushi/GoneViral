@@ -51,7 +51,10 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
 function TakePositionLink({ entry }: { readonly entry: BoardEntry }) {
   return (
     <div className="take-position">
-      <Link className="button button-quote" href={`/how-it-works#join`}>
+      <Link
+        className="button button-quote"
+        href={`/join?target=${encodeURIComponent(entry.slug)}` as Route}
+      >
         Take #{entry.rank} ·{" "}
         <Money paise={entry.takeoverQuote.requiredPaymentPaise} />
       </Link>
@@ -101,7 +104,7 @@ function InvitationRow({ rank }: { readonly rank: string }) {
       <span className="rank">#{rank}</span>
       <div>
         <strong>Want in?</strong>
-        <p>We open soon.</p>
+        <p>Join the paid list.</p>
       </div>
       <div className="invitation-action">
         <span>Starts at</span>
@@ -126,10 +129,10 @@ function EmptyBoard({ today }: { readonly today: boolean }) {
           ? "Pay first. Take the top spot."
           : "Get on the leaderboard from ₹499."}
       </p>
-      <Link className="button button-primary" href="/how-it-works#join">
-        See how it works
+      <Link className="button button-primary" href="/join">
+        Join the list
       </Link>
-      <small>Payments are not open yet.</small>
+      <small>Placement changes only after payment confirmation.</small>
     </section>
   );
 }

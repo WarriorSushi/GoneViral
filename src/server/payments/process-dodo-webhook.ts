@@ -7,6 +7,8 @@ import type postgres from "postgres";
 import { getSqlClient } from "@/server/db/client";
 import { encryptPrivateText } from "@/server/security/private-data";
 import { submissionDigest } from "@/server/security/submission-security";
+import { moneyPaise } from "@/domain/money";
+import { calculateMinimumRaise } from "@/domain/ranking";
 
 import type { NormalizedDodoEvent } from "./dodo-webhook";
 
@@ -40,6 +42,7 @@ type AttemptRow = {
   provider_order_id: string | null;
   public_id: string;
   purpose: string;
+  requested_by_user_id: string | null;
   state: string;
 };
 
@@ -169,6 +172,7 @@ export async function processDodoWebhook(input: {
       SELECT id, public_id, provider, provider_environment, provider_order_id,
              listing_id, purpose, state, amount_paise, currency, policy_version,
              minimum_required_paise_snapshot, pending_owner_id,
+             requested_by_user_id,
              fulfilled_ledger_entry_id
       FROM private.payment_attempts
       WHERE public_id = ${payment.attemptPublicId}
@@ -358,27 +362,42 @@ export async function processDodoWebhook(input: {
         attempt.id,
         payment.paymentId,
       );
+    const isInitial = attempt.purpose === "initial_sponsorship";
+    const isRaise = attempt.purpose === "raise";
+    const raiseMinimum =
+      listing.original_sponsorship_paise === null
+        ? null
+        : calculateMinimumRaise(moneyPaise(listing.original_sponsorship_paise))
+            .minimumRequiredPaise;
     if (
-      attempt.purpose !== "initial_sponsorship" ||
+      (!isInitial && !isRaise) ||
       payment.amountPaise < attempt.minimum_required_paise_snapshot ||
-      listing.original_sponsorship_paise !== null
+      (isInitial && listing.original_sponsorship_paise !== null) ||
+      (isRaise &&
+        (listing.original_sponsorship_paise === null ||
+          attempt.requested_by_user_id === null ||
+          raiseMinimum === null ||
+          attempt.minimum_required_paise_snapshot !== raiseMinimum ||
+          payment.amountPaise < raiseMinimum))
     ) {
       return quarantineEvent(
-        "initial_fulfilment_invalid",
+        isRaise ? "raise_fulfilment_invalid" : "initial_fulfilment_invalid",
         attempt.id,
         payment.paymentId,
       );
     }
 
     const [clock] = await transactionSql<
-      { applied_at: Date; business_date: string }[]
+      { applied_at: Date | string; business_date: string }[]
     >`
       SELECT transaction_timestamp() AS applied_at,
              (transaction_timestamp() AT TIME ZONE 'Asia/Kolkata')::date
                AS business_date
     `;
     if (!clock) throw new Error("transaction_clock_missing");
-    const appliedAt = clock.applied_at;
+    const appliedAt = new Date(clock.applied_at);
+    if (Number.isNaN(appliedAt.getTime()))
+      throw new Error("transaction_clock_invalid");
     const [ledger] = await transactionSql<
       { applied_business_date: string; id: string }[]
     >`
@@ -388,12 +407,12 @@ export async function processDodoWebhook(input: {
         applied_at, applied_business_date, provider_effective_at,
         source_key, source_provider, source_environment, metadata
       ) VALUES (
-        ${listing.id}, 'initial_sponsorship', ${payment.amountPaise}, 'INR',
+        ${listing.id}, ${attempt.purpose}, ${payment.amountPaise}, 'INR',
         ${attempt.id}, ${payment.paymentId}, ${attempt.policy_version},
         ${appliedAt.toISOString()},
         ${clock.business_date},
         ${input.event.providerCreatedAt.toISOString()},
-        ${`dodo:${input.providerEnvironment}:payment:${payment.paymentId}:initial`},
+        ${`dodo:${input.providerEnvironment}:payment:${payment.paymentId}:${attempt.purpose}`},
         'dodo', ${input.providerEnvironment},
         ${JSON.stringify({ eventId: input.eventId })}::jsonb
       ) RETURNING id, applied_business_date
@@ -404,7 +423,10 @@ export async function processDodoWebhook(input: {
     await transactionSql`
       UPDATE app.listings
       SET confirmed_total_paise = confirmed_total_paise + ${payment.amountPaise},
-          original_sponsorship_paise = ${payment.amountPaise},
+          original_sponsorship_paise = CASE
+            WHEN ${isInitial} THEN ${payment.amountPaise}
+            ELSE original_sponsorship_paise
+          END,
           current_total_reached_at = ${appliedAt.toISOString()},
           first_confirmed_at = COALESCE(first_confirmed_at, ${appliedAt.toISOString()}),
           last_rank_change_at = ${appliedAt.toISOString()},
@@ -452,21 +474,27 @@ export async function processDodoWebhook(input: {
       WHERE id = ${eventRow.id}
     `;
 
-    const [owner] = await transactionSql<
-      { canonical_email: string; email_hash: string }[]
-    >`
+    const [owner] = isInitial
+      ? await transactionSql<{ canonical_email: string; email_hash: string }[]>`
       SELECT canonical_email, email_hash
       FROM private.pending_listing_owners
       WHERE id = ${attempt.pending_owner_id}
       LIMIT 1
+    `
+      : await transactionSql<{ canonical_email: string; email_hash: string }[]>`
+      SELECT lower(email) AS canonical_email, ''::text AS email_hash
+      FROM auth.users
+      WHERE id = ${attempt.requested_by_user_id} AND email IS NOT NULL
+      LIMIT 1
     `;
-    if (!owner) throw new Error("pending_owner_missing");
-    await transactionSql`
+    if (!owner && isInitial) throw new Error("pending_owner_missing");
+    if (owner)
+      await transactionSql`
       INSERT INTO private.email_outbox (
         kind, recipient_encrypted, recipient_hash, template_version,
         payload, idempotency_key, state, next_attempt_at
       ) VALUES (
-        'sponsorship_confirmed_claim', ${encryptPrivateText(owner.canonical_email)},
+        ${isInitial ? "sponsorship_confirmed_claim" : "raise_confirmed"}, ${encryptPrivateText(owner.canonical_email)},
         ${owner.email_hash || submissionDigest(owner.canonical_email)}, '2026-08-29-v1',
         ${JSON.stringify({
           amountPaise: payment.amountPaise.toString(),
@@ -474,10 +502,21 @@ export async function processDodoWebhook(input: {
           listingName: listing.name,
           listingPublicId: listing.public_id,
         })}::jsonb,
-        ${`sponsorship-confirmed:${attempt.id}:2026-08-29-v1`},
+        ${`${isInitial ? "sponsorship-confirmed" : "raise-confirmed"}:${attempt.id}:2026-08-29-v1`},
         'pending', transaction_timestamp()
       ) ON CONFLICT (idempotency_key) DO NOTHING
     `;
+    if (!owner && isRaise) {
+      await createOperationsReview({
+        attemptId: attempt.id,
+        eventId: input.eventId,
+        listingId: listing.id,
+        paymentId: payment.paymentId,
+        providerEnvironment: input.providerEnvironment,
+        reason: "raise_owner_email_missing",
+        transactionSql,
+      });
+    }
 
     const hidden = keepRemoved || listing.moderation_status === "suspended";
     if (hidden) {

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { Webhook } from "standardwebhooks";
 
 import { handleDodoWebhook } from "@/app/api/webhooks/dodo/route";
@@ -6,6 +5,8 @@ import { readPublicEnv } from "@/config/env/public";
 import { readServerEnv } from "@/config/env/server";
 import { getSqlClient } from "@/server/db/client";
 import { getMockDodoWebhookSecretForTests } from "@/server/payments/dodo-webhook";
+import { getVerifiedAuthUser } from "@/server/auth/session";
+import { findActiveListingOwner } from "@/server/db/repositories/private/owners";
 
 const publicAttemptPattern = /^att_[A-Za-z0-9_-]{24}$/;
 const loopbackHosts = new Set(["127.0.0.1", "localhost"]);
@@ -30,17 +31,33 @@ export async function POST(request: Request) {
   const [attempt] = await getSqlClient()<
     {
       amount_paise: bigint;
+      listing_id: string;
+      listing_slug: string;
+      purpose: string;
       provider_order_id: string;
+      requested_by_user_id: string | null;
       state: string;
     }[]
   >`
-    SELECT amount_paise, provider_order_id, state
-    FROM private.payment_attempts
-    WHERE public_id = ${publicId} AND provider_environment = 'mock'
+    SELECT attempt.amount_paise, attempt.listing_id, attempt.provider_order_id, attempt.state,
+           attempt.purpose, attempt.requested_by_user_id,
+           listing.slug AS listing_slug
+    FROM private.payment_attempts AS attempt
+    JOIN app.listings AS listing ON listing.id = attempt.listing_id
+    WHERE attempt.public_id = ${publicId} AND attempt.provider_environment = 'mock'
     LIMIT 1
   `;
   if (!attempt?.provider_order_id) {
     return new Response("Not found", { status: 404 });
+  }
+  if (attempt.purpose === "raise") {
+    const user = await getVerifiedAuthUser();
+    const activeOwner = user
+      ? await findActiveListingOwner(attempt.listing_id, user.id)
+      : null;
+    if (!user || user.id !== attempt.requested_by_user_id || !activeOwner) {
+      return new Response("Not found", { status: 404 });
+    }
   }
 
   const now = new Date();
@@ -78,8 +95,15 @@ export async function POST(request: Request) {
   if (!webhookResponse.ok) {
     return new Response("Mock webhook failed", { status: 503 });
   }
-  return NextResponse.redirect(
-    new URL(`/join/${encodeURIComponent(publicId)}/pending`, requestUrl),
-    303,
-  );
+  const pendingPath =
+    attempt.purpose === "raise"
+      ? `/manage/${encodeURIComponent(attempt.listing_slug)}/raise/${encodeURIComponent(publicId)}/pending`
+      : `/join/${encodeURIComponent(publicId)}/pending`;
+  return new Response(null, {
+    headers: {
+      "Cache-Control": "private, no-store, max-age=0",
+      Location: pendingPath,
+    },
+    status: 303,
+  });
 }

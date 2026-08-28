@@ -107,6 +107,9 @@ test("signed-out management is generic, same-origin, and not publicly cached", a
 
   await page.goto("/auth/callback?next=https%3A%2F%2Fevil.example%2Fmanage");
   await expect(page).toHaveURL(/\/manage\?error=auth$/);
+  await expect(
+    page.getByRole("heading", { name: "Manage your GoneViral listing" }),
+  ).toBeVisible();
   expect(new URL(page.url()).origin).toBe(applicationOrigin);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await expectNoHorizontalOverflow(page);
@@ -441,6 +444,7 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
   await expect(
     page.getByRole("link", { name: "Visit Phase Five Studio" }),
   ).toBeVisible();
+  await expect(page).toHaveTitle(/Main board/);
   await expectNoPrivateMarkers(await page.content());
   await expectNoHorizontalOverflow(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -529,6 +533,44 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   await expect(initialPayment.getByLabel("₹499 Indian rupees")).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await expectNoHorizontalOverflow(page);
+
+  await page.getByRole("link", { name: "Raise this listing" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Raise Phase Five Studio" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/immutable original sponsorship: ₹1,000/i),
+  ).toBeVisible();
+  await page.getByLabel("Payment phone").fill("+919876543210");
+  await page.getByRole("button", { name: "Continue to Dodo checkout" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Complete this mock raise" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Complete mock payment" }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "₹1,000 Indian rupees was added.",
+    }),
+  ).toBeVisible({ timeout: 12_000 });
+  await expect(page.getByText(/Actual Main position:/)).toBeVisible();
+  const [raiseState] = await fixtureSql<
+    {
+      original: bigint;
+      raise_count: bigint;
+      total: bigint;
+    }[]
+  >`
+    SELECT listing.original_sponsorship_paise AS original,
+           listing.confirmed_total_paise AS total,
+           (SELECT count(*) FROM private.financial_ledger ledger
+            WHERE ledger.listing_id = listing.id AND ledger.entry_type = 'raise') AS raise_count
+    FROM app.listings AS listing WHERE listing.id = ${listingId}
+  `;
+  expect(raiseState).toEqual({
+    original: 49_900n,
+    raise_count: 1n,
+    total: 149_900n,
+  });
 
   await page.goto(`/manage/${foreignSlug}`);
   await expect(

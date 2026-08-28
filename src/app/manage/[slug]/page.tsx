@@ -104,6 +104,16 @@ export default async function OwnerListingPage({
         </a>
       </section>
 
+      {listing.lifecycleStatus !== "removed" &&
+      listing.moderationStatus !== "suspended" ? (
+        <Link
+          className="button button-primary owner-raise-link"
+          href={`/manage/${slug}/raise` as Route}
+        >
+          Raise this listing
+        </Link>
+      ) : null}
+
       <section
         className="owner-history"
         aria-labelledby="payment-history-title"
@@ -148,8 +158,7 @@ export default async function OwnerListingPage({
       </section>
 
       <p className="owner-phase-note">
-        Raising placement and editing listing details are intentionally not part
-        of this phase.
+        Listing edits are intentionally not part of this phase.
       </p>
     </main>
   );

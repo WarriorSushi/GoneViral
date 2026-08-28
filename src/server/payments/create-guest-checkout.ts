@@ -13,6 +13,8 @@ import {
   INITIAL_SPONSORSHIP_MIN_PAISE,
   PAYMENT_ATTEMPT_EXPIRY_MINUTES,
 } from "@/domain/policy";
+import { calculateTakeoverQuote } from "@/domain/ranking";
+import { moneyPaise } from "@/domain/money";
 import { screenSubmission } from "@/domain/screening";
 import { getSqlClient } from "@/server/db/client";
 import { submissionDigest } from "@/server/security/submission-security";
@@ -66,6 +68,7 @@ function requestHash(input: JoinInput): string {
         privacyVersion: PRIVACY_VERSION,
         refundPolicyVersion: REFUND_POLICY_VERSION,
         tagline: input.tagline,
+        targetSlug: input.targetSlug,
         termsVersion: TERMS_VERSION,
       }),
     )
@@ -214,6 +217,29 @@ export async function createGuestCheckout(input: {
       LIMIT 1
     `;
     if (!category[0]) return { invalidCategory: true } as const;
+    const [target] = input.form.targetSlug
+      ? await transactionSql<{ id: string; rank: bigint; total: bigint }[]>`
+          WITH ranked AS (
+            SELECT id, slug, confirmed_total_paise AS total,
+              row_number() OVER (ORDER BY confirmed_total_paise DESC,
+                current_total_reached_at ASC, id ASC) AS rank
+            FROM app.listings WHERE lifecycle_status = 'active'
+              AND moderation_status = 'clear' AND confirmed_total_paise > 0
+          ) SELECT id, total, rank FROM ranked WHERE slug = ${input.form.targetSlug}
+        `
+      : [];
+    if (input.form.targetSlug && !target)
+      return { invalidTarget: true } as const;
+    if (target) {
+      const quote = calculateTakeoverQuote({
+        listingCurrentTotalPaise: moneyPaise(0n),
+        minimumRequiredPaise: moneyPaise(INITIAL_SPONSORSHIP_MIN_PAISE),
+        targetTotalPaise: moneyPaise(target.total),
+      });
+      if (input.form.amountPaise < quote.requiredPaymentPaise) {
+        return { targetMinimum: quote.requiredPaymentPaise } as const;
+      }
+    }
 
     const listingRows = await transactionSql<{ id: string }[]>`
       INSERT INTO app.listings (
@@ -256,6 +282,8 @@ export async function createGuestCheckout(input: {
         provider_environment, listing_id, purpose, state, amount_paise,
         currency, policy_version, minimum_required_paise_snapshot,
         listing_total_paise_snapshot, pending_owner_id,
+        target_listing_id_snapshot, target_rank_snapshot,
+        target_total_paise_snapshot,
         provider_order_request_hash, customer_phone_e164, terms_version,
         privacy_version, refund_policy_version, content_policy_version,
         checkout_expires_at
@@ -264,7 +292,8 @@ export async function createGuestCheckout(input: {
         ${input.provider.environment}, ${listingRows[0].id},
         'initial_sponsorship', 'provider_order_pending', ${input.form.amountPaise},
         'INR', ${input.form.policyVersion}, ${INITIAL_SPONSORSHIP_MIN_PAISE}, 0,
-        ${ownerRows[0]!.id}, ${intentHash}, ${input.form.phone}, ${TERMS_VERSION},
+        ${ownerRows[0]!.id}, ${target?.id ?? null}, ${target?.rank ?? null},
+        ${target?.total ?? null}, ${intentHash}, ${input.form.phone}, ${TERMS_VERSION},
         ${PRIVACY_VERSION}, ${REFUND_POLICY_VERSION}, ${CONTENT_POLICY_VERSION},
         ${checkoutExpiresAt.toISOString()}
       ) RETURNING id
@@ -288,6 +317,16 @@ export async function createGuestCheckout(input: {
   if ("invalidCategory" in transaction) {
     return { kind: "rejected", message: "Choose an available category." };
   }
+  if ("invalidTarget" in transaction)
+    return {
+      kind: "rejected",
+      message: "That leaderboard target is no longer available.",
+    };
+  if ("targetMinimum" in transaction)
+    return {
+      kind: "rejected",
+      message: `Pay at least ₹${transaction.targetMinimum / 100n} for that current takeover quote.`,
+    };
   if ("duplicate" in transaction) {
     const duplicate = transaction.duplicate;
     const eligible =

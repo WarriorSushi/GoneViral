@@ -1,6 +1,6 @@
 # GoneViral.in
 
-GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 6**: Dodo Payments guest checkout and authoritative server-to-server webhook confirmation are implemented behind replaceable provider adapters, with exact-once fulfilment on the immutable PostgreSQL ledger. Verified sponsors can claim and privately view their listings through Supabase passwordless Auth; every owner read is constrained by the active database ownership relationship. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
+GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 7**: Dodo Payments guest sponsorship and owner-only raise checkout are implemented behind replaceable provider adapters, with authoritative server-to-server webhook confirmation and exact-once fulfilment on the immutable PostgreSQL ledger. Verified sponsors can claim, privately view, and raise their listings through Supabase passwordless Auth; every owner operation is constrained by the active database ownership relationship. The board uses database projections; synthetic activity is restricted to local fixtures and the deterministic local Dodo mock.
 
 The authoritative specification pack starts at [`goneviral-specs/README_FOR_CODEX.md`](./goneviral-specs/README_FOR_CODEX.md). `00_DECISIONS_AND_PRODUCT_RULES.md` is canonical product law.
 
@@ -18,7 +18,7 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters. Phase 6 owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries and [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates.
+Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters. Owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries, [`docs/PAYMENTS_AND_RAISES.md`](./docs/PAYMENTS_AND_RAISES.md) for sponsorship and raise semantics, and [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates.
 
 ## Commands
 

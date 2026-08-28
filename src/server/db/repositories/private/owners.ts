@@ -185,3 +185,83 @@ export async function listOwnerPaymentHistory(
     entryType: row.entry_type,
   }));
 }
+
+export type OwnerRaiseAttemptStatus = Readonly<{
+  amountPaise: string;
+  estimatedRank: number | null;
+  listingName: string;
+  mainRank: number | null;
+  state: "confirmed" | "failed" | "pending";
+}>;
+
+export async function getOwnerRaiseAttemptStatus(
+  publicId: string,
+  slug: string,
+  userId: string,
+): Promise<OwnerRaiseAttemptStatus | null> {
+  if (!/^att_[A-Za-z0-9_-]{24}$/.test(publicId)) return null;
+  const rows = await getSqlClient()<
+    {
+      amount_paise: bigint;
+      estimated_rank: bigint | null;
+      listing_name: string;
+      main_rank: bigint | null;
+      state: string;
+    }[]
+  >`
+    WITH ranked AS (
+      SELECT id, row_number() OVER (
+        ORDER BY confirmed_total_paise DESC, current_total_reached_at ASC, id ASC
+      ) AS main_rank
+      FROM app.listings
+      WHERE lifecycle_status = 'active' AND moderation_status = 'clear'
+        AND confirmed_total_paise > 0
+    )
+    SELECT attempt.amount_paise, attempt.estimated_rank_snapshot AS estimated_rank,
+           listing.name AS listing_name, attempt.state, ranked.main_rank
+    FROM private.payment_attempts AS attempt
+    JOIN app.listings AS listing ON listing.id = attempt.listing_id
+    JOIN private.listing_owners AS ownership
+      ON ownership.listing_id = attempt.listing_id
+     AND ownership.user_id = ${userId} AND ownership.revoked_at IS NULL
+    LEFT JOIN ranked ON ranked.id = listing.id
+    WHERE attempt.public_id = ${publicId} AND attempt.purpose = 'raise'
+      AND listing.slug = ${slug}
+    LIMIT 1
+  `;
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    amountPaise: row.amount_paise.toString(),
+    estimatedRank:
+      row.estimated_rank === null ? null : Number(row.estimated_rank),
+    listingName: row.listing_name,
+    mainRank: row.main_rank === null ? null : Number(row.main_rank),
+    state:
+      row.state === "succeeded"
+        ? "confirmed"
+        : ["failed", "cancelled", "expired", "dropped", "quarantined"].includes(
+              row.state,
+            )
+          ? "failed"
+          : "pending",
+  };
+}
+
+export async function recordOwnerRaiseReturn(
+  publicId: string,
+  slug: string,
+  userId: string,
+) {
+  const rows = await getSqlClient()<{ public_id: string }[]>`
+    UPDATE private.payment_attempts AS attempt
+    SET state = 'customer_returned', updated_at = now()
+    FROM app.listings AS listing, private.listing_owners AS ownership
+    WHERE attempt.public_id = ${publicId} AND attempt.purpose = 'raise'
+      AND attempt.state = 'checkout_ready' AND listing.id = attempt.listing_id
+      AND listing.slug = ${slug} AND ownership.listing_id = listing.id
+      AND ownership.user_id = ${userId} AND ownership.revoked_at IS NULL
+    RETURNING attempt.public_id
+  `;
+  return Boolean(rows[0]);
+}

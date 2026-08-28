@@ -18,6 +18,8 @@ import type {
 } from "@/server/payments/dodo-webhook";
 import { MockDodoProvider } from "@/server/payments/mock-provider";
 import { processDodoWebhook } from "@/server/payments/process-dodo-webhook";
+import { createRaiseCheckout } from "@/server/payments/create-raise-checkout";
+import { claimPendingListingsForVerifiedUser } from "@/server/auth/claim-owner";
 import { MockTurnstileVerifier } from "@/server/security/turnstile";
 
 const runtimeDatabaseUrl =
@@ -47,6 +49,7 @@ function joinInput(destinationUrl: string): JoinInput {
     phone: "+919876543210",
     policyVersion: POLICY_VERSION,
     tagline: "Authoritative Dodo webhook integration verification",
+    targetSlug: null,
     turnstileToken: `local-pass-${id}`,
   };
 }
@@ -84,6 +87,79 @@ async function createAttempt(
   if (!attempt?.provider_order_id)
     throw new Error("Attempt order was not stored.");
   return { ...attempt, publicId: checkout.publicId };
+}
+
+async function createOwnedActiveListing() {
+  const initial = await createAttempt();
+  await processEvent(
+    `evt_${randomUUID()}`,
+    paymentEvent({
+      orderId: initial.provider_order_id,
+      paymentId: `pay_${randomUUID()}`,
+      publicId: initial.publicId,
+    }),
+  );
+  const [owner] = await getSqlClient()<
+    {
+      canonical_email: string;
+      slug: string;
+    }[]
+  >`
+    SELECT pending.canonical_email, listing.slug
+    FROM private.pending_listing_owners AS pending
+    JOIN app.listings AS listing ON listing.id = pending.listing_id
+    WHERE listing.id = ${initial.listing_id}
+  `;
+  if (!owner) throw new Error("Initial owner fixture missing.");
+  const signup = await fetch("http://127.0.0.1:54321/auth/v1/signup", {
+    body: JSON.stringify({
+      email: owner.canonical_email,
+      password: `phase7-${randomUUID()}`,
+    }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  const auth = (await signup.json()) as { user: { id: string } };
+  await claimPendingListingsForVerifiedUser({
+    email: owner.canonical_email,
+    userId: auth.user.id,
+  });
+  return {
+    ...initial,
+    email: owner.canonical_email,
+    slug: owner.slug,
+    userId: auth.user.id,
+  };
+}
+
+async function createRaise(
+  owner: Awaited<ReturnType<typeof createOwnedActiveListing>>,
+  amountPaise: bigint,
+) {
+  const provider = new MockDodoProvider("http://localhost:3000");
+  const result = await createRaiseCheckout({
+    email: owner.email,
+    form: {
+      amountPaise: moneyPaise(amountPaise),
+      applicationIdempotencyKey: randomUUID(),
+      phone: "+919876543210",
+      targetSlug: null,
+    },
+    listingSlug: owner.slug,
+    provider,
+    siteUrl: "http://localhost:3000",
+    userId: owner.userId,
+  });
+  if (result.kind !== "checkout")
+    throw new Error(`Raise checkout failed: ${result.kind}`);
+  const [attempt] = await getSqlClient()<
+    {
+      id: string;
+      provider_order_id: string;
+    }[]
+  >`SELECT id, provider_order_id FROM private.payment_attempts WHERE public_id = ${result.publicId}`;
+  if (!attempt?.provider_order_id) throw new Error("Raise attempt missing.");
+  return { ...attempt, amountPaise, publicId: result.publicId };
 }
 
 function paymentEvent(input: {
@@ -149,8 +225,9 @@ beforeAll(() => {
 });
 
 afterAll(async () => {
-  await closeDatabase();
   clearFixtures();
+  await getSqlClient()`DELETE FROM auth.users WHERE email LIKE 'phase5-%@example.com'`;
+  await closeDatabase();
 });
 
 describe("Phase 5 locked Dodo webhook fulfilment", () => {
@@ -435,5 +512,136 @@ describe("Phase 5 locked Dodo webhook fulfilment", () => {
         total: 49_900n,
       });
     }
+  });
+
+  it("serializes two distinct valid raises without changing the original", async () => {
+    const owner = await createOwnedActiveListing();
+    const [first, second] = await Promise.all([
+      createRaise(owner, 100_000n),
+      createRaise(owner, 150_000n),
+    ]);
+    const results = await Promise.all([
+      processEvent(
+        `evt_${randomUUID()}`,
+        paymentEvent({
+          amountPaise: first.amountPaise,
+          orderId: first.provider_order_id,
+          paymentId: `pay_${randomUUID()}`,
+          publicId: first.publicId,
+        }),
+      ),
+      processEvent(
+        `evt_${randomUUID()}`,
+        paymentEvent({
+          amountPaise: second.amountPaise,
+          orderId: second.provider_order_id,
+          paymentId: `pay_${randomUUID()}`,
+          publicId: second.publicId,
+        }),
+      ),
+    ]);
+    expect(results.every((result) => result.kind === "processed")).toBe(true);
+    const [row] = await getSqlClient()<
+      {
+        daily: bigint;
+        ledger_count: bigint;
+        original: bigint;
+        total: bigint;
+      }[]
+    >`
+      SELECT listing.confirmed_total_paise AS total,
+             listing.original_sponsorship_paise AS original,
+             (SELECT count(*) FROM private.financial_ledger ledger WHERE ledger.listing_id = listing.id) AS ledger_count,
+             (SELECT sum(net_amount_paise)::bigint FROM app.listing_daily_totals daily WHERE daily.listing_id = listing.id) AS daily
+      FROM app.listings AS listing WHERE listing.id = ${owner.listing_id}
+    `;
+    expect(row).toEqual({
+      daily: 299_900n,
+      ledger_count: 3n,
+      original: 49_900n,
+      total: 299_900n,
+    });
+  });
+
+  it("rejects below-minimum raises at creation and fulfilment", async () => {
+    const owner = await createOwnedActiveListing();
+    const provider = new MockDodoProvider("http://localhost:3000");
+    const rejected = await createRaiseCheckout({
+      email: owner.email,
+      form: {
+        amountPaise: moneyPaise(99_900n),
+        applicationIdempotencyKey: randomUUID(),
+        phone: "+919876543210",
+        targetSlug: null,
+      },
+      listingSlug: owner.slug,
+      provider,
+      siteUrl: "http://localhost:3000",
+      userId: owner.userId,
+    });
+    expect(rejected).toMatchObject({ kind: "rejected" });
+
+    const raise = await createRaise(owner, 100_000n);
+    await getSqlClient().begin(async (transaction) => {
+      await transaction`ALTER TABLE private.payment_attempts DISABLE TRIGGER payment_attempts_intent_immutable`;
+      await transaction`UPDATE private.payment_attempts SET minimum_required_paise_snapshot = 99_900 WHERE id = ${raise.id}`;
+      await transaction`ALTER TABLE private.payment_attempts ENABLE TRIGGER payment_attempts_intent_immutable`;
+    });
+    const result = await processEvent(
+      `evt_${randomUUID()}`,
+      paymentEvent({
+        amountPaise: 100_000n,
+        orderId: raise.provider_order_id,
+        paymentId: `pay_${randomUUID()}`,
+        publicId: raise.publicId,
+      }),
+    );
+    expect(result).toEqual({
+      kind: "quarantined",
+      reason: "raise_fulfilment_invalid",
+    });
+  });
+
+  it("rejects raises from non-owners and for listings hidden before checkout", async () => {
+    const provider = new MockDodoProvider("http://localhost:3000");
+    const inputFor = (
+      owner: Awaited<ReturnType<typeof createOwnedActiveListing>>,
+      userId: string,
+    ) =>
+      createRaiseCheckout({
+        email: owner.email,
+        form: {
+          amountPaise: moneyPaise(100_000n),
+          applicationIdempotencyKey: randomUUID(),
+          phone: "+919876543210",
+          targetSlug: null,
+        },
+        listingSlug: owner.slug,
+        provider,
+        siteUrl: "http://localhost:3000",
+        userId,
+      });
+
+    const owner = await createOwnedActiveListing();
+    await expect(inputFor(owner, randomUUID())).resolves.toMatchObject({
+      kind: "rejected",
+    });
+
+    await getSqlClient()`
+      UPDATE app.listings SET moderation_status = 'suspended'
+      WHERE id = ${owner.listing_id}
+    `;
+    await expect(inputFor(owner, owner.userId)).resolves.toMatchObject({
+      kind: "rejected",
+    });
+
+    const removedOwner = await createOwnedActiveListing();
+    await getSqlClient()`
+      UPDATE app.listings SET lifecycle_status = 'removed', removed_at = now()
+      WHERE id = ${removedOwner.listing_id}
+    `;
+    await expect(
+      inputFor(removedOwner, removedOwner.userId),
+    ).resolves.toMatchObject({ kind: "rejected" });
   });
 });
