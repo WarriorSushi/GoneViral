@@ -1,5 +1,8 @@
 import type { Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
+
+import goneViralLogo from "@/app/GoneViral.in logo.png";
 
 const menuLinks = [
   { href: "/", label: "Main board" },
@@ -14,7 +17,17 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header-inner">
         <Link className="wordmark" href="/" aria-label="GoneViral.in home">
-          Gone<span>Viral</span>.in
+          <Image
+            alt=""
+            className="wordmark-logo"
+            height={34}
+            priority
+            src={goneViralLogo}
+            width={34}
+          />
+          <span className="wordmark-text">
+            Gone<span>Viral</span>.in
+          </span>
         </Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
           <Link href="/how-it-works">How it works</Link>

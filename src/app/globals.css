@@ -369,14 +369,23 @@ textarea:focus-visible {
 }
 
 .wordmark {
+  display: inline-flex;
   width: fit-content;
+  gap: 9px;
+  align-items: center;
   text-decoration: none;
   font-size: 1.08rem;
   font-weight: 780;
   letter-spacing: -0.04em;
 }
 
-.wordmark span {
+.wordmark-logo {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+}
+
+.wordmark-text > span {
   color: var(--signal-hover);
 }
 
