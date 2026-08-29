@@ -39,6 +39,7 @@ export default async function PendingPage({
           <strong>{attempt.listingName}</strong> ·{" "}
           {formatInr(moneyPaise(attempt.amountPaise))}
         </p>
+        <p className="support-reference">Support reference: {publicId}</p>
         {attempt.state === "pending" ? (
           <PendingPaymentPoller publicId={publicId} />
         ) : null}

@@ -10,6 +10,7 @@ import {
   moderateListing,
   resolveReport,
   reviewChangeRequest,
+  resumeEmailOutbox,
   updateOperationalFlag,
   type AdminOperationResult,
   type AdminRequestContext,
@@ -124,6 +125,15 @@ export async function resendManagementAdminAction(formData: FormData) {
   const result = await enqueueSafeManagementEmail({
     context: await requireContext(formData),
     listingPublicId: text(formData, "listingPublicId"),
+    reason: text(formData, "reason"),
+  });
+  refresh(result);
+}
+
+export async function resumeEmailAdminAction(formData: FormData) {
+  const result = await resumeEmailOutbox({
+    context: await requireContext(formData),
+    emailOutboxId: text(formData, "emailOutboxId"),
     reason: text(formData, "reason"),
   });
   refresh(result);

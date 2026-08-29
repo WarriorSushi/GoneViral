@@ -29,6 +29,25 @@ describe("server environment schema", () => {
     ).toMatchObject({ DODO_PAYMENTS_ENVIRONMENT: "test_mode" });
   });
 
+  it("requires the Resend key and verified sender together in delivery mode", () => {
+    expect(() =>
+      serverEnvSchema.parse({ EMAIL_DELIVERY_MODE: "resend" }),
+    ).toThrow(/Resend email delivery/);
+    expect(
+      serverEnvSchema.parse({
+        EMAIL_DELIVERY_MODE: "resend",
+        RESEND_API_KEY: "re_test_key",
+        RESEND_FROM_EMAIL: "updates@goneviral.in",
+      }),
+    ).toMatchObject({ EMAIL_DELIVERY_MODE: "resend" });
+    expect(
+      serverEnvSchema.parse({
+        RESEND_FROM_EMAIL: "",
+        RESEND_REPLY_TO: "",
+      }),
+    ).toMatchObject({ EMAIL_DELIVERY_MODE: "mock" });
+  });
+
   it("does not accept a live Dodo environment in Phase 4", () => {
     expect(() =>
       serverEnvSchema.parse({ DODO_PAYMENTS_ENVIRONMENT: "live_mode" }),

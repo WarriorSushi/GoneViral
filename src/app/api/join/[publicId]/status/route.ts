@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getPublicAttemptStatus } from "@/server/db/repositories/private/guest-checkout";
+import { enqueueVerificationDelayIfDue } from "@/server/email/enqueue-verification-delay";
 import { consumeStatusRateLimit } from "@/server/security/status-rate-limit";
 
 export async function GET(
@@ -25,6 +26,9 @@ export async function GET(
     );
   }
   const status = await getPublicAttemptStatus(publicId);
+  if (status?.state === "pending") {
+    await enqueueVerificationDelayIfDue(publicId).catch(() => false);
+  }
   return NextResponse.json(
     status
       ? {

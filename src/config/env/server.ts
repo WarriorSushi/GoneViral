@@ -11,6 +11,11 @@ const optionalDatabaseUrl = z.preprocess(
   z.url({ protocol: /^postgres(?:ql)?$/ }).optional(),
 );
 
+const optionalEmail = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  z.email().optional(),
+);
+
 export const serverEnvSchema = z
   .object({
     NODE_ENV: z
@@ -25,6 +30,10 @@ export const serverEnvSchema = z
     DODO_PAYMENTS_WEBHOOK_KEY: optionalSecret,
     DODO_PAYMENTS_ENVIRONMENT: z.enum(["mock", "test_mode"]).default("mock"),
     RESEND_API_KEY: optionalSecret,
+    RESEND_FROM_EMAIL: optionalEmail,
+    RESEND_REPLY_TO: optionalEmail,
+    RESEND_WEBHOOK_SECRET: optionalSecret,
+    EMAIL_DELIVERY_MODE: z.enum(["mock", "resend"]).default("mock"),
     TURNSTILE_SECRET_KEY: optionalSecret,
     TURNSTILE_MODE: z.enum(["mock", "cloudflare"]).default("mock"),
     SUBMISSION_HMAC_SECRET: optionalSecret,
@@ -73,6 +82,18 @@ export const serverEnvSchema = z
         code: "custom",
         message: "Cloudflare Turnstile mode requires TURNSTILE_SECRET_KEY.",
         path: ["TURNSTILE_SECRET_KEY"],
+      });
+    }
+
+    if (
+      environment.EMAIL_DELIVERY_MODE === "resend" &&
+      (!environment.RESEND_API_KEY || !environment.RESEND_FROM_EMAIL)
+    ) {
+      context.addIssue({
+        code: "custom",
+        message:
+          "Resend email delivery requires RESEND_API_KEY and RESEND_FROM_EMAIL.",
+        path: ["RESEND_API_KEY"],
       });
     }
   });

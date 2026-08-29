@@ -7,6 +7,7 @@ import type postgres from "postgres";
 import { canonicalizeDestination } from "@/domain/destination";
 import { normalizeListingName } from "@/domain/listing-edit";
 import { getSqlClient } from "@/server/db/client";
+import { EMAIL_TEMPLATE_VERSION } from "@/server/email/templates";
 import { encryptPrivateText } from "@/server/security/private-data";
 import { submissionDigest } from "@/server/security/submission-security";
 
@@ -33,6 +34,44 @@ function reject(message: string): AdminOperationResult {
 }
 
 class AdminRejectedError extends Error {}
+
+async function enqueueListingOwnerNotification(
+  transaction: Transaction,
+  input: {
+    idempotencyKey: string;
+    kind: "change_request_result" | "moderation_result";
+    listingId: string;
+    payload: Record<string, unknown>;
+  },
+) {
+  const [owner] = await transaction<
+    { canonical_email: string; email_hash: string }[]
+  >`
+    SELECT lower(auth_user.email) AS canonical_email, ''::text AS email_hash
+    FROM private.listing_owners AS ownership
+    JOIN auth.users AS auth_user ON auth_user.id = ownership.user_id
+    WHERE ownership.listing_id = ${input.listingId}
+      AND ownership.revoked_at IS NULL AND auth_user.email IS NOT NULL
+    UNION ALL
+    SELECT pending.canonical_email, pending.email_hash
+    FROM private.pending_listing_owners AS pending
+    WHERE pending.listing_id = ${input.listingId}
+    LIMIT 1
+  `;
+  if (!owner) return;
+  await transaction`
+    INSERT INTO private.email_outbox (
+      kind, recipient_encrypted, recipient_hash, template_version, payload,
+      idempotency_key, state, next_attempt_at
+    ) VALUES (
+      ${input.kind}, ${encryptPrivateText(owner.canonical_email)},
+      ${owner.email_hash || submissionDigest(owner.canonical_email)},
+      ${EMAIL_TEMPLATE_VERSION},
+      (${JSON.stringify(input.payload)}::jsonb #>> '{}')::jsonb,
+      ${input.idempotencyKey}, 'pending', transaction_timestamp()
+    ) ON CONFLICT (idempotency_key) DO NOTHING
+  `;
+}
 
 function validateContext(
   context: AdminRequestContext,
@@ -95,10 +134,11 @@ export async function moderateListing(input: {
         id: string;
         lifecycle_status: string;
         moderation_status: string;
+        name: string;
         public_id: string;
       }[]
     >`
-      SELECT id, public_id, lifecycle_status, moderation_status,
+      SELECT id, public_id, name, lifecycle_status, moderation_status,
              confirmed_total_paise
       FROM app.listings WHERE public_id = ${input.listingPublicId}
       FOR UPDATE
@@ -160,6 +200,26 @@ export async function moderateListing(input: {
         ${input.reason.trim()}, ${input.context.session.userId}
       )
     `;
+    await enqueueListingOwnerNotification(transaction, {
+      idempotencyKey: `moderation-result:${inserted[0]!.id}`,
+      kind: "moderation_result",
+      listingId: listing.id,
+      payload: {
+        listingName: listing.name,
+        listingPublicId: listing.public_id,
+        outcome:
+          input.action === "remove"
+            ? "removed"
+            : input.action === "suspend"
+              ? "suspended"
+              : input.action === "unsuspend"
+                ? "unsuspended"
+                : "clear",
+        ...(input.publicReason
+          ? { publicReason: input.publicReason.trim().slice(0, 500) }
+          : {}),
+      },
+    });
     return {
       kind: "applied",
       listingPublicIds: [listing.public_id],
@@ -230,12 +290,13 @@ export async function reviewChangeRequest(input: {
           old_value: Record<string, unknown>;
           proposed_value: Record<string, unknown>;
           public_id: string;
+          listing_name: string;
           state: string;
         }[]
       >`
       SELECT request.id, request.listing_id, request.change_type,
              request.old_value, request.proposed_value, request.state,
-             listing.public_id
+             listing.public_id, listing.name AS listing_name
       FROM private.listing_change_requests AS request
       JOIN app.listings AS listing ON listing.id = request.listing_id
       WHERE request.id = ${input.changeRequestId}
@@ -361,6 +422,17 @@ export async function reviewChangeRequest(input: {
           reviewed_at = transaction_timestamp()
       WHERE id = ${request.id}
     `;
+      await enqueueListingOwnerNotification(transaction, {
+        idempotencyKey: `change-request-result:${request.id}:${input.decision}`,
+        kind: "change_request_result",
+        listingId: request.listing_id,
+        payload: {
+          changeType: request.change_type,
+          listingName: request.listing_name,
+          listingPublicId: request.public_id,
+          outcome: input.decision,
+        },
+      });
       return {
         kind: "applied",
         listingPublicIds: affectedPublicIds,
@@ -470,12 +542,62 @@ export async function enqueueSafeManagementEmail(input: {
         'management_link_requested',
         ${encryptPrivateText(owner.canonical_email)},
         ${owner.email_hash || submissionDigest(owner.canonical_email)},
-        '2026-08-29-v1',
+        ${EMAIL_TEMPLATE_VERSION},
         (${JSON.stringify({ listingName: owner.name, listingPublicId: owner.public_id })}::jsonb #>> '{}')::jsonb,
         ${`admin-management:${input.context.requestId}:${owner.listing_id}`},
         'pending', transaction_timestamp()
       ) ON CONFLICT (idempotency_key) DO NOTHING
     `;
     return { kind: "applied", listingPublicIds: [owner.public_id] } as const;
+  });
+}
+
+export async function resumeEmailOutbox(input: {
+  context: AdminRequestContext;
+  emailOutboxId: string;
+  reason: string;
+}): Promise<AdminOperationResult> {
+  validateContext(input.context, "safe_email:resend", input.reason);
+  return getSqlClient().begin(async (transaction) => {
+    const [email] = await transaction<
+      {
+        attempt_count: number;
+        id: string;
+        kind: string;
+        provider_message_id: string | null;
+        state: string;
+      }[]
+    >`
+      SELECT id, kind, state, attempt_count, provider_message_id
+      FROM private.email_outbox WHERE id = ${input.emailOutboxId}
+      FOR UPDATE
+    `;
+    if (!email) return reject("Email outbox item not found.");
+    if (!new Set(["dead_letter", "failed_retryable"]).has(email.state)) {
+      return reject("Only failed unsent email can be resumed.");
+    }
+    if (email.provider_message_id) {
+      return reject(
+        "Provider-accepted email cannot be resent from this control.",
+      );
+    }
+    const inserted = await insertAudit(transaction, {
+      action: "email_outbox_resumed",
+      after: { attemptCount: 0, state: "pending" },
+      before: { attemptCount: email.attempt_count, state: email.state },
+      context: input.context,
+      reason: input.reason,
+      targetId: email.id,
+      targetType: "email_outbox",
+    });
+    if (inserted.length === 0) return { kind: "duplicate" } as const;
+    await transaction`
+      UPDATE private.email_outbox
+      SET state = 'pending', attempt_count = 0,
+          next_attempt_at = transaction_timestamp(), last_error_code = NULL,
+          delivery_state = 'queued', delivery_updated_at = NULL
+      WHERE id = ${email.id}
+    `;
+    return { kind: "applied" } as const;
   });
 }

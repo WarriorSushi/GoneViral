@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto";
 import type postgres from "postgres";
 
 import { encryptPrivateText } from "@/server/security/private-data";
+import { EMAIL_TEMPLATE_VERSION } from "@/server/email/templates";
 import { submissionDigest } from "@/server/security/submission-security";
 
 import type { NormalizedProviderAdjustment } from "./dodo-webhook";
@@ -592,7 +593,7 @@ async function enqueueOwnerAdjustmentEmail(
     ) VALUES (
       'sponsorship_adjusted', ${encryptPrivateText(owner.canonical_email)},
       ${owner.email_hash || submissionDigest(owner.canonical_email)},
-      '2026-08-29-v1',
+      ${EMAIL_TEMPLATE_VERSION},
       (${JSON.stringify({
         adjustmentId: input.adjustmentId,
         amountDeltaPaise: input.amountDeltaPaise.toString(),
@@ -600,7 +601,7 @@ async function enqueueOwnerAdjustmentEmail(
         listingName: input.listingName,
         listingPublicId: input.listingPublicId,
       })}::jsonb #>> '{}')::jsonb,
-      ${`sponsorship-adjusted:${input.ledgerId}:2026-08-29-v1`},
+      ${`sponsorship-adjusted:${input.ledgerId}:${EMAIL_TEMPLATE_VERSION}`},
       'pending', transaction_timestamp()
     ) ON CONFLICT (idempotency_key) DO NOTHING
   `;

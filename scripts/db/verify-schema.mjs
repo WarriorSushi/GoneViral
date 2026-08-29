@@ -14,6 +14,7 @@ const expectedTables = [
   "private.admin_users",
   "private.click_dedupe",
   "private.email_outbox",
+  "private.email_provider_events",
   "private.financial_ledger",
   "private.listing_change_requests",
   "private.listing_owners",
@@ -99,11 +100,12 @@ try {
       'listings_original_sponsorship_immutable',
       'payment_attempts_intent_immutable',
       'listing_assets_ready_payload_immutable',
-      'listings_selected_logo_ready'
+      'listings_selected_logo_ready',
+      'email_provider_events_append_only'
     )
     order by trigger_name
   `;
-  assert.equal(protections.length, 9);
+  assert.equal(protections.length, 10);
 
   const unsafeFunctions = await sql`
     select p.oid::regprocedure::text as function_name
@@ -160,7 +162,7 @@ try {
   assert.equal(publicPrivileges.length, 0);
 
   console.log(
-    `Schema verification passed: ${expectedTables.length} private/domain tables, six canonical categories, nine immutable/sanitized-state triggers, no SECURITY DEFINER functions, and no PUBLIC/browser-role access.`,
+    `Schema verification passed: ${expectedTables.length} private/domain tables, six canonical categories, ten immutable/sanitized-state triggers, no SECURITY DEFINER functions, and no PUBLIC/browser-role access.`,
   );
 } finally {
   await sql.end({ timeout: 5 });

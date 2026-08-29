@@ -14,6 +14,7 @@ import {
   moderateAdminAction,
   prepareRefundAdminAction,
   resendManagementAdminAction,
+  resumeEmailAdminAction,
   resolveReportAdminAction,
   reviewChangeAdminAction,
   updateFlagAdminAction,
@@ -245,7 +246,30 @@ export default async function AdminPage() {
               <p>
                 {String(item.state)} · attempt {String(item.attempt_count)}
               </p>
+              <p>Delivery: {String(item.delivery_state)}</p>
+              <code>
+                Provider reference:{" "}
+                {String(item.provider_message_id ?? "not accepted")}
+              </code>
               <code>{String(item.last_error_code ?? "no error code")}</code>
+              {hasAdminPermission(session.role, "safe_email:resend") &&
+              ["dead_letter", "failed_retryable"].includes(
+                String(item.state),
+              ) &&
+              !item.provider_message_id ? (
+                <form
+                  action={resumeEmailAdminAction}
+                  className="admin-action-form"
+                >
+                  <input
+                    type="hidden"
+                    name="emailOutboxId"
+                    value={String(item.id)}
+                  />
+                  <ReasonFields prefix="email-resume" />
+                  <button type="submit">Resume unsent email</button>
+                </form>
+              ) : null}
             </article>
           ))}
         </div>

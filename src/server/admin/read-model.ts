@@ -59,9 +59,11 @@ export async function getAdminDashboard(role: AdminRole) {
       `
     : [];
   const emails = await sql`
-        SELECT id, kind, state, attempt_count, last_error_code, created_at
+        SELECT id, kind, state, attempt_count, last_error_code, created_at,
+               provider_message_id, delivery_state, delivery_updated_at
         FROM private.email_outbox
         WHERE state IN ('failed_retryable', 'dead_letter')
+           OR delivery_state IN ('delayed', 'bounced', 'complained', 'failed', 'suppressed')
         ORDER BY created_at DESC LIMIT 50
       `;
   const flags = await sql`

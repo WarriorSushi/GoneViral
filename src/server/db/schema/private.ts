@@ -863,6 +863,11 @@ export const emailOutbox = privateSchema.table(
     }).notNull(),
     providerMessageId: text("provider_message_id"),
     lastErrorCode: text("last_error_code"),
+    deliveryState: text("delivery_state").default("queued").notNull(),
+    deliveryUpdatedAt: timestamp("delivery_updated_at", {
+      withTimezone: true,
+      mode: "date",
+    }),
     createdAt: createdAt(),
     sentAt: timestamp("sent_at", {
       withTimezone: true,
@@ -879,7 +884,46 @@ export const emailOutbox = privateSchema.table(
       "email_outbox_attempt_count_nonnegative",
       sql`${table.attemptCount} >= 0`,
     ),
+    check(
+      "email_outbox_delivery_state_valid",
+      sql`${table.deliveryState} in ('queued', 'accepted', 'sent', 'delivered', 'delayed', 'bounced', 'complained', 'failed', 'suppressed')`,
+    ),
+    uniqueIndex("email_outbox_provider_message_unique")
+      .on(table.providerMessageId)
+      .where(sql`${table.providerMessageId} is not null`),
     index("email_outbox_delivery_idx").on(table.state, table.nextAttemptAt),
+  ],
+);
+
+export const emailProviderEvents = privateSchema.table(
+  "email_provider_events",
+  {
+    eventId: text("event_id").primaryKey(),
+    outboxId: uuid("outbox_id").references(() => emailOutbox.id, {
+      onDelete: "restrict",
+    }),
+    providerMessageId: text("provider_message_id").notNull(),
+    eventType: text("event_type").notNull(),
+    occurredAt: timestamp("occurred_at", {
+      withTimezone: true,
+      mode: "date",
+    }).notNull(),
+    receivedAt: timestamp("received_at", {
+      withTimezone: true,
+      mode: "date",
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    check(
+      "email_provider_events_type_valid",
+      sql`${table.eventType} in ('email.sent', 'email.delivered', 'email.delivery_delayed', 'email.bounced', 'email.complained', 'email.failed', 'email.suppressed')`,
+    ),
+    index("email_provider_events_message_occurred_idx").on(
+      table.providerMessageId,
+      table.occurredAt.desc(),
+    ),
   ],
 );
 

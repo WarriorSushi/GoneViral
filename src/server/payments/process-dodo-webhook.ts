@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto";
 import type postgres from "postgres";
 
 import { getSqlClient } from "@/server/db/client";
+import { EMAIL_TEMPLATE_VERSION } from "@/server/email/templates";
 import { encryptPrivateText } from "@/server/security/private-data";
 import { submissionDigest } from "@/server/security/submission-security";
 import { moneyPaise } from "@/domain/money";
@@ -531,14 +532,14 @@ export async function processDodoWebhook(input: {
         payload, idempotency_key, state, next_attempt_at
       ) VALUES (
         ${isInitial ? "sponsorship_confirmed_claim" : "raise_confirmed"}, ${encryptPrivateText(owner.canonical_email)},
-        ${owner.email_hash || submissionDigest(owner.canonical_email)}, '2026-08-29-v1',
+        ${owner.email_hash || submissionDigest(owner.canonical_email)}, ${EMAIL_TEMPLATE_VERSION},
         (${JSON.stringify({
           amountPaise: payment.amountPaise.toString(),
           attemptPublicId: attempt.public_id,
           listingName: listing.name,
           listingPublicId: listing.public_id,
         })}::jsonb #>> '{}')::jsonb,
-        ${`${isInitial ? "sponsorship-confirmed" : "raise-confirmed"}:${attempt.id}:2026-08-29-v1`},
+        ${`${isInitial ? "sponsorship-confirmed" : "raise-confirmed"}:${attempt.id}:${EMAIL_TEMPLATE_VERSION}`},
         'pending', transaction_timestamp()
       ) ON CONFLICT (idempotency_key) DO NOTHING
     `;

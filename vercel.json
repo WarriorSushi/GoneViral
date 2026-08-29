@@ -12,6 +12,10 @@
     {
       "path": "/api/cron/cleanup-retention",
       "schedule": "43 1 * * *"
+    },
+    {
+      "path": "/api/cron/drain-email-outbox",
+      "schedule": "* * * * *"
     }
   ]
 }

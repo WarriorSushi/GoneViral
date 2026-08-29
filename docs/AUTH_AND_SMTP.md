@@ -53,3 +53,9 @@ Before enabling production access:
 
 Local Auth and database tests do not prove SMTP delivery. Production credentials,
 DNS verification, inbox delivery, and staging results must never be fabricated.
+
+Supabase Auth SMTP is distinct from application notifications delivered through
+the Resend API. Application messages only direct an owner to the generic manage
+request page; Supabase creates the one-time link. Delivery worker, retry,
+webhook, privacy, and operator procedures are documented in
+[`TRANSACTIONAL_EMAIL_OPERATIONS.md`](./TRANSACTIONAL_EMAIL_OPERATIONS.md).

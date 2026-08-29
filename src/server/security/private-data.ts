@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createCipheriv, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 import { readServerEnv } from "@/config/env/server";
 
@@ -38,4 +38,30 @@ export function encryptPrivateText(plaintext: string): string {
     cipher.getAuthTag().toString("base64url"),
     ciphertext.toString("base64url"),
   ].join(".");
+}
+
+export function decryptPrivateText(encoded: string): string {
+  const [version, nonceValue, tagValue, ciphertextValue, ...extra] =
+    encoded.split(".");
+  if (
+    version !== "v1" ||
+    !nonceValue ||
+    !tagValue ||
+    !ciphertextValue ||
+    extra.length > 0
+  ) {
+    throw new Error("private_text_format_invalid");
+  }
+  const nonce = Buffer.from(nonceValue, "base64url");
+  const tag = Buffer.from(tagValue, "base64url");
+  const ciphertext = Buffer.from(ciphertextValue, "base64url");
+  if (nonce.length !== 12 || tag.length !== 16 || ciphertext.length === 0) {
+    throw new Error("private_text_format_invalid");
+  }
+  const decipher = createDecipheriv("aes-256-gcm", encryptionKey(), nonce);
+  decipher.setAuthTag(tag);
+  return Buffer.concat([
+    decipher.update(ciphertext),
+    decipher.final(),
+  ]).toString("utf8");
 }
