@@ -34,9 +34,25 @@ export const publicEnvSchema = z
 
 export type PublicEnv = z.infer<typeof publicEnvSchema>;
 
+export function resolvePublicSiteUrl(
+  configuredSiteUrl: string | undefined,
+  vercelDeploymentHost: string | undefined,
+): string | undefined {
+  const configured = configuredSiteUrl?.trim();
+  if (configured) return configured;
+
+  const vercelHost = vercelDeploymentHost?.trim();
+  if (!vercelHost) return undefined;
+
+  return `https://${vercelHost}`;
+}
+
 export function readPublicEnv(): PublicEnv {
   return publicEnvSchema.parse({
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_SITE_URL: resolvePublicSiteUrl(
+      process.env.NEXT_PUBLIC_SITE_URL,
+      process.env.NEXT_PUBLIC_VERCEL_URL,
+    ),
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,

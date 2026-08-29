@@ -10,6 +10,7 @@ import { encryptPrivateText } from "@/server/security/private-data";
 import { submissionDigest } from "@/server/security/submission-security";
 import { moneyPaise } from "@/domain/money";
 import { calculateMinimumRaise } from "@/domain/ranking";
+import type { PaymentEnvironment } from "@/server/payments/provider";
 
 import type { NormalizedDodoEvent } from "./dodo-webhook";
 import {
@@ -84,7 +85,7 @@ export async function processDodoWebhook(input: {
   event: NormalizedDodoEvent;
   eventId: string;
   expectedBusinessId: string;
-  providerEnvironment: "mock" | "test_mode";
+  providerEnvironment: PaymentEnvironment;
 }): Promise<DodoWebhookResult> {
   const sql = getSqlClient();
 

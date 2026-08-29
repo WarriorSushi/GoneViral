@@ -11,8 +11,16 @@ import type {
   CheckoutCreation,
   CheckoutLookup,
   CheckoutRequest,
+  PaymentEnvironment,
   PaymentProvider,
 } from "./provider";
+
+type DodoEnvironment = Exclude<PaymentEnvironment, "mock">;
+
+const dodoApiOrigins: Record<DodoEnvironment, string> = {
+  live_mode: "https://live.dodopayments.com",
+  test_mode: "https://test.dodopayments.com",
+};
 
 const dodoResponseSchema = z.object({
   checkout_url: z.url({ protocol: /^https$/ }),
@@ -25,12 +33,12 @@ const dodoRetrieveSchema = z.object({
 });
 
 export class DodoPaymentsProvider implements PaymentProvider {
-  readonly environment = "test_mode" as const;
   readonly name = "dodo" as const;
 
   constructor(
     private readonly apiKey: string,
     private readonly productId: string,
+    readonly environment: DodoEnvironment = "test_mode",
   ) {}
 
   async createCheckout(request: CheckoutRequest): Promise<CheckoutCreation> {
@@ -45,40 +53,43 @@ export class DodoPaymentsProvider implements PaymentProvider {
       // Dodo does not currently document idempotent checkout creation. Do not
       // automatically retry an ambiguous POST; doing so could create two
       // provider sessions for one application attempt.
-      const response = await fetch("https://test.dodopayments.com/checkouts", {
-        body: JSON.stringify({
-          billing_currency: "INR",
-          customer: {
-            email: request.customer.email,
-            name: request.customer.name,
-            phone_number: request.customer.phone,
-          },
-          feature_flags: {
-            allow_customer_editing_email: false,
-            allow_discount_code: false,
-            allow_phone_number_collection: true,
-            require_phone_number: true,
-          },
-          metadata: {
-            attempt_public_id: request.publicAttemptId,
-            application_request_id: request.requestId,
-          },
-          product_cart: [
-            {
-              amount: Number(request.amountPaise),
-              product_id: this.productId,
-              quantity: 1,
+      const response = await fetch(
+        `${dodoApiOrigins[this.environment]}/checkouts`,
+        {
+          body: JSON.stringify({
+            billing_currency: "INR",
+            customer: {
+              email: request.customer.email,
+              name: request.customer.name,
+              phone_number: request.customer.phone,
             },
-          ],
-          return_url: request.returnUrl,
-        }),
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          "Content-Type": "application/json",
+            feature_flags: {
+              allow_customer_editing_email: false,
+              allow_discount_code: false,
+              allow_phone_number_collection: true,
+              require_phone_number: true,
+            },
+            metadata: {
+              attempt_public_id: request.publicAttemptId,
+              application_request_id: request.requestId,
+            },
+            product_cart: [
+              {
+                amount: Number(request.amountPaise),
+                product_id: this.productId,
+                quantity: 1,
+              },
+            ],
+            return_url: request.returnUrl,
+          }),
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          signal: AbortSignal.timeout(10_000),
         },
-        method: "POST",
-        signal: AbortSignal.timeout(10_000),
-      });
+      );
 
       if (!response.ok) {
         return response.status >= 500
@@ -120,7 +131,7 @@ export class DodoPaymentsProvider implements PaymentProvider {
     }
     try {
       const response = await fetch(
-        `https://test.dodopayments.com/checkouts/${encodeURIComponent(sessionId)}`,
+        `${dodoApiOrigins[this.environment]}/checkouts/${encodeURIComponent(sessionId)}`,
         {
           headers: { Authorization: `Bearer ${this.apiKey}` },
           method: "GET",

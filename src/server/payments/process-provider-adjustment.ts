@@ -9,6 +9,7 @@ import { EMAIL_TEMPLATE_VERSION } from "@/server/email/templates";
 import { submissionDigest } from "@/server/security/submission-security";
 
 import type { NormalizedProviderAdjustment } from "./dodo-webhook";
+import type { PaymentEnvironment } from "./provider";
 
 type Transaction = postgres.TransactionSql<{ bigint: bigint }>;
 
@@ -60,7 +61,7 @@ export async function processProviderAdjustment(input: {
   adjustment: NormalizedProviderAdjustment;
   eventId: string;
   eventRowId: string;
-  providerEnvironment: "mock" | "test_mode";
+  providerEnvironment: PaymentEnvironment;
   transaction: Transaction;
 }): Promise<AdjustmentResult> {
   const { adjustment, transaction } = input;
@@ -152,7 +153,7 @@ export async function processProviderAdjustment(input: {
 
 export async function applyPendingAdjustmentsForPayment(input: {
   paymentId: string;
-  providerEnvironment: "mock" | "test_mode";
+  providerEnvironment: PaymentEnvironment;
   transaction: Transaction;
 }) {
   const rows = await input.transaction<{ provider_adjustment_id: string }[]>`
@@ -182,7 +183,7 @@ async function applyLockedAdjustment(input: {
   adjustmentId: string;
   eventId: string;
   eventRowId: string | null;
-  providerEnvironment: "mock" | "test_mode";
+  providerEnvironment: PaymentEnvironment;
   transaction: Transaction;
 }): Promise<AdjustmentResult> {
   const [adjustment] = await lockAdjustment(

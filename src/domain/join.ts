@@ -7,11 +7,19 @@ import {
   LISTING_TAGLINE_MAX_GRAPHEMES,
   POLICY_VERSION,
 } from "./policy";
+import {
+  CONTENT_POLICY_VERSION,
+  PRIVACY_VERSION,
+  REFUND_POLICY_VERSION,
+  TERMS_VERSION,
+} from "../config/legal";
 
-export const TERMS_VERSION = "2026-08-28" as const;
-export const PRIVACY_VERSION = "2026-08-28" as const;
-export const REFUND_POLICY_VERSION = "2026-08-28" as const;
-export const CONTENT_POLICY_VERSION = "2026-08-28" as const;
+export {
+  CONTENT_POLICY_VERSION,
+  PRIVACY_VERSION,
+  REFUND_POLICY_VERSION,
+  TERMS_VERSION,
+};
 
 const categorySlugs = new Set([
   "people-creators",

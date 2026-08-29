@@ -1722,13 +1722,13 @@ textarea:focus-visible {
   font-size: 1.1rem;
 }
 
-.legal-warning {
+.legal-policy-status {
   margin: 26px 0;
   padding: 14px 0;
   border-block: 1px solid var(--line);
 }
 
-.legal-warning p {
+.legal-policy-status p {
   margin: 4px 0 0;
 }
 
@@ -1770,9 +1770,20 @@ textarea:focus-visible {
   letter-spacing: -0.025em;
 }
 
-.legal-copy p {
-  margin: 0;
+.legal-copy p,
+.legal-copy li {
   color: var(--ink-soft);
+}
+
+.legal-copy p {
+  margin: 10px 0 0;
+}
+
+.legal-copy ul {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-left: 22px;
 }
 
 .site-footer {

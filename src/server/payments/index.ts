@@ -20,5 +20,6 @@ export function getPaymentProvider(siteUrl: string): PaymentProvider {
   return new DodoPaymentsProvider(
     environment.DODO_PAYMENTS_API_KEY!,
     environment.DODO_PAYMENTS_PRODUCT_ID!,
+    environment.DODO_PAYMENTS_ENVIRONMENT,
   );
 }

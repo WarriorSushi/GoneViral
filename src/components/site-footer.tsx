@@ -5,6 +5,8 @@ const legalLinks = [
   { href: "/privacy", label: "Privacy" },
   { href: "/refunds", label: "Refunds" },
   { href: "/content-policy", label: "Content policy" },
+  { href: "/paid-placement", label: "Paid placement" },
+  { href: "/copyright", label: "Copyright / trademark" },
   { href: "/contact", label: "Contact / report abuse" },
 ] as const;
 

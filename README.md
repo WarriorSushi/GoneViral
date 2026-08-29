@@ -1,6 +1,6 @@
 # GoneViral.in
 
-GoneViral.in is a paid public leaderboard for the Indian internet. The repository is complete through **Phase 13**. Dodo Payments is the current provider behind replaceable checkout, event, reconciliation and two-stage refund adapters; only authoritative server-to-server confirmation can commit the immutable PostgreSQL ledger. Verified sponsors can claim, privately view, raise and safely edit listings through Supabase passwordless Auth. Versioned transactional notifications leave financial and admin transactions through a durable email outbox. The application now has PII-scrubbed Sentry/log boundaries, correlation IDs, enforced browser security headers, safe health probes, aggregate operational alerts, admin abuse signals, build leakage checks, documented secret rotation, and deterministic partial-failure/restore drills. Synthetic activity is restricted to local fixtures and deterministic local Dodo, email, Turnstile, and storage doubles.
+GoneViral.in is a paid public leaderboard for the Indian internet. The repository is in **Phase 15 private staging certification**. Dodo Payments is the current provider behind replaceable checkout, event, reconciliation and two-stage refund adapters; only authoritative server-to-server confirmation can commit the immutable PostgreSQL ledger. Verified sponsors can claim, privately view, raise and safely edit listings through Supabase passwordless Auth. Versioned transactional notifications leave financial and admin transactions through a durable email outbox. The application now has PII-scrubbed Sentry/log boundaries, correlation IDs, enforced browser security headers, safe health probes, aggregate operational alerts, admin abuse signals, build leakage checks, documented secret rotation, encrypted hosted backup and guarded prelaunch-cleanup tooling, and deterministic partial-failure/restore drills. Synthetic activity is restricted to local fixtures and deterministic local Dodo, email, Turnstile, and storage doubles.
 
 The authoritative specification pack starts at [`goneviral-specs/README_FOR_CODEX.md`](./goneviral-specs/README_FOR_CODEX.md). `00_DECISIONS_AND_PRODUCT_RULES.md` is canonical product law.
 
@@ -32,6 +32,9 @@ pnpm build
 pnpm test:e2e
 pnpm security:verify-build
 pnpm ops:rehearse-restore
+pnpm ops:backup:hosted
+pnpm ops:deploy:preview
+pnpm ops:prelaunch-cleanup -- --backup-archive <absolute-verified-backup.7z>
 pnpm db:start
 pnpm db:reset
 pnpm db:migrations:verify
@@ -48,11 +51,11 @@ The local app is available at `http://localhost:3000`. Seeded local board data u
 
 ## Current external gates
 
-- No hosted Supabase development or production project exists yet; only the local Docker-backed stack is verified.
-- No Vercel project/deployment exists yet.
-- The local Supabase Storage service is unavailable in the current environment. Logo security and lifecycle tests use deterministic Storage doubles; a real signed private upload/public derivative test remains an explicit hosted or repaired-local-infrastructure gate.
+- The empty hosted Supabase staging project `fndssapjkaicxzeruuvv` is linked in Mumbai with committed migrations, disabled legacy API keys, modern API keys, and the reviewed private/public Storage buckets. It is not a production project. Exact hosted Auth redirects, end-to-end application flows, and a clean replacement encrypted backup/off-device copy remain open gates.
+- A login-protected Vercel Preview exists with automatic Git deployments disabled, Mumbai Functions configured, `PAYMENTS_ENABLED=false`, and safe mock provider modes. Vercel Hobby rejects the committed sub-daily production schedules, so the technical preview uses `vercel.preview.json`; automatic scheduler certification requires a supporting paid plan and separate owner approval.
+- Real signed private Storage upload, sanitisation, publication, and cleanup remain hosted-certification gates; deterministic local Storage doubles do not satisfy them.
 - Dodo Payments is the current hosted-checkout and webhook provider behind replaceable checkout and event adapters. Test mode requires a Dodo test API key, business ID, webhook key, and a one-time INR `pay_what_you_want` product. The local mock signs exact raw payloads with Standard Webhooks. Live credentials or approval are not assumed.
 - Resend API delivery, signed delivery webhooks, custom SMTP, sender-domain DNS verification, worker scheduling, and genuine hosted staging notification/magic-link delivery and replay tests are not yet available and are not represented as complete.
-- No hosted Sentry project, source-map upload, alert destination, Vercel observability/WAF, external penetration test, or hosted backup/PITR restore has been configured or claimed. Local scrubbing, headers, metrics, failure tests and temporary-table restore fingerprints do not satisfy those launch gates.
+- The hosted Sentry project exists, but source-map upload, a safe test event, alert destination, Vercel observability/WAF, external penetration test, and hosted PITR restore are not yet certified. Local scrubbing, headers, metrics, failure tests and temporary-table restore fingerprints do not satisfy those launch gates.
 - Hosted admin enrollment, verified MFA/re-auth configuration and a genuine role-bypass smoke test require a hosted Supabase environment and human security ceremony; local service and permission tests do not claim those gates are complete.
-- Legal, privacy, refund and accounting launch approvals remain open.
+- Versioned owner-approved legal, privacy, refund, content, paid-placement, copyright, and contact policies are effective. Accounting, GST/invoice, provider, infrastructure, and production approvals remain open; independent counsel is optional rather than a launch blocker.

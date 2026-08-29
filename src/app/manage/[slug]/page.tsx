@@ -175,9 +175,9 @@ export default async function OwnerListingPage({
       <aside className="owner-trust-links" aria-label="Support and policies">
         <strong>Need help with a payment or listing?</strong>
         <p>
-          Review the <Link href="/terms">terms draft</Link>,{" "}
-          <Link href="/privacy">privacy draft</Link>,{" "}
-          <Link href="/refunds">refund draft</Link>, or use the{" "}
+          Review the <Link href="/terms">terms</Link>,{" "}
+          <Link href="/privacy">privacy policy</Link>,{" "}
+          <Link href="/refunds">refund policy</Link>, or use the{" "}
           <Link href="/contact">contact / abuse hook</Link>.
         </p>
       </aside>

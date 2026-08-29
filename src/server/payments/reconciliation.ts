@@ -11,6 +11,7 @@ import { logger } from "@/server/telemetry/logger";
 
 import type { NormalizedDodoEvent } from "./dodo-webhook";
 import { getDodoWebhookConfiguration } from "./dodo-webhook";
+import type { PaymentEnvironment } from "./provider";
 import {
   processDodoWebhook,
   type DodoWebhookResult,
@@ -55,11 +56,15 @@ export class DodoReconciliationSource implements PaymentReconciliationSource {
   readonly #businessId: string;
   readonly #client: DodoPayments;
 
-  constructor(apiKey: string, businessId: string) {
+  constructor(
+    apiKey: string,
+    businessId: string,
+    environment: Exclude<PaymentEnvironment, "mock"> = "test_mode",
+  ) {
     this.#businessId = businessId;
     this.#client = new DodoPayments({
       bearerToken: apiKey,
-      environment: "test_mode",
+      environment,
       maxRetries: 2,
       timeout: 15_000,
     });
@@ -215,6 +220,7 @@ export function createConfiguredReconciliationSource(): PaymentReconciliationSou
   return new DodoReconciliationSource(
     environment.DODO_PAYMENTS_API_KEY!,
     environment.DODO_PAYMENTS_BUSINESS_ID!,
+    environment.DODO_PAYMENTS_ENVIRONMENT,
   );
 }
 

@@ -27,8 +27,10 @@ export type CheckoutLookup =
     }>
   | Readonly<{ kind: "not_found" | "uncertain" }>;
 
+export type PaymentEnvironment = "live_mode" | "mock" | "test_mode";
+
 export interface PaymentProvider {
-  readonly environment: "mock" | "test_mode";
+  readonly environment: PaymentEnvironment;
   readonly name: "dodo";
   createCheckout(request: CheckoutRequest): Promise<CheckoutCreation>;
   recoverCheckout(requestId: string): Promise<CheckoutCreation>;

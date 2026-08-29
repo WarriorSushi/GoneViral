@@ -2,7 +2,13 @@ import { randomUUID } from "node:crypto";
 
 import { describe, expect, it } from "vitest";
 
-import { validateJoinForm } from "@/domain/join";
+import {
+  CONTENT_POLICY_VERSION,
+  PRIVACY_VERSION,
+  REFUND_POLICY_VERSION,
+  TERMS_VERSION,
+  validateJoinForm,
+} from "@/domain/join";
 import { INITIAL_SPONSORSHIP_MAX_PAISE } from "@/domain/policy";
 
 function validForm(overrides: Record<string, string> = {}) {
@@ -25,6 +31,20 @@ function validForm(overrides: Record<string, string> = {}) {
 }
 
 describe("guest join validation", () => {
+  it("records the effective checkout policy version as one coherent set", () => {
+    expect({
+      content: CONTENT_POLICY_VERSION,
+      privacy: PRIVACY_VERSION,
+      refunds: REFUND_POLICY_VERSION,
+      terms: TERMS_VERSION,
+    }).toEqual({
+      content: "2026-08-29-v1",
+      privacy: "2026-08-29-v1",
+      refunds: "2026-08-29-v1",
+      terms: "2026-08-29-v1",
+    });
+  });
+
   it("normalizes private contact fields and parses whole INR", () => {
     const result = validateJoinForm(validForm());
     expect(result.ok).toBe(true);

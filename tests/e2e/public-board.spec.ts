@@ -121,7 +121,7 @@ test("production build renders a truthful empty board", async ({
   await capture(page, testInfo, `${testInfo.project.name}-empty`);
 });
 
-test("robots, sitemap, canonicals, and draft legal metadata stay public-safe", async ({
+test("robots, sitemap, canonicals, and effective legal metadata stay public-safe", async ({
   page,
 }) => {
   const robots = await page.request.get("/robots.txt");
@@ -144,6 +144,17 @@ test("robots, sitemap, canonicals, and draft legal metadata stay public-safe", a
   const sitemapText = await sitemap.text();
   expect(sitemapText).toContain("https://goneviral.in/");
   for (const path of [
+    "/terms",
+    "/privacy",
+    "/refunds",
+    "/content-policy",
+    "/paid-placement",
+    "/copyright",
+    "/contact",
+  ]) {
+    expect(sitemapText).toContain(`https://goneviral.in${path}`);
+  }
+  for (const path of [
     "/actions",
     "/admin",
     "/api",
@@ -156,14 +167,15 @@ test("robots, sitemap, canonicals, and draft legal metadata stay public-safe", a
   await expectNoPrivateMarkers(sitemapText);
 
   await page.goto("/terms");
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
-    "content",
-    /noindex/,
-  );
-  await expect(
-    page.getByText("Counsel-pending draft — not effective."),
-  ).toBeVisible();
-  await expect(page.getByText("2026-08-29-phase14")).toBeVisible();
+  const legalRobots = await page
+    .locator('meta[name="robots"]')
+    .evaluateAll((nodes) =>
+      nodes.map((node) => node.getAttribute("content") ?? ""),
+    );
+  expect(legalRobots.join(",")).not.toMatch(/noindex/i);
+  await expect(page.getByText("Effective owner-approved policy")).toBeVisible();
+  await expect(page.getByText("2026-08-29-v1")).toBeVisible();
+  await expect(page.getByText("29 August 2026")).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 

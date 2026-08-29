@@ -18,10 +18,25 @@ export const PUBLIC_STATIC_SITEMAP_PATHS = [
   "/",
   "/today",
   "/how-it-works",
+  "/terms",
+  "/privacy",
+  "/refunds",
+  "/content-policy",
+  "/paid-placement",
+  "/copyright",
+  "/contact",
 ] as const;
 
 export function canonicalUrl(path: string): string {
   return new URL(path, SITE_ORIGIN).toString();
+}
+
+export function previewRobotsMetadata(
+  vercelEnvironment: string | undefined,
+): Metadata["robots"] {
+  if (vercelEnvironment !== "preview") return undefined;
+
+  return { follow: false, index: false, nocache: true };
 }
 
 export function publicPageMetadata(input: {
@@ -49,8 +64,3 @@ export function publicPageMetadata(input: {
     },
   };
 }
-
-export const draftLegalRobots: Metadata["robots"] = {
-  follow: false,
-  index: false,
-};

@@ -107,11 +107,14 @@ checkout/join, pending/return, owner/manage, report, webhook, cron, and health
 surfaces. The sitemap includes only active, clear, positive, HTTPS listings in
 active categories.
 
-Terms, Privacy, Refunds, Content Policy, and Contact remain unmistakable
-counsel-pending drafts. They display an ineffective date and draft version and
-are `noindex, nofollow`. Footer, report, checkout, and owner hooks link to the
-draft policy/contact surfaces. No text claims counsel, privacy, refund, tax,
-accounting, or CA approval.
+Terms, Privacy, Refunds, Content Policy, Paid Placement, Copyright/Trademark,
+and Contact are effective owner-approved public policies at version
+`2026-08-29-v1`, effective 29 August 2026. They are canonical, indexable, and
+included in the public sitemap. Checkout acceptance records the matching Terms,
+Privacy, Refund, and Content versions. The footer, report, checkout, and owner
+surfaces link to these policies. Owner approval is not represented as counsel,
+tax, accounting, provider, or CA approval; those distinct launch gates remain
+open until genuine evidence exists.
 
 ## Gates that remain open
 
@@ -121,5 +124,6 @@ accounting, or CA approval.
 - genuine Dodo test/live credentials and provider certification;
 - hosted Sentry, alert delivery, Storage, and restore evidence;
 - external penetration testing;
-- counsel-approved legal/privacy/refund copy and CA/accounting approval;
+- CA/accounting validation of tax, invoicing, and financial operations; optional
+  independent legal review does not suspend the effective owner-approved policies;
 - manual NVDA/VoiceOver/TalkBack and real-device/staging certification.

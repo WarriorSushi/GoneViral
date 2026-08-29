@@ -144,7 +144,7 @@ export function getDodoWebhookConfiguration() {
   }
   return {
     businessId: environment.DODO_PAYMENTS_BUSINESS_ID!,
-    environment: "test_mode" as const,
+    environment: environment.DODO_PAYMENTS_ENVIRONMENT,
     secret: environment.DODO_PAYMENTS_WEBHOOK_KEY!,
   };
 }

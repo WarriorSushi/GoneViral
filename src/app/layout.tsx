@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { previewRobotsMetadata } from "@/config/seo";
 
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
     title: "GoneViral.in | Pay. Get seen.",
     type: "website",
   },
+  robots: previewRobotsMetadata(process.env.VERCEL_ENV),
 };
 
 export default function RootLayout({

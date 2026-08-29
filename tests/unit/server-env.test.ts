@@ -17,7 +17,7 @@ describe("server environment schema", () => {
   it("requires Dodo credentials and product configuration together in test mode", () => {
     expect(() =>
       serverEnvSchema.parse({ DODO_PAYMENTS_ENVIRONMENT: "test_mode" }),
-    ).toThrow(/Dodo test mode/);
+    ).toThrow(/Dodo provider mode/);
     expect(
       serverEnvSchema.parse({
         DODO_PAYMENTS_API_KEY: "test-key",
@@ -48,10 +48,23 @@ describe("server environment schema", () => {
     ).toMatchObject({ EMAIL_DELIVERY_MODE: "mock" });
   });
 
-  it("does not accept a live Dodo environment in Phase 4", () => {
+  it("requires a complete, matching credential set in live Dodo mode", () => {
     expect(() =>
       serverEnvSchema.parse({ DODO_PAYMENTS_ENVIRONMENT: "live_mode" }),
-    ).toThrow();
+    ).toThrow(/Dodo provider mode/);
+    expect(
+      serverEnvSchema.parse({
+        DODO_PAYMENTS_API_KEY: "live-key",
+        DODO_PAYMENTS_BUSINESS_ID: "business-id",
+        DODO_PAYMENTS_ENVIRONMENT: "live_mode",
+        DODO_PAYMENTS_PRODUCT_ID: "product-id",
+        DODO_PAYMENTS_WEBHOOK_KEY: "whsec_bGl2ZQ==",
+        PAYMENTS_ENABLED: "false",
+      }),
+    ).toMatchObject({
+      DODO_PAYMENTS_ENVIRONMENT: "live_mode",
+      PAYMENTS_ENABLED: "false",
+    });
   });
 
   it("requires runtime and direct database URLs together", () => {

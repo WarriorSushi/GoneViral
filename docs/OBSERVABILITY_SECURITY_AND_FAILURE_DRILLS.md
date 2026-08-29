@@ -194,6 +194,35 @@ snapshot restorability while the current machine lacks PostgreSQL dump/restore
 executables; it does not replace a real Supabase backup/PITR restore into a new
 hosted project.
 
+For the linked hosted project, `pnpm ops:backup:hosted` creates separate role,
+`app`/`private` and managed `auth`/`storage` schema/data dumps,
+migration-history, configuration, and both actual Storage bucket exports under
+`D:\GoneViral-Backups`. The installed CLI's linked Storage copy command is
+currently unsupported, so the script retrieves the modern secret key only into
+process memory and downloads objects through the supported Storage API without
+printing or persisting the credential. It records per-file checksums and source identity, asks
+7-Zip for a passphrase without accepting it on the command line, verifies the
+encrypted archive, writes an external SHA-256 evidence file, and only then
+removes plaintext. The passphrase must be stored in an approved password
+manager, never chat, shell history, the repository, or the backup directory.
+For an off-device copy, upload only the resulting `.7z` and matching
+`.7z.sha256` to a private account; never upload the plaintext timestamp folder
+or SQL files.
+`-PruneExpired` requires a second typed confirmation and removes only matching
+encrypted archives older than the configured rolling period.
+
+Before staging test-data cleanup, verify that archive again and run
+`pnpm ops:prelaunch-cleanup -- --backup-archive <absolute .7z path>`. The script
+is deliberately restricted to a linked project whose URL and direct database
+identity agree, Dodo `test_mode`, `PAYMENTS_ENABLED=false`, and a matching
+backup less than 24 hours old. It aborts on live/unknown/non-INR/admin-corrected
+financial records, prints counts rather than row content, and requires an exact
+project-bound deletion phrase. It removes both Storage buckets, application
+test data, and Auth users while preserving the exact six categories and safe
+operational configuration. Any partial failure requires payments-off/read-only
+incident handling and restoration/reconciliation from the verified backup; do
+not rerun blindly.
+
 ## Remaining human/hosted gates
 
 No production Sentry, Vercel, Supabase, Resend, Turnstile, Dodo, DNS, backup,

@@ -34,7 +34,8 @@ eight-day overlap window.
 `private.click_dedupe` rows expire after eight days. The authenticated daily
 `/api/cron/cleanup-retention` job deletes expired rows. Daily counts in
 `app.listing_click_daily_totals` are longer-lived non-personal aggregates;
-their final deletion period remains part of launch counsel's retention approval.
+their final deletion period follows the effective Privacy Policy and the
+owner-approved retention schedule.
 An aggregate failure never traps a visitor on GoneViral.in: redirect continues
 and the server logs only a public listing reference and error class.
 

@@ -8,6 +8,7 @@ import type postgres from "postgres";
 import { readServerEnv } from "@/config/env/server";
 import { getSqlClient } from "@/server/db/client";
 import { readOperationalFlag } from "@/server/operations/flags";
+import type { PaymentEnvironment } from "@/server/payments/provider";
 
 import type { AdminRequestContext, AdminOperationResult } from "./operations";
 import { hasAdminPermission } from "./permissions";
@@ -25,10 +26,13 @@ export interface ProviderRefundExecutor {
 export class DodoRefundExecutor implements ProviderRefundExecutor {
   readonly #client: DodoPayments;
 
-  constructor(apiKey: string) {
+  constructor(
+    apiKey: string,
+    environment: Exclude<PaymentEnvironment, "mock"> = "test_mode",
+  ) {
     this.#client = new DodoPayments({
       bearerToken: apiKey,
-      environment: "test_mode",
+      environment,
       maxRetries: 2,
       timeout: 15_000,
     });
@@ -97,7 +101,10 @@ export function getConfiguredRefundExecutor(): ProviderRefundExecutor {
   const environment = readServerEnv();
   return environment.DODO_PAYMENTS_ENVIRONMENT === "mock"
     ? new MockRefundExecutor()
-    : new DodoRefundExecutor(environment.DODO_PAYMENTS_API_KEY!);
+    : new DodoRefundExecutor(
+        environment.DODO_PAYMENTS_API_KEY!,
+        environment.DODO_PAYMENTS_ENVIRONMENT,
+      );
 }
 
 function validate(input: {

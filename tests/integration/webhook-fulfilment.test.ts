@@ -55,7 +55,7 @@ function joinInput(destinationUrl: string): JoinInput {
 }
 
 async function createAttempt(
-  providerEnvironment: "mock" | "test_mode" = "mock",
+  providerEnvironment: "live_mode" | "mock" | "test_mode" = "mock",
 ) {
   const mockProvider = new MockDodoProvider("http://localhost:3000");
   const provider =
@@ -63,7 +63,7 @@ async function createAttempt(
       ? mockProvider
       : {
           createCheckout: mockProvider.createCheckout.bind(mockProvider),
-          environment: "test_mode" as const,
+          environment: providerEnvironment,
           name: "dodo" as const,
           recoverCheckout: mockProvider.recoverCheckout.bind(mockProvider),
           retrieveCheckout: mockProvider.retrieveCheckout.bind(mockProvider),

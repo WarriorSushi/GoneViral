@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "packageManager": "pnpm@11.24.0",
   "engines": {
-    "node": ">=24.20.0 <25",
+    "node": ">=24.19.0 <25",
     "pnpm": "11.24.0"
   },
   "scripts": {
@@ -25,6 +25,9 @@
     "test:database": "vitest run --config vitest.database.config.ts",
     "security:verify-build": "node scripts/security/verify-build.mjs",
     "ops:rehearse-restore": "node scripts/operations/rehearse-critical-restore.mjs",
+    "ops:backup:hosted": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/operations/backup-hosted-supabase.ps1",
+    "ops:deploy:preview": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/operations/deploy-vercel-preview.ps1",
+    "ops:prelaunch-cleanup": "node scripts/operations/prelaunch-cleanup.mjs",
     "db:start": "supabase start --exclude edge-runtime,imgproxy,logflare,mailpit,postgres-meta,realtime,storage-api,studio,vector",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset --local",

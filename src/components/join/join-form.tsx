@@ -198,7 +198,8 @@ export function JoinForm({
         </legend>
         <p className="field-help">
           Payment buys leaderboard placement. It does not promise clicks, sales,
-          or a permanent rank.
+          or a permanent rank. Read how money decides the order in the{" "}
+          <Link href="/paid-placement">paid placement disclosure</Link>.
         </p>
         <label className="check-row">
           <input

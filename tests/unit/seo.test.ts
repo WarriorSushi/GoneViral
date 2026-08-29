@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import robots from "@/app/robots";
+import robots, { buildRobotsFile } from "@/app/robots";
 import {
   canonicalUrl,
   PRIVATE_ROBOT_PATHS,
+  previewRobotsMetadata,
   PUBLIC_STATIC_SITEMAP_PATHS,
   publicPageMetadata,
 } from "@/config/seo";
@@ -38,5 +39,32 @@ describe("public SEO boundaries", () => {
     expect(PUBLIC_STATIC_SITEMAP_PATHS).not.toContain("/join");
     expect(PUBLIC_STATIC_SITEMAP_PATHS).not.toContain("/manage");
     expect(PUBLIC_STATIC_SITEMAP_PATHS).not.toContain("/admin");
+    expect(PUBLIC_STATIC_SITEMAP_PATHS).toEqual(
+      expect.arrayContaining([
+        "/terms",
+        "/privacy",
+        "/refunds",
+        "/content-policy",
+        "/paid-placement",
+        "/copyright",
+        "/contact",
+      ]),
+    );
+  });
+
+  it("blocks indexing and sitemap discovery on Vercel previews", () => {
+    const previewRobots = buildRobotsFile("preview");
+    const rules = Array.isArray(previewRobots.rules)
+      ? previewRobots.rules[0]
+      : previewRobots.rules;
+
+    expect(rules).toMatchObject({ disallow: "/", userAgent: "*" });
+    expect(previewRobots).not.toHaveProperty("sitemap");
+    expect(previewRobotsMetadata("preview")).toEqual({
+      follow: false,
+      index: false,
+      nocache: true,
+    });
+    expect(previewRobotsMetadata("production")).toBeUndefined();
   });
 });

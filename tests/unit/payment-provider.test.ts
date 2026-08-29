@@ -36,7 +36,7 @@ describe("Dodo Payments adapters", () => {
     });
   });
 
-  it("uses only Dodo test mode, minor units, and validated customer contact", async () => {
+  it("uses Dodo test mode, minor units, and validated customer contact", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -62,6 +62,30 @@ describe("Dodo Payments adapters", () => {
       { amount: 49_900, product_id: "product", quantity: 1 },
     ]);
     expect(body.customer.phone_number).toBe("+919876543210");
+  });
+
+  it("uses the live Dodo origin only when explicitly configured", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          checkout_url: "https://checkout.dodopayments.com/session/live",
+          session_id: "session_live",
+        }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const provider = new DodoPaymentsProvider(
+      "live-secret",
+      "live-product",
+      "live_mode",
+    );
+    expect(provider.environment).toBe("live_mode");
+    expect((await provider.createCheckout(request())).kind).toBe("created");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://live.dodopayments.com/checkouts",
+    );
   });
 
   it("rejects a tampered amount before calling Dodo", async () => {

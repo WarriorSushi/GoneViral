@@ -101,8 +101,8 @@ export function ReportForm({
             : "Send report"}
       </button>
       <p className="provider-note">
-        Read the <Link href="/content-policy">content policy draft</Link> and{" "}
-        <Link href="/privacy">privacy draft</Link>, or use the{" "}
+        Read the <Link href="/content-policy">content policy</Link> and{" "}
+        <Link href="/privacy">privacy policy</Link>, or use the{" "}
         <Link href="/contact">contact / abuse hook</Link>.
       </p>
     </form>

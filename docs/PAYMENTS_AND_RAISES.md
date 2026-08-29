@@ -10,9 +10,14 @@ payment. Browser returns, polling, and local mock pages also have no financial
 authority.
 
 Local development uses a deterministic Dodo-compatible mock. It exercises the
-same signed webhook handler as the hosted integration. Production and Dodo test
-mode still require real Dodo credentials, business configuration, webhook
-registration, and approval; none are fabricated by this repository.
+same signed webhook handler as the hosted integration. `test_mode` and
+`live_mode` select distinct official Dodo API/SDK origins across checkout,
+webhook identity, reconciliation, and refunds. Both require complete,
+environment-matching credentials. `PAYMENTS_ENABLED=false` is the default and
+keeps non-mock checkout creation disabled even when credentials are present.
+Live activation additionally requires the written provider, KYC, legal,
+accounting, infrastructure, backup, and security gates in the Phase 15 runbook;
+none are fabricated by this repository.
 
 ## Initial sponsorship
 
