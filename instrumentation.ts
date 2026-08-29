@@ -17,7 +17,10 @@ export const onRequestError: Instrumentation.onRequestError = async (
   request,
   context,
 ) => {
-  const Sentry = await import("@sentry/nextjs");
+  const Sentry =
+    process.env.NEXT_RUNTIME === "nodejs"
+      ? (await import("@/server/telemetry/sentry")).initializeSentryServer()
+      : await import("@sentry/nextjs");
   Sentry.captureRequestError(error, request, context);
 
   if (process.env.NEXT_RUNTIME !== "nodejs") return;

@@ -3,6 +3,7 @@ import "server-only";
 import type { OperationalAlert } from "@/server/operations/metrics";
 
 import { logger } from "./logger";
+import { initializeSentryServer } from "./sentry";
 
 export async function captureOperationalAlert(
   alert: OperationalAlert,
@@ -15,7 +16,7 @@ export async function captureOperationalAlert(
     value: alert.value,
   });
   if (!process.env.NEXT_PUBLIC_SENTRY_DSN) return;
-  const Sentry = await import("@sentry/nextjs");
+  const Sentry = initializeSentryServer();
   Sentry.withScope((scope) => {
     scope.setTag("operational.alert_code", alert.code);
     scope.setTag("operational.severity", alert.severity);
@@ -26,4 +27,5 @@ export async function captureOperationalAlert(
       alert.severity === "critical" ? "error" : "warning",
     );
   });
+  await Sentry.flush(2_000);
 }
