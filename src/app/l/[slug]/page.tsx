@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -157,6 +157,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
       <aside className="listing-safety-note">
         <strong>Direct link</strong>
         <p>People click your listing and go straight to your website.</p>
+        <Link href={`/l/${slug}/report` as Route}>Report this listing</Link>
       </aside>
     </main>
   );

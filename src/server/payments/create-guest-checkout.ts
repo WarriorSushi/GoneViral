@@ -17,6 +17,10 @@ import { calculateTakeoverQuote } from "@/domain/ranking";
 import { moneyPaise } from "@/domain/money";
 import { screenSubmission } from "@/domain/screening";
 import { getSqlClient } from "@/server/db/client";
+import {
+  mutationsAreReadOnly,
+  paymentsAreEnabled,
+} from "@/server/operations/flags";
 import { submissionDigest } from "@/server/security/submission-security";
 import type { TurnstileVerifier } from "@/server/security/turnstile";
 
@@ -118,6 +122,12 @@ export async function createGuestCheckout(input: {
   siteUrl: string;
   turnstile: TurnstileVerifier;
 }): Promise<GuestCheckoutResult> {
+  if ((await mutationsAreReadOnly()) || !(await paymentsAreEnabled())) {
+    return {
+      kind: "rejected",
+      message: "Payments are temporarily paused. Please try again later.",
+    };
+  }
   const sql = getSqlClient();
   const intentHash = requestHash(input.form);
   const existing = await sql<AttemptRow[]>`
@@ -308,7 +318,8 @@ export async function createGuestCheckout(input: {
         listing_id, screening_version, result, result_codes, request_fingerprint
       ) VALUES (
         ${listingRows[0].id}, ${screening.rulesetVersion}, ${screening.status},
-        ${JSON.stringify(screening.reasonCodes)}::jsonb, ${intentHash}
+        (${JSON.stringify(screening.reasonCodes)}::jsonb #>> '{}')::jsonb,
+        ${intentHash}
       )
     `;
     return { created: true } as const;

@@ -116,6 +116,25 @@ test("signed-out management is generic, same-origin, and not publicly cached", a
   await capture(page, testInfo, `${testInfo.project.name}-manage-signed-out`);
 });
 
+test("signed-out admin route bypass exposes no operational data", async ({
+  page,
+}) => {
+  for (const path of ["/admin", "/admin/listings/guessed-public-id"]) {
+    const response = await page.goto(path);
+    // PPR may commit the static shell with 200 before the authenticated
+    // dynamic segment resolves to notFound; the rendered boundary is the
+    // authorization assertion.
+    expect([200, 404]).toContain(response?.status());
+    expect(response?.headers()["cache-control"] ?? "").toContain("no-store");
+    await expect(
+      page.getByRole("heading", { name: "Page not found." }),
+    ).toBeVisible();
+    await expect(page.getByText("Founder console")).toHaveCount(0);
+    await expect(page.getByText("Payment exceptions")).toHaveCount(0);
+    await expectNoPrivateMarkers(await page.content());
+  }
+});
+
 test("low-population Main board is first-viewport, accessible, and private-data safe", async ({
   page,
 }, testInfo) => {
@@ -189,6 +208,51 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
   await capture(page, testInfo, `${testInfo.project.name}-low-population`);
+});
+
+test("public report form is generic and leaves paid eligibility unchanged", async ({
+  page,
+}) => {
+  await page.goto("/l/monsoon-studio/report");
+  await expect(
+    page.getByRole("heading", { name: "Report Monsoon Studio" }),
+  ).toBeVisible();
+  await page.getByLabel("Reason").selectOption("scam");
+  await page
+    .getByLabel("Details")
+    .fill("This synthetic browser report has enough detail for human review.");
+  await page.getByRole("button", { name: "Send report" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "We received your report",
+  );
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  const verificationSql = postgres(directDatabaseUrl, {
+    prepare: false,
+    types: { bigint: postgres.BigInt },
+  });
+  const [state] = await verificationSql<
+    {
+      confirmed_total_paise: bigint;
+      lifecycle_status: string;
+      moderation_status: string;
+      reports: bigint;
+    }[]
+  >`
+    SELECT listing.confirmed_total_paise, listing.lifecycle_status,
+           listing.moderation_status, count(report.id)::bigint AS reports
+    FROM app.listings AS listing
+    LEFT JOIN private.reports AS report ON report.listing_id = listing.id
+    WHERE listing.slug = 'monsoon-studio'
+    GROUP BY listing.id
+  `;
+  await verificationSql.end({ timeout: 5 });
+  expect(state).toEqual({
+    confirmed_total_paise: 2_500_000n,
+    lifecycle_status: "active",
+    moderation_status: "clear",
+    reports: 1n,
+  });
 });
 
 test("Main, Today, category, and listing navigation use real public projections", async ({

@@ -373,7 +373,7 @@ async function applyLockedAdjustment(input: {
       ${clock.business_date}, ${observedAt.toISOString()},
       ${`dodo:${input.providerEnvironment}:adjustment:${adjustment.provider_adjustment_id}:${adjustment.status}:${observedAt.toISOString()}:${adjustment.desired_effective_delta}`},
       'dodo', ${input.providerEnvironment},
-      ${JSON.stringify({ eventId: input.eventId, status: adjustment.status })}::jsonb
+      (${JSON.stringify({ eventId: input.eventId, status: adjustment.status })}::jsonb #>> '{}')::jsonb
     ) RETURNING id, applied_business_date
   `;
   if (!ledger) throw new Error("adjustment_ledger_insert_failed");
@@ -539,7 +539,7 @@ async function createException(
     ) VALUES (
       ${runId}, 'dodo', ${input.providerEnvironment}, 'adjustment_exception',
       ${now}, ${now}, 'completed', ${now},
-      ${JSON.stringify({ critical: "1", open: "1" })}::jsonb,
+      (${JSON.stringify({ critical: "1", open: "1" })}::jsonb #>> '{}')::jsonb,
       ${detail.reason}
     )
   `;
@@ -551,8 +551,9 @@ async function createException(
     ) VALUES (
       ${runId}, 'adjustment', ${input.adjustmentId}, ${detail.attemptId},
       ${detail.listingId}, ${detail.reason},
-      ${JSON.stringify({ action: "operations_review" })}::jsonb,
-      ${JSON.stringify({ eventId: input.eventId })}::jsonb, 'open'
+      (${JSON.stringify({ action: "operations_review" })}::jsonb #>> '{}')::jsonb,
+      (${JSON.stringify({ eventId: input.eventId })}::jsonb #>> '{}')::jsonb,
+      'open'
     )
   `;
 }
@@ -592,13 +593,13 @@ async function enqueueOwnerAdjustmentEmail(
       'sponsorship_adjusted', ${encryptPrivateText(owner.canonical_email)},
       ${owner.email_hash || submissionDigest(owner.canonical_email)},
       '2026-08-29-v1',
-      ${JSON.stringify({
+      (${JSON.stringify({
         adjustmentId: input.adjustmentId,
         amountDeltaPaise: input.amountDeltaPaise.toString(),
         entryType: input.entryType,
         listingName: input.listingName,
         listingPublicId: input.listingPublicId,
-      })}::jsonb,
+      })}::jsonb #>> '{}')::jsonb,
       ${`sponsorship-adjusted:${input.ledgerId}:2026-08-29-v1`},
       'pending', transaction_timestamp()
     ) ON CONFLICT (idempotency_key) DO NOTHING

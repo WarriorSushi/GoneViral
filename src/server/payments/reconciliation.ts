@@ -3,6 +3,7 @@ import "server-only";
 import { createHash, randomUUID } from "node:crypto";
 
 import DodoPayments from "dodopayments";
+import type postgres from "postgres";
 
 import { readServerEnv } from "@/config/env/server";
 import { getSqlClient } from "@/server/db/client";
@@ -237,7 +238,7 @@ export async function runPaymentReconciliation(input?: {
     ) VALUES (
       ${runId}, 'dodo', ${configuration.environment}, 'scheduled',
       ${windowStart.toISOString()}, ${windowEnd.toISOString()}, 'running',
-      ${JSON.stringify(counters)}::jsonb
+      (${JSON.stringify(counters)}::jsonb #>> '{}')::jsonb
     )
   `;
 
@@ -275,7 +276,7 @@ export async function runPaymentReconciliation(input?: {
     await sql`
       UPDATE private.reconciliation_runs
       SET state = 'completed', completed_at = transaction_timestamp(),
-          counts = ${JSON.stringify({ ...counters, discrepancies })}::jsonb
+          counts = (${JSON.stringify({ ...counters, discrepancies })}::jsonb #>> '{}')::jsonb
       WHERE id = ${runId}
     `;
     if (discrepancies > 0) {
@@ -291,7 +292,7 @@ export async function runPaymentReconciliation(input?: {
     await sql`
       UPDATE private.reconciliation_runs
       SET state = 'failed', completed_at = transaction_timestamp(),
-          counts = ${JSON.stringify(counters)}::jsonb,
+          counts = (${JSON.stringify(counters)}::jsonb #>> '{}')::jsonb,
           error_summary = ${message.slice(0, 500)}
       WHERE id = ${runId}
     `;
@@ -441,9 +442,9 @@ async function auditFinancialProjections(runId: string) {
 }
 
 async function insertReconciliationItem(input: {
-  actual: Record<string, unknown>;
+  actual: postgres.JSONValue;
   discrepancyType: string;
-  expected: Record<string, unknown>;
+  expected: postgres.JSONValue;
   listingId: string;
   objectId: string;
   runId: string;
@@ -455,8 +456,9 @@ async function insertReconciliationItem(input: {
       discrepancy_type, expected, actual, state
     ) VALUES (
       ${input.runId}, 'projection', ${input.objectId}, ${input.listingId},
-      ${input.discrepancyType}, ${JSON.stringify(input.expected)}::jsonb,
-      ${JSON.stringify(input.actual)}::jsonb, 'open'
+      ${input.discrepancyType},
+      (${JSON.stringify(input.expected)}::jsonb #>> '{}')::jsonb,
+      (${JSON.stringify(input.actual)}::jsonb #>> '{}')::jsonb, 'open'
     ) ON CONFLICT (run_id, provider_object_type, provider_object_id, discrepancy_type)
     DO NOTHING
   `;

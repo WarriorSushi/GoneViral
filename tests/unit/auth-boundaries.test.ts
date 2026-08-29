@@ -14,7 +14,11 @@ describe("owner auth boundaries", () => {
   });
 
   it("refreshes auth only where owner sessions are consumed", () => {
-    expect(proxyConfig.matcher).toEqual(["/manage/:path*", "/auth/:path*"]);
+    expect(proxyConfig.matcher).toEqual([
+      "/manage/:path*",
+      "/admin/:path*",
+      "/auth/:path*",
+    ]);
   });
 
   it.each([

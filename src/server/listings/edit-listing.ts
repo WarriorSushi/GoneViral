@@ -1,8 +1,11 @@
 import "server-only";
 
+import type postgres from "postgres";
+
 import type { ListingEditInput } from "@/domain/listing-edit";
 import { normalizeListingName } from "@/domain/listing-edit";
 import { getSqlClient } from "@/server/db/client";
+import { mutationsAreReadOnly } from "@/server/operations/flags";
 
 type ListingRow = {
   category_id: string;
@@ -22,8 +25,8 @@ type ListingRow = {
 
 type Change = Readonly<{
   changeType: string;
-  oldValue: Record<string, unknown>;
-  proposedValue: Record<string, unknown>;
+  oldValue: postgres.JSONValue;
+  proposedValue: postgres.JSONValue;
 }>;
 
 export type EditListingResult =
@@ -42,6 +45,12 @@ export async function editOwnedListing(input: {
   listingSlug: string;
   userId: string;
 }): Promise<EditListingResult> {
+  if (await mutationsAreReadOnly()) {
+    return {
+      kind: "rejected",
+      message: "Listing changes are temporarily read-only.",
+    };
+  }
   try {
     return await getSqlClient().begin(async (transaction) => {
       const [listing] = await transaction<ListingRow[]>`
@@ -148,8 +157,8 @@ export async function editOwnedListing(input: {
             proposed_value, state, review_reason, reviewed_at
           ) VALUES (
             ${listing.id}, ${input.userId}, ${change.changeType},
-            ${JSON.stringify(change.oldValue)}::jsonb,
-            ${JSON.stringify(change.proposedValue)}::jsonb,
+            (${JSON.stringify(change.oldValue)}::jsonb #>> '{}')::jsonb,
+            (${JSON.stringify(change.proposedValue)}::jsonb #>> '{}')::jsonb,
             'approved', 'automatic_low_risk', transaction_timestamp()
           )
         `;
@@ -162,8 +171,9 @@ export async function editOwnedListing(input: {
             old_value, proposed_value, state
           ) VALUES (
             ${listing.id}, ${input.userId}, ${change.changeType},
-            ${JSON.stringify(change.oldValue)}::jsonb,
-            ${JSON.stringify(change.proposedValue)}::jsonb, 'pending'
+            (${JSON.stringify(change.oldValue)}::jsonb #>> '{}')::jsonb,
+            (${JSON.stringify(change.proposedValue)}::jsonb #>> '{}')::jsonb,
+            'pending'
           ) ON CONFLICT DO NOTHING
           RETURNING id
         `;

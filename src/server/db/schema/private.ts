@@ -738,6 +738,56 @@ export const adminAuditEvents = privateSchema.table(
   ],
 );
 
+export const adminRefundRequests = privateSchema.table(
+  "admin_refund_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    publicId: text("public_id").notNull(),
+    provider: text("provider").notNull(),
+    providerEnvironment: text("provider_environment").notNull(),
+    providerPaymentId: text("provider_payment_id").notNull(),
+    amountPaise: bigint("amount_paise", { mode: "bigint" }).notNull(),
+    currency: text("currency").notNull(),
+    reason: text("reason").notNull(),
+    state: text("state").notNull(),
+    requestId: text("request_id").notNull(),
+    requestedBy: uuid("requested_by").notNull(),
+    confirmedBy: uuid("confirmed_by"),
+    providerRefundId: text("provider_refund_id"),
+    failureCode: text("failure_code"),
+    createdAt: createdAt(),
+    confirmedAt: timestamp("confirmed_at", {
+      withTimezone: true,
+      mode: "date",
+    }),
+    submittedAt: timestamp("submitted_at", {
+      withTimezone: true,
+      mode: "date",
+    }),
+  },
+  (table) => [
+    unique("admin_refund_requests_public_id_unique").on(table.publicId),
+    unique("admin_refund_requests_request_id_unique").on(table.requestId),
+    check(
+      "admin_refund_requests_state_valid",
+      sql`${table.state} in ('prepared', 'submitting', 'submitted', 'failed', 'cancelled')`,
+    ),
+    check(
+      "admin_refund_requests_amount_valid",
+      sql`${table.amountPaise} > 0 and ${table.amountPaise} % 100 = 0 and ${table.currency} = 'INR'`,
+    ),
+    index("admin_refund_requests_state_created_idx").on(
+      table.state,
+      table.createdAt,
+    ),
+    index("admin_refund_requests_payment_idx").on(
+      table.provider,
+      table.providerEnvironment,
+      table.providerPaymentId,
+    ),
+  ],
+);
+
 export const listingScreenings = privateSchema.table(
   "listing_screenings",
   {

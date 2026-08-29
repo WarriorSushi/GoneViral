@@ -444,7 +444,7 @@ export async function processDodoWebhook(input: {
         ${input.event.providerCreatedAt.toISOString()},
         ${`dodo:${input.providerEnvironment}:payment:${payment.paymentId}:${attempt.purpose}`},
         'dodo', ${input.providerEnvironment},
-        ${JSON.stringify({ eventId: input.eventId })}::jsonb
+        (${JSON.stringify({ eventId: input.eventId })}::jsonb #>> '{}')::jsonb
       ) RETURNING id, applied_business_date
     `;
     if (!ledger) throw new Error("ledger_insert_failed");
@@ -532,12 +532,12 @@ export async function processDodoWebhook(input: {
       ) VALUES (
         ${isInitial ? "sponsorship_confirmed_claim" : "raise_confirmed"}, ${encryptPrivateText(owner.canonical_email)},
         ${owner.email_hash || submissionDigest(owner.canonical_email)}, '2026-08-29-v1',
-        ${JSON.stringify({
+        (${JSON.stringify({
           amountPaise: payment.amountPaise.toString(),
           attemptPublicId: attempt.public_id,
           listingName: listing.name,
           listingPublicId: listing.public_id,
-        })}::jsonb,
+        })}::jsonb #>> '{}')::jsonb,
         ${`${isInitial ? "sponsorship-confirmed" : "raise-confirmed"}:${attempt.id}:2026-08-29-v1`},
         'pending', transaction_timestamp()
       ) ON CONFLICT (idempotency_key) DO NOTHING
@@ -611,7 +611,8 @@ async function createOperationsReview(input: {
       state, completed_at, counts
     ) VALUES (
       ${runId}, 'dodo', ${input.providerEnvironment}, 'webhook_operations_review',
-      ${now}, ${now}, 'completed', ${now}, ${JSON.stringify({ open: "1" })}::jsonb
+      ${now}, ${now}, 'completed', ${now},
+      (${JSON.stringify({ open: "1" })}::jsonb #>> '{}')::jsonb
     )
   `;
   await input.transactionSql`
@@ -622,8 +623,9 @@ async function createOperationsReview(input: {
     ) VALUES (
       ${runId}, 'payment', ${input.paymentId}, ${input.attemptId},
       ${input.listingId}, ${input.reason},
-      ${JSON.stringify({ action: "manual_review" })}::jsonb,
-      ${JSON.stringify({ eventId: input.eventId })}::jsonb, 'open'
+      (${JSON.stringify({ action: "manual_review" })}::jsonb #>> '{}')::jsonb,
+      (${JSON.stringify({ eventId: input.eventId })}::jsonb #>> '{}')::jsonb,
+      'open'
     )
   `;
 }

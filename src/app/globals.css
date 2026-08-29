@@ -2090,6 +2090,90 @@ select:focus-visible {
   }
 }
 
+.admin-page {
+  display: grid;
+  gap: 32px;
+  padding-block: 48px 80px;
+}
+
+.admin-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.6fr);
+  gap: 24px;
+  align-items: end;
+}
+
+.admin-section {
+  display: grid;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+
+.admin-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.admin-card pre,
+.admin-card code {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.admin-action-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-action-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.admin-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-button-row button,
+.admin-action-form > button {
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-action-form .danger-button {
+  border-color: #8b1e1e;
+  background: #8b1e1e;
+}
+
+@media (max-width: 720px) {
+  .admin-header {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

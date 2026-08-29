@@ -13,6 +13,10 @@ import {
   calculateTakeoverQuote,
 } from "@/domain/ranking";
 import { getSqlClient } from "@/server/db/client";
+import {
+  mutationsAreReadOnly,
+  paymentsAreEnabled,
+} from "@/server/operations/flags";
 
 import type { PaymentProvider } from "./provider";
 
@@ -42,6 +46,12 @@ export async function createRaiseCheckout(input: {
   siteUrl: string;
   userId: string;
 }): Promise<RaiseCheckoutResult> {
+  if ((await mutationsAreReadOnly()) || !(await paymentsAreEnabled())) {
+    return {
+      kind: "rejected",
+      message: "Payments are temporarily paused. Please try again later.",
+    };
+  }
   const sql = getSqlClient();
   const publicId = attemptPublicId();
   const expiresAt = new Date(

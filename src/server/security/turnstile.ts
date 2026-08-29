@@ -8,7 +8,7 @@ export type TurnstileResult =
 
 export interface TurnstileVerifier {
   verify(input: {
-    expectedAction: "join";
+    expectedAction: "join" | "report";
     remoteIp?: string;
     token: string;
   }): Promise<TurnstileResult>;
@@ -18,7 +18,7 @@ const locallyUsedTokens = new Set<string>();
 
 export class MockTurnstileVerifier implements TurnstileVerifier {
   async verify(input: {
-    expectedAction: "join";
+    expectedAction: "join" | "report";
     remoteIp?: string;
     token: string;
   }): Promise<TurnstileResult> {
@@ -46,7 +46,7 @@ export class CloudflareTurnstileVerifier implements TurnstileVerifier {
   ) {}
 
   async verify(input: {
-    expectedAction: "join";
+    expectedAction: "join" | "report";
     remoteIp?: string;
     token: string;
   }): Promise<TurnstileResult> {

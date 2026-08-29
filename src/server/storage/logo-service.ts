@@ -3,6 +3,7 @@ import "server-only";
 import { randomBytes, randomUUID } from "node:crypto";
 
 import { getSqlClient } from "@/server/db/client";
+import { mutationsAreReadOnly } from "@/server/operations/flags";
 import { submissionDigest } from "@/server/security/submission-security";
 
 import { sanitizeLogo } from "./logo-sanitizer";
@@ -52,6 +53,11 @@ export async function createLogoUploadIntent(input: {
   storage: LogoStorage;
   userId: string;
 }): Promise<LogoUploadIntentResult> {
+  if (await mutationsAreReadOnly())
+    return {
+      kind: "rejected",
+      message: "Listing changes are temporarily paused.",
+    };
   if (
     !LOGO_INPUT_TYPES.has(input.contentType) ||
     !Number.isSafeInteger(input.declaredBytes) ||
@@ -142,6 +148,11 @@ export async function finalizeLogoUpload(input: {
   storage: LogoStorage;
   userId: string;
 }) {
+  if (await mutationsAreReadOnly())
+    return {
+      kind: "unavailable",
+      message: "Listing changes are temporarily paused.",
+    } as const;
   const sql = getSqlClient();
   const processing = await sql.begin(async (transaction) => {
     const [asset] = await transaction<ProcessingAsset[]>`
@@ -256,8 +267,8 @@ export async function finalizeLogoUpload(input: {
           proposed_value, state, review_reason, reviewed_at
         ) VALUES (
           ${listing.id}, ${input.userId}, 'logo',
-          ${JSON.stringify({ assetId: listing.logo_asset_id })}::jsonb,
-          ${JSON.stringify({ assetId: processing.id })}::jsonb,
+          (${JSON.stringify({ assetId: listing.logo_asset_id })}::jsonb #>> '{}')::jsonb,
+          (${JSON.stringify({ assetId: processing.id })}::jsonb #>> '{}')::jsonb,
           ${immediate ? "approved" : "pending"},
           ${immediate ? "automatic_low_risk" : null},
           ${immediate ? new Date().toISOString() : null}
