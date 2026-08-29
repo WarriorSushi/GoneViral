@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { BoardPage } from "@/components/public/board-page";
+import { publicPageMetadata } from "@/config/seo";
 import { toIstBusinessDate } from "@/domain/today";
 import {
   getCachedPublicCategories,
@@ -10,7 +11,12 @@ import {
 } from "@/server/cache/public-read-model";
 import { parseTodayBoardCursor } from "@/server/db/repositories/leaderboards";
 
-export const metadata: Metadata = { title: "Today’s board" };
+export const metadata: Metadata = publicPageMetadata({
+  description:
+    "Confirmed money added today, net of reversals posted today. Resets at midnight IST.",
+  path: "/today",
+  title: "Today’s board",
+});
 
 export default async function TodayPage(props: PageProps<"/today">) {
   await connection();

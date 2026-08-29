@@ -10,6 +10,7 @@ describe("application security headers", () => {
     const policy = buildContentSecurityPolicy({
       nodeEnvironment: "production",
       sentryDsn: "https://public@example.ingest.sentry.io/1",
+      siteUrl: "https://goneviral.in",
       supabaseUrl: "https://project.supabase.co",
     });
     expect(policy).toContain("default-src 'self'");
@@ -21,6 +22,17 @@ describe("application security headers", () => {
     expect(policy).toContain("upgrade-insecure-requests");
     expect(policy).not.toContain("'unsafe-eval'");
     expect(policy).not.toMatch(/(?:^|\s)\*(?:\s|;|$)/);
+  });
+
+  it("does not force an impossible TLS upgrade on explicit loopback labs", () => {
+    const policy = buildContentSecurityPolicy({
+      nodeEnvironment: "production",
+      sentryDsn: undefined,
+      siteUrl: "http://127.0.0.1:3100",
+      supabaseUrl: "http://127.0.0.1:54321",
+    });
+    expect(policy).not.toContain("upgrade-insecure-requests");
+    expect(policy).not.toContain("'unsafe-eval'");
   });
 
   it("sets the complete no-sniff, framing, referrer, feature, and transport set", () => {

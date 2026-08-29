@@ -1,10 +1,11 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-import { PUBLIC_CACHE_TAGS } from "@/server/cache/tags";
+import { toIstBusinessDate } from "@/domain/today";
 import { getAdminSession } from "@/server/admin/auth";
+import { revalidatePublicCacheImpact } from "@/server/cache/invalidate-public";
 import {
   enqueueSafeManagementEmail,
   moderateListing,
@@ -46,10 +47,9 @@ async function requireContext(
 
 function refresh(result: AdminOperationResult) {
   revalidatePath("/admin");
-  revalidateTag(PUBLIC_CACHE_TAGS.main, { expire: 0 });
-  revalidateTag(PUBLIC_CACHE_TAGS.activity, { expire: 0 });
-  for (const publicId of result.listingPublicIds ?? []) {
-    revalidateTag(PUBLIC_CACHE_TAGS.listing(publicId), { expire: 0 });
+  const businessDate = toIstBusinessDate(new Date());
+  for (const impact of result.cacheImpacts ?? []) {
+    revalidatePublicCacheImpact({ ...impact, businessDate });
   }
   if (result.kind === "rejected")
     throw new Error(result.message ?? "admin_operation_rejected");

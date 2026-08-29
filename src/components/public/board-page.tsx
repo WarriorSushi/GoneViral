@@ -1,4 +1,3 @@
-import { refreshPublicBoard } from "@/app/actions/refresh-public-board";
 import type {
   PublicCategory,
   PublicMainBoardEntry,
@@ -67,8 +66,9 @@ export function BoardPage({
               IST
             </time>
           </p>
-          <form action={refreshPublicBoard}>
+          <form action="/actions/refresh-board" method="post">
             <input type="hidden" name="kind" value={refreshContext.kind} />
+            <input type="hidden" name="returnTo" value={pageHref} />
             {refreshContext.kind === "today" ? (
               <input
                 type="hidden"

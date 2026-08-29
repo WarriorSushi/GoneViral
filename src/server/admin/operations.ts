@@ -24,8 +24,12 @@ export type AdminRequestContext = Readonly<{
 }>;
 
 export type AdminOperationResult = Readonly<{
+  cacheImpacts?: readonly Readonly<{
+    categorySlugs: readonly string[];
+    listingPublicId: string;
+    listingSlug: string;
+  }>[];
   kind: "applied" | "duplicate" | "rejected";
-  listingPublicIds?: readonly string[];
   message?: string;
 }>;
 
@@ -131,17 +135,22 @@ export async function moderateListing(input: {
     const [listing] = await transaction<
       {
         confirmed_total_paise: bigint;
+        category_slug: string;
         id: string;
         lifecycle_status: string;
         moderation_status: string;
         name: string;
         public_id: string;
+        slug: string;
       }[]
     >`
-      SELECT id, public_id, name, lifecycle_status, moderation_status,
-             confirmed_total_paise
-      FROM app.listings WHERE public_id = ${input.listingPublicId}
-      FOR UPDATE
+      SELECT listing.id, listing.public_id, listing.slug, listing.name,
+             listing.lifecycle_status, listing.moderation_status,
+             listing.confirmed_total_paise, category.slug AS category_slug
+      FROM app.listings AS listing
+      JOIN app.categories AS category ON category.id = listing.category_id
+      WHERE listing.public_id = ${input.listingPublicId}
+      FOR UPDATE OF listing
     `;
     if (!listing) return reject("Listing not found.");
     if (
@@ -221,8 +230,14 @@ export async function moderateListing(input: {
       },
     });
     return {
+      cacheImpacts: [
+        {
+          categorySlugs: [listing.category_slug],
+          listingPublicId: listing.public_id,
+          listingSlug: listing.slug,
+        },
+      ],
       kind: "applied",
-      listingPublicIds: [listing.public_id],
     } as const;
   });
 }
@@ -262,7 +277,6 @@ export async function resolveReport(input: {
     `;
     return {
       kind: "applied",
-      listingPublicIds: [report.listing_public_id],
     } as const;
   });
 }
@@ -285,20 +299,24 @@ export async function reviewChangeRequest(input: {
       const [request] = await transaction<
         {
           change_type: string;
+          category_slug: string;
           id: string;
           listing_id: string;
           old_value: Record<string, unknown>;
           proposed_value: Record<string, unknown>;
           public_id: string;
           listing_name: string;
+          listing_slug: string;
           state: string;
         }[]
       >`
       SELECT request.id, request.listing_id, request.change_type,
              request.old_value, request.proposed_value, request.state,
-             listing.public_id, listing.name AS listing_name
+             listing.public_id, listing.name AS listing_name,
+             listing.slug AS listing_slug, category.slug AS category_slug
       FROM private.listing_change_requests AS request
       JOIN app.listings AS listing ON listing.id = request.listing_id
+      JOIN app.categories AS category ON category.id = listing.category_id
       WHERE request.id = ${input.changeRequestId}
       FOR UPDATE OF request, listing
     `;
@@ -315,7 +333,7 @@ export async function reviewChangeRequest(input: {
       });
       if (inserted.length === 0) return { kind: "duplicate" } as const;
 
-      const affectedPublicIds = [request.public_id];
+      let approvedCategorySlug = request.category_slug;
       if (input.decision === "approved") {
         if (request.change_type === "name") {
           const name = request.proposed_value.name;
@@ -348,8 +366,8 @@ export async function reviewChangeRequest(input: {
           const categoryId = request.proposed_value.id;
           const [category] =
             typeof categoryId === "string"
-              ? await transaction<{ id: string }[]>`
-                SELECT id FROM app.categories WHERE id = ${categoryId}
+              ? await transaction<{ id: string; slug: string }[]>`
+                SELECT id, slug FROM app.categories WHERE id = ${categoryId}
                   AND is_active = true LIMIT 1
               `
               : [];
@@ -360,6 +378,7 @@ export async function reviewChangeRequest(input: {
             version = version + 1, updated_at = transaction_timestamp()
           WHERE id = ${request.listing_id}
         `;
+          approvedCategorySlug = category.slug;
         } else if (request.change_type === "destination") {
           const proposedUrl = request.proposed_value.url;
           if (typeof proposedUrl !== "string")
@@ -400,7 +419,6 @@ export async function reviewChangeRequest(input: {
                 version = version + 1, updated_at = transaction_timestamp()
             WHERE id = ${conflict.id} AND lifecycle_status = 'removed'
           `;
-            affectedPublicIds.push(conflict.public_id);
           }
           await transaction`
           UPDATE app.listings
@@ -434,8 +452,20 @@ export async function reviewChangeRequest(input: {
         },
       });
       return {
+        ...(input.decision === "approved"
+          ? {
+              cacheImpacts: [
+                {
+                  categorySlugs: [
+                    ...new Set([request.category_slug, approvedCategorySlug]),
+                  ],
+                  listingPublicId: request.public_id,
+                  listingSlug: request.listing_slug,
+                },
+              ],
+            }
+          : {}),
         kind: "applied",
-        listingPublicIds: affectedPublicIds,
       } as const;
     });
   } catch (error) {
@@ -548,7 +578,7 @@ export async function enqueueSafeManagementEmail(input: {
         'pending', transaction_timestamp()
       ) ON CONFLICT (idempotency_key) DO NOTHING
     `;
-    return { kind: "applied", listingPublicIds: [owner.public_id] } as const;
+    return { kind: "applied" } as const;
   });
 }
 

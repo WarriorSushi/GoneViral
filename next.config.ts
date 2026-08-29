@@ -12,10 +12,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ headers: [...securityHeaders()], source: "/:path*" }];
   },
-  poweredByHeader: false,
-  ...(storageUrl
-    ? {
-        images: {
+  images: {
+    formats: ["image/avif", "image/webp"],
+    imageSizes: [32, 48, 64, 96, 128],
+    qualities: [70, 75],
+    ...(storageUrl
+      ? {
           remotePatterns: [
             {
               hostname: storageUrl.hostname,
@@ -25,9 +27,10 @@ const nextConfig: NextConfig = {
                 "http" | "https",
             },
           ],
-        },
-      }
-    : {}),
+        }
+      : {}),
+  },
+  poweredByHeader: false,
   reactStrictMode: true,
   typedRoutes: true,
 };

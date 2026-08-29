@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { BoardPage } from "@/components/public/board-page";
+import { publicPageMetadata } from "@/config/seo";
 import {
   getCachedMainBoard,
   getCachedPublicCategories,
@@ -12,7 +13,15 @@ export async function generateMetadata(
   props: PageProps<"/category/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  return { title: `${slug.replaceAll("-", " ")} category` };
+  const categories = await getCachedPublicCategories();
+  const category = categories.find((item) => item.slug === slug);
+  if (!category)
+    return { robots: { index: false }, title: "Category unavailable" };
+  return publicPageMetadata({
+    description: `Paid leaderboard entries in ${category.name}, ordered by current confirmed totals.`,
+    path: `/category/${slug}`,
+    title: `${category.name} board`,
+  });
 }
 
 export default async function CategoryPage(

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Script from "next/script";
 import { useActionState } from "react";
 
@@ -99,6 +100,11 @@ export function ReportForm({
             ? "Report received"
             : "Send report"}
       </button>
+      <p className="provider-note">
+        Read the <Link href="/content-policy">content policy draft</Link> and{" "}
+        <Link href="/privacy">privacy draft</Link>, or use the{" "}
+        <Link href="/contact">contact / abuse hook</Link>.
+      </p>
     </form>
   );
 }

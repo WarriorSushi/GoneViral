@@ -14,9 +14,19 @@ function directive(name: string, values: readonly string[]): string {
 export function buildContentSecurityPolicy(input: {
   nodeEnvironment: string | undefined;
   sentryDsn: string | undefined;
+  siteUrl?: string | undefined;
   supabaseUrl: string | undefined;
 }): string {
   const development = input.nodeEnvironment === "development";
+  const siteOrigin = safeOrigin(input.siteUrl);
+  const localHttpSite = (() => {
+    if (!siteOrigin) return false;
+    const site = new URL(siteOrigin);
+    return (
+      site.protocol === "http:" &&
+      ["127.0.0.1", "localhost", "::1"].includes(site.hostname)
+    );
+  })();
   const supabaseOrigin = safeOrigin(input.supabaseUrl);
   const sentryOrigin = safeOrigin(input.sentryDsn);
   const cloudflare = "https://challenges.cloudflare.com";
@@ -48,7 +58,7 @@ export function buildContentSecurityPolicy(input: {
     directive("base-uri", ["'self'"]),
     directive("form-action", ["'self'"]),
     directive("frame-ancestors", ["'none'"]),
-    ...(input.nodeEnvironment === "production"
+    ...(input.nodeEnvironment === "production" && !localHttpSite
       ? ["upgrade-insecure-requests"]
       : []),
   ];
@@ -62,6 +72,7 @@ export function securityHeaders() {
       value: buildContentSecurityPolicy({
         nodeEnvironment: process.env.NODE_ENV,
         sentryDsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+        siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
         supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
       }),
     },

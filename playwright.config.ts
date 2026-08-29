@@ -18,7 +18,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: "pnpm exec next start --hostname 127.0.0.1 --port 3100",
+    command: "node scripts/e2e/serve-production.mjs",
     env: {
       DATABASE_DIRECT_URL: directDatabaseUrl,
       DATABASE_URL: runtimeDatabaseUrl,
@@ -58,6 +58,34 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 320, height: 568 },
+      },
+    },
+    {
+      name: "android-412",
+      use: {
+        ...devices["Pixel 7"],
+        browserName: "chromium",
+      },
+    },
+    {
+      name: "tablet-834",
+      use: {
+        ...devices["iPad Pro 11"],
+        browserName: "webkit",
+      },
+    },
+    {
+      name: "firefox-1440",
+      use: {
+        ...devices["Desktop Firefox"],
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+    {
+      name: "webkit-1440",
+      use: {
+        ...devices["Desktop Safari"],
+        viewport: { width: 1440, height: 900 },
       },
     },
   ],

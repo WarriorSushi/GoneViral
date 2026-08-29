@@ -10,8 +10,18 @@ import { submitJoinForm, type JoinActionState } from "@/app/join/actions";
 
 const initialState: JoinActionState = {};
 
-function FieldError({ message }: { message: string | undefined }) {
-  return message ? <p className="field-error">{message}</p> : null;
+function FieldError({
+  field,
+  message,
+}: {
+  field: string;
+  message: string | undefined;
+}) {
+  return message ? (
+    <p className="field-error" id={`${field}-error`} role="alert">
+      {message}
+    </p>
+  ) : null;
 }
 
 export function JoinForm({
@@ -62,16 +72,26 @@ export function JoinForm({
           <label>
             Name
             <input
+              aria-describedby={state.errors?.name ? "name-error" : undefined}
+              aria-invalid={Boolean(state.errors?.name)}
               name="name"
               maxLength={160}
               autoComplete="organization"
               required
             />
-            <FieldError message={state.errors?.name} />
+            <FieldError field="name" message={state.errors?.name} />
           </label>
           <label>
             Category
-            <select name="category" defaultValue="" required>
+            <select
+              aria-describedby={
+                state.errors?.category ? "category-error" : undefined
+              }
+              aria-invalid={Boolean(state.errors?.category)}
+              name="category"
+              defaultValue=""
+              required
+            >
               <option value="" disabled>
                 Choose one
               </option>
@@ -81,23 +101,38 @@ export function JoinForm({
                 </option>
               ))}
             </select>
-            <FieldError message={state.errors?.category} />
+            <FieldError field="category" message={state.errors?.category} />
           </label>
           <label className="form-wide">
             Tagline
-            <input name="tagline" maxLength={320} required />
-            <FieldError message={state.errors?.tagline} />
+            <input
+              aria-describedby={
+                state.errors?.tagline ? "tagline-error" : undefined
+              }
+              aria-invalid={Boolean(state.errors?.tagline)}
+              name="tagline"
+              maxLength={320}
+              required
+            />
+            <FieldError field="tagline" message={state.errors?.tagline} />
           </label>
           <label className="form-wide">
             Website URL
             <input
+              aria-describedby={
+                state.errors?.destination ? "destination-error" : undefined
+              }
+              aria-invalid={Boolean(state.errors?.destination)}
               name="destination"
               type="url"
               inputMode="url"
               placeholder="https://example.com"
               required
             />
-            <FieldError message={state.errors?.destination} />
+            <FieldError
+              field="destination"
+              message={state.errors?.destination}
+            />
           </label>
         </div>
       </fieldset>
@@ -112,12 +147,21 @@ export function JoinForm({
         <div className="form-grid">
           <label>
             Email
-            <input name="email" type="email" autoComplete="email" required />
-            <FieldError message={state.errors?.email} />
+            <input
+              aria-describedby={state.errors?.email ? "email-error" : undefined}
+              aria-invalid={Boolean(state.errors?.email)}
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+            />
+            <FieldError field="email" message={state.errors?.email} />
           </label>
           <label>
             Phone
             <input
+              aria-describedby={state.errors?.phone ? "phone-error" : undefined}
+              aria-invalid={Boolean(state.errors?.phone)}
               name="phone"
               type="tel"
               inputMode="tel"
@@ -125,11 +169,15 @@ export function JoinForm({
               placeholder="+919876543210"
               required
             />
-            <FieldError message={state.errors?.phone} />
+            <FieldError field="phone" message={state.errors?.phone} />
           </label>
           <label className="amount-field">
             Amount (₹)
             <input
+              aria-describedby={
+                state.errors?.amount ? "amount-error" : undefined
+              }
+              aria-invalid={Boolean(state.errors?.amount)}
               name="amount"
               type="number"
               inputMode="numeric"
@@ -139,7 +187,7 @@ export function JoinForm({
               defaultValue={initialAmountRupees}
               required
             />
-            <FieldError message={state.errors?.amount} />
+            <FieldError field="amount" message={state.errors?.amount} />
           </label>
         </div>
       </fieldset>
@@ -153,7 +201,14 @@ export function JoinForm({
           or a permanent rank.
         </p>
         <label className="check-row">
-          <input name="termsAccepted" type="checkbox" value="yes" required />
+          <input
+            aria-describedby={state.errors?.terms ? "terms-error" : undefined}
+            aria-invalid={Boolean(state.errors?.terms)}
+            name="termsAccepted"
+            type="checkbox"
+            value="yes"
+            required
+          />
           <span>
             I accept the <Link href="/terms">terms</Link>,{" "}
             <Link href="/privacy">privacy policy</Link>,{" "}
@@ -161,7 +216,7 @@ export function JoinForm({
             <Link href="/content-policy">content policy</Link>.
           </span>
         </label>
-        <FieldError message={state.errors?.terms} />
+        <FieldError field="terms" message={state.errors?.terms} />
         {turnstileSiteKey ? (
           <>
             <Script
@@ -175,11 +230,13 @@ export function JoinForm({
             />
           </>
         ) : null}
-        <FieldError message={state.errors?.turnstile} />
+        <FieldError field="turnstile" message={state.errors?.turnstile} />
       </fieldset>
 
       {state.errors?.form ? (
-        <p className="form-notice error-notice">{state.errors.form}</p>
+        <p className="form-notice error-notice" role="alert">
+          {state.errors.form}
+        </p>
       ) : null}
       {state.message ? (
         <p className="form-notice" role="status">
@@ -195,7 +252,8 @@ export function JoinForm({
       </button>
       <p className="provider-note">
         Checkout is provided by Dodo Payments. Your listing stays pending until
-        payment is verified.
+        payment is verified.{" "}
+        <Link href="/contact">Contact or report abuse</Link>.
       </p>
     </form>
   );

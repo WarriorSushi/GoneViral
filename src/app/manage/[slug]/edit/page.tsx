@@ -60,6 +60,7 @@ export default async function EditListingPage({
           <Image
             alt={`${listing.name} current logo`}
             height={96}
+            sizes="96px"
             src={listing.logoUrl}
             width={96}
           />

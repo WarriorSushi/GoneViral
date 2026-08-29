@@ -8,6 +8,7 @@ import { refreshPublicBoard } from "@/app/actions/refresh-public-board";
 import { Money } from "@/components/public/money";
 import { ShareControls } from "@/components/public/share-controls";
 import { SponsoredDisclosure } from "@/components/public/sponsored-disclosure";
+import { canonicalUrl } from "@/config/seo";
 import { toIstBusinessDate } from "@/domain/today";
 import { getCachedPublicListingDetail } from "@/server/cache/public-read-model";
 import type { PublicMovementKind } from "@/server/db/repositories/public-types";
@@ -23,13 +24,18 @@ export async function generateMetadata(
   );
   if (!listing)
     return { robots: { index: false }, title: "Listing unavailable" };
-  const description = `${listing.name} is currently #${listing.currentMainRank} on the sponsored GoneViral.in leaderboard, with ${listing.uniqueClicks} privacy-preserving tracked outbound clicks.`;
+  const description = `${listing.name} is currently #${listing.currentMainRank} on the paid GoneViral.in leaderboard. Order is based on confirmed totals.`;
+  const url = canonicalUrl(`/l/${listing.slug}`);
   return {
+    alternates: { canonical: url },
     description,
     openGraph: {
       description,
+      locale: "en_IN",
+      siteName: "GoneViral.in",
       title: `${listing.name} is #${listing.currentMainRank}`,
       type: "website",
+      url,
     },
     title: `${listing.name} · #${listing.currentMainRank}`,
     twitter: {
@@ -66,7 +72,8 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
             alt={`${listing.name} logo`}
             className="listing-mark listing-mark-large listing-logo"
             height={96}
-            priority
+            preload
+            sizes="96px"
             src={listing.logoUrl}
             width={96}
           />

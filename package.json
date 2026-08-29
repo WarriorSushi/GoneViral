@@ -20,6 +20,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "test:performance": "vitest run --config vitest.performance.config.ts",
+    "perf:query-plans": "node scripts/performance/phase14-query-plans.mjs",
     "test:database": "vitest run --config vitest.database.config.ts",
     "security:verify-build": "node scripts/security/verify-build.mjs",
     "ops:rehearse-restore": "node scripts/operations/rehearse-critical-restore.mjs",

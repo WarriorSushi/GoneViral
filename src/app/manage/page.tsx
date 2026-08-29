@@ -40,8 +40,8 @@ export default async function ManagePage({ searchParams }: ManagePageProps) {
           <p className="eyebrow">Owner access</p>
           <h1 id="manage-title">Manage your GoneViral listing</h1>
           <p>
-            Enter the email used to sponsor. We’ll send a secure sign-in link if
-            a listing is associated with it.
+            Enter the email used to pay. We’ll send a secure sign-in link if a
+            listing is associated with it.
           </p>
           {query.error === "auth" ? (
             <p className="form-notice error-notice" role="alert">
@@ -83,7 +83,7 @@ export default async function ManagePage({ searchParams }: ManagePageProps) {
 
       {query.claimed === "1" ? (
         <p className="form-notice" role="status">
-          Your verified sponsorships have been claimed.
+          Your verified payments have been claimed.
         </p>
       ) : null}
 

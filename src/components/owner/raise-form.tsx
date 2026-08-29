@@ -92,7 +92,7 @@ export function RaiseForm({
         />
       </label>
       <p className="field-help">
-        Minimum from the immutable original sponsorship:{" "}
+        Minimum from the immutable original payment:{" "}
         {formatWholeRupees(minimumRupees)}.
       </p>
       {state.errors?.amount ? (

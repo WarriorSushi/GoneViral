@@ -145,6 +145,11 @@ type TodayBoardRow = MainBoardRow &
     todayTotalReachedAt: Date;
   }>;
 
+export type PublicSitemapEntry = Readonly<{
+  slug: string;
+  updatedAt: string;
+}>;
+
 function publicLogoUrl(row: MainBoardRow): string | null {
   const base = readPublicEnv().NEXT_PUBLIC_SUPABASE_URL;
   if (!base || !row.logoPublicBucket || !row.logoPublicObjectKey) return null;
@@ -209,12 +214,9 @@ export async function listMainBoard(input: {
         l.destination_url as "destinationUrl",
         l.confirmed_total_paise as "confirmedTotalPaise",
         l.current_total_reached_at as "currentTotalReachedAt",
-        asset.public_bucket as "logoPublicBucket",
-        asset.public_object_key as "logoPublicObjectKey",
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
-        coalesce(clicks.unique_clicks, 0)::bigint as "uniqueClicks",
         row_number() over (
           order by l.confirmed_total_paise desc,
                    l.current_total_reached_at asc,
@@ -222,26 +224,37 @@ export async function listMainBoard(input: {
         ) as rank
       from app.listings l
       inner join app.categories c on c.id = l.category_id
-      left join app.listing_assets asset
-        on asset.id = l.logo_asset_id and asset.listing_id = l.id
-       and asset.state = 'ready' and asset.kind = 'logo'
-      left join lateral (
-        select sum(click.unique_clicks)::bigint as unique_clicks
-        from app.listing_click_daily_totals click
-        where click.listing_id = l.id
-      ) clicks on true
       where l.lifecycle_status = 'active'
         and l.moderation_status = 'clear'
         and l.confirmed_total_paise > 0
         and l.destination_url ~ '^https://'
         ${categoryPredicate}
+    ), page as materialized (
+      select * from ranked r
+      ${cursorPredicate}
+      order by r."confirmedTotalPaise" desc,
+               r."currentTotalReachedAt" asc,
+               r.id asc
+      limit ${limit + 1}
     )
-    select * from ranked r
-    ${cursorPredicate}
-    order by r."confirmedTotalPaise" desc,
-             r."currentTotalReachedAt" asc,
-             r.id asc
-    limit ${limit + 1}
+    select page.*,
+           selected_asset.public_bucket as "logoPublicBucket",
+           selected_asset.public_object_key as "logoPublicObjectKey",
+           coalesce(clicks.unique_clicks, 0)::bigint as "uniqueClicks"
+    from page
+    left join app.listings source_listing on source_listing.id = page.id
+    left join app.listing_assets selected_asset
+      on selected_asset.id = source_listing.logo_asset_id
+     and selected_asset.listing_id = source_listing.id
+     and selected_asset.state = 'ready' and selected_asset.kind = 'logo'
+    left join lateral (
+      select sum(click.unique_clicks)::bigint as unique_clicks
+      from app.listing_click_daily_totals click
+      where click.listing_id = page.id
+    ) clicks on true
+    order by page."confirmedTotalPaise" desc,
+             page."currentTotalReachedAt" asc,
+             page.id asc
   `;
 
   const generatedAt = new Date().toISOString();
@@ -311,12 +324,9 @@ export async function listTodayBoard(input: {
         l.destination_url as "destinationUrl",
         l.confirmed_total_paise as "confirmedTotalPaise",
         l.current_total_reached_at as "currentTotalReachedAt",
-        asset.public_bucket as "logoPublicBucket",
-        asset.public_object_key as "logoPublicObjectKey",
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
-        coalesce(clicks.unique_clicks, 0)::bigint as "uniqueClicks",
         d.net_amount_paise as "todayNetPaise",
         d.total_reached_at as "todayTotalReachedAt",
         row_number() over (
@@ -327,14 +337,6 @@ export async function listTodayBoard(input: {
       from app.listing_daily_totals d
       inner join app.listings l on l.id = d.listing_id
       inner join app.categories c on c.id = l.category_id
-      left join app.listing_assets asset
-        on asset.id = l.logo_asset_id and asset.listing_id = l.id
-       and asset.state = 'ready' and asset.kind = 'logo'
-      left join lateral (
-        select sum(click.unique_clicks)::bigint as unique_clicks
-        from app.listing_click_daily_totals click
-        where click.listing_id = l.id
-      ) clicks on true
       where d.business_date = ${input.businessDate}
         and d.net_amount_paise > 0
         and l.lifecycle_status = 'active'
@@ -342,13 +344,32 @@ export async function listTodayBoard(input: {
         and l.confirmed_total_paise > 0
         and l.destination_url ~ '^https://'
         and c.is_active = true
+    ), page as materialized (
+      select * from ranked r
+      ${cursorPredicate}
+      order by r."todayNetPaise" desc,
+               r."todayTotalReachedAt" asc,
+               r.id asc
+      limit ${limit + 1}
     )
-    select * from ranked r
-    ${cursorPredicate}
-    order by r."todayNetPaise" desc,
-             r."todayTotalReachedAt" asc,
-             r.id asc
-    limit ${limit + 1}
+    select page.*,
+           asset.public_bucket as "logoPublicBucket",
+           asset.public_object_key as "logoPublicObjectKey",
+           coalesce(clicks.unique_clicks, 0)::bigint as "uniqueClicks"
+    from page
+    left join app.listings source_listing on source_listing.id = page.id
+    left join app.listing_assets asset
+      on asset.id = source_listing.logo_asset_id
+     and asset.listing_id = source_listing.id
+     and asset.state = 'ready' and asset.kind = 'logo'
+    left join lateral (
+      select sum(click.unique_clicks)::bigint as unique_clicks
+      from app.listing_click_daily_totals click
+      where click.listing_id = page.id
+    ) clicks on true
+    order by page."todayNetPaise" desc,
+             page."todayTotalReachedAt" asc,
+             page.id asc
   `;
 
   const generatedAt = new Date().toISOString();
@@ -631,5 +652,28 @@ export async function listPublicCategories(): Promise<PublicCategory[]> {
     name: row.name,
     slug: row.slug,
     sortOrder: row.sortOrder,
+  }));
+}
+
+/** Minimal allowlisted projection for public, indexable listing URLs only. */
+export async function listPublicSitemapEntries(): Promise<
+  readonly PublicSitemapEntry[]
+> {
+  const rows = await getSqlClient()<
+    { slug: string; updatedAt: Date | string }[]
+  >`
+    select listing.slug, listing.updated_at as "updatedAt"
+    from app.listings as listing
+    join app.categories as category on category.id = listing.category_id
+    where listing.lifecycle_status = 'active'
+      and listing.moderation_status = 'clear'
+      and listing.confirmed_total_paise > 0
+      and listing.destination_url ~ '^https://'
+      and category.is_active = true
+    order by listing.id asc
+  `;
+  return rows.map((row) => ({
+    slug: row.slug,
+    updatedAt: isoTimestamp(row.updatedAt),
   }));
 }

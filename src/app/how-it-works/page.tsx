@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "How it works" };
+import { publicPageMetadata } from "@/config/seo";
+
+export const metadata: Metadata = publicPageMetadata({
+  description:
+    "Add your work, pay at least ₹499, and move up when a larger confirmed total changes the order.",
+  path: "/how-it-works",
+  title: "How it works",
+});
 
 export default function HowItWorksPage() {
   return (

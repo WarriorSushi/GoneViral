@@ -19,7 +19,13 @@ describe("private recipient encryption", () => {
   it("rejects tampered authenticated ciphertext", () => {
     vi.stubEnv("NODE_ENV", "test");
     const encrypted = encryptPrivateText("owner@example.com");
-    expect(() => decryptPrivateText(`${encrypted.slice(0, -1)}x`)).toThrow();
+    const parts = encrypted.split(".");
+    const ciphertext = Buffer.from(parts[3]!, "base64url");
+    ciphertext[0] = ciphertext[0]! ^ 1;
+    parts[3] = ciphertext.toString("base64url");
+    expect(() => decryptPrivateText(parts.join("."))).toThrow(
+      "private_text_authentication_failed",
+    );
   });
 
   it("decrypts old envelopes through the explicit previous-key rotation window", () => {

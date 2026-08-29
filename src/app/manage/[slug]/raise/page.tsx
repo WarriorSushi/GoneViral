@@ -69,7 +69,7 @@ export default async function RaisePage({
           <p>
             Current total{" "}
             {formatInr(moneyPaise(BigInt(listing.confirmedTotalPaise)))}.
-            Original{" "}
+            Original payment{" "}
             {formatInr(moneyPaise(BigInt(listing.originalSponsorshipPaise)))}{" "}
             never changes.
           </p>

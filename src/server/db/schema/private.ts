@@ -322,6 +322,10 @@ export const providerEvents = privateSchema.table(
       table.processingState,
       table.receivedAt,
     ),
+    index("provider_events_received_idx").on(table.receivedAt.desc()),
+    index("provider_events_quarantine_received_idx")
+      .on(table.receivedAt.desc(), table.id)
+      .where(sql`${table.processingState} = 'quarantined'`),
   ],
 );
 
@@ -892,6 +896,14 @@ export const emailOutbox = privateSchema.table(
       .on(table.providerMessageId)
       .where(sql`${table.providerMessageId} is not null`),
     index("email_outbox_delivery_idx").on(table.state, table.nextAttemptAt),
+    index("email_outbox_worker_idx")
+      .on(table.nextAttemptAt, table.createdAt, table.id)
+      .where(sql`${table.state} in ('pending', 'failed_retryable', 'sending')`),
+    index("email_outbox_exception_created_idx")
+      .on(table.createdAt.desc(), table.id)
+      .where(
+        sql`${table.state} in ('failed_retryable', 'dead_letter') or ${table.deliveryState} in ('delayed', 'bounced', 'complained', 'failed', 'suppressed')`,
+      ),
   ],
 );
 
@@ -1057,6 +1069,9 @@ export const reconciliationItems = privateSchema.table(
       table.state,
       table.createdAt,
     ),
+    index("reconciliation_items_open_created_idx")
+      .on(table.createdAt.desc(), table.id)
+      .where(sql`${table.state} in ('open', 'investigating')`),
     index("reconciliation_items_attempt_idx").on(table.paymentAttemptId),
     index("reconciliation_items_listing_idx").on(table.listingId),
     index("reconciliation_items_resolved_by_idx").on(table.resolvedBy),

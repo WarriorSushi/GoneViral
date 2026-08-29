@@ -83,6 +83,15 @@ test("production build renders a truthful empty board", async ({
 
   const response = await page.goto("/");
   expect(response?.ok()).toBe(true);
+  // The production cache intentionally survives direct database test-fixture
+  // changes. Exercise the real invalidation action after each project reset.
+  const refreshResponse = page.waitForResponse(
+    (candidate) =>
+      candidate.request().method() === "POST" &&
+      new URL(candidate.url()).pathname === "/actions/refresh-board",
+  );
+  await page.getByRole("button", { name: "Refresh board" }).click();
+  expect((await refreshResponse).status()).toBe(303);
   const headers = response?.headers() ?? {};
   expect(headers["content-security-policy"]).toContain(
     "frame-ancestors 'none'",
@@ -112,6 +121,52 @@ test("production build renders a truthful empty board", async ({
   await capture(page, testInfo, `${testInfo.project.name}-empty`);
 });
 
+test("robots, sitemap, canonicals, and draft legal metadata stay public-safe", async ({
+  page,
+}) => {
+  const robots = await page.request.get("/robots.txt");
+  expect(robots.status()).toBe(200);
+  const robotsText = await robots.text();
+  for (const path of [
+    "/actions",
+    "/admin",
+    "/api",
+    "/auth",
+    "/join",
+    "/manage",
+  ]) {
+    expect(robotsText).toContain(`Disallow: ${path}`);
+  }
+  expect(robotsText).toContain("Sitemap: https://goneviral.in/sitemap.xml");
+
+  const sitemap = await page.request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("https://goneviral.in/");
+  for (const path of [
+    "/actions",
+    "/admin",
+    "/api",
+    "/auth",
+    "/join",
+    "/manage",
+  ]) {
+    expect(sitemapText).not.toContain(`goneviral.in${path}`);
+  }
+  await expectNoPrivateMarkers(sitemapText);
+
+  await page.goto("/terms");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex/,
+  );
+  await expect(
+    page.getByText("Counsel-pending draft — not effective."),
+  ).toBeVisible();
+  await expect(page.getByText("2026-08-29-phase14")).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
 test("signed-out management is generic, same-origin, and not publicly cached", async ({
   page,
 }, testInfo) => {
@@ -125,7 +180,7 @@ test("signed-out management is generic, same-origin, and not publicly cached", a
   ).toBeVisible();
   const applicationOrigin = new URL(page.url()).origin;
   await page
-    .getByLabel("Email used to sponsor")
+    .getByLabel("Email used to pay")
     .fill(`not-associated-${Date.now()}@example.com`);
   await page.getByRole("button", { name: "Send secure link" }).click();
   await expect(
@@ -239,6 +294,18 @@ test("low-population Main board is first-viewport, accessible, and private-data 
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
+
+  for (const target of [
+    page.getByRole("button", { name: "Refresh board" }),
+    page.getByRole("link", { name: "Today", exact: true }).first(),
+    page.getByRole("link", { name: "More info about Monsoon Studio" }),
+    rankAction,
+  ]) {
+    const box = await target.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+    expect(box!.width).toBeGreaterThanOrEqual(44);
+  }
   await capture(page, testInfo, `${testInfo.project.name}-low-population`);
 });
 
@@ -652,10 +719,10 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
     page.getByRole("heading", { name: "Payment history" }),
   ).toBeVisible();
   const initialPayment = page.getByRole("row", {
-    name: /Initial sponsorship/,
+    name: /Initial payment/,
   });
   await expect(initialPayment).toBeVisible();
-  await expect(initialPayment.getByLabel("₹499 Indian rupees")).toBeVisible();
+  await expect(initialPayment.getByLabel("499 Indian rupees")).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await expectNoHorizontalOverflow(page);
 
@@ -713,7 +780,7 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
     page.getByRole("heading", { name: "Raise Phase Five Studio" }),
   ).toBeVisible();
   await expect(
-    page.getByText(/immutable original sponsorship: ₹1,000/i),
+    page.getByText(/immutable original payment: ₹1,000/i),
   ).toBeVisible();
   await page.getByLabel("Payment phone").fill("+919876543210");
   await page.getByRole("button", { name: "Continue to Dodo checkout" }).click();
@@ -723,7 +790,7 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   await page.getByRole("button", { name: "Complete mock payment" }).click();
   await expect(
     page.getByRole("heading", {
-      name: "₹1,000 Indian rupees was added.",
+      name: "1,000 Indian rupees was added.",
     }),
   ).toBeVisible({ timeout: 12_000 });
   await expect(page.getByText(/Actual Main position:/)).toBeVisible();
@@ -774,8 +841,18 @@ test("keyboard focus, 200% zoom, and reduced motion remain usable", async ({
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
-  await page.keyboard.press("Tab");
   const skipLink = page.getByRole("link", { name: "Skip to content" });
+  if (
+    testInfo.project.name === "tablet-834" ||
+    testInfo.project.name === "webkit-1440"
+  ) {
+    // Playwright WebKit mirrors Safari's host-level tab-to-links preference,
+    // which automation cannot enable. Verify its focus rendering directly;
+    // Chromium and Firefox below exercise the true keyboard sequence.
+    await skipLink.focus();
+  } else {
+    await page.keyboard.press("Tab");
+  }
   await expect(skipLink).toBeFocused();
   await expect(skipLink).toBeVisible();
   await expect(skipLink).toHaveCSS("outline-style", "solid");

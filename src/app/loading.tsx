@@ -1,13 +1,18 @@
 export default function Loading() {
   return (
-    <main
-      className="error-shell"
-      aria-busy="true"
-      aria-label="Loading GoneViral"
-    >
-      <div>
-        <p>Loading…</p>
-        <div className="loading-bar" aria-hidden="true" />
+    <main className="public-main loading-shell" aria-busy="true">
+      <p className="visually-hidden" role="status">
+        Loading this page…
+      </p>
+      <div className="loading-heading" aria-hidden="true">
+        <div />
+        <div />
+      </div>
+      <div className="loading-controls" aria-hidden="true" />
+      <div className="loading-rows" aria-hidden="true">
+        {Array.from({ length: 5 }, (_, index) => (
+          <div key={index} />
+        ))}
       </div>
     </main>
   );

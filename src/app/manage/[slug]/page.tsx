@@ -22,7 +22,7 @@ type OwnerListingPageProps = { params: Promise<{ slug: string }> };
 const paymentLabels: Record<string, string> = {
   chargeback: "Chargeback",
   chargeback_restoration: "Chargeback restored",
-  initial_sponsorship: "Initial sponsorship",
+  initial_sponsorship: "Initial payment",
   raise: "Raise",
   refund: "Refund",
   refund_restoration: "Refund restored",
@@ -79,7 +79,7 @@ export default async function OwnerListingPage({
             <Money paise={listing.confirmedTotalPaise} />
           </strong>
           <small>
-            Original: <Money paise={listing.originalSponsorshipPaise} />
+            Original payment: <Money paise={listing.originalSponsorshipPaise} />
           </small>
         </div>
         <div>
@@ -134,37 +134,53 @@ export default async function OwnerListingPage({
         {history.length === 0 ? (
           <p>No confirmed entries yet.</p>
         ) : (
-          <div
-            className="owner-history-table"
-            role="table"
-            aria-label="Payment history"
-          >
-            {history.map((item, index) => (
-              <div
-                className="owner-history-row"
-                key={`${item.appliedAt}-${item.entryType}-${index}`}
-                role="row"
-              >
-                <div role="cell">
-                  <strong>
-                    {paymentLabels[item.entryType] ?? "Financial adjustment"}
-                  </strong>
-                  <span>
-                    {new Intl.DateTimeFormat("en-IN", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                      timeZone: "Asia/Kolkata",
-                    }).format(new Date(item.appliedAt))}
-                  </span>
-                </div>
-                <div role="cell">
-                  <Money paise={item.amountDeltaPaise} />
-                </div>
-              </div>
-            ))}
-          </div>
+          <table className="owner-history-table">
+            <caption className="visually-hidden">
+              Confirmed payment and adjustment history
+            </caption>
+            <thead className="visually-hidden">
+              <tr>
+                <th scope="col">Entry and date</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((item, index) => (
+                <tr
+                  className="owner-history-row"
+                  key={`${item.appliedAt}-${item.entryType}-${index}`}
+                >
+                  <td>
+                    <strong>
+                      {paymentLabels[item.entryType] ?? "Financial adjustment"}
+                    </strong>
+                    <span>
+                      {new Intl.DateTimeFormat("en-IN", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                        timeZone: "Asia/Kolkata",
+                      }).format(new Date(item.appliedAt))}
+                    </span>
+                  </td>
+                  <td>
+                    <Money paise={item.amountDeltaPaise} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </section>
+
+      <aside className="owner-trust-links" aria-label="Support and policies">
+        <strong>Need help with a payment or listing?</strong>
+        <p>
+          Review the <Link href="/terms">terms draft</Link>,{" "}
+          <Link href="/privacy">privacy draft</Link>,{" "}
+          <Link href="/refunds">refund draft</Link>, or use the{" "}
+          <Link href="/contact">contact / abuse hook</Link>.
+        </p>
+      </aside>
     </main>
   );
 }

@@ -5,7 +5,7 @@ const legalLinks = [
   { href: "/privacy", label: "Privacy" },
   { href: "/refunds", label: "Refunds" },
   { href: "/content-policy", label: "Content policy" },
-  { href: "/contact", label: "Contact" },
+  { href: "/contact", label: "Contact / report abuse" },
 ] as const;
 
 export function SiteFooter() {
@@ -15,7 +15,7 @@ export function SiteFooter() {
         <Link className="wordmark footer-wordmark" href="/">
           Gone<span>Viral</span>.in
         </Link>
-        <p>A paid leaderboard for people who make things.</p>
+        <p>Paid list. Money decides the order. No outcome is guaranteed.</p>
       </div>
       <nav aria-label="Legal and trust links">
         <Link href="/how-it-works">How it works</Link>

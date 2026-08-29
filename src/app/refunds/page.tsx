@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { LegalPlaceholder } from "@/components/public/legal-placeholder";
+import { draftLegalRobots } from "@/config/seo";
 
-export const metadata: Metadata = { title: "Refunds placeholder" };
+export const metadata: Metadata = {
+  robots: draftLegalRobots,
+  title: "Refunds — draft",
+};
 export default function RefundsPage() {
   return (
     <LegalPlaceholder

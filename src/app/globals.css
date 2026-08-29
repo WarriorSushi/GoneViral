@@ -39,10 +39,6 @@ html {
 }
 
 body {
-  overflow-x: clip;
-}
-
-body {
   margin: 0;
   background: var(--canvas);
   color: var(--ink);
@@ -70,6 +66,22 @@ select:focus-visible {
   border-radius: 10px;
   outline: 3px solid var(--focus);
   outline-offset: 3px;
+}
+
+textarea:focus-visible {
+  border-radius: 10px;
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
 }
 
 .join-main {
@@ -160,7 +172,8 @@ select:focus-visible {
 }
 
 .join-form input:not([type="checkbox"]),
-.join-form select {
+.join-form select,
+.join-form textarea {
   width: 100%;
   min-height: 46px;
   padding: 10px 12px;
@@ -169,6 +182,11 @@ select:focus-visible {
   background: var(--surface);
   color: var(--ink);
   font-weight: 500;
+}
+
+.join-form textarea {
+  min-height: 132px;
+  resize: vertical;
 }
 
 .field-help {
@@ -189,6 +207,7 @@ select:focus-visible {
   gap: 10px;
   align-items: start;
   font-size: 0.88rem;
+  min-height: 46px;
 }
 
 .check-row input {
@@ -375,7 +394,7 @@ select:focus-visible {
 
 .desktop-nav a,
 .site-footer nav a {
-  min-height: 44px;
+  min-height: 46px;
   align-content: center;
   color: var(--ink-soft);
   font-size: 0.9rem;
@@ -399,7 +418,7 @@ select:focus-visible {
 .button,
 .refresh-button {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 46px;
   align-items: center;
   justify-content: center;
   border: 1px solid transparent;
@@ -735,8 +754,14 @@ select:focus-visible {
 }
 
 .owner-history-table {
+  display: block;
+  width: 100%;
   margin-top: 18px;
   border-top: 1px solid var(--line);
+}
+
+.owner-history-table tbody {
+  display: block;
 }
 
 .owner-history-row {
@@ -748,9 +773,13 @@ select:focus-visible {
   border-bottom: 1px solid var(--line);
 }
 
-.owner-history-row div:first-child {
+.owner-history-row td:first-child {
   display: grid;
   gap: 2px;
+}
+
+.owner-history-row td:last-child {
+  text-align: right;
 }
 
 .owner-history-row span:not(.money) {
@@ -760,6 +789,24 @@ select:focus-visible {
 
 .owner-history-row .money {
   font-weight: 780;
+}
+
+.owner-trust-links {
+  margin-top: 18px;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface-soft);
+}
+
+.owner-trust-links p {
+  margin: 5px 0 0;
+  color: var(--ink-soft);
+}
+
+.owner-trust-links a {
+  color: var(--signal-hover);
+  font-weight: 700;
 }
 
 .owner-phase-note {
@@ -859,7 +906,7 @@ select:focus-visible {
 }
 
 .board-tabs a {
-  min-height: 38px;
+  min-height: 46px;
   align-content: center;
   padding: 7px 15px;
   border-radius: 999px;
@@ -887,7 +934,7 @@ select:focus-visible {
 }
 
 .category-tabs a {
-  min-height: 38px;
+  min-height: 46px;
   flex: 0 0 auto;
   align-content: center;
   padding: 7px 12px;
@@ -925,7 +972,7 @@ select:focus-visible {
 }
 
 .refresh-button {
-  min-height: 38px;
+  min-height: 46px;
   font-size: 0.76rem;
 }
 
@@ -958,6 +1005,8 @@ select:focus-visible {
     border-color 160ms ease,
     background 160ms ease,
     box-shadow 160ms ease;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100px;
 }
 
 .leaderboard-card:is(:hover, :focus-within) {
@@ -1143,7 +1192,7 @@ select:focus-visible {
 .button-more-info {
   position: relative;
   z-index: 3;
-  min-height: 36px;
+  min-height: 46px;
   padding: 8px 11px;
   font-size: 0.74rem;
   white-space: nowrap;
@@ -1683,6 +1732,29 @@ select:focus-visible {
   margin: 4px 0 0;
 }
 
+.legal-version {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+
+.legal-version div {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.35fr) 1fr;
+  gap: 12px;
+}
+
+.legal-version dt {
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.legal-version dd {
+  margin: 0;
+  font-family: var(--font-geist-mono), monospace;
+  overflow-wrap: anywhere;
+}
+
 .legal-copy {
   max-width: 72ch;
 }
@@ -1725,7 +1797,7 @@ select:focus-visible {
 }
 
 .site-footer nav a {
-  min-height: 36px;
+  min-height: 46px;
 }
 
 .footer-meta {
@@ -1760,41 +1832,61 @@ select:focus-visible {
 }
 
 .error-panel button {
-  min-height: 44px;
+  min-height: 46px;
   padding: 10px 16px;
   border: 0;
   border-radius: 999px;
   background: var(--signal);
-  color: var(--ink);
+  color: #fff;
   font-weight: 700;
   cursor: pointer;
 }
 
-.loading-bar {
-  width: min(240px, 80vw);
-  height: 5px;
-  overflow: hidden;
+.loading-shell {
+  width: min(100%, 1080px);
+  margin-inline: auto;
+}
+
+.loading-heading {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 24px 0;
+}
+
+.loading-heading div,
+.loading-controls,
+.loading-rows div {
+  background: var(--surface-soft);
+}
+
+.loading-heading div:first-child {
+  width: min(420px, 78vw);
+  height: 54px;
+  border-radius: 18px;
+}
+
+.loading-heading div:last-child {
+  width: min(560px, 88vw);
+  height: 22px;
   border-radius: 999px;
-  background: var(--line);
 }
 
-.loading-bar::after {
-  display: block;
-  width: 45%;
-  height: 100%;
-  animation: loading-slide 900ms ease-in-out infinite alternate;
-  border-radius: inherit;
-  background: var(--signal);
-  content: "";
+.loading-controls {
+  height: 58px;
+  margin-bottom: 12px;
+  border-block: 1px solid var(--line);
 }
 
-@keyframes loading-slide {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(125%);
-  }
+.loading-rows {
+  display: grid;
+  gap: 16px;
+}
+
+.loading-rows div {
+  min-height: 100px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
 }
 
 @media (max-width: 1023px) {
@@ -1819,8 +1911,8 @@ select:focus-visible {
   }
 
   .mobile-menu summary {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 46px;
+    min-height: 46px;
     align-content: center;
     cursor: pointer;
     font-weight: 700;
@@ -1845,7 +1937,7 @@ select:focus-visible {
   }
 
   .mobile-menu nav a {
-    min-height: 44px;
+    min-height: 46px;
     align-content: center;
     padding: 7px 10px;
     border-radius: 10px;
@@ -1879,7 +1971,7 @@ select:focus-visible {
   }
 
   .header-actions .button-primary {
-    min-height: 40px;
+    min-height: 46px;
     padding: 8px 12px;
     font-size: 0.76rem;
   }
@@ -2229,12 +2321,12 @@ select:focus-visible {
 
 .admin-button-row button,
 .admin-action-form > button {
-  min-height: 42px;
+  min-height: 46px;
   padding: 8px 14px;
   border: 1px solid var(--ink);
   border-radius: 999px;
   background: var(--ink);
-  color: var(--paper);
+  color: #fff;
   font: inherit;
   font-weight: 800;
   cursor: pointer;

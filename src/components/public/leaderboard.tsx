@@ -34,6 +34,7 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
           alt={`${entry.name} logo`}
           className="listing-mark listing-logo"
           height={48}
+          sizes="48px"
           src={entry.logoUrl}
           width={48}
         />
@@ -136,11 +137,11 @@ function EmptyBoard({ today }: { readonly today: boolean }) {
       aria-labelledby="empty-title"
     >
       <h2 id="empty-title">
-        {today ? "Be first today." : "No one is here. Yet."}
+        {today ? "Today’s board is wide open." : "No one is here. Yet."}
       </h2>
       <p>
         {today
-          ? "Pay first. Take the top spot."
+          ? "The first confirmed payment today takes #1 here."
           : "Get on the leaderboard from ₹499."}
       </p>
       <Link className="button button-primary" href="/join">

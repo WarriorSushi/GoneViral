@@ -5,6 +5,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import {
   getPublicListingDetail,
   listPublicActivity,
+  listPublicSitemapEntries,
   listMainBoard,
   listPublicCategories,
   listTodayBoard,
@@ -25,8 +26,8 @@ export async function getCachedMainBoard(
   cursor: MainBoardCursor | null,
   categorySlug?: string,
 ) {
-  "use cache";
-  cacheLife("seconds");
+  "use cache: remote";
+  cacheLife({ expire: 300, revalidate: 30, stale: 30 });
   cacheTag(
     categorySlug
       ? PUBLIC_CACHE_TAGS.category(categorySlug)
@@ -41,8 +42,8 @@ export async function getCachedTodayBoard(
   businessDate: string,
   cursor: TodayBoardCursor | null,
 ) {
-  "use cache";
-  cacheLife("seconds");
+  "use cache: remote";
+  cacheLife({ expire: 300, revalidate: 30, stale: 30 });
   cacheTag(PUBLIC_CACHE_TAGS.today(businessDate));
   return listTodayBoard({ businessDate, cursor });
 }
@@ -51,8 +52,8 @@ export async function getCachedPublicListingDetail(
   slug: string,
   businessDate: string,
 ) {
-  "use cache";
-  cacheLife("seconds");
+  "use cache: remote";
+  cacheLife({ expire: 300, revalidate: 30, stale: 30 });
   cacheTag(PUBLIC_CACHE_TAGS.listingSlug(slug), PUBLIC_CACHE_TAGS.activity);
   const detail = await getPublicListingDetail({ businessDate, slug });
 
@@ -64,8 +65,15 @@ export async function getCachedPublicListingDetail(
 }
 
 export async function getCachedPublicActivity() {
-  "use cache";
-  cacheLife("seconds");
+  "use cache: remote";
+  cacheLife({ expire: 300, revalidate: 30, stale: 30 });
   cacheTag(PUBLIC_CACHE_TAGS.activity);
   return listPublicActivity();
+}
+
+export async function getCachedPublicSitemapEntries() {
+  "use cache: remote";
+  cacheLife({ expire: 3600, revalidate: 300, stale: 300 });
+  cacheTag(PUBLIC_CACHE_TAGS.main);
+  return listPublicSitemapEntries();
 }

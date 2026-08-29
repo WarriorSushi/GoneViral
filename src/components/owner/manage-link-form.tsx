@@ -21,7 +21,7 @@ export function ManageLinkForm() {
   const [state, action] = useActionState(requestManageLink, initialState);
   return (
     <form action={action} className="manage-link-form">
-      <label htmlFor="manage-email">Email used to sponsor</label>
+      <label htmlFor="manage-email">Email used to pay</label>
       <input
         aria-describedby="manage-email-help"
         autoComplete="email"

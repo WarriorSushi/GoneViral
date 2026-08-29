@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export function buildShareText(listingName: string, currentRank: string) {
-  return `${listingName} is currently #${currentRank} on the sponsored GoneViral.in leaderboard.`;
+  return `${listingName} is currently #${currentRank} on the paid GoneViral.in leaderboard.`;
 }
 
 export function ShareControls({

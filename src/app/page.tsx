@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { BoardPage } from "@/components/public/board-page";
+import { publicPageMetadata } from "@/config/seo";
 import {
   getCachedMainBoard,
   getCachedPublicActivity,
@@ -9,9 +10,12 @@ import {
 } from "@/server/cache/public-read-model";
 import { parseMainBoardCursor } from "@/server/db/repositories/leaderboards";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = publicPageMetadata({
+  description:
+    "A transparent paid leaderboard: current confirmed totals determine the order.",
+  path: "/",
   title: "Main board",
-};
+});
 
 export default async function Home(props: PageProps<"/">) {
   const searchParams = await props.searchParams;

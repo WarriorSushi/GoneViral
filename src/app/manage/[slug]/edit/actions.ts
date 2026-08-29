@@ -1,14 +1,12 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
-
 import {
   validateListingEdit,
   type ListingEditField,
 } from "@/domain/listing-edit";
 import { toIstBusinessDate } from "@/domain/today";
 import { getVerifiedAuthUser } from "@/server/auth/session";
-import { PUBLIC_CACHE_TAGS } from "@/server/cache/tags";
+import { revalidatePublicCacheImpact } from "@/server/cache/invalidate-public";
 import { editOwnedListing } from "@/server/listings/edit-listing";
 import { verifyLogoUploadIntent } from "@/server/storage/logo-intent";
 import {
@@ -28,17 +26,11 @@ function invalidateListing(input: {
   listingPublicId: string;
   listingSlug: string;
 }) {
-  revalidateTag(PUBLIC_CACHE_TAGS.main, { expire: 0 });
-  revalidateTag(PUBLIC_CACHE_TAGS.activity, { expire: 0 });
-  revalidateTag(PUBLIC_CACHE_TAGS.category(input.categorySlug), { expire: 0 });
-  revalidateTag(PUBLIC_CACHE_TAGS.listing(input.listingPublicId), {
-    expire: 0,
-  });
-  revalidateTag(PUBLIC_CACHE_TAGS.listingSlug(input.listingSlug), {
-    expire: 0,
-  });
-  revalidateTag(PUBLIC_CACHE_TAGS.today(toIstBusinessDate(new Date())), {
-    expire: 0,
+  revalidatePublicCacheImpact({
+    businessDate: toIstBusinessDate(new Date()),
+    categorySlugs: [input.categorySlug],
+    listingPublicId: input.listingPublicId,
+    listingSlug: input.listingSlug,
   });
 }
 

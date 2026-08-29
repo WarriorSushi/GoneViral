@@ -161,6 +161,30 @@ export const listings = appSchema.table(
       table.currentTotalReachedAt.asc(),
       table.id.asc(),
     ),
+    index("listings_public_ranking_idx")
+      .on(
+        table.confirmedTotalPaise.desc(),
+        table.currentTotalReachedAt.asc(),
+        table.id.asc(),
+      )
+      .where(
+        sql`${table.lifecycleStatus} = 'active' and ${table.moderationStatus} = 'clear' and ${table.confirmedTotalPaise} > 0`,
+      ),
+    index("listings_public_category_ranking_idx")
+      .on(
+        table.categoryId,
+        table.confirmedTotalPaise.desc(),
+        table.currentTotalReachedAt.asc(),
+        table.id.asc(),
+      )
+      .where(
+        sql`${table.lifecycleStatus} = 'active' and ${table.moderationStatus} = 'clear' and ${table.confirmedTotalPaise} > 0`,
+      ),
+    index("listings_admin_queue_updated_idx")
+      .on(table.updatedAt.desc(), table.id)
+      .where(
+        sql`${table.moderationStatus} in ('pending_review', 'suspended') or ${table.lifecycleStatus} = 'removed'`,
+      ),
     index("listings_destination_host_idx").on(table.destinationHost),
     index("listings_logo_asset_idx").on(table.logoAssetId),
     index("listings_created_at_idx").on(table.createdAt.desc()),

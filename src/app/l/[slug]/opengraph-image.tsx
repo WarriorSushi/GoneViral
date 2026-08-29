@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { toIstBusinessDate } from "@/domain/today";
 import { getCachedPublicListingDetail } from "@/server/cache/public-read-model";
 
-export const alt = "Current sponsored GoneViral.in listing position";
+export const alt = "Current paid GoneViral.in listing position";
 export const contentType = "image/png";
 export const size = { height: 630, width: 1200 };
 
@@ -46,7 +46,7 @@ export default async function Image({
         <span style={{ color: "#715cff", fontSize: 34, fontWeight: 700 }}>
           GoneViral.in
         </span>
-        <span style={{ fontSize: 27 }}>Sponsored placement</span>
+        <span style={{ fontSize: 27 }}>Paid placement</span>
       </div>
       {listing ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>

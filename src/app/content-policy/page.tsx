@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { LegalPlaceholder } from "@/components/public/legal-placeholder";
+import { draftLegalRobots } from "@/config/seo";
 
-export const metadata: Metadata = { title: "Content policy placeholder" };
+export const metadata: Metadata = {
+  robots: draftLegalRobots,
+  title: "Content policy — draft",
+};
 export default function ContentPolicyPage() {
   return (
     <LegalPlaceholder
