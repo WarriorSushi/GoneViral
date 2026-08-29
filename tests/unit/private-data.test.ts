@@ -21,4 +21,16 @@ describe("private recipient encryption", () => {
     const encrypted = encryptPrivateText("owner@example.com");
     expect(() => decryptPrivateText(`${encrypted.slice(0, -1)}x`)).toThrow();
   });
+
+  it("decrypts old envelopes through the explicit previous-key rotation window", () => {
+    vi.stubEnv("NODE_ENV", "test");
+    const oldKey = Buffer.alloc(32, 1).toString("base64");
+    const newKey = Buffer.alloc(32, 2).toString("base64");
+    vi.stubEnv("PRIVATE_DATA_ENCRYPTION_KEY", oldKey);
+    const encrypted = encryptPrivateText("owner@example.com");
+    vi.stubEnv("PRIVATE_DATA_ENCRYPTION_KEY", newKey);
+    vi.stubEnv("PRIVATE_DATA_ENCRYPTION_KEY_PREVIOUS", oldKey);
+    expect(decryptPrivateText(encrypted)).toBe("owner@example.com");
+    expect(encryptPrivateText("new@example.com")).not.toBe(encrypted);
+  });
 });

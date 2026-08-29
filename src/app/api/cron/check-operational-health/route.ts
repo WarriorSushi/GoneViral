@@ -1,10 +1,16 @@
 import { readServerEnv } from "@/config/env/server";
-import { drainEmailOutbox } from "@/server/email/outbox";
+import {
+  collectOperationalMetrics,
+  evaluateOperationalHealth,
+} from "@/server/operations/metrics";
+import { captureOperationalAlert } from "@/server/telemetry/alerts";
 import { logger } from "@/server/telemetry/logger";
 import {
   correlationHeaders,
   requestCorrelationId,
 } from "@/server/telemetry/request-context";
+
+export const maxDuration = 30;
 
 export async function GET(request: Request) {
   const requestId = requestCorrelationId(request);
@@ -16,11 +22,21 @@ export async function GET(request: Request) {
     );
   }
   try {
-    const result = await drainEmailOutbox();
-    logger.info("email_outbox_drained", { ...result, requestId });
-    return Response.json(result, { headers: correlationHeaders(requestId) });
+    const metrics = await collectOperationalMetrics();
+    const alerts = evaluateOperationalHealth(metrics);
+    await Promise.all(
+      alerts.map((alert) => captureOperationalAlert(alert, requestId)),
+    );
+    logger.info("operational_health_checked", {
+      alertCount: alerts.length,
+      requestId,
+    });
+    return Response.json(
+      { alerts, metrics, status: alerts.length === 0 ? "ok" : "attention" },
+      { headers: correlationHeaders(requestId) },
+    );
   } catch (error) {
-    logger.error("email_outbox_drain_failed", {
+    logger.error("operational_health_failed", {
       errorName: error instanceof Error ? error.name : "UnknownError",
       requestId,
     });

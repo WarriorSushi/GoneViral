@@ -83,6 +83,20 @@ test("production build renders a truthful empty board", async ({
 
   const response = await page.goto("/");
   expect(response?.ok()).toBe(true);
+  const headers = response?.headers() ?? {};
+  expect(headers["content-security-policy"]).toContain(
+    "frame-ancestors 'none'",
+  );
+  expect(headers["content-security-policy"]).not.toContain("'unsafe-eval'");
+  expect(headers["x-content-type-options"]).toBe("nosniff");
+  expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
+  const live = await page.request.get("/api/health/live");
+  expect(live.status()).toBe(200);
+  expect(await live.json()).toEqual({ status: "ok" });
+  expect(live.headers()["x-request-id"]).toBeTruthy();
+  const ready = await page.request.get("/api/health/ready");
+  expect(ready.status()).toBe(200);
+  expect(await ready.json()).toEqual({ status: "ready" });
   await expect(page.getByTestId("board-empty")).toBeVisible();
   await expect(
     page.getByRole("heading", { level: 2, name: "No one is here. Yet." }),

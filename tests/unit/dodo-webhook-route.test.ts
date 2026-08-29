@@ -60,7 +60,11 @@ describe("Dodo webhook response semantics", () => {
     processDodoWebhook.mockRejectedValueOnce(new Error("database unavailable"));
     const result = await handleDodoWebhook(request());
     expect(result.status).toBe(503);
+    expect(result.headers.get("x-request-id")).toBeTruthy();
     await expect(result.json()).resolves.toEqual({ status: "retry" });
+    const serialized = String(error.mock.calls.at(-1)?.[0]);
+    expect(serialized).not.toContain("database unavailable");
+    expect(serialized).not.toMatch(/email|phone|secret/i);
     error.mockRestore();
   });
 

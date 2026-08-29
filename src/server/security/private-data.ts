@@ -9,25 +9,42 @@ const localKey = Buffer.from(
   "hex",
 );
 
-function encryptionKey(): Buffer {
+function decodeKey(value: string, name: string): Buffer {
+  const key = Buffer.from(value, "base64");
+  if (key.length !== 32) {
+    throw new Error(`${name} must decode to 32 bytes.`);
+  }
+  return key;
+}
+
+function encryptionKeys(): { current: Buffer; previous?: Buffer } {
   const environment = readServerEnv();
   if (!environment.PRIVATE_DATA_ENCRYPTION_KEY) {
     if (environment.NODE_ENV === "production") {
       throw new Error("PRIVATE_DATA_ENCRYPTION_KEY is required in production.");
     }
-    return localKey;
+    return { current: localKey };
   }
 
-  const key = Buffer.from(environment.PRIVATE_DATA_ENCRYPTION_KEY, "base64");
-  if (key.length !== 32) {
-    throw new Error("PRIVATE_DATA_ENCRYPTION_KEY must decode to 32 bytes.");
-  }
-  return key;
+  return {
+    current: decodeKey(
+      environment.PRIVATE_DATA_ENCRYPTION_KEY,
+      "PRIVATE_DATA_ENCRYPTION_KEY",
+    ),
+    ...(environment.PRIVATE_DATA_ENCRYPTION_KEY_PREVIOUS
+      ? {
+          previous: decodeKey(
+            environment.PRIVATE_DATA_ENCRYPTION_KEY_PREVIOUS,
+            "PRIVATE_DATA_ENCRYPTION_KEY_PREVIOUS",
+          ),
+        }
+      : {}),
+  };
 }
 
 export function encryptPrivateText(plaintext: string): string {
   const nonce = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", encryptionKey(), nonce);
+  const cipher = createCipheriv("aes-256-gcm", encryptionKeys().current, nonce);
   const ciphertext = Buffer.concat([
     cipher.update(plaintext, "utf8"),
     cipher.final(),
@@ -58,10 +75,21 @@ export function decryptPrivateText(encoded: string): string {
   if (nonce.length !== 12 || tag.length !== 16 || ciphertext.length === 0) {
     throw new Error("private_text_format_invalid");
   }
-  const decipher = createDecipheriv("aes-256-gcm", encryptionKey(), nonce);
-  decipher.setAuthTag(tag);
-  return Buffer.concat([
-    decipher.update(ciphertext),
-    decipher.final(),
-  ]).toString("utf8");
+  const keys = encryptionKeys();
+  for (const key of [keys.current, keys.previous].filter(
+    (candidate): candidate is Buffer => Boolean(candidate),
+  )) {
+    try {
+      const decipher = createDecipheriv("aes-256-gcm", key, nonce);
+      decipher.setAuthTag(tag);
+      return Buffer.concat([
+        decipher.update(ciphertext),
+        decipher.final(),
+      ]).toString("utf8");
+    } catch {
+      // During a controlled rotation, existing envelopes may still use the
+      // explicitly configured previous key.
+    }
+  }
+  throw new Error("private_text_authentication_failed");
 }

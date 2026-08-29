@@ -275,6 +275,30 @@ export default async function AdminPage() {
         </div>
       </section>
 
+      <section className="admin-section" aria-labelledby="abuse-heading">
+        <h2 id="abuse-heading">Abuse signals</h2>
+        <p>
+          Aggregate active rate-limit buckets only. Subject fingerprints stay
+          private and are not shown here.
+        </p>
+        <div className="admin-grid">
+          {dashboard.abuse.length === 0 ? (
+            <p>No active rate-limit buckets.</p>
+          ) : (
+            dashboard.abuse.map((item) => (
+              <article className="admin-card" key={String(item.scope)}>
+                <h3>{String(item.scope).replaceAll("_", " ")}</h3>
+                <p>
+                  {String(item.observed_count)} observed actions across{" "}
+                  {String(item.active_buckets)} active buckets.
+                </p>
+                <p>Latest expiry: {String(item.latest_expiry)}</p>
+              </article>
+            ))
+          )}
+        </div>
+      </section>
+
       {hasAdminPermission(session.role, "flags:manage") ? (
         <section className="admin-section" aria-labelledby="flags-heading">
           <h2 id="flags-heading">Emergency controls</h2>

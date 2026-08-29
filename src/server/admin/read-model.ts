@@ -66,6 +66,14 @@ export async function getAdminDashboard(role: AdminRole) {
            OR delivery_state IN ('delayed', 'bounced', 'complained', 'failed', 'suppressed')
         ORDER BY created_at DESC LIMIT 50
       `;
+  const abuse = await sql`
+        SELECT scope, count(*)::bigint AS active_buckets,
+               sum(count)::bigint AS observed_count,
+               max(expires_at) AS latest_expiry
+        FROM private.rate_limit_buckets
+        WHERE expires_at > transaction_timestamp()
+        GROUP BY scope ORDER BY observed_count DESC, scope ASC
+      `;
   const flags = await sql`
         SELECT key, value, updated_at FROM private.operational_flags
         WHERE key IN (
@@ -84,6 +92,7 @@ export async function getAdminDashboard(role: AdminRole) {
       `
     : [];
   return {
+    abuse,
     changes,
     emails,
     flags,

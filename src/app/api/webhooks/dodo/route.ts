@@ -6,44 +6,55 @@ import {
   verifyAndNormalizeDodoWebhook,
 } from "@/server/payments/dodo-webhook";
 import { processDodoWebhook } from "@/server/payments/process-dodo-webhook";
+import { logger } from "@/server/telemetry/logger";
+import {
+  correlationHeaders,
+  requestCorrelationId,
+} from "@/server/telemetry/request-context";
 
 export const maxDuration = 15;
 
 const MAX_WEBHOOK_BYTES = 1_000_000;
 
-function response(body: Record<string, unknown>, status = 200) {
+function response(
+  body: Record<string, unknown>,
+  requestId: string,
+  status = 200,
+) {
   return NextResponse.json(body, {
-    headers: { "Cache-Control": "private, no-store, max-age=0" },
+    headers: correlationHeaders(requestId),
     status,
   });
 }
 
 export async function handleDodoWebhook(request: Request): Promise<Response> {
+  const requestId = requestCorrelationId(request);
   const declaredLength = Number(request.headers.get("content-length") ?? "0");
   if (Number.isFinite(declaredLength) && declaredLength > MAX_WEBHOOK_BYTES) {
-    return response({ status: "invalid_request" }, 413);
+    return response({ status: "invalid_request" }, requestId, 413);
   }
 
   let rawBody: string;
   try {
     rawBody = await request.text();
   } catch {
-    return response({ status: "invalid_request" }, 400);
+    return response({ status: "invalid_request" }, requestId, 400);
   }
   if (Buffer.byteLength(rawBody, "utf8") > MAX_WEBHOOK_BYTES) {
-    return response({ status: "invalid_request" }, 413);
+    return response({ status: "invalid_request" }, requestId, 413);
   }
 
   const eventId = request.headers.get("webhook-id");
   if (!eventId || eventId.length > 200) {
-    return response({ status: "invalid_signature" }, 400);
+    return response({ status: "invalid_signature" }, requestId, 400);
   }
 
   let event;
   try {
     event = verifyAndNormalizeDodoWebhook(rawBody, request.headers);
   } catch {
-    return response({ status: "invalid_signature_or_payload" }, 400);
+    logger.warn("webhook_authentication_rejected", { requestId });
+    return response({ status: "invalid_signature_or_payload" }, requestId, 400);
   }
 
   try {
@@ -59,24 +70,31 @@ export async function handleDodoWebhook(request: Request): Promise<Response> {
       try {
         revalidatePaymentResult(result);
       } catch (cacheError) {
-        console.error("payment_cache_invalidation_failed", {
-          eventId,
-          message:
-            cacheError instanceof Error ? cacheError.message : "unknown_error",
+        logger.error("payment_cache_invalidation_failed", {
+          errorName:
+            cacheError instanceof Error ? cacheError.name : "UnknownError",
+          requestId,
         });
       }
     }
 
-    return response({ status: result.kind });
-  } catch (processingError) {
-    console.error("dodo_webhook_retryable_failure", {
-      eventId,
-      message:
-        processingError instanceof Error
-          ? processingError.message
-          : "unknown_error",
+    logger.info("payment_webhook_processed", {
+      outcome: result.kind,
+      requestId,
+      ...(result.listingPublicId
+        ? { listingPublicId: result.listingPublicId }
+        : {}),
     });
-    return response({ status: "retry" }, 503);
+    return response({ status: result.kind }, requestId);
+  } catch (processingError) {
+    logger.error("dodo_webhook_retryable_failure", {
+      errorName:
+        processingError instanceof Error
+          ? processingError.name
+          : "UnknownError",
+      requestId,
+    });
+    return response({ status: "retry" }, requestId, 503);
   }
 }
 

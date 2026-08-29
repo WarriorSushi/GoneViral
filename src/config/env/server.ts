@@ -40,9 +40,12 @@ export const serverEnvSchema = z
     CLICK_HMAC_SECRET_CURRENT: optionalSecret,
     CLICK_HMAC_SECRET_PREVIOUS: optionalSecret,
     SENTRY_AUTH_TOKEN: optionalSecret,
+    SENTRY_ORG: optionalSecret,
+    SENTRY_PROJECT: optionalSecret,
     CRON_SECRET: optionalSecret,
     PAYMENTS_ENABLED: z.enum(["true", "false"]).default("false"),
     PRIVATE_DATA_ENCRYPTION_KEY: optionalSecret,
+    PRIVATE_DATA_ENCRYPTION_KEY_PREVIOUS: optionalSecret,
   })
   .superRefine((environment, context) => {
     if (

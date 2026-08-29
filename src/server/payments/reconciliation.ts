@@ -7,6 +7,7 @@ import type postgres from "postgres";
 
 import { readServerEnv } from "@/config/env/server";
 import { getSqlClient } from "@/server/db/client";
+import { logger } from "@/server/telemetry/logger";
 
 import type { NormalizedDodoEvent } from "./dodo-webhook";
 import { getDodoWebhookConfiguration } from "./dodo-webhook";
@@ -261,11 +262,9 @@ export async function runPaymentReconciliation(input?: {
         try {
           await input.onProcessed(result);
         } catch (cacheError) {
-          console.error("reconciliation_cache_invalidation_failed", {
-            message:
-              cacheError instanceof Error
-                ? cacheError.message
-                : "unknown_error",
+          logger.error("reconciliation_cache_invalidation_failed", {
+            errorName:
+              cacheError instanceof Error ? cacheError.name : "UnknownError",
             runId,
           });
         }
@@ -280,7 +279,7 @@ export async function runPaymentReconciliation(input?: {
       WHERE id = ${runId}
     `;
     if (discrepancies > 0) {
-      console.error("payment_reconciliation_discrepancies", {
+      logger.error("payment_reconciliation_discrepancies", {
         discrepancies,
         runId,
       });
@@ -288,15 +287,15 @@ export async function runPaymentReconciliation(input?: {
     return { ...counters, discrepancies, runId };
   } catch (error) {
     counters.failed += 1;
-    const message = error instanceof Error ? error.message : "unknown_error";
+    const errorName = error instanceof Error ? error.name : "UnknownError";
     await sql`
       UPDATE private.reconciliation_runs
       SET state = 'failed', completed_at = transaction_timestamp(),
           counts = (${JSON.stringify(counters)}::jsonb #>> '{}')::jsonb,
-          error_summary = ${message.slice(0, 500)}
+          error_summary = ${errorName}
       WHERE id = ${runId}
     `;
-    console.error("payment_reconciliation_failed", { message, runId });
+    logger.error("payment_reconciliation_failed", { errorName, runId });
     throw error;
   }
 }

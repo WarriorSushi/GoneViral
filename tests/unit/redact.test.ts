@@ -17,8 +17,20 @@ describe("structured log redaction", () => {
       email: "[REDACTED]",
       nested: {
         authorization: "[REDACTED]",
-        providerPaymentId: "pay_safe_for_restricted_logs_only",
+        providerPaymentId: "[REDACTED]",
       },
+    });
+  });
+
+  it("scrubs credentials and query strings even when they appear in values", () => {
+    expect(
+      redactLogValue({
+        message:
+          "Contact owner@example.test at +919876543210 using Bearer abc.def and https://example.test/path?private=yes#secret",
+      }),
+    ).toEqual({
+      message:
+        "Contact [REDACTED_EMAIL] at [REDACTED_PHONE] using Bearer [REDACTED] and https://example.test/path",
     });
   });
 

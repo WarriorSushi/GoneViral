@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
+
+import { securityHeaders } from "./src/config/security-headers";
 
 const storageUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL)
@@ -6,6 +9,9 @@ const storageUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  async headers() {
+    return [{ headers: [...securityHeaders()], source: "/:path*" }];
+  },
   poweredByHeader: false,
   ...(storageUrl
     ? {
@@ -26,4 +32,30 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
 };
 
-export default nextConfig;
+const sentryBuildConfigured = Boolean(
+  process.env.SENTRY_AUTH_TOKEN &&
+  process.env.SENTRY_ORG &&
+  process.env.SENTRY_PROJECT,
+);
+
+export default withSentryConfig(nextConfig, {
+  ...(process.env.SENTRY_AUTH_TOKEN
+    ? { authToken: process.env.SENTRY_AUTH_TOKEN }
+    : {}),
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+    excludeReplayIframe: true,
+    excludeReplayShadowDom: true,
+  },
+  ...(process.env.SENTRY_ORG ? { org: process.env.SENTRY_ORG } : {}),
+  ...(process.env.SENTRY_PROJECT
+    ? { project: process.env.SENTRY_PROJECT }
+    : {}),
+  silent: !process.env.CI,
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+    disable: !sentryBuildConfigured,
+  },
+  telemetry: false,
+  widenClientFileUpload: sentryBuildConfigured,
+});

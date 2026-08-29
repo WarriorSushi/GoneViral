@@ -201,6 +201,44 @@ afterAll(async () => {
 });
 
 describe("Phase 8 safe owner edits", () => {
+  it("keeps the paid listing intact when optional logo storage is unavailable", async () => {
+    const userId = await createVerifiedUser();
+    const listing = await createOwnedListing(userId);
+    const storage = new MemoryLogoStorage();
+    vi.spyOn(storage, "createSignedStagingUpload").mockRejectedValueOnce(
+      new Error("storage unavailable"),
+    );
+    const { createLogoUploadIntent } =
+      await import("@/server/storage/logo-service");
+    await expect(
+      createLogoUploadIntent({
+        contentType: "image/png",
+        declaredBytes: 1_024,
+        listingSlug: listing.slug,
+        storage,
+        userId,
+      }),
+    ).resolves.toEqual({
+      kind: "rejected",
+      message: "Logo storage is unavailable. Try again later.",
+    });
+    const [after] = await directSql<
+      {
+        confirmed_total_paise: bigint;
+        lifecycle_status: string;
+        logo_asset_id: string | null;
+      }[]
+    >`
+      SELECT confirmed_total_paise, lifecycle_status, logo_asset_id
+      FROM app.listings WHERE id = ${listing.id}
+    `;
+    expect(after).toEqual({
+      confirmed_total_paise: 49_900n,
+      lifecycle_status: "active",
+      logo_asset_id: null,
+    });
+  });
+
   it("publishes only low-risk changes and deduplicates reviewed identity changes", async () => {
     const userId = await createVerifiedUser();
     const outsiderId = await createVerifiedUser();

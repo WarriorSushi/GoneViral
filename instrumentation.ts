@@ -1,22 +1,26 @@
 import type { Instrumentation } from "next";
 
 export async function register() {
-  if (process.env.NEXT_RUNTIME !== "nodejs") {
-    return;
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    await import("./sentry.server.config");
+  } else if (process.env.NEXT_RUNTIME === "edge") {
+    await import("./sentry.edge.config");
   }
 
+  if (process.env.NEXT_RUNTIME !== "nodejs") return;
   const { logger } = await import("@/server/telemetry/logger");
   logger.info("application_runtime_registered", { runtime: "nodejs" });
 }
 
 export const onRequestError: Instrumentation.onRequestError = async (
   error,
-  _request,
+  request,
   context,
 ) => {
-  if (process.env.NEXT_RUNTIME !== "nodejs") {
-    return;
-  }
+  const Sentry = await import("@sentry/nextjs");
+  Sentry.captureRequestError(error, request, context);
+
+  if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
   const { logger } = await import("@/server/telemetry/logger");
   const errorDetails =

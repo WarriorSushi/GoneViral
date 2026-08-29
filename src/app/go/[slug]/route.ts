@@ -5,6 +5,8 @@ import {
   countEligibleOutboundClick,
   resolveEligibleOutboundSlug,
 } from "@/server/clicks/outbound-redirect";
+import { logger } from "@/server/telemetry/logger";
+import { requestCorrelationId } from "@/server/telemetry/request-context";
 
 const SAFE_HEADERS = {
   "Cache-Control": "no-store, max-age=0",
@@ -16,6 +18,7 @@ export async function GET(
   request: Request,
   context: { params: Promise<{ slug: string }> },
 ) {
+  const requestId = requestCorrelationId(request);
   const { slug } = await context.params;
   const listing = await resolveEligibleOutboundSlug(slug);
   if (!listing) {
@@ -38,14 +41,19 @@ export async function GET(
       revalidateTag(PUBLIC_CACHE_TAGS.listingSlug(listing.slug), { expire: 0 });
     }
   } catch (error) {
-    console.error("outbound_click_aggregate_failed", {
-      error: error instanceof Error ? error.name : "unknown_error",
+    logger.error("outbound_click_aggregate_failed", {
+      errorName: error instanceof Error ? error.name : "UnknownError",
       listingPublicId: listing.listingPublicId,
+      requestId,
     });
   }
 
   return new Response(null, {
-    headers: { ...SAFE_HEADERS, Location: listing.destinationUrl },
+    headers: {
+      ...SAFE_HEADERS,
+      Location: listing.destinationUrl,
+      "X-Request-ID": requestId,
+    },
     status: 307,
   });
 }
