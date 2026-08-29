@@ -15,6 +15,8 @@ export interface PublicListingIdentity {
   readonly publicId: string;
   readonly slug: string;
   readonly tagline: string;
+  /** Privacy-preserving, unique-per-listing-per-IST-day aggregate. Never ranking input. */
+  readonly uniqueClicks: string;
 }
 
 export interface PublicTakeoverQuote {
@@ -51,6 +53,13 @@ export interface PublicMovement {
   readonly amountDeltaPaise: string;
   readonly appliedAt: string;
   readonly kind: PublicMovementKind;
+}
+
+export interface PublicActivityItem extends PublicMovement {
+  readonly currentMainRank: string;
+  readonly listingName: string;
+  readonly listingPublicId: string;
+  readonly listingSlug: string;
 }
 
 export interface PublicListingDetail extends PublicListingIdentity {

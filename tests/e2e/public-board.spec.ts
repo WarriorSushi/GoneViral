@@ -28,6 +28,21 @@ function fixtures(command: "clear" | "seed") {
   });
 }
 
+async function makeOutboundFixtureSafe() {
+  const sql = postgres(directDatabaseUrl, { prepare: false });
+  try {
+    await sql`
+      UPDATE app.listings
+      SET destination_url = 'https://example.com/monsoon',
+          destination_canonical_key = 'https://example.com/monsoon',
+          destination_host = 'example.com'
+      WHERE slug = 'monsoon-studio'
+    `;
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
+}
+
 async function expectNoPrivateMarkers(content: string) {
   for (const marker of privateMarkers) {
     expect(content, `private marker leaked: ${marker}`).not.toContain(marker);
@@ -69,9 +84,9 @@ test("production build renders a truthful empty board", async ({
   const response = await page.goto("/");
   expect(response?.ok()).toBe(true);
   await expect(page.getByTestId("board-empty")).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2 })).toContainText(
-    "No one is here. Yet.",
-  );
+  await expect(
+    page.getByRole("heading", { level: 2, name: "No one is here. Yet." }),
+  ).toBeVisible();
   await expect(
     page.getByText("Get on the leaderboard from ₹499."),
   ).toBeVisible();
@@ -139,6 +154,7 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   page,
 }, testInfo) => {
   fixtures("seed");
+  await makeOutboundFixtureSafe();
   await page.goto("/");
   await page.getByRole("button", { name: "Refresh board" }).click();
   await expect(page.getByTestId("leaderboard")).toBeVisible();
@@ -146,10 +162,7 @@ test("low-population Main board is first-viewport, accessible, and private-data 
     name: "Visit Monsoon Studio website",
   });
   await expect(monsoonWebsite).toBeVisible();
-  await expect(monsoonWebsite).toHaveAttribute(
-    "href",
-    "https://monsoon-studio.example.test",
-  );
+  await expect(monsoonWebsite).toHaveAttribute("href", "/go/monsoon-studio");
   await expect(
     page.getByRole("link", { name: "More info about Monsoon Studio" }),
   ).toBeVisible();
@@ -167,8 +180,13 @@ test("low-population Main board is first-viewport, accessible, and private-data 
     firstCard.getByText("B2B & Services", { exact: true }),
   ).toBeVisible();
   await expect(
-    firstCard.getByText("monsoon-studio.example.test", { exact: true }),
+    firstCard.getByText("example.com", { exact: true }),
   ).toBeVisible();
+  await expect(firstCard.getByText("0 tracked clicks")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "What actually moved" }),
+  ).toBeVisible();
+  await expect(page.getByText("No simulated activity.")).toBeVisible();
   const rankAction = firstCard.getByRole("link", { name: /Take #1/ });
   const rankActionWrap = rankAction.locator("..");
 
@@ -286,20 +304,16 @@ test("Main, Today, category, and listing navigation use real public projections"
   ).toBeVisible();
 
   await page.getByRole("link", { name: "All", exact: true }).click();
-  await page.route("https://monsoon-studio.example.test/", async (route) => {
-    await route.fulfill({
-      body: "<!doctype html><title>Monsoon Studio</title><h1>Advertiser site</h1>",
-      contentType: "text/html",
-    });
+  const outbound = await page.request.get("/go/monsoon-studio", {
+    headers: {
+      "user-agent": "Mozilla/5.0 Phase11E2E",
+      "x-forwarded-for": "203.0.113.88",
+    },
+    maxRedirects: 0,
   });
-  await page
-    .getByRole("link", { name: "Visit Monsoon Studio website" })
-    .click();
-  await expect(page).toHaveURL("https://monsoon-studio.example.test/");
-  await expect(
-    page.getByRole("heading", { name: "Advertiser site" }),
-  ).toBeVisible();
-  await page.goBack();
+  expect(outbound.status()).toBe(307);
+  expect(outbound.headers().location).toBe("https://example.com/monsoon");
+  expect(outbound.headers()["cache-control"]).toContain("no-store");
   await page
     .getByRole("link", { name: "More info about Monsoon Studio" })
     .click();
@@ -313,7 +327,37 @@ test("Main, Today, category, and listing navigation use real public projections"
   await expect(page.getByText("Joined the list")).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Visit Monsoon Studio website" }),
-  ).toHaveAttribute("href", "https://monsoon-studio.example.test");
+  ).toHaveAttribute("href", "/go/monsoon-studio");
+  await expect(
+    page
+      .locator(".listing-signal-grid article")
+      .filter({ hasText: "Outbound engagement" }),
+  ).toContainText("1");
+  await expect(
+    page.getByRole("region", { name: "Share this current result" }),
+  ).toContainText("#1");
+  const metadataDescription = await page
+    .locator('meta[name="description"]')
+    .getAttribute("content");
+  expect(metadataDescription).toContain("currently #1");
+  const shareImage = await page.request.get(
+    "/l/monsoon-studio/opengraph-image",
+  );
+  expect(shareImage.status()).toBe(200);
+  expect(shareImage.headers()["content-type"]).toContain("image/png");
+
+  const clickSql = postgres(directDatabaseUrl, {
+    prepare: false,
+    types: { bigint: postgres.BigInt },
+  });
+  const [clickState] = await clickSql<{ clicks: bigint }[]>`
+    SELECT coalesce(sum(total.unique_clicks), 0)::bigint AS clicks
+    FROM app.listing_click_daily_totals AS total
+    JOIN app.listings AS listing ON listing.id = total.listing_id
+    WHERE listing.slug = 'monsoon-studio'
+  `;
+  await clickSql.end({ timeout: 5 });
+  expect(clickState?.clicks).toBe(1n);
   await expectNoPrivateMarkers(await page.content());
   await capture(page, testInfo, `${testInfo.project.name}-listing`);
 
@@ -465,6 +509,9 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
   await expect(page.getByText(/only an estimate/)).toBeVisible();
   await expect(page.getByText(/queued a confirmation/)).toBeVisible();
   await expect(page.getByText(/already arrived/)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Share this current result" }),
+  ).toContainText("#6");
 
   const verificationSql = postgres(directDatabaseUrl, {
     max: 1,
@@ -666,6 +713,9 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
     }),
   ).toBeVisible({ timeout: 12_000 });
   await expect(page.getByText(/Actual Main position:/)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Share this current result" }),
+  ).toContainText(/#[0-9]+/);
   const [raiseState] = await fixtureSql<
     {
       original: bigint;

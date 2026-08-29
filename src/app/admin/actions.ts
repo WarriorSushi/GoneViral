@@ -99,15 +99,22 @@ export async function reviewChangeAdminAction(formData: FormData) {
 export async function updateFlagAdminAction(formData: FormData) {
   const key = text(formData, "key");
   if (
-    !new Set(["payments_enabled", "provider_refunds_enabled", "read_only"]).has(
-      key,
-    )
+    !new Set([
+      "outbound_redirects_enabled",
+      "payments_enabled",
+      "provider_refunds_enabled",
+      "read_only",
+    ]).has(key)
   )
     throw new Error("operational_flag_invalid");
   const result = await updateOperationalFlag({
     context: await requireContext(formData),
     enabled: text(formData, "enabled") === "true",
-    key: key as "payments_enabled" | "provider_refunds_enabled" | "read_only",
+    key: key as
+      | "outbound_redirects_enabled"
+      | "payments_enabled"
+      | "provider_refunds_enabled"
+      | "read_only",
     reason: text(formData, "reason"),
   });
   refresh(result);

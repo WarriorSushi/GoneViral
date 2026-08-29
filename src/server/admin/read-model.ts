@@ -66,7 +66,10 @@ export async function getAdminDashboard(role: AdminRole) {
       `;
   const flags = await sql`
         SELECT key, value, updated_at FROM private.operational_flags
-        WHERE key IN ('read_only', 'payments_enabled', 'provider_refunds_enabled')
+        WHERE key IN (
+          'outbound_redirects_enabled', 'read_only', 'payments_enabled',
+          'provider_refunds_enabled'
+        )
         ORDER BY key
       `;
   const refunds = hasAdminPermission(role, "payments:view")

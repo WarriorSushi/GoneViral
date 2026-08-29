@@ -6,12 +6,39 @@ import { connection } from "next/server";
 
 import { refreshPublicBoard } from "@/app/actions/refresh-public-board";
 import { Money } from "@/components/public/money";
+import { ShareControls } from "@/components/public/share-controls";
 import { SponsoredDisclosure } from "@/components/public/sponsored-disclosure";
 import { toIstBusinessDate } from "@/domain/today";
 import { getCachedPublicListingDetail } from "@/server/cache/public-read-model";
 import type { PublicMovementKind } from "@/server/db/repositories/public-types";
 
-export const metadata: Metadata = { title: "Listing" };
+export async function generateMetadata(
+  props: PageProps<"/l/[slug]">,
+): Promise<Metadata> {
+  await connection();
+  const { slug } = await props.params;
+  const listing = await getCachedPublicListingDetail(
+    slug,
+    toIstBusinessDate(new Date()),
+  );
+  if (!listing)
+    return { robots: { index: false }, title: "Listing unavailable" };
+  const description = `${listing.name} is currently #${listing.currentMainRank} on the sponsored GoneViral.in leaderboard, with ${listing.uniqueClicks} privacy-preserving tracked outbound clicks.`;
+  return {
+    description,
+    openGraph: {
+      description,
+      title: `${listing.name} is #${listing.currentMainRank}`,
+      type: "website",
+    },
+    title: `${listing.name} · #${listing.currentMainRank}`,
+    twitter: {
+      card: "summary_large_image",
+      description,
+      title: `${listing.name} is #${listing.currentMainRank}`,
+    },
+  };
+}
 
 const movementLabels: Record<PublicMovementKind, string> = {
   added: "Money added",
@@ -58,7 +85,8 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           <a
             aria-label={`Visit ${listing.name} website`}
             className="button button-secondary listing-visit"
-            href={listing.destinationUrl}
+            href={`/go/${listing.slug}`}
+            rel="nofollow noopener"
           >
             Visit website →
           </a>
@@ -105,6 +133,11 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
             Take #{listing.currentMainRank}
           </Link>
         </article>
+        <article>
+          <p className="signal-label">Outbound engagement</p>
+          <strong>{listing.uniqueClicks}</strong>
+          <span>privacy-preserving tracked clicks</span>
+        </article>
       </section>
 
       <p className="estimate-note listing-estimate-note">
@@ -116,7 +149,8 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           )}{" "}
           IST
         </time>
-        . This is an estimate. The spot is not held. Payments are not open yet.
+        . This is an estimate. The spot is not held. Checkout uses Dodo
+        Payments.
       </p>
 
       <section className="movement-section" aria-labelledby="movement-title">
@@ -154,9 +188,18 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
         )}
       </section>
 
+      <ShareControls
+        currentRank={listing.currentMainRank}
+        listingName={listing.name}
+        listingPath={`/l/${listing.slug}`}
+      />
+
       <aside className="listing-safety-note">
-        <strong>Direct link</strong>
-        <p>People click your listing and go straight to your website.</p>
+        <strong>Safe outbound link</strong>
+        <p>
+          The stored destination is rechecked before redirecting. Tracked clicks
+          are deduplicated and never affect rank.
+        </p>
         <Link href={`/l/${slug}/report` as Route}>Report this listing</Link>
       </aside>
     </main>

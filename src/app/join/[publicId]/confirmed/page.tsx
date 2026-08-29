@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 
 import { formatInr, moneyPaise } from "@/domain/money";
+import { ShareControls } from "@/components/public/share-controls";
 import { getPublicAttemptStatus } from "@/server/db/repositories/private/guest-checkout";
 
 export const metadata: Metadata = { title: "Payment confirmed" };
@@ -53,12 +54,21 @@ export default async function ConfirmedPaymentPage({
           arrived.
         </p>
         {attempt.listingPath ? (
-          <Link
-            className="button button-primary"
-            href={attempt.listingPath as Route}
-          >
-            View your listing
-          </Link>
+          <>
+            {attempt.mainRank ? (
+              <ShareControls
+                currentRank={attempt.mainRank.toString()}
+                listingName={attempt.listingName}
+                listingPath={attempt.listingPath}
+              />
+            ) : null}
+            <Link
+              className="button button-primary"
+              href={attempt.listingPath as Route}
+            >
+              View your listing
+            </Link>
+          </>
         ) : null}
         <Link className="button button-secondary" href="/">
           See the leaderboard

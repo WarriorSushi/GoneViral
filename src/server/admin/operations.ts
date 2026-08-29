@@ -375,7 +375,11 @@ export async function reviewChangeRequest(input: {
 export async function updateOperationalFlag(input: {
   context: AdminRequestContext;
   enabled: boolean;
-  key: "payments_enabled" | "provider_refunds_enabled" | "read_only";
+  key:
+    | "outbound_redirects_enabled"
+    | "payments_enabled"
+    | "provider_refunds_enabled"
+    | "read_only";
   reason: string;
 }): Promise<AdminOperationResult> {
   validateContext(input.context, "flags:manage", input.reason);

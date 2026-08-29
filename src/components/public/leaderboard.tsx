@@ -26,7 +26,8 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
     <a
       aria-label={`Visit ${entry.name} website`}
       className="listing-identity"
-      href={entry.destinationUrl}
+      href={`/go/${entry.slug}`}
+      rel="nofollow noopener"
     >
       {entry.logoUrl ? (
         <Image
@@ -97,6 +98,7 @@ function BoardAmount({ entry }: { readonly entry: BoardEntry }) {
         <small>
           <Money paise={entry.confirmedTotalPaise} /> all time
         </small>
+        <small>{entry.uniqueClicks} tracked clicks</small>
       </div>
     );
   }
@@ -105,6 +107,7 @@ function BoardAmount({ entry }: { readonly entry: BoardEntry }) {
     <div className="board-amount">
       <Money paise={entry.confirmedTotalPaise} />
       <small>current total</small>
+      <small>{entry.uniqueClicks} tracked clicks</small>
     </div>
   );
 }

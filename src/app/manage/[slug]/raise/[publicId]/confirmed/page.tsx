@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 
 import { Money } from "@/components/public/money";
+import { ShareControls } from "@/components/public/share-controls";
 import { getVerifiedAuthUser } from "@/server/auth/session";
 import { getOwnerRaiseAttemptStatus } from "@/server/db/repositories/private/owners";
 
@@ -45,6 +46,13 @@ export default async function RaiseConfirmedPage({
             : " was informational"}
           ; no position was reserved.
         </p>
+        {attempt.mainRank ? (
+          <ShareControls
+            currentRank={attempt.mainRank.toString()}
+            listingName={attempt.listingName}
+            listingPath={`/l/${slug}`}
+          />
+        ) : null}
         <Link
           className="button button-primary"
           href={`/manage/${slug}` as Route}

@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 
 import {
   getPublicListingDetail,
+  listPublicActivity,
   listMainBoard,
   listPublicCategories,
   listTodayBoard,
@@ -60,4 +61,11 @@ export async function getCachedPublicListingDetail(
   }
 
   return detail;
+}
+
+export async function getCachedPublicActivity() {
+  "use cache";
+  cacheLife("seconds");
+  cacheTag(PUBLIC_CACHE_TAGS.activity);
+  return listPublicActivity();
 }

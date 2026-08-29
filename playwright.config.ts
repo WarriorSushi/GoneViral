@@ -22,6 +22,7 @@ export default defineConfig({
     env: {
       DATABASE_DIRECT_URL: directDatabaseUrl,
       DATABASE_URL: runtimeDatabaseUrl,
+      CLICK_HMAC_SECRET_CURRENT: "phase11-e2e-local-only-click-secret",
       DODO_PAYMENTS_ENVIRONMENT: "mock",
       NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3100",
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "local-publishable-key",

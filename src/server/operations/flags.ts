@@ -4,7 +4,10 @@ import { readServerEnv } from "@/config/env/server";
 import { getSqlClient } from "@/server/db/client";
 
 export type OperationalFlag =
-  "payments_enabled" | "provider_refunds_enabled" | "read_only";
+  | "outbound_redirects_enabled"
+  | "payments_enabled"
+  | "provider_refunds_enabled"
+  | "read_only";
 
 export async function readOperationalFlag(
   key: OperationalFlag,

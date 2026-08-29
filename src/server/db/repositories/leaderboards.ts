@@ -12,6 +12,7 @@ import { readPublicEnv } from "@/config/env/public";
 import { getSqlClient } from "../client";
 import type {
   PublicBoardPage,
+  PublicActivityItem,
   PublicCategory,
   PublicEstimatedRank,
   PublicListingDetail,
@@ -135,6 +136,7 @@ type MainBoardRow = Readonly<{
   rank: bigint;
   slug: string;
   tagline: string;
+  uniqueClicks: bigint;
 }>;
 
 type TodayBoardRow = MainBoardRow &
@@ -167,6 +169,7 @@ function identityFromRow(row: MainBoardRow) {
     publicId: row.publicId,
     slug: row.slug,
     tagline: row.tagline,
+    uniqueClicks: row.uniqueClicks.toString(),
   } as const;
 }
 
@@ -211,6 +214,7 @@ export async function listMainBoard(input: {
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
+        coalesce(clicks.unique_clicks, 0)::bigint as "uniqueClicks",
         row_number() over (
           order by l.confirmed_total_paise desc,
                    l.current_total_reached_at asc,
@@ -221,6 +225,11 @@ export async function listMainBoard(input: {
       left join app.listing_assets asset
         on asset.id = l.logo_asset_id and asset.listing_id = l.id
        and asset.state = 'ready' and asset.kind = 'logo'
+      left join lateral (
+        select sum(click.unique_clicks)::bigint as unique_clicks
+        from app.listing_click_daily_totals click
+        where click.listing_id = l.id
+      ) clicks on true
       where l.lifecycle_status = 'active'
         and l.moderation_status = 'clear'
         and l.confirmed_total_paise > 0
@@ -307,6 +316,7 @@ export async function listTodayBoard(input: {
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
+        coalesce(clicks.unique_clicks, 0)::bigint as "uniqueClicks",
         d.net_amount_paise as "todayNetPaise",
         d.total_reached_at as "todayTotalReachedAt",
         row_number() over (
@@ -320,6 +330,11 @@ export async function listTodayBoard(input: {
       left join app.listing_assets asset
         on asset.id = l.logo_asset_id and asset.listing_id = l.id
        and asset.state = 'ready' and asset.kind = 'logo'
+      left join lateral (
+        select sum(click.unique_clicks)::bigint as unique_clicks
+        from app.listing_click_daily_totals click
+        where click.listing_id = l.id
+      ) clicks on true
       where d.business_date = ${input.businessDate}
         and d.net_amount_paise > 0
         and l.lifecycle_status = 'active'
@@ -414,6 +429,7 @@ export async function getPublicListingDetail(input: {
         c.name as "categoryName",
         c.slug as "categorySlug",
         c.sort_order as "categorySortOrder",
+        coalesce(clicks.unique_clicks, 0)::bigint as "uniqueClicks",
         row_number() over (
           order by l.confirmed_total_paise desc,
                    l.current_total_reached_at asc,
@@ -424,6 +440,11 @@ export async function getPublicListingDetail(input: {
       left join app.listing_assets asset
         on asset.id = l.logo_asset_id and asset.listing_id = l.id
        and asset.state = 'ready' and asset.kind = 'logo'
+      left join lateral (
+        select sum(click.unique_clicks)::bigint as unique_clicks
+        from app.listing_click_daily_totals click
+        where click.listing_id = l.id
+      ) clicks on true
       where l.lifecycle_status = 'active'
         and l.moderation_status = 'clear'
         and l.confirmed_total_paise > 0
@@ -535,6 +556,67 @@ export async function estimateNewListingRank(input: {
     estimatedTotalPaise: input.amountPaise.toString(),
     policyVersion: POLICY_VERSION,
   };
+}
+
+type ActivityRow = Readonly<{
+  amountDeltaPaise: bigint;
+  appliedAt: Date;
+  currentMainRank: bigint;
+  entryType: string;
+  listingName: string;
+  listingPublicId: string;
+  listingSlug: string;
+}>;
+
+/** Only committed positive ledger movements and currently public identities. */
+export async function listPublicActivity(
+  limit = 12,
+): Promise<PublicActivityItem[]> {
+  const sql = getSqlClient();
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50) {
+    throw new RangeError("Activity limit must be from 1 to 50.");
+  }
+  const rows = await sql<ActivityRow[]>`
+    WITH public_ranked AS (
+      SELECT listing.id, listing.public_id, listing.slug, listing.name,
+             row_number() OVER (
+               ORDER BY listing.confirmed_total_paise DESC,
+                        listing.current_total_reached_at ASC,
+                        listing.id ASC
+             ) AS rank
+      FROM app.listings AS listing
+      JOIN app.categories AS category ON category.id = listing.category_id
+      WHERE listing.lifecycle_status = 'active'
+        AND listing.moderation_status = 'clear'
+        AND listing.confirmed_total_paise > 0
+        AND listing.destination_url ~ '^https://'
+        AND category.is_active = true
+    )
+    SELECT ledger.entry_type AS "entryType",
+           ledger.amount_delta_paise AS "amountDeltaPaise",
+           ledger.applied_at AS "appliedAt",
+           ranked.rank AS "currentMainRank",
+           ranked.public_id AS "listingPublicId",
+           ranked.slug AS "listingSlug", ranked.name AS "listingName"
+    FROM private.financial_ledger AS ledger
+    JOIN public_ranked AS ranked ON ranked.id = ledger.listing_id
+    WHERE ledger.amount_delta_paise > 0
+      AND ledger.entry_type IN (
+        'initial_sponsorship', 'raise', 'refund_restoration',
+        'chargeback_restoration'
+      )
+    ORDER BY ledger.applied_at DESC, ledger.id DESC
+    LIMIT ${limit}
+  `;
+  return rows.map((row) => ({
+    amountDeltaPaise: row.amountDeltaPaise.toString(),
+    appliedAt: isoTimestamp(row.appliedAt),
+    currentMainRank: row.currentMainRank.toString(),
+    kind: publicMovementKind(row.entryType),
+    listingName: row.listingName,
+    listingPublicId: row.listingPublicId,
+    listingSlug: row.listingSlug,
+  }));
 }
 
 export async function listPublicCategories(): Promise<PublicCategory[]> {

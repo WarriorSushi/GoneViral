@@ -3,8 +3,10 @@ import type {
   PublicCategory,
   PublicMainBoardEntry,
   PublicTodayBoardEntry,
+  PublicActivityItem,
 } from "@/server/db/repositories/public-types";
 
+import { ActivityFeed } from "./activity-feed";
 import { BoardTabs, CategoryTabs } from "./board-navigation";
 import { Leaderboard } from "./leaderboard";
 import { SponsoredDisclosure } from "./sponsored-disclosure";
@@ -17,6 +19,7 @@ type RefreshContext =
 export function BoardPage({
   activeBoard,
   activeCategorySlug,
+  activity,
   categories,
   entries,
   generatedAt,
@@ -28,6 +31,7 @@ export function BoardPage({
 }: {
   readonly activeBoard: "main" | "today";
   readonly activeCategorySlug?: string;
+  readonly activity?: readonly PublicActivityItem[];
   readonly categories: readonly PublicCategory[];
   readonly entries: readonly (PublicMainBoardEntry | PublicTodayBoardEntry)[];
   readonly generatedAt: string;
@@ -96,6 +100,7 @@ export function BoardPage({
         Rank can change. Quotes add exactly the amount shown and do not reserve
         a position. We move you only after Dodo Payments confirms payment.
       </p>
+      {activity ? <ActivityFeed items={activity} /> : null}
     </main>
   );
 }

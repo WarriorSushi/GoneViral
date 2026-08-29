@@ -148,6 +148,7 @@ describe("Phase 3 public read model", () => {
           "targetRank": "1",
           "targetTotalPaise": "2500000",
         },
+        "uniqueClicks": "0",
       }
     `);
   });

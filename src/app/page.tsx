@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { BoardPage } from "@/components/public/board-page";
 import {
   getCachedMainBoard,
+  getCachedPublicActivity,
   getCachedPublicCategories,
 } from "@/server/cache/public-read-model";
 import { parseMainBoardCursor } from "@/server/db/repositories/leaderboards";
@@ -23,14 +24,16 @@ export default async function Home(props: PageProps<"/">) {
     notFound();
   }
 
-  const [board, categories] = await Promise.all([
+  const [board, categories, activity] = await Promise.all([
     getCachedMainBoard(cursor.value),
     getCachedPublicCategories(),
+    getCachedPublicActivity(),
   ]);
 
   return (
     <BoardPage
       activeBoard="main"
+      activity={activity}
       categories={categories}
       entries={board.entries}
       generatedAt={board.generatedAt}
