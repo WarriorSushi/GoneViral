@@ -8,11 +8,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-## Phase completion handoff
+## Phase boundaries and handoff
 
 After completing and committing any implementation-plan phase, stop before the
-next phase and end the completion report with a self-contained prompt that the
-user can paste into a new chat to begin the next phase. The prompt must state:
+next phase. Use a fresh task for the next phase unless the user explicitly asks
+to continue in the current task. End the completion report with a compact,
+delta-only prompt that the user can paste into the fresh task. The prompt must
+state:
 
 - what phase and commit were completed;
 - what was implemented and verified;
@@ -23,5 +25,39 @@ user can paste into a new chat to begin the next phase. The prompt must state:
 - that no production credentials, approvals, public activity, or test results may
   be fabricated.
 
+Point to committed specifications, runbooks, and evidence by path instead of
+copying their contents into the handoff. Do not repeat repository invariants,
+acceptance criteria, command matrices, or provider instructions that the next
+task can read from those authoritative files. Inline only new external state,
+owner decisions, unresolved gates, and facts that are not recorded safely in the
+repository.
+
 Apply this convention starting with the Phase 2 handoff after Phase 1. Do not
 begin the next phase in the same task unless the user explicitly asks.
+
+## Efficient execution without lowering quality
+
+- Preserve scope, model/reasoning setting, security review, test coverage, and
+  acceptance criteria. Never save usage by skipping work or weakening a gate.
+- Verify the baseline once, then map the exact specification sections, code,
+  tests, and commands needed. Search headings and symbols first; read full files
+  when required. Do not reread unchanged material without a new ambiguity or
+  failure.
+- Batch independent read-only inspections and checks, preferably in parallel.
+  Keep calls separate when a result changes the next decision, approval is
+  required, or external state changes.
+- Use bounded output: `rg`, targeted ranges, summaries, failure excerpts,
+  `git diff --stat`, and targeted diffs. Inspect the complete diff once before
+  commit. Keep verbose successful logs in ignored artifacts when useful.
+- Run focused affected tests while editing. Run each mandated full baseline or
+  final suite at its boundary, not after every edit. After failure, rerun the
+  affected check first and then the required final suite.
+- Reuse helpers, fixtures, adapters, and docs. Avoid duplicate investigations.
+  Use subagents only when the user or an applicable skill explicitly requests
+  them, with independent scopes and minimum context.
+- In a long phase, checkpoint after each coherent workstream or provider. If the
+  task compacts while substantial work remains, stop at the next safe checkpoint
+  with a delta-only continuation prompt unless the user explicitly prioritizes
+  uninterrupted execution.
+- Handle one external provider and approval boundary at a time; do not recheck
+  settled state unless it may have changed or the current gate requires it.
