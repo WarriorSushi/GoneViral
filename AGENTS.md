@@ -19,6 +19,16 @@ specifications or runbooks. Update it after material external-state changes.
 Never store secret values, credentials, magic links, MFA material, webhook
 bodies, payment-card data, or backup passphrases in it.
 
+## Interactive terminal boundary on this Windows host
+
+Codex cannot expose an interactive terminal prompt that the owner can reliably
+use. Never launch a command that requires the owner to type a passphrase,
+credential, MFA value, destructive confirmation, or other interactive input.
+Instead, stop immediately before that command, give the owner the exact
+PowerShell command to run in their own terminal, and wait for their sanitized
+result. Never ask the owner to paste a secret into chat. Codex may continue to
+run authorized non-interactive commands and checks normally.
+
 ## Phase boundaries and handoff
 
 After completing and committing any implementation-plan phase, stop before the
