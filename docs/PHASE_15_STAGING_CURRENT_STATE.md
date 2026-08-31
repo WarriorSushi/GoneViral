@@ -25,6 +25,11 @@ addresses, or backup passphrases here.
   `4bc73d9716215f8dcf8960706280ed12418e7ab3`. Any later closure fixes or newly
   authorized deferred-gate evidence must be committed separately; preserve
   unrelated owner changes and do not rewrite that certification commit.
+- Local deferred-gate closure was committed as
+  `194f01ae9acea5694ef27dd5e8b93ac2dc8a4352` and pushed to the existing
+  `origin/codex/phase-15-staging` branch. Local and remote refs matched exactly
+  before the restore rehearsal; no deployment or hosted-service command was
+  run as part of that push.
 
 ## Repository and connected staging services
 
@@ -192,6 +197,81 @@ domain, payment/refund, or production state was changed.
   maps or server-secret markers), and `pnpm audit --audit-level=moderate` (no
   known vulnerabilities).
 
+## Isolated backup restore rehearsal: attempted, gate failed
+
+The owner authorized an isolated non-production restore of the encrypted hosted
+backup. No hosted Supabase/Vercel/provider service, existing local database, or
+production system was used as the restore target.
+
+- The archive SHA-256 was rechecked and matched
+  `db72ee6fb77e97f0e56bf5604f82861c79154f6e80080bca82f375a0f7fffd9b`.
+  The owner entered the passphrase directly into 7-Zip; it was never sent to
+  chat, printed, committed, or stored in a repository file. Extraction reported
+  seven folders, 11 files, 352,582 bytes, and `Everything is Ok`.
+- All 10 manifest-listed payload files passed their individual SHA-256 checks,
+  including three Storage objects. The source identity remained project
+  `fndssapjkaicxzeruuvv`, source commit
+  `682969e41cbfba73bb4b2d81681eb2abd2dbe509`, and manifest creation time
+  `2026-08-31T04:28:20.6556996Z`.
+- Restoration used PostgreSQL 17.6 in disposable Docker container
+  `goneviral-phase15-restore-20260831`, on Docker internal network
+  `goneviral-phase15-restore-internal`. Host access for checks is restricted to
+  a disposable TCP proxy on `127.0.0.1:55432`; the target has no production or
+  staging connection. The first successful database restore ran from
+  `2026-08-31T06:41:01.3787981Z` to `2026-08-31T06:41:03.0052783Z` (1.626
+  seconds). An independent certified restore took 19.631 seconds.
+- The standalone Supabase PostgreSQL image required a managed
+  `supabase_realtime_admin` compatibility role. The archive's `roles.sql` also
+  omitted `GRANT goneviral_app TO postgres`, although that grant is present in
+  committed migration `20260828144813_phase_2_database_foundation.sql` and in
+  the source/local access model. The exact committed grant was applied only to
+  the disposable restore container.
+- Two independent restores matched across 57 `app`/`private`/`auth`/`storage`
+  tables with zero row-count or whole-row fingerprint differences. Aggregate
+  restored rows were `app=17`, `private=170`, `auth=17`, and `storage=5`; the
+  combined deterministic fingerprint was
+  `33b9af62a28d953770d73afbbd5b16a72ae3b0c5fe20f90b5558f052504eb72b`.
+  All 209 rows in the 55 tables represented by `COPY` sections matched the dump
+  exactly.
+- `pnpm db:migrations:verify` passed all 10 committed migrations.
+  `node scripts/db/verify-schema.mjs` passed 26 application/private tables, six
+  categories, 10 required triggers, no `SECURITY DEFINER` functions, and no
+  PUBLIC/browser-role access. Restore-target `db lint` and `db advisors`
+  equivalents using the explicit isolated URL both reported no issues.
+- Financial/integrity checks passed: five listings and five ledger entries,
+  zero listing/ledger or daily-projection mismatches, zero negative totals,
+  zero fulfilled-attempt identity mismatches, zero duplicate provider event,
+  payment, adjustment, or order identities, zero open reconciliation items,
+  zero orphan owner/admin Auth references, zero active super-admins, and both
+  payments/refunds flags disabled. Ten attempted append-only/identity/immutable
+  mutations were blocked inside rolled-back transactions.
+- Storage restoration matched exactly: two bucket metadata rows, three object
+  metadata rows, three extracted files, and zero inventory/checksum differences.
+  The public logo bucket remained public with a 256 KiB/one-MIME-type policy;
+  the staging logo bucket remained private with a 2 MiB/three-MIME-type policy.
+- The gate nevertheless **failed** because the backup's managed schema/data dump
+  contains the `auth.schema_migrations` and `storage.migrations` table
+  definitions but no rows for either table. Both restored counts are zero; the
+  same-version local Supabase reference has 77 Auth and 63 Storage migration
+  rows. Isolated GoTrue therefore attempted to replay old migrations against
+  the already-current restored schema and exited on an incompatible
+  `auth.oauth_clients` migration.
+- Consequently `pnpm test:database` is not certified on the restore. Its first
+  topology attempt passed 44/66 and failed 22/66 because runtime/Auth requests
+  still reached the ordinary local services while direct SQL reached the
+  restore clone. Creating a coherent isolated Auth service then exposed the
+  missing managed migration history above before a valid rerun could begin.
+  Twelve matching synthetic Phase 8/10 Auth users may remain in the ordinary
+  local Supabase database from that failed split-topology attempt; they were not
+  deleted because cleanup was outside the owner's authorization.
+
+The decrypted extraction directory and disposable restore database/proxy remain
+local for evidence review. They were not cleaned up because cleanup was not
+authorized. Do not treat this as a complete restore rehearsal. Repair the backup
+procedure so managed Auth and Storage migration histories and required role
+memberships are captured, create a fresh encrypted backup, and repeat the same
+isolated rehearsal before closing this gate.
+
 ## Exact resume point
 
 The risk-based critical staging path is complete. Preserve the private staging
@@ -202,12 +282,11 @@ supplies the exact project-bound confirmation through the runbook. Do not begin
 Phase 16 or touch production credentials, domains, or live payments.
 
 The formerly Docker-blocked local database, performance, and automated E2E
-gates are now resolved. The complete Phase 15 matrix is still not certified:
-the remaining deferred/unverified items remain honest limitations rather than
-implicit passes. In particular, successful creation and verification of the
-encrypted hosted backup is not a restore rehearsal. Restoration into a
-disposable empty local/non-production target, followed by the verification in
-the runbook, remains unverified.
+gates are resolved. The complete Phase 15 matrix is still not certified. The
+isolated restore was attempted and proved the application/financial data and
+Storage object payloads restorable, but the gate failed because managed Auth
+and Storage migration histories and a required role membership were absent from
+the archive. A corrected fresh backup and clean repeat rehearsal are required.
 
 Deferred unless a critical failure makes them necessary: exhaustive manual
 visual/browser/device coverage beyond the passed automated seven-project
