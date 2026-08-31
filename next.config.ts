@@ -9,6 +9,11 @@ const storageUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "3mb",
+    },
+  },
   async headers() {
     return [{ headers: [...securityHeaders()], source: "/:path*" }];
   },

@@ -4,6 +4,9 @@ import type { Route } from "next";
 
 import { getVerifiedAuthUser } from "@/server/auth/session";
 import { getOwnerRaiseAttemptStatus } from "@/server/db/repositories/private/owners";
+import { PaymentBrand } from "@/components/payment/payment-brand";
+
+export const instant = false;
 
 export default async function RaiseMockCheckout({
   params,
@@ -18,13 +21,22 @@ export default async function RaiseMockCheckout({
   return (
     <main className="pending-main" id="main-content">
       <section className="pending-card">
-        <p className="eyebrow">Local Dodo simulator</p>
-        <h1>Complete this mock raise</h1>
-        <p>The same signed webhook route fulfils this local raise.</p>
+        <PaymentBrand />
+        <header className="payment-status-header">
+          <span className="pending-mark" aria-hidden="true">
+            TEST
+          </span>
+          <p className="eyebrow">Local payment test</p>
+          <h1>Complete this test payment.</h1>
+          <p>
+            This page is only available during local testing. No real payment
+            will be made.
+          </p>
+        </header>
         <form action="/api/mock/dodo/complete" method="post">
           <input name="publicId" type="hidden" value={publicId} />
           <button className="button button-primary" type="submit">
-            Complete mock payment
+            Mark test payment complete
           </button>
         </form>
       </section>

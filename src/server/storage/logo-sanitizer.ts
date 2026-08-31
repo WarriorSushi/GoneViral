@@ -117,8 +117,8 @@ export async function sanitizeLogo(
     const output = await sharp(bytes, { limitInputPixels: LOGO_MAX_PIXELS })
       .rotate()
       .resize(LOGO_OUTPUT_SIZE, LOGO_OUTPUT_SIZE, {
-        background: { alpha: 0, b: 0, g: 0, r: 0 },
-        fit: "contain",
+        fit: "cover",
+        position: "centre",
         withoutEnlargement: false,
       })
       .webp({ effort: 5, quality: 82 })

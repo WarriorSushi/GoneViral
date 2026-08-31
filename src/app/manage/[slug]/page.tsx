@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import Link from "next/link";
 
+import { BackArrowIcon } from "@/components/icons/back-arrow-icon";
 import { Money } from "@/components/public/money";
 import { getVerifiedAuthUser } from "@/server/auth/session";
 import {
@@ -28,6 +29,19 @@ const paymentLabels: Record<string, string> = {
   refund_restoration: "Refund restored",
 };
 
+function statusTone(lifecycle: string, moderation: string): string {
+  if (
+    moderation === "suspended" ||
+    lifecycle === "inactive_reversed" ||
+    lifecycle === "removed"
+  ) {
+    return "danger";
+  }
+  if (moderation === "pending_review") return "warning";
+  if (lifecycle === "active") return "success";
+  return "warning";
+}
+
 export default async function OwnerListingPage({
   params,
 }: OwnerListingPageProps) {
@@ -45,9 +59,15 @@ export default async function OwnerListingPage({
   return (
     <main className="manage-main" id="main-content">
       <div className="manage-heading">
-        <div>
+        <div
+          className={`owner-overview-status-${statusTone(
+            listing.lifecycleStatus,
+            listing.moderationStatus,
+          )}`}
+        >
           <Link className="owner-back-link" href={"/manage" as Route}>
-            ← All listings
+            <BackArrowIcon />
+            <span>All listings</span>
           </Link>
           <p className="eyebrow">Private listing overview</p>
           <h1>{listing.name}</h1>

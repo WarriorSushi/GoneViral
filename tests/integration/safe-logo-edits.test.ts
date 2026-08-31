@@ -67,6 +67,12 @@ class MemoryLogoStorage implements LogoStorage {
       throw new Error("duplicate public object");
     this.publicObjects.set(path, bytes);
   }
+
+  async uploadStaging(path: string, bytes: Buffer) {
+    if (this.stagingObjects.has(path))
+      throw new Error("duplicate staging object");
+    this.stagingObjects.set(path, bytes);
+  }
 }
 
 async function createVerifiedUser() {

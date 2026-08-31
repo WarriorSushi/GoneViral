@@ -23,8 +23,10 @@ describe("versioned transactional email templates", () => {
     expect(rendered.html).toContain("&lt;img");
     expect(rendered.html).toContain("&lt;script&gt;");
     expect(rendered.html).not.toContain("<script>");
-    expect(rendered.html).not.toContain("<img");
-    expect(rendered.html).toContain("Support reference: listing_safe_123");
+    expect(rendered.html).not.toContain("<img src=x");
+    expect(rendered.html).toContain("goneviral-email-logo.webp");
+    expect(rendered.html).toContain("Gone<span");
+    expect(rendered.html).toContain("listing_safe_123</span>");
   });
 
   it("keeps management-link creation with Supabase Auth and never embeds a token", () => {
@@ -38,7 +40,7 @@ describe("versioned transactional email templates", () => {
       templateVersion: EMAIL_TEMPLATE_VERSION,
     });
     expect(rendered.html).toContain("https://goneviral.in/manage");
-    expect(rendered.text).toContain("Supabase Auth");
+    expect(rendered.text).toContain("one-time sign-in link");
     expect(`${rendered.html}${rendered.text}`).not.toMatch(
       /token=|otp=|provider_payment|webhook|secret/i,
     );

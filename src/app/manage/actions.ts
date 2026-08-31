@@ -10,7 +10,10 @@ import {
   isSupabaseAuthConfigured,
 } from "@/lib/supabase/server";
 import { canonicalizeOwnerEmail } from "@/server/auth/claim-owner";
-import { safeManageRedirect } from "@/server/auth/redirect";
+import {
+  buildManageCallbackUrl,
+  safeManageRedirect,
+} from "@/server/auth/redirect";
 import { getSqlClient } from "@/server/db/client";
 import { submissionDigest } from "@/server/security/submission-security";
 
@@ -95,7 +98,9 @@ export async function requestManageLink(
       await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${environment.NEXT_PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent("/manage")}`,
+          emailRedirectTo: buildManageCallbackUrl(
+            environment.NEXT_PUBLIC_SITE_URL,
+          ),
           shouldCreateUser: true,
         },
       });

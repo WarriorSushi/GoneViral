@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        margin: 0;
+        background: #f5f2ec;
+        color: #1c1917;
+        font-family: Arial, sans-serif;
+      }
+      @media (max-width: 620px) {
+        .email-shell {
+          padding: 18px 10px !important;
+        }
+        .email-card {
+          padding: 28px 22px !important;
+        }
+        .email-heading {
+          font-size: 30px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <table
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      style="width: 100%; background: #f5f2ec"
+    >
+      <tr>
+        <td class="email-shell" align="center" style="padding: 36px 16px">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="width: 100%; max-width: 600px"
+          >
+            <tr>
+              <td style="padding: 0 0 14px; text-align: center">
+                <img
+                  src="https://fndssapjkaicxzeruuvv.supabase.co/storage/v1/object/public/goneviral-logo-public/brand/goneviral-email-logo.webp"
+                  width="52"
+                  height="52"
+                  alt="GoneViral.in"
+                  style="
+                    display: inline-block;
+                    width: 52px;
+                    height: 52px;
+                    border: 0;
+                    border-radius: 50%;
+                  "
+                />
+                <div
+                  style="
+                    margin-top: 8px;
+                    color: #1c1917;
+                    font-size: 18px;
+                    font-weight: 800;
+                    letter-spacing: -0.5px;
+                  "
+                >
+                  Gone<span style="color: #9f2d36">Viral</span>.in
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="email-card"
+                style="
+                  padding: 42px 44px;
+                  border: 1px solid #e2dbd1;
+                  border-radius: 24px;
+                  background: #ffffff;
+                "
+              >
+                <div
+                  style="
+                    margin-bottom: 12px;
+                    color: #9f2d36;
+                    font-size: 12px;
+                    font-weight: 800;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                  "
+                >
+                  Secure management link
+                </div>
+                <h1
+                  class="email-heading"
+                  style="
+                    margin: 0 0 18px;
+                    color: #1c1917;
+                    font-size: 38px;
+                    line-height: 1.08;
+                    letter-spacing: -1.6px;
+                  "
+                >
+                  Manage your listing.
+                </h1>
+                <p
+                  style="
+                    margin: 0 0 14px;
+                    color: #5f5952;
+                    font-size: 16px;
+                    line-height: 1.65;
+                  "
+                >
+                  Use the button below to sign in and open the listings
+                  connected to this email address.
+                </p>
+                <p
+                  style="
+                    margin: 0 0 22px;
+                    color: #5f5952;
+                    font-size: 16px;
+                    line-height: 1.65;
+                  "
+                >
+                  This private link expires shortly and can only be used once.
+                </p>
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  style="margin: 0 0 24px"
+                >
+                  <tr>
+                    <td style="border-radius: 999px; background: #9f2d36">
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        style="
+                          display: inline-block;
+                          padding: 14px 22px;
+                          color: #ffffff;
+                          font-size: 16px;
+                          font-weight: 800;
+                          text-decoration: none;
+                        "
+                        >Manage my listing</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+                <div
+                  style="
+                    padding-top: 20px;
+                    border-top: 1px solid #e8e3db;
+                    color: #766f67;
+                    font-size: 12px;
+                    line-height: 1.55;
+                  "
+                >
+                  If you did not ask for this link, you can safely ignore this
+                  email. Never forward a sign-in link to anyone.
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 18px 24px 0;
+                  color: #8a837b;
+                  font-size: 11px;
+                  line-height: 1.5;
+                  text-align: center;
+                "
+              >
+                GoneViral.in · Pay. Get seen.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

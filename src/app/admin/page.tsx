@@ -61,7 +61,11 @@ export default async function AdminPage() {
             fresh AAL2 session is required before administrative data or actions
             are available.
           </p>
-          <Link href="/manage">Return to account access</Link>
+          {auth.kind === "mfa_required" ? (
+            <Link href="/manage/security">Verify with authenticator</Link>
+          ) : (
+            <Link href="/manage">Return to account access</Link>
+          )}
         </section>
       </main>
     );

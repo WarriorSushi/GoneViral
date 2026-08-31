@@ -30,6 +30,12 @@ export async function getAdminDashboard(role: AdminRole) {
         FROM app.listings
         WHERE moderation_status IN ('pending_review', 'suspended')
            OR lifecycle_status = 'removed'
+           OR EXISTS (
+             SELECT 1
+             FROM private.reports AS report
+             WHERE report.listing_id = app.listings.id
+               AND report.state IN ('pending', 'reviewing')
+           )
         ORDER BY updated_at DESC LIMIT 50
       `;
   const paymentExceptions = hasAdminPermission(role, "payments:view")

@@ -40,7 +40,7 @@ export function ManageLinkForm() {
         </p>
       ) : null}
       {state.message ? (
-        <p className="form-notice" role="status">
+        <p className="form-notice success-notice" role="status">
           {state.message}
         </p>
       ) : null}

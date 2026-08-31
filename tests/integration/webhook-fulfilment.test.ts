@@ -11,6 +11,7 @@ import { moneyPaise } from "@/domain/money";
 import { POLICY_VERSION } from "@/domain/policy";
 import { closeDatabase, getSqlClient } from "@/server/db/client";
 import { recordCustomerReturn } from "@/server/db/repositories/private/guest-checkout";
+import { recordOwnerRaiseReturn } from "@/server/db/repositories/private/owners";
 import { createGuestCheckout } from "@/server/payments/create-guest-checkout";
 import type {
   DodoPaymentStatus,
@@ -560,6 +561,40 @@ describe("Phase 5 locked Dodo webhook fulfilment", () => {
       ledger_count: 3n,
       original: 49_900n,
       total: 299_900n,
+    });
+  });
+
+  it("accepts an owner return after the webhook settles first", async () => {
+    const owner = await createOwnedActiveListing();
+    const raise = await createRaise(owner, 100_000n);
+    await processEvent(
+      `evt_${randomUUID()}`,
+      paymentEvent({
+        amountPaise: raise.amountPaise,
+        orderId: raise.provider_order_id,
+        paymentId: `pay_${randomUUID()}`,
+        publicId: raise.publicId,
+      }),
+    );
+
+    await expect(
+      recordOwnerRaiseReturn(raise.publicId, owner.slug, owner.userId),
+    ).resolves.toBe(true);
+
+    const [row] = await getSqlClient()<
+      { ledger_count: bigint; state: string; total: bigint }[]
+    >`
+      SELECT attempt.state, listing.confirmed_total_paise AS total,
+             (SELECT count(*) FROM private.financial_ledger AS ledger
+              WHERE ledger.payment_attempt_id = attempt.id) AS ledger_count
+      FROM private.payment_attempts AS attempt
+      JOIN app.listings AS listing ON listing.id = attempt.listing_id
+      WHERE attempt.id = ${raise.id}
+    `;
+    expect(row).toEqual({
+      ledger_count: 1n,
+      state: "succeeded",
+      total: 149_900n,
     });
   });
 

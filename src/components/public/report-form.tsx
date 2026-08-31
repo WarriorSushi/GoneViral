@@ -85,7 +85,10 @@ export function ReportForm({
         ) : null}
       </fieldset>
       {state.message ? (
-        <p className="form-notice" role="status">
+        <p
+          className={`form-notice ${state.complete ? "success-notice" : "error-notice"}`}
+          role={state.complete ? "status" : "alert"}
+        >
           {state.message}
         </p>
       ) : null}

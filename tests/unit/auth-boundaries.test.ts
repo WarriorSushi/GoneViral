@@ -3,7 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 import { canonicalizeOwnerEmail } from "@/server/auth/claim-owner";
-import { safeManageRedirect } from "@/server/auth/redirect";
+import {
+  buildManageCallbackUrl,
+  safeManageRedirect,
+} from "@/server/auth/redirect";
 import { config as proxyConfig } from "@/proxy";
 
 describe("owner auth boundaries", () => {
@@ -19,6 +22,16 @@ describe("owner auth boundaries", () => {
       "/admin/:path*",
       "/auth/:path*",
     ]);
+  });
+
+  it("requests the exact hosted callback without a query-string mismatch", () => {
+    expect(
+      buildManageCallbackUrl(
+        "https://goneviral-phase15-preview-warriorsushis-projects.vercel.app",
+      ),
+    ).toBe(
+      "https://goneviral-phase15-preview-warriorsushis-projects.vercel.app/auth/callback",
+    );
   });
 
   it.each([

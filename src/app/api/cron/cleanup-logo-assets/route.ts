@@ -1,4 +1,5 @@
 import { readServerEnv } from "@/config/env/server";
+import { publishPreparedGuestLogos } from "@/server/storage/guest-logo-service";
 import { cleanupExpiredLogoAssets } from "@/server/storage/logo-service";
 import { SupabaseLogoStorage } from "@/server/storage/logo-storage";
 
@@ -9,9 +10,11 @@ export async function GET(request: Request) {
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`)
     return new Response("Unauthorized", { status: 401 });
   try {
-    const cleaned = await cleanupExpiredLogoAssets(new SupabaseLogoStorage());
+    const storage = new SupabaseLogoStorage();
+    const published = await publishPreparedGuestLogos(storage);
+    const cleaned = await cleanupExpiredLogoAssets(storage);
     return Response.json(
-      { cleaned },
+      { cleaned, published },
       { headers: { "Cache-Control": "private, no-store, max-age=0" } },
     );
   } catch {

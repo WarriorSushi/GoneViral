@@ -10,6 +10,7 @@ export interface LogoStorage {
   removePublic(paths: readonly string[]): Promise<void>;
   removeStaging(paths: readonly string[]): Promise<void>;
   uploadPublic(path: string, bytes: Buffer): Promise<void>;
+  uploadStaging(path: string, bytes: Buffer): Promise<void>;
 }
 
 export class SupabaseLogoStorage implements LogoStorage {
@@ -43,6 +44,17 @@ export class SupabaseLogoStorage implements LogoStorage {
         upsert: false,
       });
     if (error) throw new Error(`logo_public_upload_failed:${error.name}`);
+  }
+
+  async uploadStaging(path: string, bytes: Buffer) {
+    const { error } = await this.client()
+      .storage.from(LOGO_STAGING_BUCKET)
+      .upload(path, bytes, {
+        cacheControl: "0",
+        contentType: "image/webp",
+        upsert: false,
+      });
+    if (error) throw new Error(`logo_staging_upload_failed:${error.name}`);
   }
 
   async removeStaging(paths: readonly string[]) {

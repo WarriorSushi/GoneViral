@@ -264,7 +264,7 @@ export async function runPaymentReconciliation(input?: {
       if (result.kind === "processed") counters.applied += 1;
       else if (result.kind === "duplicate") counters.duplicates += 1;
       else counters.quarantined += 1;
-      if (result.kind === "processed" && input?.onProcessed) {
+      if (result.listingPublicId && input?.onProcessed) {
         try {
           await input.onProcessed(result);
         } catch (cacheError) {

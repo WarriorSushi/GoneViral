@@ -48,6 +48,21 @@ describe("server environment schema", () => {
     ).toMatchObject({ EMAIL_DELIVERY_MODE: "mock" });
   });
 
+  it("requires a secret for strict and official-test Turnstile modes", () => {
+    expect(() =>
+      serverEnvSchema.parse({ TURNSTILE_MODE: "cloudflare" }),
+    ).toThrow(/Cloudflare Turnstile mode/);
+    expect(() =>
+      serverEnvSchema.parse({ TURNSTILE_MODE: "cloudflare_test" }),
+    ).toThrow(/Cloudflare Turnstile mode/);
+    expect(
+      serverEnvSchema.parse({
+        TURNSTILE_MODE: "cloudflare_test",
+        TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
+      }),
+    ).toMatchObject({ TURNSTILE_MODE: "cloudflare_test" });
+  });
+
   it("requires a complete, matching credential set in live Dodo mode", () => {
     expect(() =>
       serverEnvSchema.parse({ DODO_PAYMENTS_ENVIRONMENT: "live_mode" }),

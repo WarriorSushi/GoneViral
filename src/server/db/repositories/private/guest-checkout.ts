@@ -10,7 +10,7 @@ export type PublicAttemptStatus = Readonly<{
   listingPath: string | null;
   listingName: string;
   mainRank: bigint | null;
-  state: "confirmed" | "failed" | "pending";
+  state: "confirmed" | "failed" | "pending" | "reversed";
 }>;
 
 export async function getPublicAttemptStatus(
@@ -24,6 +24,7 @@ export async function getPublicAttemptStatus(
       listing_name: string;
       listing_path: string | null;
       main_rank: bigint | null;
+      net_amount_paise: bigint;
       state: string;
     }[]
   >`
@@ -39,6 +40,11 @@ export async function getPublicAttemptStatus(
     )
     SELECT pa.amount_paise, pa.estimated_rank_snapshot AS estimated_rank,
            l.name AS listing_name, pa.state,
+           COALESCE((
+             SELECT sum(ledger.amount_delta_paise)
+             FROM private.financial_ledger AS ledger
+             WHERE ledger.payment_attempt_id = pa.id
+           ), 0)::bigint AS net_amount_paise,
            CASE WHEN r.main_rank IS NOT NULL THEN '/l/' || l.slug ELSE NULL END
              AS listing_path,
            r.main_rank
@@ -58,7 +64,9 @@ export async function getPublicAttemptStatus(
     mainRank: row.main_rank,
     state:
       row.state === "succeeded"
-        ? "confirmed"
+        ? row.net_amount_paise <= 0n
+          ? "reversed"
+          : "confirmed"
         : ["failed", "cancelled", "expired", "dropped"].includes(row.state)
           ? "failed"
           : "pending",

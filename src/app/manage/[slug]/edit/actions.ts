@@ -53,11 +53,15 @@ export async function saveListingEdit(
   const messages = [];
   if (result.immediateCount > 0)
     messages.push(
-      `${result.immediateCount} safe change${result.immediateCount === 1 ? "" : "s"} published.`,
+      result.immediateCount === 1
+        ? "Your change is now live."
+        : `${result.immediateCount} changes are now live.`,
     );
   if (result.reviewCount > 0)
     messages.push(
-      `${result.reviewCount} sensitive change${result.reviewCount === 1 ? "" : "s"} sent for review; current public values stay live.`,
+      result.reviewCount === 1
+        ? "One change was sent for review. Your current public details will stay visible until it is approved."
+        : `${result.reviewCount} changes were sent for review. Your current public details will stay visible until they are approved.`,
     );
   if (messages.length === 0) messages.push("No changes were needed.");
   return { message: messages.join(" "), ok: true };

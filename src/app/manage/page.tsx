@@ -26,6 +26,19 @@ function statusLabel(lifecycle: string, moderation: string): string {
   return lifecycle.replaceAll("_", " ");
 }
 
+function statusTone(lifecycle: string, moderation: string): string {
+  if (
+    moderation === "suspended" ||
+    lifecycle === "inactive_reversed" ||
+    lifecycle === "removed"
+  ) {
+    return "danger";
+  }
+  if (moderation === "pending_review") return "warning";
+  if (lifecycle === "active") return "success";
+  return "warning";
+}
+
 export default async function ManagePage({ searchParams }: ManagePageProps) {
   await connection();
   const [user, query] = await Promise.all([
@@ -73,16 +86,24 @@ export default async function ManagePage({ searchParams }: ManagePageProps) {
           <h1>Your listings</h1>
           <p>Ownership is verified from your active database relationship.</p>
         </div>
-        <form action={signOutOwner}>
-          <input name="next" type="hidden" value="/manage" />
-          <button className="button button-secondary" type="submit">
-            Sign out
-          </button>
-        </form>
+        <div className="manage-heading-actions">
+          <Link
+            className="button button-secondary"
+            href={"/manage/security" as Route}
+          >
+            Account security
+          </Link>
+          <form action={signOutOwner}>
+            <input name="next" type="hidden" value="/manage" />
+            <button className="button button-secondary" type="submit">
+              Sign out
+            </button>
+          </form>
+        </div>
       </div>
 
       {query.claimed === "1" ? (
-        <p className="form-notice" role="status">
+        <p className="form-notice success-notice" role="status">
           Your verified payments have been claimed.
         </p>
       ) : null}
@@ -100,7 +121,12 @@ export default async function ManagePage({ searchParams }: ManagePageProps) {
           {listings.map((listing) => (
             <article className="owner-listing-card" key={listing.slug}>
               <div>
-                <p className="owner-status">
+                <p
+                  className={`owner-status owner-status-${statusTone(
+                    listing.lifecycleStatus,
+                    listing.moderationStatus,
+                  )}`}
+                >
                   {statusLabel(
                     listing.lifecycleStatus,
                     listing.moderationStatus,

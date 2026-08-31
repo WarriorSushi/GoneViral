@@ -12,7 +12,7 @@ function Submit() {
   const { pending } = useFormStatus();
   return (
     <button className="button button-primary" disabled={pending} type="submit">
-      {pending ? "Saving…" : "Save safe changes"}
+      {pending ? "Saving…" : "Save changes"}
     </button>
   );
 }
@@ -53,8 +53,8 @@ export function ListingEditForm({
         <p className="field-error">{state.errors.name}</p>
       ) : null}
       <p className="field-help">
-        Case and Unicode corrections can publish immediately. Material identity
-        changes require review.
+        Small spelling or capitalization fixes can go live immediately. A
+        different business name is sent for review.
       </p>
       <label>
         Tagline
@@ -82,8 +82,8 @@ export function ListingEditForm({
         <p className="field-error">{state.errors.destination}</p>
       ) : null}
       <p className="field-help">
-        A path or query change on the approved host can publish immediately. A
-        host change requires review and never triggers a server-side preview.
+        Changes after the website name, such as /pricing, can go live
+        immediately. Changing to a different website is sent for review.
       </p>
       <label>
         Category
@@ -98,10 +98,14 @@ export function ListingEditForm({
       {state.errors?.category ? (
         <p className="field-error">{state.errors.category}</p>
       ) : null}
-      <p className="field-help">Category changes always require approval.</p>
+      <p className="field-help">
+        A category change needs approval before it appears publicly.
+      </p>
       {state.message ? (
         <p
-          className={state.ok ? "form-notice" : "form-notice error-notice"}
+          className={
+            state.ok ? "form-notice success-notice" : "form-notice error-notice"
+          }
           role="status"
         >
           {state.message}

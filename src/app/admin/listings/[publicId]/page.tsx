@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { BackArrowIcon } from "@/components/icons/back-arrow-icon";
 import { getAdminSession } from "@/server/admin/auth";
 import { getAdminListingDetail } from "@/server/admin/read-model";
 
@@ -27,7 +28,13 @@ export default async function AdminListingPage(props: {
   if (!detail) notFound();
   return (
     <main id="main-content" className="public-main admin-page">
-      <Link href={"/admin" as Route}>← Founder console</Link>
+      <Link
+        className="button button-secondary back-link"
+        href={"/admin" as Route}
+      >
+        <BackArrowIcon />
+        <span>Founder console</span>
+      </Link>
       <header className="admin-header">
         <div>
           <p className="eyebrow">Redacted operational context</p>

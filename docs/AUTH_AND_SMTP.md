@@ -51,6 +51,13 @@ Before enabling production access:
 7. Record the human approver, test timestamp, environment, and redacted delivery
    evidence in the release checklist.
 
+The branded magic-link source is
+`supabase/templates/magic-link.html`. Its button must keep Supabase's generated
+`{{ .ConfirmationURL }}` unchanged so the one-time token and approved callback
+remain provider-controlled. The logo is a small sanitized WebP in the public
+`goneviral-logo-public/brand` path so mail clients can load it without a Vercel
+session or exposing a private asset.
+
 Local Auth and database tests do not prove SMTP delivery. Production credentials,
 DNS verification, inbox delivery, and staging results must never be fabricated.
 

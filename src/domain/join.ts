@@ -37,6 +37,7 @@ export type JoinField =
   | "destination"
   | "email"
   | "form"
+  | "logo"
   | "name"
   | "phone"
   | "tagline"

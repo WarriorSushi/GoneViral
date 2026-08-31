@@ -22,6 +22,19 @@ import {
   paymentsAreEnabled,
 } from "@/server/operations/flags";
 import { submissionDigest } from "@/server/security/submission-security";
+import {
+  discardPreparedGuestLogo,
+  prepareGuestLogo,
+  type PreparedGuestLogo,
+} from "@/server/storage/guest-logo-service";
+import {
+  LOGO_STAGING_BUCKET,
+  LOGO_OUTPUT_SIZE,
+} from "@/server/storage/logo-policy";
+import {
+  SupabaseLogoStorage,
+  type LogoStorage,
+} from "@/server/storage/logo-storage";
 import type { TurnstileVerifier } from "@/server/security/turnstile";
 
 import type { PaymentProvider } from "./provider";
@@ -57,7 +70,7 @@ function slugFor(name: string): string {
   return `${stem || "listing"}-${randomBytes(5).toString("hex")}`;
 }
 
-function requestHash(input: JoinInput): string {
+function requestHash(input: JoinInput, logoSha256: string | null): string {
   return createHash("sha256")
     .update(
       JSON.stringify({
@@ -68,6 +81,7 @@ function requestHash(input: JoinInput): string {
         email: input.email,
         name: input.name,
         phone: input.phone,
+        logoSha256,
         policyVersion: input.policyVersion,
         privacyVersion: PRIVACY_VERSION,
         refundPolicyVersion: REFUND_POLICY_VERSION,
@@ -117,6 +131,8 @@ async function consumeRateLimits(input: JoinInput, remoteIp: string) {
 
 export async function createGuestCheckout(input: {
   form: JoinInput;
+  logo?: Readonly<{ bytes: Buffer; contentType: string }>;
+  logoStorage?: LogoStorage;
   provider: PaymentProvider;
   remoteIp: string;
   siteUrl: string;
@@ -129,7 +145,10 @@ export async function createGuestCheckout(input: {
     };
   }
   const sql = getSqlClient();
-  const intentHash = requestHash(input.form);
+  const logoSha256 = input.logo
+    ? createHash("sha256").update(input.logo.bytes).digest("hex")
+    : null;
+  const intentHash = requestHash(input.form, logoSha256);
   const existing = await sql<AttemptRow[]>`
     SELECT public_id, provider_order_request_hash, provider_checkout_url,
            state, checkout_expires_at
@@ -210,25 +229,41 @@ export async function createGuestCheckout(input: {
     Date.now() + PAYMENT_ATTEMPT_EXPIRY_MINUTES * 60_000,
   );
 
-  const transaction = await sql.begin(async (transactionSql) => {
-    const duplicate = await transactionSql<
-      { lifecycle_status: string; moderation_status: string; slug: string }[]
-    >`
+  const logoStorage = input.logo
+    ? (input.logoStorage ?? new SupabaseLogoStorage())
+    : null;
+  let preparedLogo: PreparedGuestLogo | null = null;
+  if (input.logo && logoStorage) {
+    const logoResult = await prepareGuestLogo({
+      bytes: input.logo.bytes,
+      checkoutExpiresAt,
+      contentType: input.logo.contentType,
+      storage: logoStorage,
+    });
+    if (logoResult.kind === "rejected") return logoResult;
+    preparedLogo = logoResult.value;
+  }
+
+  const transaction = await sql
+    .begin(async (transactionSql) => {
+      const duplicate = await transactionSql<
+        { lifecycle_status: string; moderation_status: string; slug: string }[]
+      >`
       SELECT slug, lifecycle_status, moderation_status
       FROM app.listings
       WHERE destination_canonical_key = ${input.form.destination.canonicalKey}
       LIMIT 1
     `;
-    if (duplicate[0]) return { duplicate: duplicate[0] } as const;
+      if (duplicate[0]) return { duplicate: duplicate[0] } as const;
 
-    const category = await transactionSql<{ id: string }[]>`
+      const category = await transactionSql<{ id: string }[]>`
       SELECT id FROM app.categories
       WHERE slug = ${input.form.categorySlug} AND is_active = true
       LIMIT 1
     `;
-    if (!category[0]) return { invalidCategory: true } as const;
-    const [target] = input.form.targetSlug
-      ? await transactionSql<{ id: string; rank: bigint; total: bigint }[]>`
+      if (!category[0]) return { invalidCategory: true } as const;
+      const [target] = input.form.targetSlug
+        ? await transactionSql<{ id: string; rank: bigint; total: bigint }[]>`
           WITH ranked AS (
             SELECT id, slug, confirmed_total_paise AS total,
               row_number() OVER (ORDER BY confirmed_total_paise DESC,
@@ -237,21 +272,21 @@ export async function createGuestCheckout(input: {
               AND moderation_status = 'clear' AND confirmed_total_paise > 0
           ) SELECT id, total, rank FROM ranked WHERE slug = ${input.form.targetSlug}
         `
-      : [];
-    if (input.form.targetSlug && !target)
-      return { invalidTarget: true } as const;
-    if (target) {
-      const quote = calculateTakeoverQuote({
-        listingCurrentTotalPaise: moneyPaise(0n),
-        minimumRequiredPaise: moneyPaise(INITIAL_SPONSORSHIP_MIN_PAISE),
-        targetTotalPaise: moneyPaise(target.total),
-      });
-      if (input.form.amountPaise < quote.requiredPaymentPaise) {
-        return { targetMinimum: quote.requiredPaymentPaise } as const;
+        : [];
+      if (input.form.targetSlug && !target)
+        return { invalidTarget: true } as const;
+      if (target) {
+        const quote = calculateTakeoverQuote({
+          listingCurrentTotalPaise: moneyPaise(0n),
+          minimumRequiredPaise: moneyPaise(INITIAL_SPONSORSHIP_MIN_PAISE),
+          targetTotalPaise: moneyPaise(target.total),
+        });
+        if (input.form.amountPaise < quote.requiredPaymentPaise) {
+          return { targetMinimum: quote.requiredPaymentPaise } as const;
+        }
       }
-    }
 
-    const listingRows = await transactionSql<{ id: string }[]>`
+      const listingRows = await transactionSql<{ id: string }[]>`
       INSERT INTO app.listings (
         public_id, slug, name, name_normalized, tagline, destination_url,
         destination_canonical_key, destination_host, category_id,
@@ -266,19 +301,38 @@ export async function createGuestCheckout(input: {
       ON CONFLICT (destination_canonical_key) DO NOTHING
       RETURNING id
     `;
-    if (!listingRows[0]) {
-      const raced = await transactionSql<
-        { lifecycle_status: string; moderation_status: string; slug: string }[]
-      >`
+      if (!listingRows[0]) {
+        const raced = await transactionSql<
+          {
+            lifecycle_status: string;
+            moderation_status: string;
+            slug: string;
+          }[]
+        >`
         SELECT slug, lifecycle_status, moderation_status
         FROM app.listings
         WHERE destination_canonical_key = ${input.form.destination.canonicalKey}
         LIMIT 1
       `;
-      return { duplicate: raced[0] } as const;
-    }
+        return { duplicate: raced[0] } as const;
+      }
 
-    const ownerRows = await transactionSql<{ id: string }[]>`
+      if (preparedLogo) {
+        await transactionSql`
+        INSERT INTO app.listing_assets (
+          id, listing_id, kind, state, staging_bucket, staging_object_key,
+          content_type, byte_size, width, height, sha256, expires_at
+        ) VALUES (
+          ${preparedLogo.assetId}, ${listingRows[0].id}, 'logo', 'staged',
+          ${LOGO_STAGING_BUCKET}, ${preparedLogo.stagingObjectKey},
+          ${preparedLogo.logo.contentType}, ${preparedLogo.logo.bytes.length},
+          ${LOGO_OUTPUT_SIZE}, ${LOGO_OUTPUT_SIZE}, ${preparedLogo.logo.sha256},
+          ${preparedLogo.expiresAt.toISOString()}
+        )
+      `;
+      }
+
+      const ownerRows = await transactionSql<{ id: string }[]>`
       INSERT INTO private.pending_listing_owners (
         listing_id, canonical_email, email_hash, claim_state
       ) VALUES (
@@ -286,7 +340,7 @@ export async function createGuestCheckout(input: {
         ${submissionDigest(input.form.email)}, 'pending'
       ) RETURNING id
     `;
-    const attemptRows = await transactionSql<{ id: string }[]>`
+      const attemptRows = await transactionSql<{ id: string }[]>`
       INSERT INTO private.payment_attempts (
         public_id, application_idempotency_key, provider,
         provider_environment, listing_id, purpose, state, amount_paise,
@@ -308,12 +362,12 @@ export async function createGuestCheckout(input: {
         ${checkoutExpiresAt.toISOString()}
       ) RETURNING id
     `;
-    await transactionSql`
+      await transactionSql`
       UPDATE private.pending_listing_owners
       SET created_from_attempt_id = ${attemptRows[0]!.id}, updated_at = now()
       WHERE id = ${ownerRows[0]!.id}
     `;
-    await transactionSql`
+      await transactionSql`
       INSERT INTO private.listing_screenings (
         listing_id, screening_version, result, result_codes, request_fingerprint
       ) VALUES (
@@ -322,23 +376,34 @@ export async function createGuestCheckout(input: {
         ${intentHash}
       )
     `;
-    return { created: true } as const;
-  });
+      return { created: true } as const;
+    })
+    .catch(async (error: unknown) => {
+      if (logoStorage)
+        await discardPreparedGuestLogo(preparedLogo, logoStorage);
+      throw error;
+    });
 
   if ("invalidCategory" in transaction) {
+    if (logoStorage) await discardPreparedGuestLogo(preparedLogo, logoStorage);
     return { kind: "rejected", message: "Choose an available category." };
   }
-  if ("invalidTarget" in transaction)
+  if ("invalidTarget" in transaction) {
+    if (logoStorage) await discardPreparedGuestLogo(preparedLogo, logoStorage);
     return {
       kind: "rejected",
       message: "That leaderboard target is no longer available.",
     };
-  if ("targetMinimum" in transaction)
+  }
+  if ("targetMinimum" in transaction) {
+    if (logoStorage) await discardPreparedGuestLogo(preparedLogo, logoStorage);
     return {
       kind: "rejected",
       message: `Pay at least ₹${transaction.targetMinimum / 100n} for that current takeover quote.`,
     };
+  }
   if ("duplicate" in transaction) {
+    if (logoStorage) await discardPreparedGuestLogo(preparedLogo, logoStorage);
     const duplicate = transaction.duplicate;
     const eligible =
       duplicate?.lifecycle_status === "active" &&

@@ -49,6 +49,12 @@ require the AAL2 session to have been issued within 30 minutes. Admin responses
 are marked `private, no-store`; client navigation or UI tampering grants no
 access.
 
+When that 30-minute mutation window expires, the server action redirects to
+`/manage/security?reauth=admin`. The user must challenge the existing TOTP
+factor with a fresh code before returning to `/admin`; the rejected action is
+not replayed automatically. This expected reauthentication path must not fall
+through to the generic error boundary.
+
 Roles are deliberately narrow:
 
 - `reviewer`: view listing/report queues, clear/suspend/unsuspend, review
@@ -63,6 +69,15 @@ least-privilege role into `private.admin_users` through an approved direct
 database session. Do not expose an in-app first-admin bootstrap or infer a role
 from email/domain or client metadata. Revoke access by setting `is_active` false
 and `revoked_at`, and invalidate the user's Supabase sessions.
+
+The verified user enrolls or challenges a TOTP factor at `/manage/security`.
+That page uses only the signed-in user's Supabase Auth session and cannot read or
+write `private.admin_users`. Never record, transmit, screenshot, or paste the QR
+code, TOTP secret, or six-digit code into tickets or chat. After the page reports
+an AAL2 session, independently confirm the factor is verified in `auth.mfa_factors`
+before inserting the least-privilege role through the approved direct database
+session. A role insert must never be inferred from an email address, user
+metadata, or successful MFA alone.
 
 ## Actions and evidence
 

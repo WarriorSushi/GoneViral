@@ -6,7 +6,7 @@ const POLL_INTERVAL_MS = 3_000;
 const POLL_LIMIT = 100;
 
 export function PendingPaymentPoller({ publicId }: { publicId: string }) {
-  const [message, setMessage] = useState("Waiting for Dodo Payments…");
+  const [message, setMessage] = useState("Waiting for payment confirmation…");
 
   useEffect(() => {
     let cancelled = false;
@@ -25,12 +25,15 @@ export function PendingPaymentPoller({ publicId }: { publicId: string }) {
           status?: string;
         };
         if (cancelled) return;
-        if (body.status === "confirmed" && body.resultPath) {
+        if (
+          (body.status === "confirmed" || body.status === "reversed") &&
+          body.resultPath
+        ) {
           window.location.assign(body.resultPath);
           return;
         }
         if (body.status === "failed") {
-          setMessage("Dodo Payments did not complete this checkout.");
+          setMessage("The payment was not completed.");
           return;
         }
         if (response.status === 429) {
@@ -38,7 +41,7 @@ export function PendingPaymentPoller({ publicId }: { publicId: string }) {
         }
       } catch {
         if (!cancelled) {
-          setMessage("Still checking. It is safe to leave this page.");
+          setMessage("We’re still checking. You can safely leave this page.");
         }
       }
       if (!cancelled && pollCount < POLL_LIMIT) {

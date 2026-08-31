@@ -37,7 +37,9 @@ export const serverEnvSchema = z
     RESEND_WEBHOOK_SECRET: optionalSecret,
     EMAIL_DELIVERY_MODE: z.enum(["mock", "resend"]).default("mock"),
     TURNSTILE_SECRET_KEY: optionalSecret,
-    TURNSTILE_MODE: z.enum(["mock", "cloudflare"]).default("mock"),
+    TURNSTILE_MODE: z
+      .enum(["mock", "cloudflare", "cloudflare_test"])
+      .default("mock"),
     SUBMISSION_HMAC_SECRET: optionalSecret,
     CLICK_HMAC_SECRET_CURRENT: optionalSecret,
     CLICK_HMAC_SECRET_PREVIOUS: optionalSecret,
@@ -80,7 +82,7 @@ export const serverEnvSchema = z
     }
 
     if (
-      environment.TURNSTILE_MODE === "cloudflare" &&
+      environment.TURNSTILE_MODE !== "mock" &&
       !environment.TURNSTILE_SECRET_KEY
     ) {
       context.addIssue({

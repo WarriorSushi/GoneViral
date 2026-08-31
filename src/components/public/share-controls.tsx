@@ -60,7 +60,7 @@ export function ShareControls({
       role="region"
     >
       <p>
-        Share the confirmed result: <strong>#{currentRank}</strong> now.
+        Share your current <strong>#{currentRank}</strong> position.
       </p>
       <div>
         <button
@@ -75,17 +75,26 @@ export function ShareControls({
           onClick={copy}
           type="button"
         >
-          Copy result
+          Copy
         </button>
         <a
           className="button button-secondary"
           download={`${listingName.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}-goneviral.png`}
           href={`${listingPath}/opengraph-image`}
         >
-          Download image
+          Save image
         </a>
       </div>
-      <span aria-live="polite">
+      <span
+        aria-live="polite"
+        className={
+          status === "error"
+            ? "error-status"
+            : status === "copied" || status === "shared"
+              ? "success-status"
+              : undefined
+        }
+      >
         {status === "copied"
           ? "Result copied."
           : status === "shared"

@@ -30,14 +30,15 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
       rel="nofollow noopener"
     >
       {entry.logoUrl ? (
-        <Image
-          alt={`${entry.name} logo`}
-          className="listing-mark listing-logo"
-          height={48}
-          sizes="48px"
-          src={entry.logoUrl}
-          width={48}
-        />
+        <span className="listing-mark listing-logo-frame">
+          <Image
+            alt={`${entry.name} logo`}
+            className="listing-logo"
+            fill
+            sizes="(max-width: 820px) 48px, 56px"
+            src={entry.logoUrl}
+          />
+        </span>
       ) : (
         <span className="listing-mark" aria-hidden="true">
           {initial}
@@ -68,10 +69,9 @@ function TakePositionLink({ entry }: { readonly entry: BoardEntry }) {
         className="button button-quote"
         href={`/join?target=${encodeURIComponent(entry.slug)}` as Route}
       >
-        Take #{entry.rank} ·{" "}
+        Take #{entry.rank} for{" "}
         <Money paise={entry.takeoverQuote.requiredPaymentPaise} />
       </Link>
-      <small>Estimate. Spot not held.</small>
     </div>
   );
 }
@@ -115,17 +115,21 @@ function BoardAmount({ entry }: { readonly entry: BoardEntry }) {
 
 function InvitationRow({ rank }: { readonly rank: string }) {
   return (
-    <div className="invitation-row" data-testid="invitation-row">
+    <li className="invitation-row" data-testid="invitation-row">
       <span className="rank">#{rank}</span>
-      <div>
-        <strong>Want in?</strong>
-        <p>Join the paid list.</p>
+      <div className="invitation-copy">
+        <strong>Open leaderboard spot</strong>
+        <p>Put your listing here.</p>
       </div>
       <div className="invitation-action">
-        <span>Starts at</span>
-        <Money paise={INITIAL_SPONSORSHIP_MIN_PAISE.toString()} />
+        <span className="invitation-price">
+          From <Money paise={INITIAL_SPONSORSHIP_MIN_PAISE.toString()} />
+        </span>
+        <Link className="button button-claim-spot" href="/join">
+          Claim spot #{rank}
+        </Link>
       </div>
-    </div>
+    </li>
   );
 }
 
@@ -154,24 +158,32 @@ function EmptyBoard({ today }: { readonly today: boolean }) {
 
 export function Leaderboard({
   entries,
+  fillOpenPositions = false,
   nextCursor,
   pageHref,
   today = false,
 }: {
   readonly entries: readonly BoardEntry[];
+  readonly fillOpenPositions?: boolean;
   readonly nextCursor: string | null;
   readonly pageHref: string;
   readonly today?: boolean;
 }) {
-  if (entries.length === 0) {
+  if (entries.length === 0 && !fillOpenPositions) {
     return <EmptyBoard today={today} />;
   }
 
-  const invitationRank = (BigInt(entries.at(-1)!.rank) + 1n).toString();
-  const showInvitation = entries.length < 10 && !nextCursor;
+  const firstOpenRank = entries.length ? BigInt(entries.at(-1)!.rank) + 1n : 1n;
+  const openRanks =
+    fillOpenPositions && !nextCursor && firstOpenRank <= 10n
+      ? Array.from({ length: Number(11n - firstOpenRank) }, (_, index) =>
+          (firstOpenRank + BigInt(index)).toString(),
+        )
+      : [];
 
   return (
     <div className="leaderboard" data-testid="leaderboard">
+      {entries.length === 0 ? <EmptyBoard today={today} /> : null}
       <ol className="leaderboard-list" aria-label="Paid leaderboard">
         {entries.map((entry) => (
           <li
@@ -184,9 +196,11 @@ export function Leaderboard({
             <BoardAmount entry={entry} />
           </li>
         ))}
+        {openRanks.map((rank) => (
+          <InvitationRow key={rank} rank={rank} />
+        ))}
       </ol>
 
-      {showInvitation ? <InvitationRow rank={invitationRank} /> : null}
       {nextCursor ? (
         <div className="pagination">
           <Link

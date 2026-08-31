@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { toIstBusinessDate } from "@/domain/today";
 import { getAdminSession } from "@/server/admin/auth";
@@ -31,6 +32,9 @@ async function requireContext(
   formData: FormData,
 ): Promise<AdminRequestContext> {
   const session = await getAdminSession({ requireRecent: true });
+  if (session.kind === "mfa_required" || session.kind === "reauth_required") {
+    redirect("/manage/security?reauth=admin");
+  }
   if (session.kind !== "authenticated") throw new Error(session.kind);
   const requestHeaders = await headers();
   const forwarded =

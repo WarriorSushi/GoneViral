@@ -66,7 +66,7 @@ export async function handleDodoWebhook(request: Request): Promise<Response> {
       providerEnvironment: configuration.environment,
     });
 
-    if (result.kind === "processed" && result.listingPublicId) {
+    if (result.listingPublicId) {
       try {
         revalidatePaymentResult(result);
       } catch (cacheError) {

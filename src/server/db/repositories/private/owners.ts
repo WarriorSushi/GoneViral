@@ -246,7 +246,7 @@ export type OwnerRaiseAttemptStatus = Readonly<{
   estimatedRank: number | null;
   listingName: string;
   mainRank: number | null;
-  state: "confirmed" | "failed" | "pending";
+  state: "confirmed" | "failed" | "pending" | "reversed";
 }>;
 
 export async function getOwnerRaiseAttemptStatus(
@@ -261,6 +261,7 @@ export async function getOwnerRaiseAttemptStatus(
       estimated_rank: bigint | null;
       listing_name: string;
       main_rank: bigint | null;
+      net_amount_paise: bigint;
       state: string;
     }[]
   >`
@@ -273,7 +274,12 @@ export async function getOwnerRaiseAttemptStatus(
         AND confirmed_total_paise > 0
     )
     SELECT attempt.amount_paise, attempt.estimated_rank_snapshot AS estimated_rank,
-           listing.name AS listing_name, attempt.state, ranked.main_rank
+           listing.name AS listing_name, attempt.state, ranked.main_rank,
+           COALESCE((
+             SELECT sum(ledger.amount_delta_paise)
+             FROM private.financial_ledger AS ledger
+             WHERE ledger.payment_attempt_id = attempt.id
+           ), 0)::bigint AS net_amount_paise
     FROM private.payment_attempts AS attempt
     JOIN app.listings AS listing ON listing.id = attempt.listing_id
     JOIN private.listing_owners AS ownership
@@ -294,7 +300,9 @@ export async function getOwnerRaiseAttemptStatus(
     mainRank: row.main_rank === null ? null : Number(row.main_rank),
     state:
       row.state === "succeeded"
-        ? "confirmed"
+        ? row.net_amount_paise <= 0n
+          ? "reversed"
+          : "confirmed"
         : ["failed", "cancelled", "expired", "dropped", "quarantined"].includes(
               row.state,
             )
@@ -318,5 +326,10 @@ export async function recordOwnerRaiseReturn(
       AND ownership.user_id = ${userId} AND ownership.revoked_at IS NULL
     RETURNING attempt.public_id
   `;
-  return Boolean(rows[0]);
+  if (rows[0]) return true;
+
+  // The authoritative webhook can settle before the browser returns from
+  // Dodo. In that race, the attempt is already succeeded and must remain so;
+  // an authenticated owner should still reach the status page.
+  return Boolean(await getOwnerRaiseAttemptStatus(publicId, slug, userId));
 }

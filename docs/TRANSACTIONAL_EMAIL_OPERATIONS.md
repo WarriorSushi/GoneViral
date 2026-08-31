@@ -49,7 +49,7 @@ it does not manufacture a new idempotency identity.
 
 ## Template and privacy contract
 
-Template version `2026-08-29-v1` covers:
+Template version `2026-08-30-v2` covers:
 
 - first sponsorship confirmation and safe claim prompt;
 - confirmed raise;
@@ -58,6 +58,13 @@ Template version `2026-08-29-v1` covers:
 - moderation result;
 - listing-change result;
 - delayed payment verification.
+
+Every application template uses the shared branded email frame in
+`src/server/email/templates.ts`: a sanitized public GoneViral logo, one clear
+heading, plain-language body copy, one primary action, and a quiet support and
+financial-authority footer. The renderer temporarily accepts the earlier
+`2026-08-29-v1` identifier so already-queued Phase 15 notifications do not
+dead-letter during the visual upgrade; newly queued messages record v2.
 
 All sponsor-controlled strings are schema-bounded and HTML-escaped. Subjects
 strip control characters. URLs are built from the configured GoneViral origin

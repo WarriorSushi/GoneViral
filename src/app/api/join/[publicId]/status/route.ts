@@ -33,7 +33,7 @@ export async function GET(
     status
       ? {
           resultPath:
-            status.state === "confirmed"
+            status.state === "confirmed" || status.state === "reversed"
               ? `/join/${encodeURIComponent(publicId)}/confirmed`
               : undefined,
           status: status.state,

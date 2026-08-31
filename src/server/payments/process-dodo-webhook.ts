@@ -8,6 +8,9 @@ import { getSqlClient } from "@/server/db/client";
 import { EMAIL_TEMPLATE_VERSION } from "@/server/email/templates";
 import { encryptPrivateText } from "@/server/security/private-data";
 import { submissionDigest } from "@/server/security/submission-security";
+import { publishPreparedGuestLogoForAttempt } from "@/server/storage/guest-logo-service";
+import { SupabaseLogoStorage } from "@/server/storage/logo-storage";
+import { logger } from "@/server/telemetry/logger";
 import { moneyPaise } from "@/domain/money";
 import { calculateMinimumRaise } from "@/domain/ranking";
 import type { PaymentEnvironment } from "@/server/payments/provider";
@@ -89,7 +92,7 @@ export async function processDodoWebhook(input: {
 }): Promise<DodoWebhookResult> {
   const sql = getSqlClient();
 
-  return sql.begin(async (transactionSql) => {
+  const result = await sql.begin(async (transactionSql) => {
     await transactionSql`
       INSERT INTO private.provider_events (
         provider, provider_environment, provider_event_id,
@@ -594,6 +597,23 @@ export async function processDodoWebhook(input: {
       mainRank: rank?.rank ?? null,
     } as const;
   });
+
+  const attemptPublicId = input.event.payment?.attemptPublicId;
+  if (!attemptPublicId || result.kind === "quarantined") return result;
+  try {
+    const logoResult = await publishPreparedGuestLogoForAttempt(
+      attemptPublicId,
+      new SupabaseLogoStorage(),
+    );
+    return logoResult.kind === "published"
+      ? { ...result, listingPublicId: logoResult.listingPublicId }
+      : result;
+  } catch (error) {
+    logger.error("guest_logo_publish_failed", {
+      errorName: error instanceof Error ? error.name : "UnknownError",
+    });
+    return result;
+  }
 }
 
 async function createOperationsReview(input: {

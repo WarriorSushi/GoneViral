@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 
+import { BackArrowIcon } from "@/components/icons/back-arrow-icon";
 import { RaiseForm } from "@/components/owner/raise-form";
 import { formatInr, moneyPaise } from "@/domain/money";
 import {
@@ -60,7 +61,8 @@ export default async function RaisePage({
   return (
     <main className="manage-main" id="main-content">
       <Link className="owner-back-link" href={`/manage/${slug}` as Route}>
-        ← Listing overview
+        <BackArrowIcon />
+        <span>Listing overview</span>
       </Link>
       <div className="manage-heading">
         <div>

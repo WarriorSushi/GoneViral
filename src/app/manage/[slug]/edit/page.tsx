@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 
+import { BackArrowIcon } from "@/components/icons/back-arrow-icon";
 import { ListingEditForm } from "@/components/owner/listing-edit-form";
 import { LogoUploadForm } from "@/components/owner/logo-upload-form";
 import { getVerifiedAuthUser } from "@/server/auth/session";
@@ -36,14 +37,15 @@ export default async function EditListingPage({
   return (
     <main className="manage-main owner-edit-page" id="main-content">
       <Link className="owner-back-link" href={`/manage/${slug}` as Route}>
-        ← Listing overview
+        <BackArrowIcon />
+        <span>Listing overview</span>
       </Link>
       <p className="eyebrow">Owner edits</p>
       <h1>Edit {listing.name}</h1>
       <p>
-        Low-risk corrections publish after server validation. Identity, host,
-        category, and flagged-listing changes wait for review while the current
-        safe values stay live.
+        Small corrections can appear immediately. Changes to the business
+        identity, website, or category are reviewed first. Your current public
+        details stay visible during that review.
       </p>
 
       <section
@@ -76,7 +78,7 @@ export default async function EditListingPage({
       >
         <h2 id="pending-edit-title">Pending review</h2>
         {pending.length === 0 ? (
-          <p>No sensitive changes are waiting.</p>
+          <p>No changes are waiting for review.</p>
         ) : (
           <ul>
             {pending.map((change) => (

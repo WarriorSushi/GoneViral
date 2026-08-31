@@ -8,6 +8,17 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Active Phase 15 staging continuation
+
+While Phase 15 private staging remains in progress on
+`codex/phase-15-staging`, read
+`docs/PHASE_15_STAGING_CURRENT_STATE.md` before repeating certification or
+asking the owner to repeat manual provider/browser work. That file is a
+sanitized operational checkpoint, not a replacement for the authoritative
+specifications or runbooks. Update it after material external-state changes.
+Never store secret values, credentials, magic links, MFA material, webhook
+bodies, payment-card data, or backup passphrases in it.
+
 ## Phase boundaries and handoff
 
 After completing and committing any implementation-plan phase, stop before the

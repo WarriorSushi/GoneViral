@@ -30,6 +30,7 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
+          <Link href="/">Home</Link>
           <Link href="/how-it-works">How it works</Link>
           <Link href={"/manage" as Route}>Manage</Link>
         </nav>

@@ -114,7 +114,14 @@ test("production build renders a truthful empty board", async ({
     page.getByText("Get on the leaderboard from ₹499."),
   ).toBeVisible();
   await expect(page.getByText("NOT LIVE DATA")).toHaveCount(0);
-  await expect(page.getByTestId("leaderboard")).toHaveCount(0);
+  await expect(page.getByTestId("leaderboard")).toBeVisible();
+  await expect(page.getByTestId("invitation-row")).toHaveCount(10);
+  await expect(
+    page.getByRole("link", { name: "Claim spot #1", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Claim spot #10" }),
+  ).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await expectNoPrivateMarkers(await page.content());
   expect(consoleErrors).toEqual([]);
@@ -247,7 +254,14 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await expect(
     page.getByRole("link", { name: "More info about Monsoon Studio" }),
   ).toBeVisible();
-  await expect(page.getByTestId("invitation-row")).toContainText("Want in?");
+  await expect(
+    page.getByTestId("leaderboard").locator(".leaderboard-list > li"),
+  ).toHaveCount(10);
+  await expect(page.getByTestId("invitation-row")).toHaveCount(5);
+  await expect(page.getByRole("link", { name: "Claim spot #6" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Claim spot #10" }),
+  ).toBeVisible();
   await expect(
     page
       .getByTestId("leaderboard")
@@ -269,22 +283,12 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   ).toBeVisible();
   await expect(page.getByText("No simulated activity.")).toBeVisible();
   const rankAction = firstCard.getByRole("link", { name: /Take #1/ });
-  const rankActionWrap = rankAction.locator("..");
-
-  if (testInfo.project.name === "desktop-1440") {
-    await expect(rankActionWrap).toHaveCSS("opacity", "0");
-    await firstCard.hover();
-    await expect(rankActionWrap).toHaveCSS("opacity", "1");
-    const cardBox = await firstCard.boundingBox();
-    const actionBox = await rankAction.boundingBox();
-    expect(cardBox).not.toBeNull();
-    expect(actionBox).not.toBeNull();
-    expect(
-      Math.abs(actionBox!.y + actionBox!.height / 2 - cardBox!.y),
-    ).toBeLessThan(3);
-  } else {
-    await expect(rankAction).toBeVisible();
-  }
+  await expect(rankAction).toBeVisible();
+  await expect(rankAction).toHaveCSS("background-color", "rgb(185, 83, 24)");
+  const rankActionBox = await rankAction.boundingBox();
+  expect(rankActionBox).not.toBeNull();
+  expect(rankActionBox!.height).toBeGreaterThanOrEqual(44);
+  expect(rankActionBox!.height).toBeLessThanOrEqual(45);
 
   const boardBox = await page.getByTestId("leaderboard").boundingBox();
   expect(boardBox).not.toBeNull();
@@ -415,6 +419,15 @@ test("Main, Today, category, and listing navigation use real public projections"
     "Monsoon Studio",
   );
   await expect(
+    page.getByRole("link", { name: "Back to home" }),
+  ).toHaveAttribute("href", "/");
+  const listingHeadingSize = await page
+    .getByRole("heading", { level: 1 })
+    .evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize),
+    );
+  expect(listingHeadingSize).toBeLessThanOrEqual(56);
+  await expect(
     page.getByRole("heading", { name: "Payment history" }),
   ).toBeVisible();
   await expect(page.getByText("Joined the list")).toBeVisible();
@@ -505,16 +518,21 @@ test("guest join reaches an honest pending flow without browser authority", asyn
     .click();
 
   await expect(page).toHaveURL(/\/join\/att_[A-Za-z0-9_-]{24}\/mock-checkout$/);
-  await expect(
-    page.getByText("same Dodo webhook path used by test mode"),
-  ).toBeVisible();
-  await page.getByRole("link", { name: "Return without paying" }).click();
+  await expect(page.getByText("No real payment will be made.")).toBeVisible();
+  await page.getByRole("link", { name: "Leave payment unfinished" }).click();
   await expect(page).toHaveURL(/\/join\/att_[A-Za-z0-9_-]{24}\/pending$/);
   const attemptPublicId = new URL(page.url()).pathname.split("/")[2]!;
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "We’re checking your payment.",
+    "We’re still checking your payment.",
   );
-  await expect(page.getByText("Your listing is not live yet.")).toBeVisible();
+  await expect(
+    page.getByText(
+      "Your listing will stay hidden until the payment is confirmed.",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/Do not pay again while this check is in progress\./),
+  ).toBeVisible();
   await expect(page.getByText(/payment successful/i)).toHaveCount(0);
   await expectNoPrivateMarkers(await page.content());
 
@@ -579,8 +597,12 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
     .getByRole("button", { name: "Continue to secure checkout" })
     .click();
 
-  await page.getByRole("link", { name: "Return without paying" }).click();
-  await expect(page.getByText("Your listing is not live yet.")).toBeVisible();
+  await page.getByRole("link", { name: "Leave payment unfinished" }).click();
+  await expect(
+    page.getByText(
+      "Your listing will stay hidden until the payment is confirmed.",
+    ),
+  ).toBeVisible();
   await expect(page.getByText(/Payment confirmed/i)).toHaveCount(0);
   const attemptPublicId = new URL(page.url()).pathname.split("/")[2]!;
 
@@ -594,14 +616,12 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
     { timeout: 12_000 },
   );
   await expect(
-    page.getByRole("heading", { name: "Phase Five Studio is confirmed." }),
+    page.getByRole("heading", { name: "You’re on the leaderboard." }),
   ).toBeVisible();
-  await expect(page.getByText("actual leaderboard position")).toContainText(
-    "#6",
-  );
-  await expect(page.getByText(/only an estimate/)).toBeVisible();
-  await expect(page.getByText(/queued a confirmation/)).toBeVisible();
-  await expect(page.getByText(/already arrived/)).toBeVisible();
+  await expect(page.locator(".confirmed-rank")).toContainText("#6");
+  await expect(page.getByText(/estimate, not a reserved spot/)).toBeVisible();
+  await expect(page.getByText(/sending an email/)).toBeVisible();
+  await expect(page.getByText(/few minutes to arrive/)).toBeVisible();
   await expect(
     page.getByRole("region", { name: "Share this current result" }),
   ).toContainText("#6");
@@ -643,7 +663,7 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
     await verificationSql.end({ timeout: 5 });
   }
 
-  await page.getByRole("link", { name: "See the leaderboard" }).click();
+  await page.getByRole("link", { name: "Leaderboard" }).click();
   await page.getByRole("button", { name: "Refresh board" }).click();
   await expect(
     page.getByRole("link", { name: "Visit Phase Five Studio" }),
@@ -748,15 +768,24 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   await page.getByLabel("Tagline").fill("Phase Eight safe tagline");
   await websiteInput.fill(`${approvedWebsite.origin}/safe-owner-path`);
   await page.getByLabel("Category").selectOption("brands-d2c");
-  await page.getByRole("button", { name: "Save safe changes" }).click();
+  await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByRole("status")).toContainText(
-    "2 safe changes published.",
+    "2 changes are now live.",
   );
   await expect(page.getByRole("status")).toContainText(
-    "2 sensitive changes sent for review",
+    "2 changes were sent for review",
   );
   await expect(page.getByLabel("Logo image")).toBeVisible();
   await expect(page.getByText(/strip metadata/i)).toBeVisible();
+  await page
+    .getByLabel("Logo image")
+    .setInputFiles(`${process.cwd()}/src/app/GoneViral.in logo.png`);
+  await expect(
+    page.getByRole("img", { name: "Square logo crop preview" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Logo crop zoom")).toBeVisible();
+  await page.getByRole("button", { name: "Use this crop" }).click();
+  await expect(page.getByRole("status")).toContainText("Crop ready to upload.");
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await expectNoHorizontalOverflow(page);
 
@@ -797,15 +826,17 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   await page.getByLabel("Payment phone").fill("+919876543210");
   await page.getByRole("button", { name: "Continue to Dodo checkout" }).click();
   await expect(
-    page.getByRole("heading", { name: "Complete this mock raise" }),
+    page.getByRole("heading", { name: "Complete this test payment." }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Complete mock payment" }).click();
+  await page
+    .getByRole("button", { name: "Mark test payment complete" })
+    .click();
   await expect(
     page.getByRole("heading", {
-      name: "1,000 Indian rupees was added.",
+      name: "Your listing total has been updated.",
     }),
   ).toBeVisible({ timeout: 12_000 });
-  await expect(page.getByText(/Actual Main position:/)).toBeVisible();
+  await expect(page.locator(".confirmed-rank")).toContainText(/#[0-9]+/);
   await expect(
     page.getByRole("region", { name: "Share this current result" }),
   ).toContainText(/#[0-9]+/);

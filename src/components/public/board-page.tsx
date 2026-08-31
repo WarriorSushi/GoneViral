@@ -92,6 +92,7 @@ export function BoardPage({
 
       <Leaderboard
         entries={entries}
+        fillOpenPositions={pageHref === "/"}
         nextCursor={nextCursor}
         pageHref={pageHref}
         today={activeBoard === "today"}

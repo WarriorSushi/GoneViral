@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { readPublicEnv } from "@/config/env/public";
+import { BackArrowIcon } from "@/components/icons/back-arrow-icon";
 import { ReportForm } from "@/components/public/report-form";
 import { toIstBusinessDate } from "@/domain/today";
 import { getCachedPublicListingDetail } from "@/server/cache/public-read-model";
@@ -36,7 +37,13 @@ export default async function ReportListingPage(props: {
           Reports go to a human queue. Report count alone never hides a listing
           or changes its paid rank.
         </p>
-        <Link href={`/l/${slug}` as Route}>← Back to listing</Link>
+        <Link
+          className="button button-secondary back-link"
+          href={`/l/${slug}` as Route}
+        >
+          <BackArrowIcon />
+          <span>Back to listing</span>
+        </Link>
       </section>
       <ReportForm
         localTurnstileToken={localTurnstileToken}

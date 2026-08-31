@@ -13,5 +13,9 @@ export function RaisePoller() {
     }, 2_000);
     return () => window.clearInterval(timer);
   }, [router]);
-  return <p role="status">Waiting for Dodo Payments’ signed confirmation…</p>;
+  return (
+    <p className="pending-live-status" role="status" aria-live="polite">
+      Waiting for payment confirmation…
+    </p>
+  );
 }

@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import Script from "next/script";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
+import {
+  LogoCropField,
+  type LogoCropStatus,
+} from "@/components/shared/logo-crop-field";
 import type { PublicCategory } from "@/server/db/repositories/public-types";
 
 import { submitJoinForm, type JoinActionState } from "@/app/join/actions";
@@ -40,6 +44,17 @@ export function JoinForm({
   takeoverTarget?: Readonly<{ name: string; rank: string; slug: string }>;
 }) {
   const [state, action, pending] = useActionState(submitJoinForm, initialState);
+  const [logoStatus, setLogoStatus] = useState<LogoCropStatus>("empty");
+  const [draft, setDraft] = useState({
+    amount: initialAmountRupees,
+    category: "",
+    destination: "",
+    email: "",
+    name: "",
+    phone: "",
+    tagline: "",
+    termsAccepted: false,
+  });
 
   return (
     <form action={action} className="join-form" noValidate>
@@ -77,7 +92,14 @@ export function JoinForm({
               name="name"
               maxLength={160}
               autoComplete="organization"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))
+              }
               required
+              value={draft.name}
             />
             <FieldError field="name" message={state.errors?.name} />
           </label>
@@ -89,8 +111,14 @@ export function JoinForm({
               }
               aria-invalid={Boolean(state.errors?.category)}
               name="category"
-              defaultValue=""
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  category: event.target.value,
+                }))
+              }
               required
+              value={draft.category}
             >
               <option value="" disabled>
                 Choose one
@@ -112,7 +140,14 @@ export function JoinForm({
               aria-invalid={Boolean(state.errors?.tagline)}
               name="tagline"
               maxLength={320}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  tagline: event.target.value,
+                }))
+              }
               required
+              value={draft.tagline}
             />
             <FieldError field="tagline" message={state.errors?.tagline} />
           </label>
@@ -126,14 +161,37 @@ export function JoinForm({
               name="destination"
               type="url"
               inputMode="url"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  destination: event.target.value,
+                }))
+              }
               placeholder="https://example.com"
               required
+              value={draft.destination}
             />
             <FieldError
               field="destination"
               message={state.errors?.destination}
             />
           </label>
+          <div className="form-wide">
+            <LogoCropField
+              ariaInvalid={Boolean(state.errors?.logo)}
+              disabled={pending}
+              helpId="logo-help"
+              label="Logo (optional)"
+              name="logo"
+              onStatusChange={setLogoStatus}
+            />
+            <span className="field-help" id="logo-help">
+              JPEG, PNG or WebP, up to 2 MB. Crop it into the square, then we
+              clean and resize it before it appears publicly. It is discarded if
+              payment is not confirmed.
+            </span>
+            <FieldError field="logo" message={state.errors?.logo} />
+          </div>
         </div>
       </fieldset>
 
@@ -153,7 +211,14 @@ export function JoinForm({
               name="email"
               type="email"
               autoComplete="email"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  email: event.target.value,
+                }))
+              }
               required
+              value={draft.email}
             />
             <FieldError field="email" message={state.errors?.email} />
           </label>
@@ -166,8 +231,15 @@ export function JoinForm({
               type="tel"
               inputMode="tel"
               autoComplete="tel"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  phone: event.target.value,
+                }))
+              }
               placeholder="+919876543210"
               required
+              value={draft.phone}
             />
             <FieldError field="phone" message={state.errors?.phone} />
           </label>
@@ -184,8 +256,14 @@ export function JoinForm({
               min={initialAmountRupees}
               max="21474836"
               step="1"
-              defaultValue={initialAmountRupees}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  amount: event.target.value,
+                }))
+              }
               required
+              value={draft.amount}
             />
             <FieldError field="amount" message={state.errors?.amount} />
           </label>
@@ -206,6 +284,13 @@ export function JoinForm({
             aria-describedby={state.errors?.terms ? "terms-error" : undefined}
             aria-invalid={Boolean(state.errors?.terms)}
             name="termsAccepted"
+            checked={draft.termsAccepted}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                termsAccepted: event.target.checked,
+              }))
+            }
             type="checkbox"
             value="yes"
             required
@@ -240,16 +325,20 @@ export function JoinForm({
         </p>
       ) : null}
       {state.message ? (
-        <p className="form-notice" role="status">
+        <p className="form-notice error-notice" role="alert">
           {state.message}
         </p>
       ) : null}
       <button
         className="button button-primary join-submit"
         type="submit"
-        disabled={pending}
+        disabled={pending || logoStatus === "editing"}
       >
-        {pending ? "Opening secure checkout…" : "Continue to secure checkout"}
+        {pending
+          ? "Opening secure checkout…"
+          : logoStatus === "editing"
+            ? "Finish the logo crop first"
+            : "Continue to secure checkout"}
       </button>
       <p className="provider-note">
         Checkout is provided by Dodo Payments. Your listing stays pending until

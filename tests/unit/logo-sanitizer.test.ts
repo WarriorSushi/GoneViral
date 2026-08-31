@@ -79,6 +79,19 @@ describe("safe logo sanitization", () => {
     });
   });
 
+  it("center-crops non-square uploads so the square output is fully filled", async () => {
+    const input = await sharp({
+      create: { background: "#197149", channels: 4, height: 64, width: 192 },
+    })
+      .png()
+      .toBuffer();
+    const result = await sanitizeLogo(input, "image/png");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const metadata = await sharp(result.value.bytes).metadata();
+    expect(metadata.hasAlpha).toBe(false);
+  });
+
   it("rejects appended polyglot payloads and oversized inputs", async () => {
     const jpeg = await sharp({
       create: { background: "white", channels: 3, height: 8, width: 8 },

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { refreshPublicBoard } from "@/app/actions/refresh-public-board";
+import { BackArrowIcon } from "@/components/icons/back-arrow-icon";
 import { Money } from "@/components/public/money";
 import { ShareControls } from "@/components/public/share-controls";
 import { SponsoredDisclosure } from "@/components/public/sponsored-disclosure";
@@ -65,6 +66,12 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
 
   return (
     <main id="main-content" className="public-main listing-page">
+      <nav className="listing-page-nav" aria-label="Listing navigation">
+        <Link className="button button-secondary back-link" href="/">
+          <BackArrowIcon />
+          <span>Back to home</span>
+        </Link>
+      </nav>
       <SponsoredDisclosure />
       <section className="listing-hero">
         {listing.logoUrl ? (
