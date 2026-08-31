@@ -265,12 +265,87 @@ production system was used as the restore target.
   local Supabase database from that failed split-topology attempt; they were not
   deleted because cleanup was outside the owner's authorization.
 
-The decrypted extraction directory and disposable restore database/proxy remain
-local for evidence review. They were not cleaned up because cleanup was not
-authorized. Do not treat this as a complete restore rehearsal. Repair the backup
-procedure so managed Auth and Storage migration histories and required role
-memberships are captured, create a fresh encrypted backup, and repeat the same
-isolated rehearsal before closing this gate.
+The failed-rehearsal extraction and disposable target remained only until the
+corrected rehearsal evidence was recorded. They are historical failure evidence,
+not the current restore state.
+
+## Corrected isolated backup restore rehearsal: core recovery passed; database suite safety-deferred
+
+The remediation in `b4a404743911f72b9a630a42d708214c97272796` added the
+intentionally scoped Auth/Storage migration-history export and the one required
+custom-role membership. The owner then authorized a new encrypted backup and a
+new disposable local restore target. No hosted staging, provider, production,
+credential, domain, or payment/refund state was changed.
+
+- The fresh archive
+  `D:\GoneViral-Backups\20260831T074328Z-fndssapjkaicxzeruuvv.7z`
+  passed encrypted-archive and per-file verification: 14 files, 363,130
+  plaintext bytes, archive SHA-256
+  `fac5c0149101cec6e96f2bfc8e07b274ff58037bd67762dce76a58f53d3569c9`.
+  The owner entered its passphrase directly into 7-Zip; it was never printed,
+  stored, committed, or sent to chat. Its format-v2 manifest records project
+  `fndssapjkaicxzeruuvv`, source commit
+  `b202e05263ca1f7afd52b923ef525fc9f5bcc99d`, PostgreSQL image
+  `public.ecr.aws/supabase/postgres:17.6.1.166`, 77 Auth and 65 Storage
+  migration-history rows, the sole `goneviral_app -> postgres` membership, and
+  three Storage objects.
+- The restore used a newly initialized, locally isolated Supabase target named
+  `goneviral_phase15_restore_20260831`, separate ports, its own Docker network,
+  and the manifest's PostgreSQL image. The exact final database restore ran from
+  `2026-08-31T08:29:12.3151844Z` to `2026-08-31T08:29:17.4049194Z` (5.090
+  seconds). It restored roles, the scoped membership, Auth/Storage and
+  application schemas/data, managed histories, and application history in
+  dependency order with stop-on-error; it never targeted the linked staging or
+  ordinary local-development database.
+- Source versus restored `COPY` payloads matched byte-for-byte after normalized
+  deterministic extraction: `app-private-data.sql`
+  `0a8805dc5f37896539fea1cf7a2ca28585b85b316d03b4b13e606477fc4ff96f`,
+  `auth-storage-data.sql`
+  `62e58180322d7e1be9d77e8919e24028f89702479abac52dd36c372317726b61`,
+  `migration-history-data.sql`
+  `13826b7f589cfbe198bdba516ef4cd7b93cb8bd7ae157ed9e0898ada8adce10a`,
+  and `managed-migration-history.sql`
+  `455fbffd21632cd0c05cc9030547cb2ebf76187ac689da6dde8214cfe855f68d`.
+  Final restored row counts were five listings, five ledger entries, one Auth
+  user/identity, two Storage buckets, and three Storage objects.
+- Auth and Storage both became healthy after the clean final restore with zero
+  migration-error signatures; the restored history counts were exactly 77 and 65. Auth and Storage health endpoints returned HTTP 200. All three archived
+  Storage objects were retrieved through the isolated Storage service with exact
+  SHA-256 matches. The two buckets retained the expected public/private,
+  size-limit, and MIME-type policies.
+- `pnpm db:migrations:verify`, `node scripts/db/verify-schema.mjs`, isolated
+  target `db lint`, and isolated target `db advisors` all passed. Data API
+  checks returned `406/PGRST106` for both `app` and `private`, and `404` for
+  `public.categories`.
+- Financial, projection, timing, identity, role, and trigger checks passed:
+  zero listing/ledger and daily-projection mismatches; zero negative totals,
+  fulfilled-attempt identity mismatches, duplicate provider identities, open
+  reconciliation items, or orphan Auth references; zero active super-admins;
+  the exact custom membership was present; payments and provider refunds were
+  both restored as disabled; and all ten required mutation triggers were
+  enabled. Nine representative update/delete probes were blocked in rollback
+  subtransactions, including the immutable ledger, provider identities,
+  payment-intent fields, listing sponsorship, ready-logo payload, audit,
+  moderation, and refund-request protections.
+- `pnpm test:database` is **not certified for the exact restored snapshot**.
+  A fully routed isolated attempt passed 56/66 tests; its remaining ten mock
+  checkout/webhook tests were correctly rejected because the restored staging
+  `payments_enabled` flag is `false`. No provider call occurred. The ordinary
+  local ports were restored immediately afterward. Do not flip that flag merely
+  to make the suite green without fresh owner authorization for this disposable,
+  mock-only target; afterwards restore the exact disabled snapshot and rerun the
+  complete 66-test suite.
+- The prior split-topology attempt created 12 synthetic Auth users only in the
+  ordinary local development database: seven `phase8-*` and five `phase10-*`,
+  all created between `2026-08-31T06:48:12Z` and `2026-08-31T06:48:18Z`. They
+  had zero application, admin, financial, audit, moderation, or refund
+  references and were deleted there only; staging and production were not
+  touched.
+- After this evidence was recorded, all identified restore-rehearsal containers,
+  networks, volumes, plaintext extraction directories, and the disposable stack
+  directory were removed. A final inventory found none remaining. The encrypted
+  archive and its `.sha256` evidence file remain intact; the ordinary local
+  database, pooler, and router were restored healthy.
 
 ## Exact resume point
 
@@ -281,12 +356,13 @@ destructive prelaunch cleanup unless the owner separately authorizes it and
 supplies the exact project-bound confirmation through the runbook. Do not begin
 Phase 16 or touch production credentials, domains, or live payments.
 
-The formerly Docker-blocked local database, performance, and automated E2E
-gates are resolved. The complete Phase 15 matrix is still not certified. The
-isolated restore was attempted and proved the application/financial data and
-Storage object payloads restorable, but the gate failed because managed Auth
-and Storage migration histories and a required role membership were absent from
-the archive. A corrected fresh backup and clean repeat rehearsal are required.
+The formerly Docker-blocked local database, performance, automated E2E, and
+core isolated backup-restore gates are resolved. The complete Phase 15 matrix
+is still not certified: the exact restored snapshot still needs an explicitly
+authorized mock-only isolated `payments_enabled` test prerequisite before the
+complete 66-test database suite can certify. Preserve the restored source state
+with both payments and provider refunds disabled outside that tightly scoped
+test.
 
 Deferred unless a critical failure makes them necessary: exhaustive manual
 visual/browser/device coverage beyond the passed automated seven-project
