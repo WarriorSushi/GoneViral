@@ -21,9 +21,10 @@ addresses, or backup passphrases here.
   not claim the complete Phase 15 matrix passed.
 - Do not repeat settled tests without a new failure, changed deployment, or
   other evidence that invalidates the earlier result.
-- The worktree is intentionally very dirty with uncommitted Phase 15 work.
-  Preserve it. Do not reset, clean, revert, or commit merely because one check
-  passes.
+- Risk-based certification was committed cleanly as
+  `4bc73d9716215f8dcf8960706280ed12418e7ab3`. Any later closure fixes or newly
+  authorized deferred-gate evidence must be committed separately; preserve
+  unrelated owner changes and do not rewrite that certification commit.
 
 ## Repository and connected staging services
 
@@ -58,11 +59,12 @@ addresses, or backup passphrases here.
   store its value. Vercel Hobby cannot certify the committed sub-daily
   scheduler frequencies; authenticated manual Preview invocation is evidence
   only for the route/worker, not automatic scheduling.
-- Docker Desktop/local Supabase was unavailable during the essential-suite
-  boundary, so the Docker-dependent database and Playwright commands were
-  recorded as blocked rather than repeatedly retried. Docker later became
-  available for the authorized hosted-backup command, which completed. The
-  previously blocked suites were not retroactively claimed as passing.
+- Docker Desktop/local Supabase was unavailable during the original
+  essential-suite boundary, so the Docker-dependent commands were correctly
+  recorded as blocked at that time. The owner later made Docker available and
+  authorized local closure of those gates. The exact later evidence is recorded
+  below; it does not rewrite the earlier result or imply any hosted/production
+  action.
 
 ## Settled critical staging evidence
 
@@ -126,10 +128,10 @@ addresses, or backup passphrases here.
   not silently treated as a passing advisor matrix. Performance findings were
   informational missing/unused-index notices on the small staging dataset.
 - Formatting, lint, typecheck, 203 core tests, the production build, build
-  secret verification, and the high-severity dependency audit passed. Docker-
-  dependent database and Playwright suites remain blocked and were not retried
-  repeatedly. Hosted migration and schema equivalents matched the committed
-  ten-migration set and required isolation invariants.
+  secret verification, and the dependency audit passed. Hosted migration and
+  schema equivalents matched the committed ten-migration set and required
+  isolation invariants. The formerly blocked local Docker-dependent database,
+  performance, and Playwright suites subsequently passed as recorded below.
 - Preview `PAYMENTS_ENABLED` was changed to `false`, a fresh successful Preview
   deployment was created, and the stable protected alias was repointed to it.
   The owner then explicitly approved a temporary least-privilege ceremony. The
@@ -154,6 +156,42 @@ addresses, or backup passphrases here.
   - passphrase location: approved password manager only; never repository or
     chat.
 
+## Later local deferred-gate closure
+
+Docker Desktop and the required local Supabase services were healthy when this
+closure was run. No hosted database, Preview deployment, provider, credential,
+domain, payment/refund, or production state was changed.
+
+- `pnpm db:migrations:verify` passed with all 10 committed migrations applied in
+  order.
+- `node scripts/db/verify-schema.mjs` passed with 26 `app`/`private` tables, six
+  categories, 10 immutable/sanitization triggers, no `SECURITY DEFINER`
+  functions, and no browser/public access.
+- `pnpm db:schema:verify`, `pnpm db:lint`, and `pnpm db:advisors` passed. The
+  local Data API did not expose `app` or `private`, and the local database linter
+  and advisors reported no issues.
+- `pnpm test:database` passed 12 files and 66 tests.
+- `pnpm perf:query-plans` passed. Recorded p95 execution times in milliseconds:
+  Main 0.100, Today 0.160, category 0.062, owner 0.094, admin 0.113, payment
+  0.041, webhook 0.047, email outbox 0.041, reconciliation 0.032, and listing
+  ledger 0.057.
+- `pnpm test:performance` passed its local synthetic payment/webhook load test
+  with zero pool errors.
+- The first `pnpm test:e2e` closure run honestly failed: 61 passed, seven
+  failed, and nine did not run. It exposed a WebKit pre-hydration controlled
+  form-value loss plus an ambiguous status-role test locator. The ordinary join
+  fields were returned to browser-owned form state for progressive enhancement,
+  and the crop assertion was made exact. A complete WebKit 1440 sequence then
+  passed 11/11, followed by a clean full matrix: `pnpm test:e2e` passed 77/77
+  across desktop Chromium, 390/320/412 mobile Chromium, 834 tablet WebKit,
+  Firefox 1440, and WebKit 1440.
+- The exact closure candidate also passed `pnpm format:check`, `pnpm lint`,
+  `pnpm typecheck`, `pnpm test` (40 files, 203 tests), `pnpm test:coverage`
+  (95.40% statements, 91.51% branches, 97.00% functions, 95.91% lines),
+  `pnpm build`, `pnpm security:verify-build` (25 client assets; no public source
+  maps or server-secret markers), and `pnpm audit --audit-level=moderate` (no
+  known vulnerabilities).
+
 ## Exact resume point
 
 The risk-based critical staging path is complete. Preserve the private staging
@@ -163,15 +201,23 @@ destructive prelaunch cleanup unless the owner separately authorizes it and
 supplies the exact project-bound confirmation through the runbook. Do not begin
 Phase 16 or touch production credentials, domains, or live payments.
 
-The complete Phase 15 matrix was not run. The deferred/unverified items above,
-including Docker-dependent suites blocked at their original boundary, remain
-honest limitations rather than implicit passes.
+The formerly Docker-blocked local database, performance, and automated E2E
+gates are now resolved. The complete Phase 15 matrix is still not certified:
+the remaining deferred/unverified items remain honest limitations rather than
+implicit passes. In particular, successful creation and verification of the
+encrypted hosted backup is not a restore rehearsal. Restoration into a
+disposable empty local/non-production target, followed by the verification in
+the runbook, remains unverified.
 
-Deferred unless a critical failure makes them necessary: exhaustive
-browser/viewport coverage, manual screen-reader/device certification, a fresh
-hosted cropper walkthrough, every synthetic bounce/complaint/suppression case,
-destructive load testing, and provider restoration when genuine safe Dodo
-evidence is unavailable.
+Deferred unless a critical failure makes them necessary: exhaustive manual
+visual/browser/device coverage beyond the passed automated seven-project
+matrix, manual screen-reader certification, a fresh hosted cropper walkthrough,
+every synthetic bounce/complaint/suppression case, destructive load testing,
+and provider restoration when genuine safe Dodo evidence is unavailable.
+
+Vercel Hobby automatic sub-daily scheduling and production-specific
+configuration also remain unverified. The committed Preview Auth URLs and
+staging-hosted email logo must not be reused as production configuration.
 
 ## Production boundary
 

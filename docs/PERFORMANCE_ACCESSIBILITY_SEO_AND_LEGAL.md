@@ -124,6 +124,8 @@ open until genuine evidence exists.
 - genuine Dodo test/live credentials and provider certification;
 - hosted Sentry, alert delivery, Storage, and restore evidence;
 - external penetration testing;
-- CA/accounting validation of tax, invoicing, and financial operations; optional
-  independent legal review does not suspend the effective owner-approved policies;
+- counsel review of the legal/privacy/refund/content/disclosure/grievance
+  requirements and CA/accounting approval of tax, invoicing, GST, and
+  place-of-supply operations before production; the effective owner-approved
+  policies do not satisfy those separate launch gates;
 - manual NVDA/VoiceOver/TalkBack and real-device/staging certification.

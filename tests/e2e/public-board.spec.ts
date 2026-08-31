@@ -117,11 +117,11 @@ test("production build renders a truthful empty board", async ({
   await expect(page.getByTestId("leaderboard")).toBeVisible();
   await expect(page.getByTestId("invitation-row")).toHaveCount(10);
   await expect(
-    page.getByRole("link", { name: "Claim spot #1", exact: true }),
-  ).toBeVisible();
+    page.getByRole("link", { name: "Join the leaderboard" }),
+  ).toHaveCount(10);
   await expect(
-    page.getByRole("link", { name: "Claim spot #10" }),
-  ).toBeVisible();
+    page.getByText("Your final rank is set", { exact: false }),
+  ).toHaveCount(10);
   await expectNoHorizontalOverflow(page);
   await expectNoPrivateMarkers(await page.content());
   expect(consoleErrors).toEqual([]);
@@ -258,10 +258,9 @@ test("low-population Main board is first-viewport, accessible, and private-data 
     page.getByTestId("leaderboard").locator(".leaderboard-list > li"),
   ).toHaveCount(10);
   await expect(page.getByTestId("invitation-row")).toHaveCount(5);
-  await expect(page.getByRole("link", { name: "Claim spot #6" })).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Claim spot #10" }),
-  ).toBeVisible();
+    page.getByRole("link", { name: "Join the leaderboard" }),
+  ).toHaveCount(5);
   await expect(
     page
       .getByTestId("leaderboard")
@@ -785,7 +784,9 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   ).toBeVisible();
   await expect(page.getByLabel("Logo crop zoom")).toBeVisible();
   await page.getByRole("button", { name: "Use this crop" }).click();
-  await expect(page.getByRole("status")).toContainText("Crop ready to upload.");
+  await expect(
+    page.getByText("Crop ready to upload.", { exact: true }),
+  ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await expectNoHorizontalOverflow(page);
 

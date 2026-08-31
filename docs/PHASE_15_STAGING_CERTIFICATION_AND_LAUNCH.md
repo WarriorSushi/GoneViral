@@ -170,10 +170,11 @@ cleanup report beside the encrypted backup.
 Do not promote or attach `goneviral.in` until the user separately confirms the
 specific action and genuine evidence exists for Vercel Pro, Supabase Pro/PITR,
 production isolation, DNS/TLS/email authentication, backup/restore, alerts,
-access/MFA, security review, owner-approved legal compliance,
-CA/accounting/GST/invoice handling, Dodo written model approval,
-KYC/entity/bank setup, and live credentials. Independent counsel is optional
-and is not a launch blocker for the effective owner-approved policies.
+access/MFA, security review, counsel-reviewed legal/privacy/refund/content/
+disclosure/grievance requirements, CA-approved accounting/GST/invoice/place-of-
+supply handling, Dodo written model approval, KYC/entity/bank setup, and live
+credentials. The effective owner-approved policies are product copy, not
+evidence that the separate counsel and CA launch gates have passed.
 
 Even after those gates, deploy first with payments disabled. Smoke public,
 Auth, admin, cron, webhook, and reconciliation reads. Register exact live URLs,

@@ -5,15 +5,15 @@
     "duplicateCalls": 24
   },
   "distinctFulfilment": {
-    "maximumMs": 140.70159999999987,
-    "p50Ms": 73.42579999999998,
-    "p95Ms": 138.76339999999982
+    "maximumMs": 139.43889999999965,
+    "p50Ms": 68.00639999999976,
+    "p95Ms": 132.55660000000034
   },
   "duplicateStorm": {
-    "maximumMs": 87.61889999999994,
-    "p95Ms": 86.02819999999974
+    "maximumMs": 108.17550000000028,
+    "p95Ms": 107.2860999999998
   },
-  "generatedAt": "2026-08-29T07:01:28.664Z",
+  "generatedAt": "2026-08-31T04:59:45.575Z",
   "method": "Strictly local mock-provider normalized events; database transaction timing excludes network and signature parsing; errors would fail the run.",
   "poolErrors": 0,
   "resultCounts": {

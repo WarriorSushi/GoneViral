@@ -118,15 +118,15 @@ function InvitationRow({ rank }: { readonly rank: string }) {
     <li className="invitation-row" data-testid="invitation-row">
       <span className="rank">#{rank}</span>
       <div className="invitation-copy">
-        <strong>Open leaderboard spot</strong>
-        <p>Put your listing here.</p>
+        <strong>Room on the leaderboard</strong>
+        <p>Your final rank is set after payment confirmation.</p>
       </div>
       <div className="invitation-action">
         <span className="invitation-price">
           From <Money paise={INITIAL_SPONSORSHIP_MIN_PAISE.toString()} />
         </span>
         <Link className="button button-claim-spot" href="/join">
-          Claim spot #{rank}
+          Join the leaderboard
         </Link>
       </div>
     </li>

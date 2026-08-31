@@ -45,16 +45,6 @@ export function JoinForm({
 }) {
   const [state, action, pending] = useActionState(submitJoinForm, initialState);
   const [logoStatus, setLogoStatus] = useState<LogoCropStatus>("empty");
-  const [draft, setDraft] = useState({
-    amount: initialAmountRupees,
-    category: "",
-    destination: "",
-    email: "",
-    name: "",
-    phone: "",
-    tagline: "",
-    termsAccepted: false,
-  });
 
   return (
     <form action={action} className="join-form" noValidate>
@@ -92,14 +82,7 @@ export function JoinForm({
               name="name"
               maxLength={160}
               autoComplete="organization"
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  name: event.target.value,
-                }))
-              }
               required
-              value={draft.name}
             />
             <FieldError field="name" message={state.errors?.name} />
           </label>
@@ -111,14 +94,8 @@ export function JoinForm({
               }
               aria-invalid={Boolean(state.errors?.category)}
               name="category"
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  category: event.target.value,
-                }))
-              }
+              defaultValue=""
               required
-              value={draft.category}
             >
               <option value="" disabled>
                 Choose one
@@ -140,14 +117,7 @@ export function JoinForm({
               aria-invalid={Boolean(state.errors?.tagline)}
               name="tagline"
               maxLength={320}
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  tagline: event.target.value,
-                }))
-              }
               required
-              value={draft.tagline}
             />
             <FieldError field="tagline" message={state.errors?.tagline} />
           </label>
@@ -161,15 +131,8 @@ export function JoinForm({
               name="destination"
               type="url"
               inputMode="url"
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  destination: event.target.value,
-                }))
-              }
               placeholder="https://example.com"
               required
-              value={draft.destination}
             />
             <FieldError
               field="destination"
@@ -211,14 +174,7 @@ export function JoinForm({
               name="email"
               type="email"
               autoComplete="email"
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  email: event.target.value,
-                }))
-              }
               required
-              value={draft.email}
             />
             <FieldError field="email" message={state.errors?.email} />
           </label>
@@ -231,15 +187,8 @@ export function JoinForm({
               type="tel"
               inputMode="tel"
               autoComplete="tel"
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  phone: event.target.value,
-                }))
-              }
               placeholder="+919876543210"
               required
-              value={draft.phone}
             />
             <FieldError field="phone" message={state.errors?.phone} />
           </label>
@@ -256,14 +205,8 @@ export function JoinForm({
               min={initialAmountRupees}
               max="21474836"
               step="1"
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  amount: event.target.value,
-                }))
-              }
+              defaultValue={initialAmountRupees}
               required
-              value={draft.amount}
             />
             <FieldError field="amount" message={state.errors?.amount} />
           </label>
@@ -284,13 +227,6 @@ export function JoinForm({
             aria-describedby={state.errors?.terms ? "terms-error" : undefined}
             aria-invalid={Boolean(state.errors?.terms)}
             name="termsAccepted"
-            checked={draft.termsAccepted}
-            onChange={(event) =>
-              setDraft((current) => ({
-                ...current,
-                termsAccepted: event.target.checked,
-              }))
-            }
             type="checkbox"
             value="yes"
             required

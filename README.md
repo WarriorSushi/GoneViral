@@ -51,11 +51,18 @@ The local app is available at `http://localhost:3000`. Seeded local board data u
 
 ## Current external gates
 
-- The empty hosted Supabase staging project `fndssapjkaicxzeruuvv` is linked in Mumbai with committed migrations, disabled legacy API keys, modern API keys, and the reviewed private/public Storage buckets. It is not a production project. Exact hosted Auth redirects, end-to-end application flows, and a clean replacement encrypted backup/off-device copy remain open gates.
-- A login-protected Vercel Preview exists with automatic Git deployments disabled, Mumbai Functions configured, `PAYMENTS_ENABLED=false`, and safe mock provider modes. Vercel Hobby rejects the committed sub-daily production schedules, so the technical preview uses `vercel.preview.json`; automatic scheduler certification requires a supporting paid plan and separate owner approval.
-- Real signed private Storage upload, sanitisation, publication, and cleanup remain hosted-certification gates; deterministic local Storage doubles do not satisfy them.
-- Dodo Payments is the current hosted-checkout and webhook provider behind replaceable checkout and event adapters. Test mode requires a Dodo test API key, business ID, webhook key, and a one-time INR `pay_what_you_want` product. The local mock signs exact raw payloads with Standard Webhooks. Live credentials or approval are not assumed.
-- Resend API delivery, signed delivery webhooks, custom SMTP, sender-domain DNS verification, worker scheduling, and genuine hosted staging notification/magic-link delivery and replay tests are not yet available and are not represented as complete.
-- The hosted Sentry project exists, but source-map upload, a safe test event, alert destination, Vercel observability/WAF, external penetration test, and hosted PITR restore are not yet certified. Local scrubbing, headers, metrics, failure tests and temporary-table restore fingerprints do not satisfy those launch gates.
-- Hosted admin enrollment, verified MFA/re-auth configuration and a genuine role-bypass smoke test require a hosted Supabase environment and human security ceremony; local service and permission tests do not claim those gates are complete.
-- Versioned owner-approved legal, privacy, refund, content, paid-placement, copyright, and contact policies are effective. Accounting, GST/invoice, provider, infrastructure, and production approvals remain open; independent counsel is optional rather than a launch blocker.
+- Phase 15 risk-based private-staging certification is recorded in
+  `docs/PHASE_15_STAGING_CURRENT_STATE.md`. Read that checkpoint before repeating
+  hosted provider, Auth, email, Storage, admin, or browser work.
+- The protected Preview and hosted Supabase project are staging-only. Payments
+  and provider refunds are disabled, Dodo remains in Test Mode, and staging
+  credentials/configuration must never be promoted to production.
+- The complete Phase 15 matrix is not certified. Open gates include an isolated
+  hosted-backup restore rehearsal, exhaustive browser/accessibility coverage,
+  automatic sub-daily scheduler evidence on supporting infrastructure, and
+  production-specific configuration.
+- Production remains blocked on written Dodo model approval, KYC/entity/bank
+  setup, live credentials, counsel-reviewed legal requirements, CA-approved
+  accounting/GST/invoice handling, Vercel Pro, Supabase Pro/PITR, production
+  isolation, domain/DNS/TLS/email authentication, security/access review,
+  monitoring, backup/restore, and explicit owner authorization.
