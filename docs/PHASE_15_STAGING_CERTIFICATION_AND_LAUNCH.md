@@ -87,9 +87,18 @@ when needed and report concise excerpts and exact failures.
    `.7z.sha256`; never copy the plaintext timestamp directory or SQL files.
 
 6. Rehearse restoration only into a disposable empty local/non-production
-   target. Never restore over the linked database. Verify migrations, schema,
-   row counts/fingerprints, categories, financial identities, projections,
-   triggers, grants, RLS, Storage inventory, and recovery duration.
+   target initialized with the PostgreSQL image recorded in the backup manifest
+   so Supabase-managed roles/bootstrap grants exist before logical restore.
+   Never restore over the linked database. Restore the scoped custom role and
+   `goneviral-role-memberships.sql`, application/managed schemas and data,
+   `managed-migration-history.sql`, and the separate application migration
+   history in dependency order with stop-on-error and replication triggers
+   disabled only during data load. Start isolated Auth and Storage only after
+   the database restore; both services must become healthy without replaying an
+   already-applied migration. Restore actual Storage objects into the isolated
+   backend, then verify migrations, schema, row counts/fingerprints, categories,
+   financial and identity state, projections, triggers, grants/RLS, Storage
+   metadata/object checksums, service health, and recovery duration.
 
 ## Hosted configuration matrix
 

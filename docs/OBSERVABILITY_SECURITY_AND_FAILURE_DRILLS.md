@@ -195,21 +195,36 @@ executables; it does not replace a real Supabase backup/PITR restore into a new
 hosted project.
 
 For the linked hosted project, `pnpm ops:backup:hosted` creates separate role,
-`app`/`private` and managed `auth`/`storage` schema/data dumps,
-migration-history, configuration, and both actual Storage bucket exports under
-`D:\GoneViral-Backups`. The installed CLI's linked Storage copy command is
-currently unsupported, so the script retrieves the modern secret key only into
-process memory and downloads objects through the supported Storage API without
-printing or persisting the credential. It records per-file checksums and source identity, asks
-7-Zip for a passphrase without accepting it on the command line, verifies the
-encrypted archive, writes an external SHA-256 evidence file, and only then
-removes plaintext. The passphrase must be stored in an approved password
-manager, never chat, shell history, the repository, or the backup directory.
+scoped custom-role-membership, `app`/`private` and managed `auth`/`storage`
+schema/data dumps, Auth/Storage managed migration history, application migration
+schema/data history, configuration, and both actual Storage bucket exports under
+`D:\GoneViral-Backups`. The managed-history export is deliberately limited to
+`auth.schema_migrations` and `storage.migrations`; the membership export is
+limited to the required `goneviral_app -> postgres` grant. Supabase platform
+roles and unrelated system catalogs are not copied. The installed CLI's linked
+Storage copy command is currently unsupported, so the script retrieves the
+modern secret key only into process memory and downloads objects through the
+supported Storage API without printing or persisting the credential. It records
+per-file checksums and source identity, asks 7-Zip for a passphrase without
+accepting it on the command line, verifies the encrypted archive, writes an
+external SHA-256 evidence file, and only then removes plaintext. The passphrase
+must be stored in an approved password manager, never chat, shell history, the
+repository, or the backup directory.
 For an off-device copy, upload only the resulting `.7z` and matching
 `.7z.sha256` to a private account; never upload the plaintext timestamp folder
 or SQL files.
 `-PruneExpired` requires a second typed confirmation and removes only matching
 encrypted archives older than the configured rolling period.
+
+For restore, initialize a disposable target with the PostgreSQL image recorded
+in the format-v2 manifest so platform roles and bootstrap grants exist. Stop its
+Auth/Storage writers, restore the scoped role/membership, schemas, normal data,
+managed migration history, and application migration history with stop-on-error,
+then start Auth and Storage. Certification requires both services to become
+healthy without attempting an already-recorded migration; matching non-zero
+Auth/Storage history counts and database boot alone are insufficient. Restore
+the archived Storage payloads into that isolated backend and checksum the files
+through the service before running the post-restore commands above.
 
 Before staging test-data cleanup, verify that archive again and run
 `pnpm ops:prelaunch-cleanup -- --backup-archive <absolute .7z path>`. The script

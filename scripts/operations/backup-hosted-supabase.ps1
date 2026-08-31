@@ -36,6 +36,7 @@ function Get-Sha256([string]$Path) {
 Assert-Command "pnpm"
 Assert-Command "git"
 Assert-Command "7z"
+Assert-Command "docker"
 
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $projectRefFile = Join-Path $repositoryRoot "supabase\.temp\project-ref"
@@ -45,6 +46,102 @@ if (-not (Test-Path -LiteralPath $projectRefFile -PathType Leaf)) {
 $projectRef = (Get-Content -LiteralPath $projectRefFile -Raw).Trim()
 if ($projectRef -notmatch '^[a-z]{20}$') {
   throw "The linked Supabase project ref is malformed."
+}
+
+function Get-LinkedDatabaseSession {
+  # Supabase CLI intentionally excludes Auth/Storage migration tables and
+  # memberships into reserved roles from its portable dumps. Obtain the same
+  # short-lived login session the CLI uses, keep it only in process memory, and
+  # use the linked session-pooler endpoint so IPv4-only hosts remain supported.
+  $previousErrorActionPreference = $ErrorActionPreference
+  try {
+    # Windows PowerShell wraps native stderr as ErrorRecord objects. The CLI's
+    # harmless progress messages use stderr, so capture with Continue and judge
+    # the native exit code explicitly.
+    $ErrorActionPreference = "Continue"
+    $dryRun = (& pnpm.cmd exec supabase db dump --linked --schema auth --data-only --dry-run 2>$null | Out-String)
+    $dryRunExitCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
+  if ($dryRunExitCode -ne 0 -or -not $dryRun.Trim()) {
+    throw "Could not obtain a temporary linked database session."
+  }
+
+  function Read-TemporaryExport([string]$Name) {
+    $pattern = 'export {0}="([^"]+)"' -f [regex]::Escape($Name)
+    $match = [regex]::Match($dryRun, $pattern)
+    if (-not $match.Success) {
+      throw "The temporary linked database session omitted $Name."
+    }
+    return $match.Groups[1].Value
+  }
+
+  $poolerUrlFile = Join-Path $repositoryRoot "supabase\.temp\pooler-url"
+  if (-not (Test-Path -LiteralPath $poolerUrlFile -PathType Leaf)) {
+    throw "The linked Supabase session-pooler URL is unavailable."
+  }
+  $poolerUrl = [Uri](Get-Content -LiteralPath $poolerUrlFile -Raw).Trim()
+  if ($poolerUrl.Scheme -ne "postgresql" -or -not $poolerUrl.Host -or $poolerUrl.Port -le 0) {
+    throw "The linked Supabase session-pooler URL is malformed."
+  }
+
+  try {
+    return [ordered]@{
+      Host = $poolerUrl.Host
+      Port = $poolerUrl.Port.ToString()
+      User = "$(Read-TemporaryExport 'PGUSER').$projectRef"
+      Password = Read-TemporaryExport "PGPASSWORD"
+      Database = Read-TemporaryExport "PGDATABASE"
+    }
+  } finally {
+    Remove-Variable dryRun -ErrorAction SilentlyContinue
+  }
+}
+
+function Invoke-LinkedPostgresTool(
+  [System.Collections.IDictionary]$Session,
+  [string]$Image,
+  [string[]]$Arguments,
+  [AllowNull()][string]$InputText
+) {
+  $names = @("PGHOST", "PGPORT", "PGUSER", "PGPASSWORD", "PGDATABASE")
+  $previous = @{}
+  foreach ($name in $names) {
+    $previous[$name] = [Environment]::GetEnvironmentVariable($name, "Process")
+  }
+
+  try {
+    $env:PGHOST = $Session.Host
+    $env:PGPORT = $Session.Port
+    $env:PGUSER = $Session.User
+    $env:PGPASSWORD = $Session.Password
+    $env:PGDATABASE = $Session.Database
+    $dockerArguments = @(
+      "run", "--rm", "-i",
+      "-e", "PGHOST", "-e", "PGPORT", "-e", "PGUSER",
+      "-e", "PGPASSWORD", "-e", "PGDATABASE",
+      "-v", "$($plainDirectory):/backup",
+      $Image
+    ) + $Arguments
+    if ($null -eq $InputText) {
+      $output = (& docker @dockerArguments | Out-String)
+    } else {
+      $output = ($InputText | & docker @dockerArguments | Out-String)
+    }
+    if ($LASTEXITCODE -ne 0) {
+      throw "The scoped linked PostgreSQL export failed."
+    }
+    return $output
+  } finally {
+    foreach ($name in $names) {
+      if ($null -eq $previous[$name]) {
+        Remove-Item "Env:$name" -ErrorAction SilentlyContinue
+      } else {
+        [Environment]::SetEnvironmentVariable($name, $previous[$name], "Process")
+      }
+    }
+  }
 }
 
 $resolvedBackupRoot = [System.IO.Path]::GetFullPath($BackupRoot)
@@ -79,7 +176,63 @@ try {
   Invoke-Checked "pnpm" @("exec", "supabase", "db", "dump", "--linked", "--schema", "app,private", "--data-only", "--use-copy", "--file", (Join-Path $plainDirectory "app-private-data.sql"))
   Invoke-Checked "pnpm" @("exec", "supabase", "db", "dump", "--linked", "--schema", "auth,storage", "--file", (Join-Path $plainDirectory "auth-storage-schema.sql"))
   Invoke-Checked "pnpm" @("exec", "supabase", "db", "dump", "--linked", "--schema", "auth,storage", "--data-only", "--use-copy", "--file", (Join-Path $plainDirectory "auth-storage-data.sql"))
-  Invoke-Checked "pnpm" @("exec", "supabase", "db", "dump", "--linked", "--schema", "supabase_migrations", "--data-only", "--use-copy", "--file", (Join-Path $plainDirectory "migration-history.sql"))
+  Invoke-Checked "pnpm" @("exec", "supabase", "db", "dump", "--linked", "--schema", "supabase_migrations", "--file", (Join-Path $plainDirectory "migration-history-schema.sql"))
+  Invoke-Checked "pnpm" @("exec", "supabase", "db", "dump", "--linked", "--schema", "supabase_migrations", "--data-only", "--use-copy", "--file", (Join-Path $plainDirectory "migration-history-data.sql"))
+
+  $postgresVersionFile = Join-Path $repositoryRoot "supabase\.temp\postgres-version"
+  if (-not (Test-Path -LiteralPath $postgresVersionFile -PathType Leaf)) {
+    throw "The linked Supabase PostgreSQL image version is unavailable."
+  }
+  $postgresVersion = (Get-Content -LiteralPath $postgresVersionFile -Raw).Trim()
+  if ($postgresVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+    throw "The linked Supabase PostgreSQL image version is malformed."
+  }
+  $postgresToolsImage = "public.ecr.aws/supabase/postgres:$postgresVersion"
+  $linkedSession = Get-LinkedDatabaseSession
+  try {
+    Invoke-LinkedPostgresTool $linkedSession $postgresToolsImage @(
+      "pg_dump", "--data-only", "--quote-all-identifiers",
+      "--role=postgres", "--table=auth.schema_migrations",
+      "--table=storage.migrations", "--file=/backup/managed-migration-history.sql"
+    ) $null | Out-Null
+
+    $catalogSql = @'
+SET ROLE postgres;
+SELECT json_build_object(
+  'authMigrationCount', (SELECT count(*) FROM auth.schema_migrations),
+  'storageMigrationCount', (SELECT count(*) FROM storage.migrations),
+  'requiredMembershipCount', (
+    SELECT count(*)
+    FROM pg_auth_members AS membership
+    JOIN pg_roles AS granted_role ON granted_role.oid = membership.roleid
+    JOIN pg_roles AS member_role ON member_role.oid = membership.member
+    JOIN pg_roles AS grantor_role ON grantor_role.oid = membership.grantor
+    WHERE granted_role.rolname = 'goneviral_app'
+      AND member_role.rolname = 'postgres'
+      AND grantor_role.rolname = 'postgres'
+      AND membership.admin_option = false
+      AND membership.inherit_option = true
+      AND membership.set_option = true
+  )
+);
+'@
+    $catalog = (Invoke-LinkedPostgresTool $linkedSession $postgresToolsImage @(
+      "psql", "-X", "-q", "-A", "-t", "--set", "ON_ERROR_STOP=1"
+    ) $catalogSql).Trim() | ConvertFrom-Json
+    if ($catalog.authMigrationCount -le 0 -or $catalog.storageMigrationCount -le 0) {
+      throw "Managed Auth/Storage migration history is unexpectedly empty."
+    }
+    if ($catalog.requiredMembershipCount -ne 1) {
+      throw "The required goneviral_app-to-postgres membership is missing or ambiguous."
+    }
+    [System.IO.File]::WriteAllText(
+      (Join-Path $plainDirectory "goneviral-role-memberships.sql"),
+      "-- Scoped custom membership intentionally filtered by Supabase role dumps.`r`nGRANT `"goneviral_app`" TO `"postgres`";`r`n",
+      [System.Text.UTF8Encoding]::new($false)
+    )
+  } finally {
+    Remove-Variable linkedSession -ErrorAction SilentlyContinue
+  }
 
   $storageRoot = Join-Path $plainDirectory "storage"
   [System.IO.Directory]::CreateDirectory($storageRoot) | Out-Null
@@ -121,7 +274,7 @@ try {
 
   Copy-Item -LiteralPath (Join-Path $repositoryRoot "supabase\config.toml") -Destination (Join-Path $plainDirectory "supabase-config.toml")
   $files = Get-ChildItem -LiteralPath $plainDirectory -Recurse -File
-  foreach ($required in @("roles.sql", "app-private-schema.sql", "app-private-data.sql", "auth-storage-schema.sql", "auth-storage-data.sql", "migration-history.sql", "supabase-config.toml")) {
+  foreach ($required in @("roles.sql", "goneviral-role-memberships.sql", "app-private-schema.sql", "app-private-data.sql", "auth-storage-schema.sql", "auth-storage-data.sql", "managed-migration-history.sql", "migration-history-schema.sql", "migration-history-data.sql", "supabase-config.toml")) {
     $requiredPath = Join-Path $plainDirectory $required
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf) -or (Get-Item -LiteralPath $requiredPath).Length -eq 0) {
       throw "Required backup component is missing or empty: $required"
@@ -129,11 +282,17 @@ try {
   }
 
   $manifest = [ordered]@{
-    formatVersion = 1
+    formatVersion = 2
     createdAtUtc = (Get-Date).ToUniversalTime().ToString("o")
     projectRef = $projectRef
     gitCommit = $gitCommit
     schemas = @("app", "private", "auth", "storage", "supabase_migrations")
+    managedMigrationHistory = [ordered]@{
+      auth = [int]$catalog.authMigrationCount
+      storage = [int]$catalog.storageMigrationCount
+    }
+    requiredCustomRoleMemberships = @("goneviral_app->postgres")
+    postgresImage = $postgresToolsImage
     storageBuckets = $storageBuckets
     storageObjectCount = @($files | Where-Object { $_.FullName.StartsWith($storageRoot, [System.StringComparison]::OrdinalIgnoreCase) }).Count
     files = @($files | ForEach-Object {
