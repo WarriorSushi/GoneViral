@@ -44,6 +44,7 @@ jobs:
       - name: Invoke authenticated operation
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: ${{ vars.GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED }}
           GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL: ${{ vars.GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL }}
         run: node scripts/operations/invoke-scheduled-operations.mjs

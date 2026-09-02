@@ -81,9 +81,22 @@ export function selectOperations(eventName, event) {
   throw new SafeInvocationError("unsupported_event");
 }
 
+export function buildRequestHeaders({
+  cronSecret,
+  vercelAutomationBypassSecret,
+}) {
+  return {
+    accept: "application/json",
+    authorization: `Bearer ${cronSecret}`,
+    "user-agent": "GoneViral-Scheduled-Operations/1",
+    "x-vercel-protection-bypass": vercelAutomationBypassSecret,
+  };
+}
+
 export function requestRoute({
   url,
-  secret,
+  cronSecret,
+  vercelAutomationBypassSecret,
   connectTimeoutMs = CONNECT_TIMEOUT_MS,
   totalTimeoutMs = TOTAL_TIMEOUT_MS,
 }) {
@@ -104,11 +117,10 @@ export function requestRoute({
       {
         method: "GET",
         agent: false,
-        headers: {
-          accept: "application/json",
-          authorization: `Bearer ${secret}`,
-          "user-agent": "GoneViral-Scheduled-Operations/1",
-        },
+        headers: buildRequestHeaders({
+          cronSecret,
+          vercelAutomationBypassSecret,
+        }),
       },
       (response) => {
         response.resume();
@@ -155,8 +167,14 @@ export async function runScheduledOperations({
     throw new SafeInvocationError("scheduler_disabled");
   }
 
-  const secret = environment.CRON_SECRET;
-  if (!secret) throw new SafeInvocationError("missing_cron_secret");
+  const cronSecret = environment.CRON_SECRET;
+  if (!cronSecret) throw new SafeInvocationError("missing_cron_secret");
+
+  const vercelAutomationBypassSecret =
+    environment.VERCEL_AUTOMATION_BYPASS_SECRET;
+  if (!vercelAutomationBypassSecret) {
+    throw new SafeInvocationError("missing_vercel_automation_bypass_secret");
+  }
 
   const baseUrl = parseBaseUrl(
     environment.GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL,
@@ -171,7 +189,8 @@ export async function runScheduledOperations({
     try {
       const status = await request({
         url,
-        secret,
+        cronSecret,
+        vercelAutomationBypassSecret,
         connectTimeoutMs: CONNECT_TIMEOUT_MS,
         totalTimeoutMs: TOTAL_TIMEOUT_MS,
       });

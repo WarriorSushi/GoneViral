@@ -7,6 +7,7 @@ import {
   OPERATION_ROUTES,
   SCHEDULE_OPERATIONS,
   TOTAL_TIMEOUT_MS,
+  buildRequestHeaders,
   parseBaseUrl,
   runScheduledOperations,
   selectOperations,
@@ -53,7 +54,13 @@ describe("scheduled operations workflow", () => {
     expect(workflow).toContain(
       "run: node scripts/operations/invoke-scheduled-operations.mjs",
     );
+    expect(workflow).toContain(
+      "VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}",
+    );
     expect(workflow).not.toMatch(/run:.*(?:CRON_SECRET|secrets\.)/);
+    expect(workflow).not.toMatch(
+      /run:.*(?:VERCEL_AUTOMATION_BYPASS_SECRET|x-vercel-protection-bypass)/,
+    );
   });
 
   it("maps schedules and manual dispatches only to fixed routes", () => {
@@ -129,14 +136,56 @@ describe("scheduled operations workflow", () => {
     expect(request).not.toHaveBeenCalled();
   });
 
+  it("fails closed when the protected Preview bypass secret is missing", async () => {
+    const request = vi.fn();
+    await expect(
+      runScheduledOperations({
+        environment: {
+          CRON_SECRET: "test-only-cron-secret",
+          GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL: "https://scheduled.example",
+          GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: "true",
+        },
+        event: { schedule: "*/5 * * * *" },
+        eventName: "schedule",
+        request,
+      }),
+    ).rejects.toThrow("missing_vercel_automation_bypass_secret");
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it("builds both authentication headers without putting credentials in the URL", () => {
+    const cronSecret = "test-only-cron-secret";
+    const vercelAutomationBypassSecret = "test-only-vercel-bypass-secret";
+    const headers = buildRequestHeaders({
+      cronSecret,
+      vercelAutomationBypassSecret,
+    });
+
+    expect(headers).toEqual({
+      accept: "application/json",
+      authorization: `Bearer ${cronSecret}`,
+      "user-agent": "GoneViral-Scheduled-Operations/1",
+      "x-vercel-protection-bypass": vercelAutomationBypassSecret,
+    });
+    expect(
+      JSON.stringify(new URL("https://scheduled.example/api/cron")),
+    ).not.toContain(cronSecret);
+    expect(
+      JSON.stringify(new URL("https://scheduled.example/api/cron")),
+    ).not.toContain(vercelAutomationBypassSecret);
+  });
+
   it("constructs authenticated requests in memory with bounded timeouts and safe logs", async () => {
-    const secret = "test-only-secret-never-log";
+    const cronSecret = "test-only-cron-secret-never-log";
+    const vercelAutomationBypassSecret =
+      "test-only-vercel-bypass-secret-never-log";
     const request = vi.fn().mockResolvedValue(204);
     const logger = { info: vi.fn(), error: vi.fn() };
 
     await runScheduledOperations({
       environment: {
-        CRON_SECRET: secret,
+        CRON_SECRET: cronSecret,
+        VERCEL_AUTOMATION_BYPASS_SECRET: vercelAutomationBypassSecret,
         GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL: "https://scheduled.example",
         GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: "true",
       },
@@ -151,7 +200,8 @@ describe("scheduled operations workflow", () => {
       1,
       expect.objectContaining({
         url: new URL("https://scheduled.example/api/cron/drain-email-outbox"),
-        secret,
+        cronSecret,
+        vercelAutomationBypassSecret,
         connectTimeoutMs: CONNECT_TIMEOUT_MS,
         totalTimeoutMs: TOTAL_TIMEOUT_MS,
       }),
@@ -167,7 +217,8 @@ describe("scheduled operations workflow", () => {
 
     const logs = logger.info.mock.calls.flat().join(" ");
     expect(logs).toContain("route=/api/cron/drain-email-outbox status=204");
-    expect(logs).not.toContain(secret);
+    expect(logs).not.toContain(cronSecret);
+    expect(logs).not.toContain(vercelAutomationBypassSecret);
     expect(logs).not.toContain("scheduled.example");
   });
 
@@ -178,7 +229,9 @@ describe("scheduled operations workflow", () => {
     await expect(
       runScheduledOperations({
         environment: {
-          CRON_SECRET: "test-only-secret-never-log",
+          CRON_SECRET: "test-only-cron-secret-never-log",
+          VERCEL_AUTOMATION_BYPASS_SECRET:
+            "test-only-vercel-bypass-secret-never-log",
           GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL: "https://scheduled.example",
           GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: "true",
         },
@@ -192,7 +245,8 @@ describe("scheduled operations workflow", () => {
     expect(logger.error).toHaveBeenCalledOnce();
     const logs = logger.error.mock.calls.flat().join(" ");
     expect(logs).toContain("route=/api/cron/reconcile-payments status=503");
-    expect(logs).not.toContain("test-only-secret-never-log");
+    expect(logs).not.toContain("test-only-cron-secret-never-log");
+    expect(logs).not.toContain("test-only-vercel-bypass-secret-never-log");
     expect(request).toHaveBeenCalledOnce();
   });
 });
