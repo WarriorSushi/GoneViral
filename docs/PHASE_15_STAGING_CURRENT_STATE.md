@@ -446,12 +446,46 @@ matrix, manual screen-reader certification, a fresh hosted cropper walkthrough,
 every synthetic bounce/complaint/suppression case, destructive load testing,
 and provider restoration when genuine safe Dodo evidence is unavailable.
 
-Vercel Hobby automatic sub-daily scheduling and production-specific
-configuration also remain unverified. The committed Preview Auth URLs and
-staging-hosted email logo must not be reused as production configuration.
+Vercel Hobby automatic sub-daily scheduling is conclusively blocked by the
+current plan as recorded below; production-specific configuration remains
+unverified. The committed Preview Auth URLs and staging-hosted email logo must
+not be reused as production configuration.
 An actual hosted isolated restore/PITR rehearsal also remains deferred; this
 local isolated logical restore is not evidence for hosted retention, RPO, RTO,
 or provider-operated recovery.
+
+## Vercel automatic sub-daily cron certification: blocked by current plan
+
+This gate was re-evaluated read-only on 2026-09-02 after the isolated restore
+closure. No deployment, project setting, environment variable, billing state,
+schedule, or hosted service was changed.
+
+- The linked project remains `goneviral`, project
+  `prj_pvt3u8wDLvJ3C4X9QTB7AlHUvL12`, under team
+  `warriorsushis-projects`. An authenticated read-only Vercel API query reported
+  `billing.plan=hobby`.
+- Current official Vercel documentation allows up to 100 cron entries per
+  project on all plans, but Hobby schedules may run only once per day;
+  expressions that run more frequently fail deployment. Hobby daily invocation
+  timing is also imprecise within the selected hour. This supersedes the old
+  two-job count but does not remove the cadence blocker.
+- `vercel.json` has five authenticated jobs. Daily logo cleanup and retention
+  cleanup meet Hobby frequency syntax. Hourly payment reconciliation,
+  every-minute email outbox draining, and five-minute operational health checks
+  do not. Weakening those safety cadences would contradict the operational
+  specification and is not an acceptable certification workaround.
+- Vercel Cron is registered from production deployments, not Preview
+  deployments. The authorized protected staging deployment uses
+  `vercel.preview.json`, which deliberately omits cron schedules. Prior
+  authenticated manual Preview invocations prove the routes and workers, not
+  automatic scheduling.
+- Therefore this gate is conclusively **blocked**, not merely untested, while
+  the linked team remains Hobby and only Preview deployment is authorized.
+  Resolution requires a fresh owner decision authorizing a Pro plan and an
+  isolated Vercel staging project/production-target deployment for automatic
+  schedule evidence, or approving a different scheduler architecture. The
+  Phase 15 production hard gate already requires Vercel Pro; no purchase or
+  production deployment is authorized by this checkpoint.
 
 ## Production boundary
 
