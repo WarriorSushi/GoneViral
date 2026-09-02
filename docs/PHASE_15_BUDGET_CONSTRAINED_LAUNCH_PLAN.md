@@ -95,6 +95,15 @@ as `fcaf1a206c9f046f900eefd04e1988ba7c93ca3d`. One bounded post-merge query
 still returned zero schedule events. No repository-side cause is identifiable;
 automatic cadence remains an unresolved GitHub scheduler behavior gate.
 
+The owner declined escalation to GitHub Support and authorized a temporary
+credential-free schedule canary. Pull request `#6` added the isolated workflow
+and its static safety test; 10/10 focused tests and required CI passed, and it
+squash-merged as `cf7e991bcbd0cc97b0069ecfe2124bd07fd365b7`. Its
+manual run passed, but GitHub created no event for the first fair scheduled slot
+within the bounded observation window. Leave the harmless canary temporarily,
+check both workflows once after a longer passive delay, and select another
+owner-approved scheduler if both remain empty.
+
 Official references:
 
 - <https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule>

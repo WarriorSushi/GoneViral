@@ -114,6 +114,10 @@ Do not rerun these phases wholesale merely because a new task starts.
 - The manual operational-health run correctly emitted a Preview warning for at
   least one nonterminal payment attempt older than 30 minutes. Its identity and
   count remain unverified; this is not evidence of a live charge.
+- After declining a GitHub Support case, the owner authorized an isolated,
+  credential-free schedule canary. Its manual run passed, but neither active
+  workflow had a schedule event by the first bounded post-slot check. The canary
+  is retained temporarily for passive observation.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
@@ -121,12 +125,13 @@ Exact sanitized evidence and commits are in
 ### Next task
 
 Keep the scheduler scoped to the approved protected non-production Preview.
-Do not continue short-interval polling. Recheck GitHub scheduled-event history
-after a reasonable provider delay; if it remains empty, escalate the active
-workflow ID and sanitized evidence to GitHub Support or select a different
-owner-approved scheduler. Separately inspect the stale Preview payment attempt
-read-only before any expiry/remediation. Do not represent passed manual runs as
-automatic cadence certification, deploy production, or use live credentials.
+Do not continue short-interval polling. Recheck the production scheduler and
+temporary canary once after a longer passive provider delay. The owner declined
+a GitHub Support case; if both histories remain empty, select a different owner-
+approved scheduler and then remove the canary. Separately inspect the stale
+Preview payment attempt read-only before any expiry/remediation. Do not
+represent passed manual runs as automatic cadence certification, deploy
+production, or use live credentials.
 
 ### Remaining Phase 15 gates
 

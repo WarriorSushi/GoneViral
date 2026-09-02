@@ -569,6 +569,20 @@ zero schedule events. GitHub Status showed no Actions incident. GitHub exposes
 no deeper registration state, so the exact provider-side cause is not
 identifiable and automatic cadence remains uncertified.
 
+The owner declined a GitHub Support case and authorized a temporary isolated
+canary. Pull request `#6` added a five-minute offset schedule that uses empty
+permissions, no Actions, no repository checkout, no credentials/configuration,
+and no network request; it prints only event name and UTC time. The canary and
+existing scheduler tests passed 10/10, required CI run `33660917458` passed, and
+the PR squash-merged as `cf7e991bcbd0cc97b0069ecfe2124bd07fd365b7`.
+Canary workflow ID `348634880` was active, and manual run `33661199927` passed
+in three seconds. GitHub created no event for its first fair 17:32 UTC scheduled
+slot by the single 17:35:41 UTC query; both the canary and production scheduler
+reported zero schedule events at that time. This isolates the observed failure
+from GoneViral routes, secrets, variables, Vercel, and scheduler job logic, but
+does not rule out later GitHub delivery. Retain the harmless canary for one
+longer passive observation window, then remove it after evidence is captured.
+
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
 were pushed together to the existing origin branch. Local, tracking, and
