@@ -148,6 +148,15 @@ credential-free request to the protected Preview returned HTTP 302 without
 following the redirect or printing a body, which confirms that Vercel
 Deployment Protection denied the un-bypassed request.
 
+The operational-health HTTP 200 proves that the authenticated check completed;
+it does not mean every metric was clear. Sentry emitted the expected Preview
+warning `operational_alert:payment_attempt_stale` at 15:58:13 UTC from release
+`682969e41cbfba73bb4b2d81681eb2abd2dbe509`, immediately after manual health
+run `33651935090`. The code emits this warning when at least one nonterminal
+payment attempt is more than 30 minutes old. The notification did not identify
+the record or count, so an abandoned staging checkout is plausible but not yet
+proved. This is not evidence of a live payment, charge, or route failure.
+
 Automatic cadence is not yet certified. GitHub created no `schedule` event from
 16:00 through 16:23:43 UTC, including the 16:05, 16:10, 16:15, and 16:20
 five-minute boundaries and the 16:17 hourly boundary. The workflow file was
@@ -156,6 +165,28 @@ refreshed that state through GitHub's supported disable/enable API at 16:11 UTC,
 but no scheduled run appeared during the remaining observation window. GitHub
 documents that scheduled events can be delayed or dropped under load, so this
 is recorded as unresolved cadence evidence rather than a route failure.
+
+A narrow follow-up diagnostic confirmed workflow ID `348420162` was `active`,
+the repository was a non-fork public repository, and default-branch SHA
+`e24c6040443010af72501e30e86e0dab1fdfa6f7` contained the exact expected
+workflow. Its remote and local SHA-256 hashes matched, its workflow blob was
+`31d223af50e94f31221a45b178975b79039520d7`, and the Actions API reported five
+successful manual runs but zero `schedule` runs. The earlier disable/enable
+cycle changed the API state timestamp but did not produce a scheduled event.
+
+To force GitHub to process changed schedule metadata without altering any cron
+string or cadence, pull request `#4` added the supported explicit IANA timezone
+`Etc/UTC` to all three schedules. The default behavior was already UTC, so this
+does not change timing, event-to-route mapping, permissions, job logic, secrets,
+variables, or hosted configuration. Focused tests passed 9/9, required CI run
+`33655967625` passed, and the PR squash-merged as
+`fcaf1a206c9f046f900eefd04e1988ba7c93ca3d`. A single bounded check at 16:41:45
+UTC still showed state `active`, the updated workflow blob
+`a054029b825670a3bebd98c00ec31c72cb2a5858`, and zero scheduled events. GitHub
+Status reported Actions operational with no incident on 2026-09-02. GitHub does
+not expose its internal schedule registration, so no repository-side root cause
+can be proved; the remaining evidence points to GitHub schedule registration or
+delivery behavior.
 
 Still required: observe successful automatic five-minute, hourly, and daily
 runs; verify duplicate/catch-up behavior from hosted evidence; enable or verify

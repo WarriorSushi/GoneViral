@@ -534,6 +534,16 @@ protected-Preview operation succeeded independently: email outbox drain run
 `33652118316` all returned HTTP 200. Inspected output contained only fixed route,
 status, and duration. No response body or credential was printed or stored.
 
+The operational-health result was successful execution with attention needed,
+not an all-clear. Sentry emitted Preview warning
+`operational_alert:payment_attempt_stale` at 15:58:13 UTC from the known Preview
+release immediately after manual health run `33651935090`. The code condition
+means at least one nonterminal payment attempt was more than 30 minutes old.
+The owner-provided notification contained no record identity or count, so it
+does not prove whether this was an abandoned staging checkout. It is not a live-
+payment, charge, or route-failure result. Inspect aggregate/redacted staging
+state before deciding whether expiry or other remediation is appropriate.
+
 A separate bounded credential-free Preview request returned HTTP 302 without
 following the redirect or printing a body, confirming Vercel Deployment
 Protection denial. GitHub created no automatic `schedule` event from 16:00
@@ -543,6 +553,21 @@ supported disable/enable API at 16:11 UTC; no event appeared during the remainin
 window. This is unresolved automatic-cadence evidence, not a route failure.
 Five-minute, hourly, daily, duplicate/catch-up, failure-notification,
 stale/missing-run, and 60-day-disablement certification remain open.
+
+A follow-up diagnostic verified the active workflow metadata, non-fork public
+repository state, exact default-branch file, matching local/remote content hash,
+all three cron definitions, and direct Actions API run history. Workflow ID
+`348420162` had five successful manual events and zero scheduled events. The
+prior disable/enable cycle did not repair delivery. Pull request `#4` therefore
+made the smallest supported schedule-metadata refresh: add explicit
+`timezone: "Etc/UTC"` to the three already-UTC schedules while leaving every
+cron string and all job logic/configuration unchanged. Focused tests passed 9/9
+and required CI run `33655967625` passed. The PR squash-merged as
+`fcaf1a206c9f046f900eefd04e1988ba7c93ca3d`; local, tracking, and remote refs
+matched. One bounded post-merge check at 16:41:45 UTC still showed `active` and
+zero schedule events. GitHub Status showed no Actions incident. GitHub exposes
+no deeper registration state, so the exact provider-side cause is not
+identifiable and automatic cadence remains uncertified.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`

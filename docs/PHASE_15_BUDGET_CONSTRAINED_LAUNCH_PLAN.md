@@ -86,6 +86,15 @@ passed, while automatic cadence, failure/staleness notification, and 60-day
 disablement evidence remain open. Sanitized run IDs and results are in
 `GITHUB_SCHEDULED_OPERATIONS.md`.
 
+A narrow registration diagnostic subsequently confirmed the workflow API state
+was active and the exact file/crons were present on the default branch, while
+the direct Actions API still reported zero schedule events. Pull request `#4`
+added only explicit `Etc/UTC` schedule metadata, preserving the already-UTC
+cadence and every cron string. Required CI passed and the change squash-merged
+as `fcaf1a206c9f046f900eefd04e1988ba7c93ca3d`. One bounded post-merge query
+still returned zero schedule events. No repository-side cause is identifiable;
+automatic cadence remains an unresolved GitHub scheduler behavior gate.
+
 Official references:
 
 - <https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule>
