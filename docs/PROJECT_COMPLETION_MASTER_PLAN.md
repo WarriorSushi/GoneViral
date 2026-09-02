@@ -88,6 +88,9 @@ Do not rerun these phases wholesale merely because a new task starts.
   verification in `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1`.
 - Complete reachable-history/current-tree/workflow/tag safety audit. The owner
   had already made the repository public; Codex did not change visibility.
+- Scheduler implementation and primary evidence pushed to the existing origin
+  branch with matching local/tracking/remote refs; the enable guard, hosted
+  secrets, repository variables, and hosted runs remained absent.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.

@@ -494,6 +494,14 @@ variable, and keep the enable guard non-`true` until route invocation is
 authorized. Hosted manual/automatic schedule, failure notification, missed-run,
 and 60-day-disablement evidence remain unverified.
 
+Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
+documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
+were pushed together to the existing origin branch. Local, tracking, and
+independently queried remote refs matched the latter commit. GitHub registered
+the workflow as active, but repository secret and variable counts remained
+zero and the scheduler run list was empty immediately after the push. The
+guard therefore remained disabled and no hosted route was invoked.
+
 The risk-based critical staging path is complete. Preserve the private staging
 shutdown: Preview and database payments off, provider refunds off, Dodo Test
 Mode, protected alias only, and the sole active admin at `reviewer`. Do not run
