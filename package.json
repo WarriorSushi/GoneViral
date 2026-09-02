@@ -18,6 +18,7 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:scheduled-operations": "vitest run tests/unit/scheduled-operations-workflow.test.mjs",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:performance": "vitest run --config vitest.performance.config.ts",
