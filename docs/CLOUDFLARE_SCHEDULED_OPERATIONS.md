@@ -140,6 +140,9 @@ Current official references:
    Wrangler configuration, and focused unit/static tests are checked in with
    the enable binding `false`. `wrangler deploy --dry-run` validates the bundle
    and exposes only the two non-secret bindings.
+   The compatibility date is pinned to `2026-09-02`, which is non-future in
+   Cloudflare UTC. An earlier inert deployment attempt was rejected before
+   creation because the original `2026-09-03` pin was still a future UTC date.
 3. **Next manual boundary:** owner authenticates Wrangler interactively in the
    owner's terminal. Codex must not launch or receive the interactive credential
    flow.

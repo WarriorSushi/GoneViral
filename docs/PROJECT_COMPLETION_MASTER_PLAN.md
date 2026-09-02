@@ -153,6 +153,10 @@ Do not rerun these phases wholesale merely because a new task starts.
   client-leak, audit, and Gitleaks checks. It squash-merged as
   `fd7a59bd44e167633bb877e5b2837c00ac200e2b`. The unrelated nonrequired Vercel
   deployment check remained failed; no deployment occurred.
+- The first owner-run inert Cloudflare deployment was rejected before creation
+  solely because compatibility date `2026-09-03` was future-dated in
+  Cloudflare UTC. The narrow patch pins `2026-09-02`; Worker logic, schedules,
+  bindings, guard, secrets, Preview URL, and hosted state remain unchanged.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.

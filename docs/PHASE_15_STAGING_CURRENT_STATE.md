@@ -651,6 +651,14 @@ local expiry. The previously diagnosed hosted Test Mode row was not changed;
 it will remain as-is until this application commit is deployed and the route
 runs under separate authorization.
 
+The owner's first inert Cloudflare deployment attempt was rejected before
+Worker creation with Cloudflare error `10021` because compatibility date
+`2026-09-03` was still in the future under Cloudflare's 2026-09-02 UTC date.
+No Worker logic, cron, secret, guard, Preview URL, or hosted configuration was
+changed. The configuration is corrected to the pinned non-future date
+`2026-09-02`; focused tests and a local Wrangler dry run pass. Rerun the same
+inert deployment command only after the protected patch merges.
+
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
 were pushed together to the existing origin branch. Local, tracking, and
