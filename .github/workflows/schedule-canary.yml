@@ -1,0 +1,24 @@
+name: Schedule canary
+
+run-name: Schedule canary (${{ github.event_name }})
+
+on:
+  schedule:
+    - cron: "2-57/5 * * * *"
+      timezone: "Etc/UTC"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: goneviral-schedule-canary
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Record canary event
+        shell: bash
+        run: printf 'event=%s utc=%s\n' "$GITHUB_EVENT_NAME" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
