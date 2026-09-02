@@ -26,6 +26,7 @@ describe("Cloudflare scheduled-operations Worker", () => {
     const configText = await readFile(configPath, "utf8");
     const config = JSON.parse(configText.replaceAll(/,\s*([}\]])/g, "$1"));
     expect(config.name).toBe("goneviral-scheduled-operations-staging");
+    expect(config.compatibility_date).toBe("2026-09-02");
     expect(config.workers_dev).toBe(false);
     expect(config.preview_urls).toBe(false);
     expect(config.triggers.crons).toEqual([
