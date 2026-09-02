@@ -12,6 +12,13 @@ lowercase `false`, and both required Worker secret names are present. No secret
 value was disclosed or read. This proves the inert Cloudflare setup only; it is
 not automatic cadence or hosted-route execution evidence.
 
+On 2026-09-03 the owner explicitly authorized activation. Protected pull
+request `#14` changed only the checked-in enable binding from `false` to `true`
+and its focused static assertion, then squash-merged as
+`e813fb6de43ea9b4979bc8f7abefa9d485dab787`. The hosted Worker remains on the
+previous inert deployment until the owner deploys the exact merged version;
+there is still no automatic cadence evidence.
+
 The Worker will only invoke GoneViral's existing authenticated cron routes. It
 must not contain payment, email, health, reconciliation, logo, retention, or
 other application business logic. The existing route authentication and
@@ -152,9 +159,11 @@ Current official references:
 6. **Complete for the inert gate:** the owner reported exactly three Cron
    Triggers and the disabled guard. No automatic route execution or cadence is
    claimed while the guard is `false`.
-7. **Next, only after explicit owner authorization:** make a separate reviewed
-   activation change setting the enable binding to exact `true`, deploy it, and
-   allow up to 15 minutes for trigger propagation.
+7. **Activation authorized and reviewed:** protected pull request `#14` changed
+   the checked-in enable binding to exact `true` without changing Worker logic,
+   routes, schedules, Preview origin, or secret handling. The owner must now
+   deploy the exact merged version and allow up to 15 minutes for trigger
+   propagation.
 8. Inspect one bounded set of Past Events/logs after the relevant slots. Verify
    fixed route/status/timing-only logs and confirm no credential or body appears.
 9. Observe five-minute, hourly, and daily cadence plus failure/duplicate/catch-up
@@ -165,15 +174,19 @@ Current official references:
 
 ### Current gate and exact next action
 
-The inert-deployment boundary is complete. No further secret value or
-credential needs to be provided to Codex. Keep
-`GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` at exact lowercase `false` until the
-owner explicitly authorizes scheduler activation.
+The reviewed activation change is merged. No secret value or credential needs
+to be provided to Codex. From `C:\coding\goneviral` in the owner's own
+PowerShell, deploy the exact checked-out merge with:
 
-After that explicit authorization, prepare one narrow protected pull request
-that changes only the reviewed guard from `false` to `true`. Deploy the exact
-merged version, allow up to 15 minutes for Cloudflare trigger propagation, and
-inspect one bounded set of Past Events and safe Worker logs covering at least
-one five-minute, one hourly, and one daily slot. Never disclose or read either
-secret value. Production hosting and plan selection remain a separate owner
-decision immediately before commercial launch.
+```powershell
+$env:WRANGLER_SEND_METRICS = "false"
+pnpm exec wrangler deploy --config workers/scheduled-operations/wrangler.jsonc
+```
+
+Do not paste authentication output or any credential into chat. After the
+deployment succeeds, report only the sanitized version/deployment result and
+confirm the guard shows `true`. Then allow up to 15 minutes for Cloudflare
+trigger propagation and inspect one bounded set of Past Events and safe Worker
+logs covering at least one five-minute, one hourly, and one daily slot. Never
+disclose or read either secret value. Production hosting and plan selection
+remain a separate owner decision immediately before commercial launch.

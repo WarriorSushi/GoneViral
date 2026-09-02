@@ -226,16 +226,17 @@ Official references:
    Free, reported a successful inert Worker deployment with exactly three Cron
    Triggers, confirmed the guard remains `false`, and confirmed both required
    Worker secret names are present. No secret value was disclosed or read.
-   Activation and bounded automatic cadence/failure evidence remain the
-   separate reviewed sequence in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
+   The owner subsequently authorized activation, and the narrow reviewed guard
+   change merged. Deployment of that exact version and bounded automatic
+   cadence/failure evidence remain in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
 5. Complete locally: the operational-health path now atomically and
    idempotently expires elapsed checkout-bearing pending attempts before
    measuring health. It never treats pre-checkout stalls as expiry, never
    asserts provider failure, and preserves authentic late-success handling.
    The known hosted Test Mode row was not repaired ad hoc and remains unchanged
    until this application change is deployed and the authenticated route runs.
-6. Current scheduler gate: obtain explicit owner authorization for the separate
-   guard-activation change, then deploy the exact reviewed version and collect
+6. Current scheduler gate: the separate guard-activation change is authorized
+   and merged. The owner must deploy the exact reviewed version, then collect
    bounded automatic cadence/failure evidence. Do not repeat the five passed
    manual routes or settled database, restore, or E2E evidence without an
    invalidating change.

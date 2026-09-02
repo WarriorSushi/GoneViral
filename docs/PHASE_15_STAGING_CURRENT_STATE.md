@@ -669,6 +669,17 @@ not provided or read. This completes the inert hosted setup boundary only: the
 disabled guard prevents GoneViral route invocation, so no automatic cadence,
 route result, or failure/staleness evidence is claimed.
 
+The owner explicitly authorized the reviewed Cloudflare staging scheduler
+activation on 2026-09-03. The activation diff changed only the checked-in guard
+from exact lowercase `false` to `true` and updated its focused static assertion.
+Local Worker tests passed 8/8; the guard-true Wrangler dry run bundled 4.96 KiB
+(gzip 1.55 KiB); formatting, lint, typecheck, and the full 43-file/223-test unit
+suite passed. Required CI run `33676704557` passed, and protected pull request
+`#14` squash-merged as `e813fb6de43ea9b4979bc8f7abefa9d485dab787`.
+No secret value was accessed or printed. The repository change did not deploy
+the Worker or invoke a hosted route; the hosted guard remains on its prior
+inert value until the owner deploys the exact merged version.
+
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
 were pushed together to the existing origin branch. Local, tracking, and
@@ -771,10 +782,11 @@ The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
 measured paid-upgrade triggers are recorded in
 `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The public-repository audit,
 manual protected-Preview route certification, Cloudflare design/implementation,
-and inert hosted setup are complete. Explicitly authorized guarded activation,
-automatic cadence, and failure/staleness certification are next. Production
-deployment, `goneviral.in`, live credentials/payments/refunds, prelaunch
-cleanup, and Phase 16 still require their existing separate authorizations.
+and inert hosted setup are complete. The activation change is authorized and
+merged; owner-run deployment of that exact version, automatic cadence, and
+failure/staleness certification are next. Production deployment,
+`goneviral.in`, live credentials/payments/refunds, prelaunch cleanup, and Phase
+16 still require their existing separate authorizations.
 
 ## Production boundary
 

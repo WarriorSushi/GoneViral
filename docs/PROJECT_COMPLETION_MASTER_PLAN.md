@@ -25,17 +25,17 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                           | Status                                    | Evidence/source                                       |
-| ----------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
-| Phases 0–14                                     | Complete                                  | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging             | Critical path complete                    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation            | Complete                                  | restore and 66/66 database evidence in the checkpoint |
-| Phase 15 staging scheduler                      | Inert Worker deployed; activation pending | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
-| Public-repository content audit                 | Passed; owner already made repo public    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Public-repository settings hardening            | Complete                                  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                       | checkpoint exact resume point                         |
-| Production launch                               | Not authorized/not complete               | Phase 15 runbook                                      |
-| Phase 16                                        | Not started                               | implementation plan                                   |
+| Scope                                           | Status                                  | Evidence/source                                       |
+| ----------------------------------------------- | --------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                                     | Complete                                | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging             | Critical path complete                  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation            | Complete                                | restore and 66/66 database evidence in the checkpoint |
+| Phase 15 staging scheduler                      | Activation reviewed; deployment pending | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Public-repository content audit                 | Passed; owner already made repo public  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Public-repository settings hardening            | Complete                                | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                     | checkpoint exact resume point                         |
+| Production launch                               | Not authorized/not complete             | Phase 15 runbook                                      |
+| Phase 16                                        | Not started                             | implementation plan                                   |
 
 Current branch: `codex/phase-15-staging`.
 
@@ -164,24 +164,29 @@ Do not rerun these phases wholesale merely because a new task starts.
   lowercase `false`, and both required Worker secret names are present. No
   secret value was disclosed or read. This is inert setup evidence only; no
   automatic route execution or cadence result is claimed.
+- On 2026-09-03 the owner explicitly authorized scheduler activation. The
+  checked-in guard changed from `false` to `true` with its focused assertion;
+  required CI passed and protected pull request `#14` squash-merged as
+  `e813fb6de43ea9b4979bc8f7abefa9d485dab787`. No deployment or hosted route
+  invocation was performed by that repository change.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-The inert Cloudflare deployment boundary is complete. The next scheduler task,
-only after fresh explicit owner authorization, is the separate reviewed
-guard-activation change followed by deployment of the exact merged version and
-bounded automatic cadence/failure certification. Do not deploy production,
-purchase Vercel Pro, or use live payment credentials.
+The reviewed Cloudflare activation change is merged. The owner must deploy the
+exact merged version from the owner's authenticated terminal and report only
+the sanitized result. Then collect bounded automatic cadence/failure evidence.
+Do not deploy production, purchase Vercel Pro, or use live payment credentials.
 
 ### Remaining Phase 15 gates
 
-- Cloudflare guarded activation, automatic cadence, and failure/staleness
-  certification. Worker implementation and inert account/trigger/secret-name
-  setup are complete. The five manual protected-Preview route certifications
-  are complete and need not be repeated merely because the scheduler changes.
+- Cloudflare activation deployment, automatic cadence, and failure/staleness
+  certification. Worker implementation, inert account/trigger/secret-name
+  setup, and the reviewed guard change are complete. The five manual
+  protected-Preview route certifications are complete and need not be repeated
+  merely because the scheduler changes.
 - Owner-selected deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint.
