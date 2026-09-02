@@ -105,6 +105,15 @@ Do not rerun these phases wholesale merely because a new task starts.
 - Fresh-run CI route-type prerequisite fixed by running `next typegen` before
   TypeScript; required pull-request `quality` run `33649828937` passed the full
   format/lint/typecheck/test/build/security/audit pipeline.
+- Narrow GitHub schedule-registration diagnostic completed. The workflow,
+  default-branch contents, and cron strings were correct and active, but the
+  Actions API returned zero scheduled events. Explicit already-UTC schedule
+  metadata was merged in `fcaf1a206c9f046f900eefd04e1988ba7c93ca3d` to force
+  reprocessing without changing cadence or job logic; a bounded post-merge
+  check still returned zero events.
+- The manual operational-health run correctly emitted a Preview warning for at
+  least one nonterminal payment attempt older than 30 minutes. Its identity and
+  count remain unverified; this is not evidence of a live charge.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
@@ -112,12 +121,12 @@ Exact sanitized evidence and commits are in
 ### Next task
 
 Keep the scheduler scoped to the approved protected non-production Preview.
-Observe successful five-minute, hourly, and daily automatic runs from the
-default branch, then complete failure-notification and owner-visible
-stale/missing-run evidence. GitHub emitted no scheduled event during the first
-bounded observation window; do not represent the passed manual runs as
-automatic cadence certification. Do not deploy production or use live
-credentials.
+Do not continue short-interval polling. Recheck GitHub scheduled-event history
+after a reasonable provider delay; if it remains empty, escalate the active
+workflow ID and sanitized evidence to GitHub Support or select a different
+owner-approved scheduler. Separately inspect the stale Preview payment attempt
+read-only before any expiry/remediation. Do not represent passed manual runs as
+automatic cadence certification, deploy production, or use live credentials.
 
 ### Remaining Phase 15 gates
 
