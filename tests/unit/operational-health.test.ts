@@ -2,12 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-const { captureOperationalAlert, collectOperationalMetrics, logger } =
-  vi.hoisted(() => ({
-    captureOperationalAlert: vi.fn(),
-    collectOperationalMetrics: vi.fn(),
-    logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
-  }));
+const {
+  captureOperationalAlert,
+  collectOperationalMetrics,
+  expireAbandonedPaymentAttempts,
+  logger,
+} = vi.hoisted(() => ({
+  captureOperationalAlert: vi.fn(),
+  collectOperationalMetrics: vi.fn(),
+  expireAbandonedPaymentAttempts: vi.fn(),
+  logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
+}));
 
 vi.mock("@/server/operations/metrics", async (importOriginal) => {
   const original =
@@ -16,6 +21,9 @@ vi.mock("@/server/operations/metrics", async (importOriginal) => {
 });
 vi.mock("@/server/telemetry/alerts", () => ({ captureOperationalAlert }));
 vi.mock("@/server/telemetry/logger", () => ({ logger }));
+vi.mock("@/server/payments/expire-abandoned-payment-attempts", () => ({
+  expireAbandonedPaymentAttempts,
+}));
 
 import { GET } from "@/app/api/cron/check-operational-health/route";
 import {
@@ -37,6 +45,7 @@ const healthy: OperationalMetrics = {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv("CRON_SECRET", "phase13-cron-secret");
+  expireAbandonedPaymentAttempts.mockResolvedValue(0);
 });
 
 describe("operational metrics and alert route", () => {
@@ -64,6 +73,7 @@ describe("operational metrics and alert route", () => {
   });
 
   it("authenticates the cron, emits each safe alert, and returns count-only data", async () => {
+    expireAbandonedPaymentAttempts.mockResolvedValueOnce(1);
     collectOperationalMetrics.mockResolvedValueOnce({
       ...healthy,
       stalePendingAttempts: "1",
@@ -88,6 +98,14 @@ describe("operational metrics and alert route", () => {
       },
       "phase13-health-request",
     );
+    expect(expireAbandonedPaymentAttempts).toHaveBeenCalledTimes(1);
+    expect(
+      expireAbandonedPaymentAttempts.mock.invocationCallOrder[0]!,
+    ).toBeLessThan(collectOperationalMetrics.mock.invocationCallOrder[0]!);
+    expect(logger.info).toHaveBeenCalledWith(
+      "operational_health_checked",
+      expect.objectContaining({ expiredAbandonedAttempts: 1 }),
+    );
     expect(JSON.stringify(body)).not.toMatch(/@|phone|provider_payment/i);
   });
 
@@ -96,6 +114,7 @@ describe("operational metrics and alert route", () => {
       new Request("https://goneviral.in/api/cron/check-operational-health"),
     );
     expect(unauthorized.status).toBe(401);
+    expect(expireAbandonedPaymentAttempts).not.toHaveBeenCalled();
     collectOperationalMetrics.mockRejectedValueOnce(
       new Error("database secret details"),
     );

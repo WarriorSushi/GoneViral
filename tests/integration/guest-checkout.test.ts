@@ -12,6 +12,7 @@ import { moneyPaise } from "@/domain/money";
 import { POLICY_VERSION } from "@/domain/policy";
 import { closeDatabase, getSqlClient } from "@/server/db/client";
 import { createGuestCheckout } from "@/server/payments/create-guest-checkout";
+import { expireAbandonedPaymentAttempts } from "@/server/payments/expire-abandoned-payment-attempts";
 import { MockDodoProvider } from "@/server/payments/mock-provider";
 import type { CheckoutRequest } from "@/server/payments/provider";
 import { MockTurnstileVerifier } from "@/server/security/turnstile";
@@ -92,6 +93,76 @@ afterAll(async () => {
 });
 
 describe("Phase 4 guest checkout transaction and idempotency", () => {
+  it("expires an elapsed abandoned checkout exactly once", async () => {
+    const suffix = randomUUID();
+    const listingId = randomUUID();
+    const pendingOwnerId = randomUUID();
+    const attemptId = randomUUID();
+    const createdAt = new Date(Date.now() - 60 * 60_000);
+    const checkoutExpiresAt = new Date(Date.now() - 30 * 60_000);
+    await getSqlClient().begin(async (transaction) => {
+      await transaction`
+        INSERT INTO app.listings (
+          id, public_id, slug, name, name_normalized, tagline,
+          destination_url, destination_canonical_key, destination_host,
+          category_id, lifecycle_status, moderation_status, created_at
+        ) VALUES (
+          ${listingId}, ${`lst_${suffix}`}, ${`expired-${suffix}`},
+          'Expired checkout fixture', 'expired checkout fixture',
+          'Local abandoned checkout lifecycle test',
+          ${`https://expired-${suffix}.example.test`},
+          ${`expired-${suffix}.example.test`},
+          ${`expired-${suffix}.example.test`},
+          '00000000-0000-4000-8000-000000000002', 'payment_pending',
+          'clear', ${createdAt.toISOString()}
+        )
+      `;
+      await transaction`
+        INSERT INTO private.pending_listing_owners (
+          id, listing_id, canonical_email, email_hash, claim_state, created_at
+        ) VALUES (
+          ${pendingOwnerId}, ${listingId}, ${`expired-${suffix}@example.test`},
+          ${`expired-hash-${suffix}`}, 'pending', ${createdAt.toISOString()}
+        )
+      `;
+      await transaction`
+        INSERT INTO private.payment_attempts (
+          id, public_id, application_idempotency_key, provider,
+          provider_environment, provider_order_id, listing_id, purpose, state,
+          amount_paise, currency, policy_version,
+          minimum_required_paise_snapshot, listing_total_paise_snapshot,
+          pending_owner_id, provider_order_request_hash, checkout_expires_at,
+          created_at
+        ) VALUES (
+          ${attemptId}, ${`att_${suffix}`}, ${`expired-${suffix}`}, 'fixture',
+          'local', ${`order-${suffix}`}, ${listingId}, 'initial_sponsorship',
+          'checkout_ready', 49900, 'INR', '2026-08-28-v1', 49900, 0,
+          ${pendingOwnerId}, ${`request-${suffix}`},
+          ${checkoutExpiresAt.toISOString()}, ${createdAt.toISOString()}
+        )
+      `;
+    });
+
+    await expect(expireAbandonedPaymentAttempts()).resolves.toBe(1);
+    await expect(expireAbandonedPaymentAttempts()).resolves.toBe(0);
+
+    const [row] = await getSqlClient()<
+      {
+        expired_at: Date | string | null;
+        lifecycle_status: string;
+        state: string;
+      }[]
+    >`
+      SELECT attempt.state, attempt.expired_at, listing.lifecycle_status
+      FROM private.payment_attempts AS attempt
+      JOIN app.listings AS listing ON listing.id = attempt.listing_id
+      WHERE attempt.id = ${attemptId}
+    `;
+    expect(row?.state).toBe("expired");
+    expect(row?.expired_at).not.toBeNull();
+    expect(row?.lifecycle_status).toBe("payment_pending");
+  });
+
   it("replays one checkout and prevents a duplicate destination", async () => {
     const provider = new MockDodoProvider("http://localhost:3000");
     const form = joinInput(`https://phase4-${randomUUID()}.example.com/path`);
