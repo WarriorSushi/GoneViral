@@ -589,9 +589,26 @@ Canary workflow ID `348634880` was active, and manual run `33661199927` passed
 in three seconds. GitHub created no event for its first fair 17:32 UTC scheduled
 slot by the single 17:35:41 UTC query; both the canary and production scheduler
 reported zero schedule events at that time. This isolates the observed failure
-from GoneViral routes, secrets, variables, Vercel, and scheduler job logic, but
-does not rule out later GitHub delivery. Retain the harmless canary for one
-longer passive observation window, then remove it after evidence is captured.
+from GoneViral routes, secrets, variables, Vercel, and scheduler job logic.
+
+A later bounded check again found both workflow registrations active and zero
+scheduled events in both histories. On 2026-09-02 the owner ended further
+GitHub scheduled-event debugging and selected Cloudflare Workers Cron for
+private staging. Codex manually disabled workflow IDs `348420162` and
+`348634880`, deleted only repository variable
+`GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED`, and verified both API states were
+`disabled_manually`. The two GitHub secrets and non-secret base-URL variable
+were not read, changed, or deleted. The repository change removes the canary
+and its test and strips the main workflow's automatic `schedule` trigger while
+retaining its guarded manual-recovery definition and historical evidence. No
+hosted route was invoked by these shutdown actions.
+
+The replacement proposal is in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`: one
+dependency-free scheduled-only Worker, three UTC triggers, fixed route mapping,
+Cloudflare secrets for `CRON_SECRET` and the protected-Preview automation
+bypass, a disabled-by-default guard, bounded requests, redirect rejection, and
+safe logs. No Cloudflare account setting, Worker, trigger, variable, secret,
+deployment, or request has been created or executed.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
@@ -659,20 +676,17 @@ schedule, or hosted service was changed.
   `vercel.preview.json`, which deliberately omits cron schedules. Prior
   authenticated manual Preview invocations prove the routes and workers, not
   automatic scheduling.
-- Therefore this gate is conclusively **blocked**, not merely untested, while
-  the linked team remains Hobby and only Preview deployment is authorized.
-  Resolution requires a fresh owner decision authorizing a Pro plan and an
-  isolated Vercel staging project/production-target deployment for automatic
-  schedule evidence, or approving a different scheduler architecture. The
-  Phase 15 production hard gate already requires Vercel Pro; no purchase or
-  production deployment is authorized by this checkpoint.
+- Therefore Vercel Cron is conclusively **blocked**, not merely untested, while
+  the linked team remains Hobby and only Preview deployment is authorized. The
+  owner selected Cloudflare Workers Cron instead for private staging. No Vercel
+  purchase or production deployment is required or authorized at this stage.
 
 ## Owner budget-constrained production decision and next gate
 
-On 2026-09-02 the owner selected Vercel Pro for commercial production when the
-owner is ready to purchase it, with the strongest available spend controls and
-no optional paid seats, add-ons, or integrations. The owner selected Supabase
-Free initially and accepts it without managed PITR, including weaker provider
+On 2026-09-02 the owner deferred the production hosting and plan selection until
+immediately before commercial launch and explicitly declined purchasing or
+requiring Vercel Pro during private staging. The owner selected Supabase Free
+initially and accepts it without managed PITR, including weaker provider
 recovery, possible inactivity pause, self-managed backup dependence, and
 possible recovery downtime.
 
@@ -681,32 +695,27 @@ not require another restore. The corrected encrypted backup remains the
 baseline Free-plan recovery mechanism. It is not evidence of managed PITR or a
 no-data-loss guarantee.
 
-The owner permits making the repository public after a complete current-tree
-and Git-history secret audit and selected free public-repository GitHub Actions
-as the initial scheduler. The owner accepts its five-minute minimum and possible
-delay/drop behavior, including changing the email-outbox cadence from one to
-five minutes. Health remains every five minutes, reconciliation hourly, and
-cleanup daily. Durable/idempotent workers catch up after a missed run. Secrets
-must remain only in approved GitHub/hosting secret stores and unavailable to
-untrusted pull-request workflows. The owner's VPS is reserved for OTTR.
+The public-repository audit passed. The owner retired GitHub Actions automatic
+scheduling after its application workflow and isolated canary both received
+zero scheduled events, and selected Cloudflare Workers Cron for staging. Email
+and health remain every five minutes, reconciliation hourly, and cleanup daily.
+Durable/idempotent workers catch up after a missed run. Secrets must remain only
+in approved provider secret stores. The owner's VPS is reserved for OTTR.
 
 Vercel Hobby remains private-preview-only. Its published terms prohibit
 commercial use and explicitly include requesting or processing payments, so an
-external scheduler alone cannot make it a valid production host. Vercel Pro's
-lowest permitted spend amount, explicit production-pause action, one paid seat,
-no paid add-ons/integrations, and notifications must be verified before launch.
-These controls cannot guarantee an exact fixed INR or US$20 invoice because
-Vercel checks metered spend every few minutes and excludes fixed extras; taxes
-and card conversion may also vary.
+external scheduler alone cannot make it a valid production host. The owner will
+select the commercial production host and plan immediately before launch and
+then verify its cost, rollback/pause, notification, and residual billing risks.
 
 The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
 measured paid-upgrade triggers are recorded in
-`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The local scheduler and repository
-audit are complete; hosted configuration names and manual protected-Preview
-route certification are also complete. Automatic cadence and failure/staleness
-certification are next. Deployment, `goneviral.in`, live credentials/payments/
-refunds, prelaunch cleanup, and Phase 16 still require their existing separate
-authorizations.
+`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The public-repository audit and
+manual protected-Preview route certification are complete. Cloudflare design
+review, implementation, interactive setup, automatic cadence, and failure/
+staleness certification are next. Deployment, `goneviral.in`, live credentials/
+payments/refunds, prelaunch cleanup, and Phase 16 still require their existing
+separate authorizations.
 
 ## Production boundary
 

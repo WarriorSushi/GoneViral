@@ -57,15 +57,15 @@ V1 uses an immutable cumulative financial ledger.
 | First checkout               | No mandatory account; claim/manage by email magic link afterward                      |
 | Payment authority            | Verified server-side provider state only; browser redirects never change rank         |
 | Public refresh               | Cached reads plus tag invalidation; no WebSockets                                     |
-| Infrastructure               | Vercel Pro + Supabase Free; GitHub Actions scheduler                                  |
+| Infrastructure               | Production host deferred + Supabase Free; Cloudflare Workers Cron scheduler           |
 | Current payment provider      | Dodo Payments hosted checkout, only after written approval of this exact advertising model |
 
 ## Selected stack
 
 - Node.js 24 LTS.
 - Current patched Next.js 16 App Router release, React 19.2-compatible release, strict TypeScript and pnpm.
-- Vercel Pro at commercial launch; Mumbai function region (`bom1`) for
-  database-connected work.
+- Production host and plan selected separately immediately before commercial
+  launch; retain Mumbai proximity for database-connected work when supported.
 - Supabase Free Mumbai/South Asia (`ap-south-1`) for PostgreSQL, Auth and
   Storage, with the owner-accepted recovery posture in
   `../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`.
@@ -164,10 +164,11 @@ Codex may build through sandbox phases, but production payments remain disabled 
 - [ ] Indian counsel has reviewed Terms, Privacy, sponsored-ranking disclosure, content and refund policy;
 - [ ] CA has approved GST/invoicing/accounting treatment;
 - [ ] `goneviral.in` and authenticated email sending are configured;
-- [ ] Vercel Pro and its cost controls are active in the selected region;
+- [ ] the separately selected commercial production host/plan and its cost
+      controls are active in the selected region;
 - [ ] Supabase Free capacity, encrypted backup freshness, and owner-accepted
       recovery posture are verified;
-- [ ] the GitHub Actions scheduler and public-repository safety gates pass;
+- [ ] the Cloudflare Workers Cron scheduler safety and cadence gates pass;
 - [ ] production webhooks, reconciliation, alerts, backup and restore tests pass.
 
 ## Research source register
@@ -196,8 +197,9 @@ The completed specification set was checked for cross-file agreement. The follow
 2. **10% rounding** is upward to the next whole rupee before the ₹1,000 floor.
 3. **Tie time** is the database time the latest rank-affecting delta is applied; reversals give the lower total a new reached time.
 4. **Lifecycle and moderation** are separate axes, preventing suspension from rewriting money.
-5. **Production infrastructure risk** is explicit: Vercel Pro is the commercial
-   host; Supabase Free is owner-accepted with self-managed recovery; GitHub
-   Actions is the initial scheduler after its public-repository safety gate.
+5. **Production infrastructure risk** is explicit: the production host/plan is
+   selected separately immediately before commercial launch; Supabase Free is
+   owner-accepted with self-managed recovery; Cloudflare Workers Cron is the
+   private-staging scheduler after GitHub scheduled events were retired.
 6. **Provider approval** is explicit; Dodo Payments is the selected adapter implementation, not guaranteed merchant acceptance, and can be replaced behind the interface.
 7. No obsolete fresh-bid/replacement model, client-confirmed ranking, writable rank or non-cumulative interpretation remains.
