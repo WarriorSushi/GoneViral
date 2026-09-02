@@ -150,9 +150,11 @@ with the explicit owner risks and self-managed backup obligations in that plan.
 The local scheduler implementation and public-repository content audit are
 complete. The scheduler also supports the protected Preview by reading the
 Vercel automation-bypass value from a GitHub Actions secret and sending it only
-as the `x-vercel-protection-bypass` header. Hosted secret/configuration,
-automatic and manual non-production schedule certification, failure/staleness
-notifications, and automated backup delivery are not certified yet. Follow
+as the `x-vercel-protection-bypass` header. The expected GitHub secret and base-
+URL variable names are now present, and repository hardening is complete; no
+value was disclosed or read. The enable variable remains absent. Automatic and
+manual non-production schedule certification, failure/staleness notifications,
+and automated backup delivery are not certified yet. Follow
 `GITHUB_SCHEDULED_OPERATIONS.md`.
 
 Before enabling Dodo test checkout, verify business ID, webhook key, API key,

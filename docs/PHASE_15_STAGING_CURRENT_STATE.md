@@ -490,22 +490,46 @@ ambiguous sensitive artifact:
 
 The original audit showed secret scanning and push protection disabled. The
 post-patch read-only check now shows both enabled. Actions secrets and repository
-variables remain empty, default workflow permission remains `read`, and
-workflows still cannot approve pull requests. Repository-wide SHA-pin
-enforcement and default-branch rules/protection remain disabled, while Actions
-are repository-wide allowed. Those remaining settings are hardening tasks
-before any scheduler secret is added, not evidence of a tracked credential. The
-checked-in workflows themselves remain SHA-pinned, read-only, and do not expose
-repository secrets to pull-request events.
+variables were subsequently configured by the owner. Read-only listing verified
+only expected names: Actions secrets `CRON_SECRET` and
+`VERCEL_AUTOMATION_BYPASS_SECRET`, plus repository variable
+`GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL`. Values were neither disclosed nor
+read. `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` remains absent, and the
+scheduled-workflow run list remains empty.
+
+Repository hardening is now complete. Default workflow permission remains
+`read`, and workflows cannot approve pull requests. Actions are restricted to
+GitHub-owned Actions plus `pnpm/action-setup` and
+`gitleaks/gitleaks-action`; verified-creator wildcard access is off and full-SHA
+pinning is repository-enforced. Active ruleset `Protect default branch` (ID
+`22121900`) follows `~DEFAULT_BRANCH` with no bypass actors. It blocks deletion
+and force pushes, requires linear history, and permits only squash merges after
+a pull request whose review threads are resolved and whose strict `quality`
+check comes from GitHub Actions app ID `15368`. Required approvals are zero to
+preserve a workable solo-owner flow while retaining the PR and CI audit trail.
+
+The hardening evidence was submitted through public pull request `#2` to prove
+the new rules. Its first `quality` run failed honestly at typecheck because a
+fresh runner did not yet have Next.js-generated global `PageProps` route types;
+local development/build state had masked that prerequisite. Following the
+installed Next.js 16.3.3 documentation, `package.json` now runs `next typegen`
+before `tsc --noEmit`. Local formatting, lint, corrected typecheck, and 212/212
+tests passed. GitHub Actions run `33649828937` then passed the complete required
+`quality` job, including install, formatting, lint, typecheck, unit tests,
+production build, client-build secret/source-map verification, dependency
+audit, and Gitleaks. This is repository/CI evidence, not hosted scheduler
+evidence.
+
+Vercel's automatic pull-request integration emitted a separate failed
+`Deployment failed` check. It is not required by the ruleset; no Vercel deploy
+command or hosted cron request was run by Codex. The failed external check is
+not represented as a successful Preview deployment.
 
 The next scheduler gate is documented in `GITHUB_SCHEDULED_OPERATIONS.md`:
-harden repository settings; retrieve the existing Preview `CRON_SECRET` from
-the owner's password manager; generate a Vercel Protection Bypass for
-Automation value; place both only in GitHub Actions Secrets; and set the stable
-protected Preview origin as the base URL repository variable. Keep the enable
-guard absent/non-`true` until route invocation is explicitly authorized. Hosted
-manual/automatic schedule, failure notification, missed-run, and 60-day-
-disablement evidence remain unverified.
+keep the enable guard absent/non-`true` until route invocation is explicitly
+authorized. Then certify each manual protected-Preview operation before
+observing automatic cadence, failure notification, missed-run, and 60-day-
+disablement behavior. All hosted execution evidence remains unverified.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`

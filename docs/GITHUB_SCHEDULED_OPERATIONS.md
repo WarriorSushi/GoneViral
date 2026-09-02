@@ -14,7 +14,10 @@ dispatch cannot invoke a hosted route unless the repository variable
 `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` exists with the exact lowercase value
 `true`. The checked-in runner repeats this check before it reads configuration.
 No hosted secret, repository variable, deployment, domain, or route invocation
-was added during either implementation step.
+was added during either implementation step. The owner later configured the
+two required GitHub repository secret names and the base-URL repository
+variable without disclosing values. The enable variable remains absent, so the
+hosted scheduler remains inert.
 
 ## Fixed schedule and route map
 
@@ -67,25 +70,45 @@ authenticates the application route. `VERCEL_AUTOMATION_BYPASS_SECRET` crosses
 only the Vercel protection layer. GitHub repository permissions and workflow
 triggers keep both unavailable to untrusted pull-request runs.
 
+## Public-repository hardening
+
+The repository currently enforces these controls:
+
+- secret scanning and push protection are enabled;
+- default workflow permission is read-only and workflows cannot approve pull
+  requests;
+- Actions are restricted to GitHub-owned Actions plus
+  `pnpm/action-setup` and `gitleaks/gitleaks-action`, and every Action must use a
+  full commit SHA;
+- active ruleset `Protect default branch` follows `~DEFAULT_BRANCH`, has no
+  bypass actors, and requires a pull request, strict GitHub Actions `quality`
+  status, squash-only linear history, and resolved review threads;
+- the ruleset blocks default-branch deletion and force pushes while requiring
+  zero approving reviews so the solo owner is not permanently locked out.
+
+Repository secret/variable listing verified only the expected names. No value
+was read. The enable variable remained absent and no scheduled workflow was
+executed during hardening.
+
 ## Activation and certification
 
-Before adding the secret or enabling the guard:
+Before enabling the guard:
 
 1. use the already-authorized stable protected Preview origin recorded in the
    Phase 15 checkpoint; do not reuse production credentials or infer that
    Vercel Hobby is a commercial host;
-2. enable GitHub secret scanning/push protection where available, add a
-   default-branch ruleset or equivalent reviewed-change protection, retain
-   read-only default workflow permissions, and keep workflows SHA-pinned;
-3. retrieve the existing matching Preview `CRON_SECRET` from the owner's
-   password manager and add it as a GitHub Actions repository secret; do not
-   rotate it unless the stored value is unavailable;
-4. in Vercel project Settings -> Deployment Protection -> Protection Bypass for
-   Automation, generate a value, save it directly to the owner's password
-   manager, and add the same value as GitHub Actions repository secret
+2. completed: enable GitHub secret scanning/push protection, add default-branch
+   reviewed-change protection, retain read-only workflow permissions, restrict
+   allowed Actions, and enforce complete Action SHAs;
+3. completed by the owner through provider interfaces: add the existing
+   matching Preview `CRON_SECRET` as a GitHub Actions repository secret;
+4. completed by the owner through provider interfaces: create Vercel's
+   Protection Bypass for Automation value, retain it in the approved password
+   manager, and add it as GitHub Actions repository secret
    `VERCEL_AUTOMATION_BYPASS_SECRET`;
-5. configure `GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL` as the stable protected
-   Preview HTTPS origin with no path, query, fragment, or credentials;
+5. completed by the owner through provider interfaces: add repository variable
+   `GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL`; only the expected name was
+   verified, and its value has deliberately not been read;
 6. set the enable variable to exact `true` only when hosted invocation is
    authorized, manually dispatch each operation independently, and verify
    authentication denial separately without exposing a credential;
