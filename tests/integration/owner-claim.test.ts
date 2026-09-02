@@ -12,6 +12,8 @@ process.env.DATABASE_DIRECT_URL ??= directDatabaseUrl;
 process.env.DATABASE_URL ??=
   "postgresql://postgres.pooler-dev:postgres@127.0.0.1:54329/postgres";
 process.env.SUBMISSION_HMAC_SECRET ??= "phase6-integration-hmac-secret";
+const supabaseApiUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 
 const directSql = postgres(directDatabaseUrl, {
   max: 2,
@@ -60,7 +62,7 @@ async function cleanupPhase6Fixtures() {
 }
 
 async function createVerifiedUser(email: string): Promise<string> {
-  const response = await fetch("http://127.0.0.1:54321/auth/v1/signup", {
+  const response = await fetch(`${supabaseApiUrl}/auth/v1/signup`, {
     body: JSON.stringify({ email, password: `local-${randomUUID()}` }),
     headers: { "content-type": "application/json" },
     method: "POST",
@@ -146,7 +148,7 @@ async function createPaidPendingOwner(email: string) {
 
 beforeAll(async () => {
   await cleanupPhase6Fixtures();
-  const health = await fetch("http://127.0.0.1:54321/auth/v1/health");
+  const health = await fetch(`${supabaseApiUrl}/auth/v1/health`);
   if (!health.ok) throw new Error("Local Supabase Auth is required.");
 });
 

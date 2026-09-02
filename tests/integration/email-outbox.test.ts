@@ -19,9 +19,13 @@ import { EMAIL_TEMPLATE_VERSION } from "@/server/email/templates";
 import { encryptPrivateText } from "@/server/security/private-data";
 
 const runtimeDatabaseUrl =
+  process.env.DATABASE_URL ??
   "postgresql://postgres.pooler-dev:postgres@127.0.0.1:54329/postgres";
 const directDatabaseUrl =
+  process.env.DATABASE_DIRECT_URL ??
   "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+const supabaseApiUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 let deadLetterId = "";
 let adminUserId = "";
 
@@ -241,7 +245,7 @@ describe("Phase 12 durable email outbox", () => {
   it("shows failed/dead letters to admins and resumes only unsent rows with audit", async () => {
     expect(deadLetterId).not.toBe("");
     const email = `phase12-admin-${randomUUID()}@example.test`;
-    const signup = await fetch("http://127.0.0.1:54321/auth/v1/signup", {
+    const signup = await fetch(`${supabaseApiUrl}/auth/v1/signup`, {
       body: JSON.stringify({ email, password: `phase12-${randomUUID()}` }),
       headers: { "content-type": "application/json" },
       method: "POST",

@@ -9,8 +9,10 @@ import {
 } from "@/server/operations/metrics";
 
 const runtimeDatabaseUrl =
+  process.env.DATABASE_URL ??
   "postgresql://postgres.pooler-dev:postgres@127.0.0.1:54329/postgres";
 const directDatabaseUrl =
+  process.env.DATABASE_DIRECT_URL ??
   "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
 
 beforeAll(() => {

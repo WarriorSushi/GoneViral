@@ -17,6 +17,8 @@ process.env.DODO_PAYMENTS_ENVIRONMENT = "mock";
 process.env.SUBMISSION_HMAC_SECRET ??= "phase10-admin-hmac-secret";
 process.env.PRIVATE_DATA_ENCRYPTION_KEY ??=
   "xtMT1+ly4wVTnz5uDGwQk21jGl4/Ro/GV6z9/imDAdg=";
+const supabaseApiUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 
 const directSql = postgres(directDatabaseUrl, {
   max: 2,
@@ -28,7 +30,7 @@ const fixtureUsers: string[] = [];
 
 async function createAdmin(role: AdminSession["role"]): Promise<AdminSession> {
   const email = `phase10-${role}-${randomUUID()}@example.test`;
-  const response = await fetch("http://127.0.0.1:54321/auth/v1/signup", {
+  const response = await fetch(`${supabaseApiUrl}/auth/v1/signup`, {
     body: JSON.stringify({ email, password: `local-${randomUUID()}` }),
     headers: { "content-type": "application/json" },
     method: "POST",
@@ -183,7 +185,7 @@ async function cleanup() {
 
 beforeAll(async () => {
   await cleanup();
-  const health = await fetch("http://127.0.0.1:54321/auth/v1/health");
+  const health = await fetch(`${supabaseApiUrl}/auth/v1/health`);
   if (!health.ok) throw new Error("Local Supabase Auth is required.");
 });
 

@@ -18,8 +18,10 @@ import { MockTurnstileVerifier } from "@/server/security/turnstile";
 import type { LogoStorage } from "@/server/storage/logo-storage";
 
 const runtimeDatabaseUrl =
+  process.env.DATABASE_URL ??
   "postgresql://postgres.pooler-dev:postgres@127.0.0.1:54329/postgres";
 const directDatabaseUrl =
+  process.env.DATABASE_DIRECT_URL ??
   "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
 
 class MemoryLogoStorage implements LogoStorage {

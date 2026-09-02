@@ -23,6 +23,7 @@
     "test:performance": "vitest run --config vitest.performance.config.ts",
     "perf:query-plans": "node scripts/performance/phase14-query-plans.mjs",
     "test:database": "vitest run --config vitest.database.config.ts",
+    "test:database:isolated-restore": "node scripts/operations/run-isolated-database-tests.mjs",
     "security:verify-build": "node scripts/security/verify-build.mjs",
     "ops:rehearse-restore": "node scripts/operations/rehearse-critical-restore.mjs",
     "ops:backup:hosted": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/operations/backup-hosted-supabase.ps1",

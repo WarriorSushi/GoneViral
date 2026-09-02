@@ -26,6 +26,7 @@ process.env.DATABASE_URL ??=
 process.env.NEXT_PUBLIC_SUPABASE_URL ??= "http://127.0.0.1:54321";
 process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??=
   "phase8-local-publishable-key";
+const supabaseApiUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 process.env.SUBMISSION_HMAC_SECRET ??= "phase8-integration-logo-signing-secret";
 
 const directSql = postgres(directDatabaseUrl, {
@@ -77,7 +78,7 @@ class MemoryLogoStorage implements LogoStorage {
 
 async function createVerifiedUser() {
   const email = `phase8-${randomUUID()}@example.test`;
-  const response = await fetch("http://127.0.0.1:54321/auth/v1/signup", {
+  const response = await fetch(`${supabaseApiUrl}/auth/v1/signup`, {
     body: JSON.stringify({ email, password: `local-${randomUUID()}` }),
     headers: { "content-type": "application/json" },
     method: "POST",
@@ -193,7 +194,7 @@ async function cleanupFixtures() {
 }
 
 beforeAll(async () => {
-  const health = await fetch("http://127.0.0.1:54321/auth/v1/health");
+  const health = await fetch(`${supabaseApiUrl}/auth/v1/health`);
   if (!health.ok) throw new Error("Local Supabase Auth is required.");
 });
 

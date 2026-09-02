@@ -12,12 +12,16 @@ if (process.env.NODE_ENV === "production") {
   );
 }
 
-if (
-  !["127.0.0.1", "localhost"].includes(parsedDatabaseUrl.hostname) ||
-  parsedDatabaseUrl.port !== "54322"
-) {
+const isLoopback = ["127.0.0.1", "localhost", "[::1]"].includes(
+  parsedDatabaseUrl.hostname,
+);
+const isOrdinaryLocal = parsedDatabaseUrl.port === "54322";
+const isAuthorizedDisposable =
+  process.env.GONEVIRAL_ALLOW_DISPOSABLE_DATABASE_TEST_TARGET === "true";
+
+if (!isLoopback || (!isOrdinaryLocal && !isAuthorizedDisposable)) {
   throw new Error(
-    "Phase 3 synthetic fixtures may only target local Supabase on port 54322.",
+    "Phase 3 synthetic fixtures may only target ordinary local Supabase or an explicitly authorized loopback-only disposable target.",
   );
 }
 

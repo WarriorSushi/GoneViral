@@ -226,6 +226,22 @@ Auth/Storage history counts and database boot alone are insufficient. Restore
 the archived Storage payloads into that isolated backend and checksum the files
 through the service before running the post-restore commands above.
 
+For the local file backend, preserve the Storage service's tenant/project
+namespace in addition to `<bucket>/<object-key>/<version>`; the current isolated
+CLI stack uses `stub/stub`, so its volume path begins
+`/mnt/stub/stub/<bucket>/...`. Derive and verify this namespace from the
+disposable service configuration instead of assuming that files live directly
+under `/mnt`.
+
+Do not invoke `pnpm test:database` directly against a restored snapshot. Its
+fixture lifecycle intentionally replaces broad local test data. Use
+`pnpm test:database:isolated-restore -- --workdir
+<absolute-disposable-stack>` so the five restored schemas are snapshotted in
+the database container, the suite is forced to loopback/mock-only services,
+and the full payload is restored and fingerprinted in `finally` while only the
+disposable writers are stopped. The wrapper also verifies the exact shutdown
+flags and Auth/Storage histories and removes its temporary database dump.
+
 Before staging test-data cleanup, verify that archive again and run
 `pnpm ops:prelaunch-cleanup -- --backup-archive <absolute .7z path>`. The script
 is deliberately restricted to a linked project whose URL and direct database

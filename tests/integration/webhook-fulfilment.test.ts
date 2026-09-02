@@ -24,9 +24,13 @@ import { claimPendingListingsForVerifiedUser } from "@/server/auth/claim-owner";
 import { MockTurnstileVerifier } from "@/server/security/turnstile";
 
 const runtimeDatabaseUrl =
+  process.env.DATABASE_URL ??
   "postgresql://postgres.pooler-dev:postgres@127.0.0.1:54329/postgres";
 const directDatabaseUrl =
+  process.env.DATABASE_DIRECT_URL ??
   "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+const supabaseApiUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 
 function clearFixtures() {
   execFileSync(process.execPath, ["scripts/db/phase3-fixtures.mjs", "clear"], {
@@ -112,7 +116,7 @@ async function createOwnedActiveListing() {
     WHERE listing.id = ${initial.listing_id}
   `;
   if (!owner) throw new Error("Initial owner fixture missing.");
-  const signup = await fetch("http://127.0.0.1:54321/auth/v1/signup", {
+  const signup = await fetch(`${supabaseApiUrl}/auth/v1/signup`, {
     body: JSON.stringify({
       email: owner.canonical_email,
       password: `phase7-${randomUUID()}`,
