@@ -227,19 +227,22 @@ Official references:
    Triggers, confirmed the guard remains `false`, and confirmed both required
    Worker secret names are present. No secret value was disclosed or read.
    The owner subsequently authorized activation, and the narrow reviewed guard
-   change merged. Deployment of that exact version and bounded automatic
-   cadence/failure evidence remain in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
+   change merged. The owner then reported a successful deployment and dashboard
+   guard `true`, without providing secret values or raw output. Bounded
+   automatic cadence/failure evidence remains in
+   `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
 5. Complete locally: the operational-health path now atomically and
    idempotently expires elapsed checkout-bearing pending attempts before
    measuring health. It never treats pre-checkout stalls as expiry, never
    asserts provider failure, and preserves authentic late-success handling.
    The known hosted Test Mode row was not repaired ad hoc and remains unchanged
    until this application change is deployed and the authenticated route runs.
-6. Current scheduler gate: the separate guard-activation change is authorized
-   and merged. The owner must deploy the exact reviewed version, then collect
-   bounded automatic cadence/failure evidence. Do not repeat the five passed
-   manual routes or settled database, restore, or E2E evidence without an
-   invalidating change.
+6. Current scheduler gate: the separate guard-activation change is authorized,
+   merged, and deployed by owner report with the dashboard guard showing
+   `true`. Collect one bounded set of automatic cadence/failure evidence after
+   the first fair five-minute, hourly, and daily slots. Do not repeat the five
+   passed manual routes or settled database, restore, or E2E evidence without
+   an invalidating change.
 7. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
    domain/email, security/access, alerting, and production-isolation gates.
 8. Immediately before commercial launch, make a separate owner decision on the

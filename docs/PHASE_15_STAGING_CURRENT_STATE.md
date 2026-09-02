@@ -680,6 +680,15 @@ No secret value was accessed or printed. The repository change did not deploy
 the Worker or invoke a hosted route; the hosted guard remains on its prior
 inert value until the owner deploys the exact merged version.
 
+The owner then reported that the activated Worker deployment succeeded and the
+Cloudflare dashboard shows `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` as exact
+lowercase `true`. No secret value or raw deployment output was provided. This
+confirms activation state only; no automatic trigger, route result, or cadence
+outcome is fabricated. Using the reported deployment window, the first fair
+post-propagation slots are 2026-09-02 20:30 UTC for the five-minute trigger,
+2026-09-02 21:17 UTC for the hourly trigger, and 2026-09-03 02:43 UTC for the
+daily trigger.
+
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
 were pushed together to the existing origin branch. Local, tracking, and
@@ -782,8 +791,8 @@ The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
 measured paid-upgrade triggers are recorded in
 `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The public-repository audit,
 manual protected-Preview route certification, Cloudflare design/implementation,
-and inert hosted setup are complete. The activation change is authorized and
-merged; owner-run deployment of that exact version, automatic cadence, and
+and inert hosted setup are complete. The activation change is authorized,
+merged, and deployed by owner report; bounded automatic cadence and
 failure/staleness certification are next. Production deployment,
 `goneviral.in`, live credentials/payments/refunds, prelaunch cleanup, and Phase
 16 still require their existing separate authorizations.
