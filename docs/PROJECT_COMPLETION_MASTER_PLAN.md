@@ -148,10 +148,11 @@ Do not rerun these phases wholesale merely because a new task starts.
   formatting, lint, typecheck, production build, client-build leak scanning,
   dependency audit, and a guard-false Wrangler dry run. These results are not
   hosted Cloudflare cadence evidence.
-- Protected pull request `#10` required CI run `33669954613` passed the exact
-  implementation/documentation candidate through install, format, lint,
-  typecheck, unit, build, client-leak, audit, and Gitleaks checks. The unrelated
-  nonrequired Vercel deployment check remained failed; no deployment occurred.
+- Protected pull request `#10` final required CI run `33670289167` passed the
+  exact candidate through install, format, lint, typecheck, unit, build,
+  client-leak, audit, and Gitleaks checks. It squash-merged as
+  `fd7a59bd44e167633bb877e5b2837c00ac200e2b`. The unrelated nonrequired Vercel
+  deployment check remained failed; no deployment occurred.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
