@@ -188,6 +188,25 @@ not expose its internal schedule registration, so no repository-side root cause
 can be proved; the remaining evidence points to GitHub schedule registration or
 delivery behavior.
 
+The owner declined a GitHub Support case and authorized a temporary repository-
+level canary. Pull request `#6` added `.github/workflows/schedule-canary.yml`
+with a five-minute offset schedule, explicit `Etc/UTC`, manual dispatch, empty
+permissions, no checkout or Action, no secret/variable reference, and no URL or
+external request. It prints only the GitHub event name and UTC timestamp. The
+canary safety test and existing scheduler suite passed 10/10, required CI run
+`33660917458` passed, and the PR squash-merged as
+`cf7e991bcbd0cc97b0069ecfe2124bd07fd365b7`.
+
+The canary registered separately as active workflow ID `348634880`. Manual run
+`33661199927` passed in three seconds and printed only the expected manual event
+and UTC timestamp, proving the canary job itself is valid. GitHub created no run
+for its first fair `17:32 UTC` scheduled slot by the single bounded check at
+17:35:41 UTC. At that same check, both active workflows still had zero schedule
+events. This removes GoneViral routes, secrets, variables, Vercel, and the
+production scheduler job logic from the failing path. It remains possible that
+GitHub will deliver a delayed event, so keep the harmless canary temporarily and
+inspect both histories once after a longer passive observation window.
+
 Still required: observe successful automatic five-minute, hourly, and daily
 runs; verify duplicate/catch-up behavior from hosted evidence; enable or verify
 the owner's GitHub Actions failure notifications; add an owner-visible
