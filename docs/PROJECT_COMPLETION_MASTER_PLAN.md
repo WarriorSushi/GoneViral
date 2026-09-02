@@ -96,8 +96,9 @@ Do not rerun these phases wholesale merely because a new task starts.
 - Scheduler implementation and primary evidence pushed to the existing origin
   branch with matching local/tracking/remote refs.
 - Expected GitHub scheduler secret and base-URL variable names configured by
-  the owner without value disclosure; the enable variable remains absent and
-  no hosted scheduler run occurred.
+  the owner without secret-value disclosure. After explicit activation
+  authorization, the exact enable variable was created and all five manual
+  protected-Preview operations passed with safe HTTP 200 logs.
 - Secret scanning/push protection, restricted SHA-pinned Actions, read-only
   workflow permissions, and an active no-bypass default-branch PR/strict-CI
   ruleset configured and verified.
@@ -110,16 +111,19 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Keep the enable guard absent/non-`true`. Only after fresh explicit authorization,
-create the exact lowercase enable variable, certify each manual protected-
-Preview route, and then observe the five-minute, hourly, and daily automatic
-cadences plus failure/staleness behavior. Do not deploy production or use live
+Keep the scheduler scoped to the approved protected non-production Preview.
+Observe successful five-minute, hourly, and daily automatic runs from the
+default branch, then complete failure-notification and owner-visible
+stale/missing-run evidence. GitHub emitted no scheduled event during the first
+bounded observation window; do not represent the passed manual runs as
+automatic cadence certification. Do not deploy production or use live
 credentials.
 
 ### Remaining Phase 15 gates
 
-- GitHub repository hardening, scheduler secret/configuration, and
-  non-production manual/automatic schedule certification.
+- Automatic GitHub scheduler cadence plus failure/staleness certification; the
+  repository hardening, secret/configuration names, and manual protected-
+  Preview route certification are complete.
 - Owner-selected deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint.

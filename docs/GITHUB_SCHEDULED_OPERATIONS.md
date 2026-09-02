@@ -16,8 +16,10 @@ dispatch cannot invoke a hosted route unless the repository variable
 No hosted secret, repository variable, deployment, domain, or route invocation
 was added during either implementation step. The owner later configured the
 two required GitHub repository secret names and the base-URL repository
-variable without disclosing values. The enable variable remains absent, so the
-hosted scheduler remains inert.
+variable without disclosing a secret value or recording the configured origin.
+On 2026-09-02 the owner authorized activation and Codex created the exact
+lowercase enable variable. The guard currently remains enabled for the approved
+protected non-production Preview only.
 
 ## Fixed schedule and route map
 
@@ -86,9 +88,10 @@ The repository currently enforces these controls:
 - the ruleset blocks default-branch deletion and force pushes while requiring
   zero approving reviews so the solo owner is not permanently locked out.
 
-Repository secret/variable listing verified only the expected names. No value
-was read. The enable variable remained absent and no scheduled workflow was
-executed during hardening.
+Repository secret/variable listing verified only the expected names. No secret
+value was read. The enable variable was absent and no scheduled workflow was
+executed during hardening; its later activation and certification evidence are
+recorded below.
 
 ## Activation and certification
 
@@ -120,6 +123,45 @@ Before enabling the guard:
    stale/missing-run check;
 9. after 60 days without public-repository activity, verify that GitHub has not
    automatically disabled the schedules.
+
+### 2026-09-02 protected-Preview activation evidence
+
+The owner explicitly authorized activation after configuring the two repository
+secrets and base-URL variable. Codex verified only their names and safe
+configuration shape, then created
+`GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED=true`. No credential was read, printed,
+or stored in the repository.
+
+Five independent `workflow_dispatch` runs on the default branch succeeded:
+
+| Operation              | Run ID        | Sanitized result   |
+| ---------------------- | ------------- | ------------------ |
+| email outbox drain     | `33651848820` | HTTP 200, 1,796 ms |
+| operational health     | `33651935090` | HTTP 200, 2,037 ms |
+| payment reconciliation | `33652002634` | HTTP 200, 2,144 ms |
+| logo-asset cleanup     | `33652063724` | HTTP 200, 548 ms   |
+| retention cleanup      | `33652118316` | HTTP 200, 825 ms   |
+
+The inspected workflow output contained only the fixed route, HTTP status, and
+duration. It contained no response body or credential. A separate bounded
+credential-free request to the protected Preview returned HTTP 302 without
+following the redirect or printing a body, which confirms that Vercel
+Deployment Protection denied the un-bypassed request.
+
+Automatic cadence is not yet certified. GitHub created no `schedule` event from
+16:00 through 16:23:43 UTC, including the 16:05, 16:10, 16:15, and 16:20
+five-minute boundaries and the 16:17 hourly boundary. The workflow file was
+present on the repository default branch and its API state was `active`. Codex
+refreshed that state through GitHub's supported disable/enable API at 16:11 UTC,
+but no scheduled run appeared during the remaining observation window. GitHub
+documents that scheduled events can be delayed or dropped under load, so this
+is recorded as unresolved cadence evidence rather than a route failure.
+
+Still required: observe successful automatic five-minute, hourly, and daily
+runs; verify duplicate/catch-up behavior from hosted evidence; enable or verify
+the owner's GitHub Actions failure notifications; add an owner-visible
+stale/missing-run check; and perform the documented 60-day activity check. The
+manual recovery path is certified, but it does not substitute for those gates.
 
 To stop calls immediately, remove or change the enable variable away from exact
 `true`. During a suspected scheduler-secret compromise, disable the guard,
