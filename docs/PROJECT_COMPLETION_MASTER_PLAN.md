@@ -1,6 +1,6 @@
 # GoneViral project completion master plan
 
-Last updated: 2026-09-02 (Asia/Kolkata)
+Last updated: 2026-09-03 (Asia/Kolkata)
 
 ## Purpose and authority
 
@@ -30,7 +30,7 @@ contents in this file.
 | Phases 0–14                                     | Complete                                 | Git history and phase documents under `docs/`         |
 | Phase 15 risk-based private staging             | Critical path complete                   | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 isolated backup remediation            | Complete                                 | restore and 66/66 database evidence in the checkpoint |
-| Phase 15 staging scheduler                      | Cloudflare design proposed; not deployed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Phase 15 staging scheduler                      | Worker implemented inertly; not deployed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
 | Public-repository content audit                 | Passed; owner already made repo public   | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Public-repository settings hardening            | Complete                                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 exhaustive/manual and production gates | Incomplete/deferred                      | checkpoint exact resume point                         |
@@ -133,24 +133,39 @@ Do not rerun these phases wholesale merely because a new task starts.
   before commercial launch. The exact three-trigger, two-secret, fail-closed
   proposal is in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`; nothing is deployed or
   configured in Cloudflare yet.
+- The owner confirmed Workers Free and at least three unused Cron Trigger
+  slots. The dependency-free scheduled-only Worker, exact three-trigger route
+  map, disabled guard, safe request/log behavior, pinned Wrangler CLI, and
+  focused tests are implemented locally. No Cloudflare resource, secret,
+  trigger, deployment, or hosted GoneViral request was created.
+- Elapsed checkout-bearing payment attempts now transition idempotently to
+  local `expired` at the start of authenticated operational-health checks.
+  Pre-checkout stalls remain visible, no provider failure is inferred, and the
+  existing authentic late-success path remains authoritative. The previously
+  diagnosed hosted Test Mode row was not modified during implementation.
+- The exact local candidate passed Worker tests (8/8), the full unit suite (43
+  files, 223 tests), the full local database suite (12 files, 67 tests),
+  formatting, lint, typecheck, production build, client-build leak scanning,
+  dependency audit, and a guard-false Wrangler dry run. These results are not
+  hosted Cloudflare cadence evidence.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-Have the owner review the exact Cloudflare proposal and confirm a Workers Free
-account with at least three unused account-wide Cron Trigger slots. Then
-implement and locally verify the inert Worker with its enable binding `false`;
-do not deploy until the interactive Cloudflare setup boundary is completed.
-After the scheduler plan is settled, implement and verify the narrow lifecycle
-treatment for expired abandoned checkouts; do not perform an ad hoc database
-repair. Do not deploy production, purchase Vercel Pro, or use live credentials.
+Complete the interactive Cloudflare boundary in
+`CLOUDFLARE_SCHEDULED_OPERATIONS.md`: the owner authenticates Wrangler, verifies
+the intended account, deploys only the inert guard-false Worker, and adds both
+secrets through the Cloudflare dashboard without disclosing them. Stop before
+activation. Do not deploy production, purchase Vercel Pro, or use live payment
+credentials.
 
 ### Remaining Phase 15 gates
 
-- Cloudflare Worker implementation, interactive account/secret setup, guarded
-  activation, automatic cadence, and failure/staleness certification. The five
+- Cloudflare interactive account/secret setup, guarded activation, automatic
+  cadence, and failure/staleness certification. Worker implementation is
+  complete locally. The five
   manual protected-Preview route certifications are complete and need not be
   repeated merely because the scheduler changes.
 - Owner-selected deferred exhaustive visual/manual-device, keyboard,
