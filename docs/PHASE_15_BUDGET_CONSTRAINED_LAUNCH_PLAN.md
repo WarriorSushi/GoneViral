@@ -67,6 +67,14 @@ fixed runner, and focused verification. The complete configuration and
 certification procedure is in `GITHUB_SCHEDULED_OPERATIONS.md`. No hosted
 secret/variable, route call, or deployment was made.
 
+Protected Preview support was added in
+`a6bc5289a7a0b9dd9222ae6ba9bc332d81b30109`. The workflow now reads the Vercel
+automation-bypass value from GitHub Actions secret
+`VERCEL_AUTOMATION_BYPASS_SECRET` and sends it only as the
+`x-vercel-protection-bypass` header. It remains inert unless the existing
+repository-variable guard is exact lowercase `true`; no hosted configuration
+or request was made by this patch.
+
 Official references:
 
 - <https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule>
@@ -156,9 +164,11 @@ Official references:
    history, fetched public refs, current tree, workflows, tags, and unpublished
    ignored state. The sanitized clean result is in the Phase 15 checkpoint.
    Codex did not change repository visibility.
-3. Next: harden the public repository settings, then add configuration through
-   the GitHub/hosting interfaces without exposing values and certify scheduled
-   and manual execution against an authorized non-production target.
+3. Next: harden the public repository settings, generate the Vercel
+   automation-bypass value, then add both GitHub secrets and the protected
+   Preview base URL through provider interfaces without exposing values. Keep
+   the enable guard absent/non-`true` until hosted invocation is explicitly
+   authorized, then certify scheduled and manual execution.
 4. Complete only the remaining owner-selected Phase 15 visual/accessibility and
    hosted operational checks; do not repeat settled database, restore, or E2E
    evidence without an invalidating change.

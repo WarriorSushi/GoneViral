@@ -446,10 +446,21 @@ require repository variable `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` to equal
 exact lowercase `true`; it was absent at verification, so the scheduler is
 inert. No hosted route, secret, variable, deployment, or provider was changed.
 
-Local verification passed `pnpm test:scheduled-operations` (one file, seven
-tests), `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, and `pnpm test` (41
-files, 210 tests). These are implementation/static results, not hosted schedule
-evidence.
+Protected Vercel Preview support is implemented in
+`a6bc5289a7a0b9dd9222ae6ba9bc332d81b30109`. The workflow reads
+`VERCEL_AUTOMATION_BYPASS_SECRET` only from GitHub Actions secrets. The runner
+requires it after the exact enable guard, sends it only in the
+`x-vercel-protection-bypass` header, keeps both credentials out of the command,
+URL, response handling, and logs, and fails closed before a request when the
+bypass value is absent. No secret value was created, read, printed, or stored.
+An immediate read-only GitHub check still showed zero Actions secrets, zero
+repository variables, and zero scheduled-workflow runs, so the hosted scheduler
+remained disabled throughout implementation.
+
+Local verification for that patch passed `pnpm test:scheduled-operations` (one
+file, 9 tests), `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, and
+`pnpm test` (41 files, 212 tests). These are implementation/static results, not
+hosted schedule evidence.
 
 The complete public-content audit passed without a credential exposure or
 ambiguous sensitive artifact:
@@ -487,12 +498,13 @@ a tracked credential. The checked-in workflows themselves remain SHA-pinned,
 read-only, and do not expose repository secrets to pull-request events.
 
 The next scheduler gate is documented in `GITHUB_SCHEDULED_OPERATIONS.md`:
-harden repository settings, authorize an isolated non-production HTTPS target,
-configure its matching `CRON_SECRET` in GitHub Actions Secrets and the target's
-encrypted server environment, set the approved origin-only base URL repository
-variable, and keep the enable guard non-`true` until route invocation is
-authorized. Hosted manual/automatic schedule, failure notification, missed-run,
-and 60-day-disablement evidence remain unverified.
+harden repository settings; retrieve the existing Preview `CRON_SECRET` from
+the owner's password manager; generate a Vercel Protection Bypass for
+Automation value; place both only in GitHub Actions Secrets; and set the stable
+protected Preview origin as the base URL repository variable. Keep the enable
+guard absent/non-`true` until route invocation is explicitly authorized. Hosted
+manual/automatic schedule, failure notification, missed-run, and 60-day-
+disablement evidence remain unverified.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`

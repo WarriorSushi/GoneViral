@@ -25,16 +25,16 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                           | Status                                 | Evidence/source                                       |
-| ----------------------------------------------- | -------------------------------------- | ----------------------------------------------------- |
-| Phases 0–14                                     | Complete                               | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging             | Critical path complete                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation            | Complete                               | restore and 66/66 database evidence in the checkpoint |
-| Phase 15 production scheduler                   | Local implementation complete          | `GITHUB_SCHEDULED_OPERATIONS.md`                      |
-| Public-repository content audit                 | Passed; owner already made repo public | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                    | checkpoint exact resume point                         |
-| Production launch                               | Not authorized/not complete            | Phase 15 runbook                                      |
-| Phase 16                                        | Not started                            | implementation plan                                   |
+| Scope                                           | Status                                    | Evidence/source                                       |
+| ----------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                                     | Complete                                  | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging             | Critical path complete                    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation            | Complete                                  | restore and 66/66 database evidence in the checkpoint |
+| Phase 15 production scheduler                   | Protected-Preview implementation complete | `GITHUB_SCHEDULED_OPERATIONS.md`                      |
+| Public-repository content audit                 | Passed; owner already made repo public    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                       | checkpoint exact resume point                         |
+| Production launch                               | Not authorized/not complete               | Phase 15 runbook                                      |
+| Phase 16                                        | Not started                               | implementation plan                                   |
 
 Current branch: `codex/phase-15-staging`.
 
@@ -86,6 +86,9 @@ Do not rerun these phases wholesale merely because a new task starts.
 - Owner selection of Supabase Free risk posture and GitHub Actions scheduling.
 - Guarded GitHub Actions scheduler implementation and focused local
   verification in `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1`.
+- Protected Vercel Preview authentication support, two-secret safe request
+  construction, and focused verification in
+  `a6bc5289a7a0b9dd9222ae6ba9bc332d81b30109`.
 - Complete reachable-history/current-tree/workflow/tag safety audit. The owner
   had already made the repository public; Codex did not change visibility.
 - Scheduler implementation and primary evidence pushed to the existing origin
@@ -97,12 +100,12 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Harden the public GitHub repository settings, select an authorized
-non-production HTTPS target, and configure the shared scheduler secret plus
-base URL only through GitHub/hosting secret and variable interfaces. Keep the
-enable guard absent/non-`true` until hosted invocation is explicitly
-authorized. Then certify every manual route and the automatic cadences without
-deploying production or using live credentials.
+Harden the public GitHub repository settings, generate the protected Preview's
+Vercel automation-bypass value, and configure it plus the existing application
+cron secret and stable Preview origin only through GitHub/Vercel secret and
+variable interfaces. Keep the enable guard absent/non-`true` until hosted
+invocation is explicitly authorized. Then certify every manual route and the
+automatic cadences without deploying production or using live credentials.
 
 ### Remaining Phase 15 gates
 

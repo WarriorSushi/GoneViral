@@ -148,9 +148,12 @@ repository GitHub Actions at the owner-approved five-minute email/health,
 hourly reconciliation, and daily cleanup cadences. Supabase Free is accepted
 with the explicit owner risks and self-managed backup obligations in that plan.
 The local scheduler implementation and public-repository content audit are
-complete. Hosted secret/configuration, automatic and manual non-production
-schedule certification, failure/staleness notifications, and automated backup
-delivery are not certified yet. Follow `GITHUB_SCHEDULED_OPERATIONS.md`.
+complete. The scheduler also supports the protected Preview by reading the
+Vercel automation-bypass value from a GitHub Actions secret and sending it only
+as the `x-vercel-protection-bypass` header. Hosted secret/configuration,
+automatic and manual non-production schedule certification, failure/staleness
+notifications, and automated backup delivery are not certified yet. Follow
+`GITHUB_SCHEDULED_OPERATIONS.md`.
 
 Before enabling Dodo test checkout, verify business ID, webhook key, API key,
 and one-time INR pay-what-you-want product all belong to the same test
