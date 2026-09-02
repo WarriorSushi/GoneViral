@@ -28,6 +28,7 @@ function request() {
     body: "{}",
     headers: {
       "content-type": "application/json",
+      "x-request-id": "req_dodo_route_test",
       "webhook-id": "evt_route_test",
       "webhook-signature": "v1,test",
       "webhook-timestamp": String(Math.floor(Date.now() / 1000)),
