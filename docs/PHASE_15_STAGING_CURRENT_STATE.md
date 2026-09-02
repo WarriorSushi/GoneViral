@@ -539,10 +539,20 @@ not an all-clear. Sentry emitted Preview warning
 `operational_alert:payment_attempt_stale` at 15:58:13 UTC from the known Preview
 release immediately after manual health run `33651935090`. The code condition
 means at least one nonterminal payment attempt was more than 30 minutes old.
-The owner-provided notification contained no record identity or count, so it
-does not prove whether this was an abandoned staging checkout. It is not a live-
-payment, charge, or route-failure result. Inspect aggregate/redacted staging
-state before deciding whether expiry or other remediation is appropriate.
+
+At 17:46 UTC on 2026-09-02, a read-only aggregate query against the verified
+healthy `goneviral` Supabase project found exactly one matching attempt. It was
+a Dodo `test_mode` `initial_sponsorship` attempt in `checkout_ready`, about 77
+hours old, with an already-expired checkout window. It had a provider order and
+checkout-session reference, as expected for a created checkout, but no provider
+event, provider payment, fulfilled ledger entry, success timestamp, failure or
+quarantine marker, or open/investigating reconciliation item. No identifiers,
+customer data, provider references, amounts, payloads, or credentials were
+returned or recorded, and no database or provider state was changed. This is
+consistent with an abandoned staging checkout rather than a charge, lost
+payment, or route failure. Its nonterminal state can continue to trigger the
+health warning until the application applies an approved lifecycle transition;
+do not perform an ad hoc database repair.
 
 A separate bounded credential-free Preview request returned HTTP 302 without
 following the redirect or printing a body, confirming Vercel Deployment

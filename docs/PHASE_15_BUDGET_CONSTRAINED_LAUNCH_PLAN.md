@@ -202,7 +202,10 @@ Official references:
    enable variable is present and every manual protected-Preview operation
    passed. Automatic five-minute/hourly/daily cadence and failure/staleness
    behavior remain unverified because GitHub emitted no scheduled event during
-   the bounded observation window.
+   the bounded observation window. The operational-health warning was separately
+   diagnosed through a redacted, read-only aggregate query as one expired Dodo
+   Test Mode checkout with no provider event, payment, ledger fulfillment, or
+   open reconciliation item; no state was changed.
 5. Complete only the remaining owner-selected Phase 15 visual/accessibility and
    hosted operational checks; do not repeat settled database, restore, or E2E
    evidence without an invalidating change.

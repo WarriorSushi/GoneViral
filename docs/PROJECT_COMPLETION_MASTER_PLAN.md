@@ -111,9 +111,13 @@ Do not rerun these phases wholesale merely because a new task starts.
   metadata was merged in `fcaf1a206c9f046f900eefd04e1988ba7c93ca3d` to force
   reprocessing without changing cadence or job logic; a bounded post-merge
   check still returned zero events.
-- The manual operational-health run correctly emitted a Preview warning for at
-  least one nonterminal payment attempt older than 30 minutes. Its identity and
-  count remain unverified; this is not evidence of a live charge.
+- The manual operational-health warning was resolved diagnostically with a
+  read-only, aggregate Supabase inspection. Exactly one Dodo `test_mode`
+  `initial_sponsorship` attempt remained in `checkout_ready` after its checkout
+  expiry. It had no provider event, provider payment, fulfilled ledger entry,
+  success timestamp, or open reconciliation item. This is consistent with an
+  abandoned staging checkout and is not evidence of a live charge. No record
+  identifier was returned or recorded, and no row was modified.
 - After declining a GitHub Support case, the owner authorized an isolated,
   credential-free schedule canary. Its manual run passed, but neither active
   workflow had a schedule event by the first bounded post-slot check. The canary
@@ -128,10 +132,11 @@ Keep the scheduler scoped to the approved protected non-production Preview.
 Do not continue short-interval polling. Recheck the production scheduler and
 temporary canary once after a longer passive provider delay. The owner declined
 a GitHub Support case; if both histories remain empty, select a different owner-
-approved scheduler and then remove the canary. Separately inspect the stale
-Preview payment attempt read-only before any expiry/remediation. Do not
-represent passed manual runs as automatic cadence certification, deploy
-production, or use live credentials.
+approved scheduler and then remove the canary. Separately decide and verify the
+narrow, non-production-safe lifecycle treatment for the confirmed expired Test
+Mode checkout before changing its state; do not perform an ad hoc database
+repair. Do not represent passed manual runs as automatic cadence certification,
+deploy production, or use live credentials.
 
 ### Remaining Phase 15 gates
 
