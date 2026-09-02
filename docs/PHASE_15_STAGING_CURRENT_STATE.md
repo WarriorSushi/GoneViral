@@ -621,9 +621,9 @@ checked-in enable binding remains exact lowercase `false`; the bundle passed a
 local Wrangler dry run and no Cloudflare login, account binding, secret,
 trigger, deployment, or hosted GoneViral request occurred.
 
-Implementation commits are `e08f78c40b6fd47a11d544b08a2cc3d75175e35c`
-for the inert Worker and `4f684dc2716b4308f22f9be8fa2de4605d23a106`
-for abandoned-checkout expiry. Local verification passed the Worker-focused
+The inert Worker and abandoned-checkout expiry implementation squash-merged
+through protected pull request `#10` as
+`fd7a59bd44e167633bb877e5b2837c00ac200e2b`. Local verification passed the Worker-focused
 suite (8/8), lifecycle/health unit selection (5/5), checkout/webhook integration
 selection (14/14), full unit suite (43 files, 223 tests), full local database
 suite (12 files, 67 tests), retired-workflow safety suite (10/10), formatting,
@@ -633,10 +633,11 @@ bundled 4.90 KiB and listed only the base URL and guard as non-secret bindings.
 These are local implementation results, not Cloudflare deployment or cadence
 evidence.
 
-Protected pull request `#10` then passed required CI run `33669954613` on exact
-head `f3008c432972a27c23a7ca0777e5c8653da97504`: dependency installation,
-formatting, lint, typecheck, 43-file unit suite, production build, 25-asset
-client leak scan, moderate dependency audit, and Gitleaks all passed. The
+Protected pull request `#10` passed required CI run `33669954613` on its primary
+implementation/documentation head and final required CI run `33670289167` on
+exact head `1a79d196b1a54a6df0aba307ebeeefcf13bc64da`: dependency installation,
+formatting, lint, typecheck, 43-file unit suite, production build, 25-asset client
+leak scan, moderate dependency audit, and Gitleaks all passed. The
 separate Vercel deployment check failed as expected and is not required; no
 deployment was requested or represented as successful.
 
