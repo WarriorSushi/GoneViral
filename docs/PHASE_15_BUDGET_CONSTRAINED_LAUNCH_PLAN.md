@@ -164,21 +164,25 @@ Official references:
    history, fetched public refs, current tree, workflows, tags, and unpublished
    ignored state. The sanitized clean result is in the Phase 15 checkpoint.
    Codex did not change repository visibility.
-3. Next: harden the public repository settings, generate the Vercel
-   automation-bypass value, then add both GitHub secrets and the protected
-   Preview base URL through provider interfaces without exposing values. Keep
-   the enable guard absent/non-`true` until hosted invocation is explicitly
-   authorized, then certify scheduled and manual execution.
-4. Complete only the remaining owner-selected Phase 15 visual/accessibility and
+3. Completed through inert configuration: secret scanning/push protection,
+   read-only workflow permissions, restricted SHA-pinned Actions, and an active
+   no-bypass default-branch PR/strict-CI ruleset are configured. The two
+   expected GitHub secret names and the base-URL variable name are present;
+   values were not disclosed or read. The enable variable remains absent and
+   no hosted run occurred.
+4. Next: only after fresh explicit authorization, add the exact lowercase
+   enable variable, certify each manual Preview operation, and then observe the
+   automatic cadences and failure/staleness behavior.
+5. Complete only the remaining owner-selected Phase 15 visual/accessibility and
    hosted operational checks; do not repeat settled database, restore, or E2E
    evidence without an invalidating change.
-5. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
+6. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
    domain/email, security/access, alerting, and production-isolation gates.
-6. When the owner is ready, purchase/configure Vercel Pro with the cost controls
+7. When the owner is ready, purchase/configure Vercel Pro with the cost controls
    above. Production remains payments-off until the exact release suite and
    minimal production smoke pass.
-7. Request separate immediate authorization before the one legitimate founder-
+8. Request separate immediate authorization before the one legitimate founder-
    owned live transaction, before enabling payments/refunds, and before
    destructive prelaunch cleanup.
-8. Begin Phase 16 only after a completed launch. Upgrade plans or architecture
+9. Begin Phase 16 only after a completed launch. Upgrade plans or architecture
    only from measured traffic, incidents, limits, or revenue.

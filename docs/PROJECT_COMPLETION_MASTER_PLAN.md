@@ -32,6 +32,7 @@ contents in this file.
 | Phase 15 isolated backup remediation            | Complete                                  | restore and 66/66 database evidence in the checkpoint |
 | Phase 15 production scheduler                   | Protected-Preview implementation complete | `GITHUB_SCHEDULED_OPERATIONS.md`                      |
 | Public-repository content audit                 | Passed; owner already made repo public    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Public-repository settings hardening            | Complete                                  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 exhaustive/manual and production gates | Incomplete/deferred                       | checkpoint exact resume point                         |
 | Production launch                               | Not authorized/not complete               | Phase 15 runbook                                      |
 | Phase 16                                        | Not started                               | implementation plan                                   |
@@ -93,22 +94,24 @@ Do not rerun these phases wholesale merely because a new task starts.
 - Complete reachable-history/current-tree/workflow/tag safety audit. The owner
   had already made the repository public; Codex did not change visibility.
 - Scheduler implementation and primary evidence pushed to the existing origin
-  branch with matching local/tracking/remote refs; the enable guard, hosted
-  secrets, repository variables, and hosted runs remained absent.
+  branch with matching local/tracking/remote refs.
+- Expected GitHub scheduler secret and base-URL variable names configured by
+  the owner without value disclosure; the enable variable remains absent and
+  no hosted scheduler run occurred.
+- Secret scanning/push protection, restricted SHA-pinned Actions, read-only
+  workflow permissions, and an active no-bypass default-branch PR/strict-CI
+  ruleset configured and verified.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-Complete public GitHub hardening by adding default-branch change protection and
-repository-wide Action SHA-pin enforcement; secret scanning and push protection
-are now enabled. Then generate the protected Preview's Vercel automation-bypass
-value and configure it plus the existing application cron secret and stable
-Preview origin only through GitHub/Vercel secret and variable interfaces. Keep
-the enable guard absent/non-`true` until hosted invocation is explicitly
-authorized. Then certify every manual route and the automatic cadences without
-deploying production or using live credentials.
+Keep the enable guard absent/non-`true`. Only after fresh explicit authorization,
+create the exact lowercase enable variable, certify each manual protected-
+Preview route, and then observe the five-minute, hourly, and daily automatic
+cadences plus failure/staleness behavior. Do not deploy production or use live
+credentials.
 
 ### Remaining Phase 15 gates
 
