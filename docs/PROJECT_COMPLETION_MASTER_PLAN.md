@@ -101,6 +101,9 @@ Do not rerun these phases wholesale merely because a new task starts.
 - Secret scanning/push protection, restricted SHA-pinned Actions, read-only
   workflow permissions, and an active no-bypass default-branch PR/strict-CI
   ruleset configured and verified.
+- Fresh-run CI route-type prerequisite fixed by running `next typegen` before
+  TypeScript; required pull-request `quality` run `33649828937` passed the full
+  format/lint/typecheck/test/build/security/audit pipeline.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.

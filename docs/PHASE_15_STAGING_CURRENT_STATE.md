@@ -508,6 +508,23 @@ a pull request whose review threads are resolved and whose strict `quality`
 check comes from GitHub Actions app ID `15368`. Required approvals are zero to
 preserve a workable solo-owner flow while retaining the PR and CI audit trail.
 
+The hardening evidence was submitted through public pull request `#2` to prove
+the new rules. Its first `quality` run failed honestly at typecheck because a
+fresh runner did not yet have Next.js-generated global `PageProps` route types;
+local development/build state had masked that prerequisite. Following the
+installed Next.js 16.3.3 documentation, `package.json` now runs `next typegen`
+before `tsc --noEmit`. Local formatting, lint, corrected typecheck, and 212/212
+tests passed. GitHub Actions run `33649828937` then passed the complete required
+`quality` job, including install, formatting, lint, typecheck, unit tests,
+production build, client-build secret/source-map verification, dependency
+audit, and Gitleaks. This is repository/CI evidence, not hosted scheduler
+evidence.
+
+Vercel's automatic pull-request integration emitted a separate failed
+`Deployment failed` check. It is not required by the ruleset; no Vercel deploy
+command or hosted cron request was run by Codex. The failed external check is
+not represented as a successful Preview deployment.
+
 The next scheduler gate is documented in `GITHUB_SCHEDULED_OPERATIONS.md`:
 keep the enable guard absent/non-`true` until route invocation is explicitly
 authorized. Then certify each manual protected-Preview operation before
