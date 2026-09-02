@@ -30,6 +30,10 @@ addresses, or backup passphrases here.
   `origin/codex/phase-15-staging` branch. Local and remote refs matched exactly
   before the restore rehearsal; no deployment or hosted-service command was
   run as part of that push.
+- The later Phase 15 evidence series through
+  `a7d1206dea4151cad9e996077fea72ce3a8383b1` was also pushed to that same
+  origin branch and independently verified with `git ls-remote`; no deployment
+  or hosted-service mutation accompanied the push.
 
 ## Repository and connected staging services
 
@@ -350,6 +354,79 @@ credential, domain, or payment/refund state was changed.
   archive and its `.sha256` evidence file remain intact; the ordinary local
   database, pooler, and router were restored healthy.
 
+## Final isolated restore and database-suite certification: passed
+
+The owner started Docker and authorized a new isolated rehearsal of the same
+verified corrected archive. Implementation commit
+`0ba836151c1ae2d9dba31bd2ec57a2decef0fcf2` hardened the test orchestration and
+restore procedure; it is intentionally separate from this evidence update.
+
+- The owner entered the archive passphrase only in 7-Zip. Extraction to
+  `D:\GoneViral-Restore-Rehearsal\20260902T103018Z-fndssapjkaicxzeruuvv`
+  produced 14 files and 363,130 bytes. Independent manifest-v2, archive
+  SHA-256, per-file SHA-256, source identity, image, managed-history,
+  membership, and Storage-object checks all passed. The passphrase was not
+  printed, logged, committed, or sent to chat.
+- The new target
+  `D:\GoneViral-Restore-Rehearsal\20260902T103018Z-stack` used distinct
+  loopback ports `55321`/`55322`/`55329`, isolated Docker resources, and exact
+  image `public.ecr.aws/supabase/postgres:17.6.1.166`. No staging, production,
+  or ordinary local-development database was targeted. The successful clean
+  restore ran from `2026-09-02T10:42:12.7985461Z` through
+  `2026-09-02T10:42:13.4901387Z` (0.686 seconds), with stop-on-error and the
+  disposable `postgres` role immediately returned to `NOSUPERUSER`.
+- Auth and Storage started healthy without historical migration replay:
+  health endpoints returned HTTP 200, their logs contained zero migration-error
+  signatures, and histories were exactly Auth 77, Storage 65, and application 10. Final counts were five listings, five ledger entries, one Auth user and
+  identity, two Storage buckets, and three Storage objects.
+- The local Storage file backend required its configured `stub/stub` tenant and
+  project namespace before `<bucket>/<key>/<version>`; the earlier direct-under-
+  `/mnt` assumption was wrong. After correcting only the disposable volume,
+  all three objects returned HTTP 200 through Storage with exact SHA-256 values
+  `13cfce5cb75fb783f6bb433475c7259e20420086e497093ff20dc29c4be0aa89`,
+  `41a3a431e35d6bb54d042e8e694be67d83ef14d491d006338b285bd5fa7d834f`,
+  and `51c44b0a59e61b971006023c2e99fbdea2f56a0494af4ccb94eb72dbcde3a3ff`.
+- Post-test source-versus-target normalized `COPY` payloads matched exactly:
+  `app-private-data.sql`
+  `0a8805dc5f37896539fea1cf7a2ca28585b85b316d03b4b13e606477fc4ff96f`,
+  `auth-storage-data.sql`
+  `62e58180322d7e1be9d77e8919e24028f89702479abac52dd36c372317726b61`,
+  application history
+  `13826b7f589cfbe198bdba516ef4cd7b93cb8bd7ae157ed9e0898ada8adce10a`,
+  and managed history
+  `455fbffd21632cd0c05cc9030547cb2ebf76187ac689da6dde8214cfe855f68d`.
+- `pnpm db:migrations:verify`, `node scripts/db/verify-schema.mjs`, isolated
+  `db lint`, and isolated `db advisors` passed. Data API denial remained
+  `406/PGRST106` for `app` and `private`, with `404` for
+  `public.categories`. All financial, ledger, daily/lifetime projection,
+  timing, fulfilled-attempt identity, duplicate-provider-identity,
+  reconciliation, orphan-Auth-reference, active-super-admin, role-membership,
+  trigger, and shutdown-flag failure counts were zero. Both bucket policies
+  matched, all 12 application/private custom triggers were enabled, and nine
+  representative forbidden updates/deletes were blocked inside a rolled-back
+  transaction.
+- The earlier wrapper was too narrow: the integration fixture lifecycle
+  replaces broad local-test data, so restoring only operational flags would
+  destroy the certified source snapshot. The final wrapper snapshots all five
+  restored schemas inside the disposable database container, fingerprints
+  data and sequence state, removes live-provider credentials, forces mock-only
+  execution, quiesces only disposable writers in `finally`, restores the full
+  snapshot, verifies exact disabled flags and managed histories, and deletes
+  its temporary dump.
+- Final verification passed `pnpm format:check`, `pnpm lint`, and
+  `pnpm typecheck`. The guarded database run then passed 12/12 files and 66/66
+  tests in 23.21 seconds and recovered the complete pre-test payload exactly.
+  No provider transaction or hosted payment/refund state change occurred.
+
+- Cleanup removed only this rehearsal's plaintext extraction, comparison files,
+  containers, network, volumes, and stack directory. Final inventory was
+  containers 0, volumes 0, networks 0, and directories 0. The temporary
+  in-container test snapshot was absent before shutdown. The encrypted archive
+  and `.sha256` evidence remain present; the archive still matches SHA-256
+  `fac5c0149101cec6e96f2bfc8e07b274ff58037bd67762dce76a58f53d3569c9`.
+  Ordinary local Supabase remained available on expected API/database ports
+  54321/54322.
+
 ## Exact resume point
 
 The risk-based critical staging path is complete. Preserve the private staging
@@ -359,12 +436,9 @@ destructive prelaunch cleanup unless the owner separately authorizes it and
 supplies the exact project-bound confirmation through the runbook. Do not begin
 Phase 16 or touch production credentials, domains, or live payments.
 
-The formerly Docker-blocked local database, performance, automated E2E, and
-core isolated backup-restore gates are resolved. The complete Phase 15 matrix
-is still not certified: a new restore of the same verified archive needs the
-documented mock-only operational-flag wrapper and a complete 66-test database
-suite pass. Preserve the restored source state with both payments and provider
-refunds disabled before and after that tightly scoped test.
+The formerly Docker-blocked local database, performance, automated E2E, core
+isolated backup-restore, and restored-snapshot 66-test gates are resolved. The
+complete Phase 15 matrix is still not certified.
 
 Deferred unless a critical failure makes them necessary: exhaustive manual
 visual/browser/device coverage beyond the passed automated seven-project
@@ -375,6 +449,9 @@ and provider restoration when genuine safe Dodo evidence is unavailable.
 Vercel Hobby automatic sub-daily scheduling and production-specific
 configuration also remain unverified. The committed Preview Auth URLs and
 staging-hosted email logo must not be reused as production configuration.
+An actual hosted isolated restore/PITR rehearsal also remains deferred; this
+local isolated logical restore is not evidence for hosted retention, RPO, RTO,
+or provider-operated recovery.
 
 ## Production boundary
 
