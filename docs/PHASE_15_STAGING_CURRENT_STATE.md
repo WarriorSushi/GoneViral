@@ -487,6 +487,45 @@ schedule, or hosted service was changed.
   Phase 15 production hard gate already requires Vercel Pro; no purchase or
   production deployment is authorized by this checkpoint.
 
+## Owner budget-constrained production decision and next gate
+
+On 2026-09-02 the owner selected Vercel Pro for commercial production when the
+owner is ready to purchase it, with the strongest available spend controls and
+no optional paid seats, add-ons, or integrations. The owner selected Supabase
+Free initially and accepts it without managed PITR, including weaker provider
+recovery, possible inactivity pause, self-managed backup dependence, and
+possible recovery downtime.
+
+This decision does not invalidate the passed logical restore evidence and does
+not require another restore. The corrected encrypted backup remains the
+baseline Free-plan recovery mechanism. It is not evidence of managed PITR or a
+no-data-loss guarantee.
+
+The owner permits making the repository public after a complete current-tree
+and Git-history secret audit and selected free public-repository GitHub Actions
+as the initial scheduler. The owner accepts its five-minute minimum and possible
+delay/drop behavior, including changing the email-outbox cadence from one to
+five minutes. Health remains every five minutes, reconciliation hourly, and
+cleanup daily. Durable/idempotent workers catch up after a missed run. Secrets
+must remain only in approved GitHub/hosting secret stores and unavailable to
+untrusted pull-request workflows. The owner's VPS is reserved for OTTR.
+
+Vercel Hobby remains private-preview-only. Its published terms prohibit
+commercial use and explicitly include requesting or processing payments, so an
+external scheduler alone cannot make it a valid production host. Vercel Pro's
+lowest permitted spend amount, explicit production-pause action, one paid seat,
+no paid add-ons/integrations, and notifications must be verified before launch.
+These controls cannot guarantee an exact fixed INR or US$20 invoice because
+Vercel checks metered spend every few minutes and excludes fixed extras; taxes
+and card conversion may also vary.
+
+The exact evidence, limits, unchanged schedules, sequential remaining Phase 15
+work, and measured paid-upgrade triggers are recorded in
+`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The next authorized implementation
+scope is local implementation and testing of the GitHub scheduler. Deployment,
+`goneviral.in`, live credentials/payments/refunds, prelaunch cleanup, and Phase
+16 still require their existing separate authorizations.
+
 ## Production boundary
 
 Do not repeat the whole staging suite in production. If production is later

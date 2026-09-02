@@ -55,7 +55,9 @@ Mock-only payment tests are insufficient. Browser-only “success” tests are a
 
 ### Production
 
-- Vercel Pro + Supabase Pro in selected regions;
+- Vercel Pro + Supabase Free in selected regions;
+- public-repository GitHub Actions scheduler after its safety/certification
+  gate;
 - live provider only after gates;
 - no test fixtures/fake data;
 - controlled founder-owned smoke payment only through real accounting policy.
@@ -617,7 +619,12 @@ Set database-connected functions to Mumbai (`bom1`) while Supabase is Mumbai/Sou
 
 ### Plan
 
-Vercel Hobby may be used for development/prototyping only if terms fit. Activate Pro before commercial live payments. Verify current plan terms/pricing at launch.
+Vercel Hobby may be used for development/prototyping only if terms fit.
+Activate Pro before commercial live payments. Keep one deploying seat, enable
+no paid add-on/integration, set the lowest permitted on-demand spend amount,
+explicitly enable production pause, and verify spend notifications. These
+controls do not guarantee an exact fixed invoice because metering is periodic
+and taxes/card conversion may vary. Verify current terms/pricing at launch.
 
 ---
 
@@ -625,13 +632,18 @@ Vercel Hobby may be used for development/prototyping only if terms fit. Activate
 
 ### Project/region
 
-Production Supabase Pro in closest available Mumbai/South Asia region (`ap-south-1` at specification time). Staging is separate.
+Production Supabase Free in the closest available Mumbai/South Asia region
+(`ap-south-1` at specification time). Staging is separate. The owner accepts no
+managed PITR, possible inactivity pause, self-managed backup dependence, weaker
+provider recovery guarantees, and possible recovery downtime. Re-evaluate Pro
+from measured traffic, reliability need, or revenue.
 
 ### Database
 
 - direct migration URL and Supavisor transaction pooler runtime URL;
 - connection/pool settings sized conservatively;
-- PITR/backups/retention according to current Pro capabilities and risk;
+- no managed PITR/automatic-backup assumption; use the certified encrypted
+  logical and Storage backup procedure and documented retention;
 - SSL required;
 - least-privilege server/migration roles;
 - network restrictions where supported/operationally feasible;
@@ -803,13 +815,15 @@ A deletion/data-request workflow must distinguish erasable personal data from le
 
 Initial production targets (confirm against plan capabilities and business risk):
 
-- **RPO:** aim <= 24 hours at absolute baseline; preferably much lower/PITR with Supabase Pro/current feature.
+- **RPO:** aim <= 24 hours through verified self-managed encrypted backups; this
+  is an operational target, not a provider guarantee.
 - **RTO:** aim <= 4 hours for service recovery, with public read-only restoration sooner where possible.
 - Financial reconciliation with provider can reconstruct missing settlement events, but is not a substitute for database backup.
 
 ### Backup verification
 
-- know automatic backup/PITR schedule and retention;
+- record that Free has no relied-upon automatic backup/PITR, and know the
+  self-managed backup schedule and retention;
 - periodic logical export of schema/config/reference data where appropriate and securely encrypted;
 - no secrets embedded in backups beyond DB data protections;
 - restore to isolated non-production environment at least quarterly and before launch/high-risk changes;
@@ -824,7 +838,10 @@ Never resolve an incident by restoring an older database over newer provider tra
 
 ## 24. Scheduled jobs
 
-Use Vercel Cron or current approved scheduler; endpoints are authenticated and idempotent.
+Use the approved public-repository GitHub Actions scheduler initially; endpoints
+remain authenticated and idempotent. The owner accepts a five-minute email
+cadence and possible GitHub delay/drop behavior. Durable work catches up on the
+next run.
 
 Suggested schedule:
 
@@ -833,7 +850,7 @@ Suggested schedule:
 | pending payment reconciliation    | every 5–15 min             | recover delayed/missed status   |
 | payment/adjustment reconciliation | hourly + daily full window | financial correctness           |
 | projection audit                  | daily                      | ledger/listing/daily equality   |
-| email outbox drain                | every minute/frequent      | transactional delivery          |
+| email outbox drain                | every five minutes         | transactional delivery          |
 | asset staging cleanup             | hourly/daily               | delete expired/orphaned uploads |
 | click dedupe cleanup              | daily                      | enforce retention               |
 | rate bucket cleanup               | daily/hourly               | remove expired rows             |
@@ -1009,8 +1026,9 @@ Codex implements reviewed requirements; it does not invent legal conclusions. St
 
 Expected fixed launch base, subject to current public prices/taxes:
 
-- Vercel Pro roughly US$20/month;
-- Supabase Pro roughly US$25/month;
+- Vercel Pro advertised at roughly US$20/month, plus possible tax/card
+  conversion and residual metered-overage risk;
+- Supabase Free at US$0/month within current limits;
 - domain already owned/renewal;
 - email/monitoring often within starter allowances initially;
 - gateway fee per transaction + GST;
@@ -1036,12 +1054,14 @@ Set budget alerts on Vercel, Supabase, Resend, Sentry and provider where availab
 
 ### Infrastructure
 
-- [ ] Vercel Pro and Supabase Pro in intended regions.
+- [ ] Vercel Pro and strict cost controls in the intended region.
+- [ ] Supabase Free capacity/risk acceptance and fresh encrypted backup.
+- [ ] public-repository GitHub Actions scheduler safety and cadence certified.
 - [ ] production/staging completely isolated.
 - [ ] domain/TLS/canonical redirects.
 - [ ] Auth redirect allowlist and Resend DNS/custom SMTP.
 - [ ] provider webhook/return URLs and secrets.
-- [ ] backups/PITR/restore evidence.
+- [ ] self-managed backup freshness and restore evidence; no PITR claim.
 - [ ] operational flags/cron/alerts/dashboard.
 
 ### Security

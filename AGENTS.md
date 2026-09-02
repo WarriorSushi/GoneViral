@@ -19,6 +19,15 @@ specifications or runbooks. Update it after material external-state changes.
 Never store secret values, credentials, magic links, MFA material, webhook
 bodies, payment-card data, or backup passphrases in it.
 
+## Persistent project completion plan
+
+For every GoneViral task, read `docs/PROJECT_COMPLETION_MASTER_PLAN.md` after
+this file and before planning or repeating work. Treat it as the persistent
+zero-to-100 progress index and update it after any material owner decision,
+completed workstream, evidence result, blocker, or next-action change. It does
+not replace the authority order, specifications, active runbook, or detailed
+Phase 15 checkpoint. Never store secrets or private evidence in it.
+
 ## Interactive terminal boundary on this Windows host
 
 Codex cannot expose an interactive terminal prompt that the owner can reliably

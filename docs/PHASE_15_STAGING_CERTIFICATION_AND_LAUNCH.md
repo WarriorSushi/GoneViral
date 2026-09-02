@@ -136,9 +136,19 @@ and Hobby rejects schedules that run more than daily. Deploy it with
 `pnpm ops:deploy:preview`; the script selects the Preview target, temporarily
 excludes only the production schedule file during upload, and restores it in a
 `finally` block. Manually invoke and verify the authenticated cron routes in
-preview, but do not claim scheduler certification. Production continues to use
-the schedules in `vercel.json` and therefore requires a plan that supports their
-one-minute/five-minute/hourly frequencies.
+preview, but do not claim scheduler certification.
+
+The owner plans to purchase Vercel Pro when ready for commercial launch and use
+Supabase Free initially. Vercel Hobby remains preview-only because its current
+published terms prohibit commercial payment use; an external scheduler does
+not change that restriction.
+The production host and scheduler must follow and pass
+`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The initial scheduler is public-
+repository GitHub Actions at the owner-approved five-minute email/health,
+hourly reconciliation, and daily cleanup cadences. Supabase Free is accepted
+with the explicit owner risks and self-managed backup obligations in that plan.
+The public-repository gate, scheduler, and automated backup delivery are not
+certified yet.
 
 Before enabling Dodo test checkout, verify business ID, webhook key, API key,
 and one-time INR pay-what-you-want product all belong to the same test
@@ -190,8 +200,10 @@ cleanup report beside the encrypted backup.
 ## Production and live-money hard gates
 
 Do not promote or attach `goneviral.in` until the user separately confirms the
-specific action and genuine evidence exists for Vercel Pro, Supabase Pro/PITR,
-production isolation, DNS/TLS/email authentication, backup/restore, alerts,
+specific action and genuine evidence exists for Vercel Pro with the documented
+cost controls, the certified GitHub Actions scheduler, Supabase Free capacity
+and owner-accepted recovery posture, production isolation, DNS/TLS/email
+authentication, backup/restore, alerts,
 access/MFA, security review, counsel-reviewed legal/privacy/refund/content/
 disclosure/grievance requirements, CA-approved accounting/GST/invoice/place-of-
 supply handling, Dodo written model approval, KYC/entity/bank setup, and live

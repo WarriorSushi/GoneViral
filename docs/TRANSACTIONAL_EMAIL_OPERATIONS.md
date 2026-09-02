@@ -94,9 +94,10 @@ CRON_SECRET=<server secret>
 
 `RESEND_REPLY_TO` is optional. Local and test environments use
 `EMAIL_DELIVERY_MODE=mock`; the application rejects that mode in production.
-Select a hosting plan whose cron scheduler supports the configured one-minute
-worker cadence, or replace that trigger with an authenticated scheduler without
-changing the worker/outbox contract.
+The owner-selected initial GitHub Actions scheduler invokes this worker every
+five minutes. Durable rows wait safely through a delayed/dropped schedule and
+the next run catches up without changing the worker/outbox contract. A future
+Vercel Cron migration may restore a one-minute cadence after measured need.
 
 Create a Resend webhook for `https://goneviral.in/api/webhooks/resend` and
 subscribe to sent, delivered, delivery-delayed, bounced, complained, failed,

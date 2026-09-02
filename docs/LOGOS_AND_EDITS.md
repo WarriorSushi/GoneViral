@@ -23,10 +23,10 @@ prevent a listing from selecting another listing's asset or an unsanitized
 asset, and keep a ready asset's storage payload immutable. Public read models
 join the selected asset only when it is `ready` and belongs to the same listing.
 
-The daily `/api/cron/cleanup-logo-assets` job requires Vercel's `CRON_SECRET`,
-deletes expired staging/rejected objects and unselected replacement objects,
-then removes their unreferenced database rows. Object cleanup remains retryable
-if Storage is unavailable.
+The daily `/api/cron/cleanup-logo-assets` job requires the shared scheduler
+`CRON_SECRET`, deletes expired staging/rejected objects and unselected
+replacement objects, then removes their unreferenced database rows. Object
+cleanup remains retryable if Storage is unavailable.
 
 ## Edit risk policy
 

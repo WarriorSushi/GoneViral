@@ -900,11 +900,24 @@ Do not enable production payments until all are true:
 - live KYC/entity/bank credentials;
 - counsel-approved Terms/Privacy/refund/content/disclosure/grievance process;
 - CA-approved GST/invoice/place-of-supply/accounting setup;
-- Vercel Pro + Supabase Pro selected regions;
+- Vercel Pro in the selected region with exactly one paid deploying seat, no
+  paid add-ons/integrations, the lowest permitted on-demand budget, explicit
+  production-pause action, and spend notifications verified;
+- Supabase Free in the selected region with the owner's explicit no-PITR,
+  possible-pause, self-managed-backup, and recovery-downtime risk acceptance;
+- an authenticated GitHub Actions scheduler certified at the owner-approved
+  five-minute email/health, hourly reconciliation, and daily cleanup cadences,
+  including delayed/missed/duplicate-run behavior;
 - production domain/DNS/TLS/email authentication;
 - production webhook and reconciliation tested;
 - backup/restore and incident runbooks verified;
 - security/access review complete.
+
+The 2026-09-02 budget decision and required Phase 15 adaptation sequence are
+recorded in `../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. Vercel Hobby
+is preview-only. Vercel's controls reduce but cannot mathematically eliminate
+all invoice variance from periodic metering, taxes, or card conversion; this
+residual risk must be shown to the owner before purchase/launch.
 
 ## Staging certification
 

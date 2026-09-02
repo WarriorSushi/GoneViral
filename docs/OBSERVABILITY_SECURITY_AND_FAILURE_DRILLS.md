@@ -59,7 +59,7 @@ Official references:
 ## Operational metrics and alerts
 
 The authenticated `/api/cron/check-operational-health` route runs every five
-minutes in the committed Vercel schedule. It returns aggregates only and emits
+minutes under the selected scheduler. It returns aggregates only and emits
 safe structured/Sentry alerts. It never returns row IDs, owner data, rate-limit
 subject HMACs, provider payment references, or raw payloads.
 

@@ -57,15 +57,20 @@ V1 uses an immutable cumulative financial ledger.
 | First checkout               | No mandatory account; claim/manage by email magic link afterward                      |
 | Payment authority            | Verified server-side provider state only; browser redirects never change rank         |
 | Public refresh               | Cached reads plus tag invalidation; no WebSockets                                     |
-| Infrastructure               | Vercel + Supabase only                                                                |
+| Infrastructure               | Vercel Pro + Supabase Free; GitHub Actions scheduler                                  |
 | Current payment provider      | Dodo Payments hosted checkout, only after written approval of this exact advertising model |
 
 ## Selected stack
 
 - Node.js 24 LTS.
 - Current patched Next.js 16 App Router release, React 19.2-compatible release, strict TypeScript and pnpm.
-- Vercel; Mumbai function region (`bom1`) for database-connected work.
-- Supabase Mumbai/South Asia (`ap-south-1`) for PostgreSQL, Auth and Storage.
+- Vercel Pro at commercial launch; Mumbai function region (`bom1`) for
+  database-connected work.
+- Supabase Free Mumbai/South Asia (`ap-south-1`) for PostgreSQL, Auth and
+  Storage, with the owner-accepted recovery posture in
+  `../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`.
+- Public-repository GitHub Actions for initial five-minute/hourly/daily
+  scheduling after its visibility and secret-safety gates pass.
 - Drizzle ORM/Kit for typed schema, migrations and ordinary queries.
 - Explicit parameterised PostgreSQL inside Drizzle transactions for payment, ledger and row-locking paths.
 - `postgres.js` through Supavisor transaction pooling with prepared statements disabled; direct connection for migrations.
@@ -131,7 +136,12 @@ Phase 5 uses Dodo's Standard Webhooks-compatible delivery contract at the provid
 
 ### Production cost reality
 
-Free tiers are suitable for development/private testing. A commercial payment launch should use Vercel Pro and Supabase Pro for commercial terms, non-pausing operation and backups. Current public base pricing is roughly US$20 + US$25 per month before domain, payment fees, email/monitoring overages and taxes.
+Vercel Hobby is suitable only for development/private testing under its current
+non-commercial terms. Commercial launch uses Vercel Pro with the strict cost
+controls in `../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The owner has
+accepted Supabase Free initially, including no managed PITR, possible inactivity
+pause, self-managed backup dependence, and recovery downtime. Upgrade Supabase
+after measured traffic, reliability need, or revenue justifies it.
 
 ### Legal/product language
 
@@ -154,7 +164,10 @@ Codex may build through sandbox phases, but production payments remain disabled 
 - [ ] Indian counsel has reviewed Terms, Privacy, sponsored-ranking disclosure, content and refund policy;
 - [ ] CA has approved GST/invoicing/accounting treatment;
 - [ ] `goneviral.in` and authenticated email sending are configured;
-- [ ] Vercel Pro and Supabase Pro are active in the selected regions;
+- [ ] Vercel Pro and its cost controls are active in the selected region;
+- [ ] Supabase Free capacity, encrypted backup freshness, and owner-accepted
+      recovery posture are verified;
+- [ ] the GitHub Actions scheduler and public-repository safety gates pass;
 - [ ] production webhooks, reconciliation, alerts, backup and restore tests pass.
 
 ## Research source register
@@ -183,6 +196,8 @@ The completed specification set was checked for cross-file agreement. The follow
 2. **10% rounding** is upward to the next whole rupee before the ₹1,000 floor.
 3. **Tie time** is the database time the latest rank-affecting delta is applied; reversals give the lower total a new reached time.
 4. **Lifecycle and moderation** are separate axes, preventing suspension from rewriting money.
-5. **Production free-tier assumptions** were removed; Vercel/Supabase Pro are launch gates.
+5. **Production infrastructure risk** is explicit: Vercel Pro is the commercial
+   host; Supabase Free is owner-accepted with self-managed recovery; GitHub
+   Actions is the initial scheduler after its public-repository safety gate.
 6. **Provider approval** is explicit; Dodo Payments is the selected adapter implementation, not guaranteed merchant acceptance, and can be replaced behind the interface.
 7. No obsolete fresh-bid/replacement model, client-confirmed ranking, writable rank or non-cumulative interpretation remains.

@@ -52,11 +52,11 @@ private outbox notification and can see the immutable entry in payment history.
 ## Scheduled reconciliation
 
 `GET /api/cron/reconcile-payments` requires `Authorization: Bearer $CRON_SECRET`
-and runs hourly on Vercel. In Dodo `test_mode`, the source uses Dodo's paginated
-Payments, Refunds, and Disputes APIs for a bounded 48-hour window. A missing
-payment success is retrieved in full and passed to the same fulfilment service as
-a webhook. In deterministic local `mock` mode no external provider is contacted;
-projection audits still run.
+and is invoked hourly by the selected scheduler. In Dodo `test_mode`, the source
+uses Dodo's paginated Payments, Refunds, and Disputes APIs for a bounded 48-hour
+window. A missing payment success is retrieved in full and passed to the same
+fulfilment service as a webhook. In deterministic local `mock` mode no external
+provider is contacted; projection audits still run.
 
 Every execution creates a durable `private.reconciliation_runs` row. Projection
 checks compare the immutable ledger with listing totals, daily totals, original

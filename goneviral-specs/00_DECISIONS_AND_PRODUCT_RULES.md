@@ -748,6 +748,37 @@ Original ₹10,001 -> exact 10% ₹1,000.10 -> ceil ₹1,001 -> minimum ₹1,001
 
 ---
 
-## 29. Policy evolution
+## 29. Launch budget and infrastructure posture
+
+Owner decision effective 2026-09-02:
+
+- use Vercel Pro for the commercial production launch when the owner is ready
+  to purchase it, with the strongest available cost controls and no optional
+  paid seats/add-ons/integrations;
+- do not claim that Vercel can guarantee an exact fixed INR or US$20 invoice;
+  its spend pause is checked periodically and excludes fixed extras;
+- Supabase Free is accepted with no managed PITR, weaker recovery guarantees,
+  possible inactivity pause, dependence on GoneViral's encrypted logical and
+  Storage backups, and potential recovery downtime;
+- the existing certified backup/restore procedure remains required and must
+  not be represented as managed provider recovery;
+- Vercel Hobby may remain a private preview environment, but it cannot host the
+  commercial payment launch under Vercel's published non-commercial terms;
+- after a complete current-tree and Git-history secret audit, the owner permits
+  making the repository public and using free standard GitHub Actions runners
+  as the initial scheduler;
+- accept a five-minute email-outbox cadence and GitHub schedule delay/drop risk;
+  durable idempotent workers must catch up on the next run;
+- the owner's existing VPS is reserved for OTTR and is not a GoneViral runtime.
+
+The detailed evidence, schedule requirements, public-repository gate, next
+workstreams, and upgrade triggers are in
+`../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. This is
+an infrastructure/risk decision and does not change product policy version,
+money semantics, provider authority, or any live-payment gate.
+
+---
+
+## 30. Policy evolution
 
 A future change must define a new policy version, in-flight attempt treatment, existing-listing effect, migration/rollback, public disclosure/Terms impact and full test updates. Never reinterpret historical attempts or rewrite immutable ledger history under a new rule.
