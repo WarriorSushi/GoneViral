@@ -98,6 +98,8 @@ The owner-selected initial GitHub Actions scheduler invokes this worker every
 five minutes. Durable rows wait safely through a delayed/dropped schedule and
 the next run catches up without changing the worker/outbox contract. A future
 Vercel Cron migration may restore a one-minute cadence after measured need.
+Configuration, the disabled-by-default guard, manual recovery, and schedule
+certification are documented in `GITHUB_SCHEDULED_OPERATIONS.md`.
 
 Create a Resend webhook for `https://goneviral.in/api/webhooks/resend` and
 subscribe to sent, delivered, delivery-delayed, bounced, complained, failed,

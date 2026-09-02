@@ -38,6 +38,8 @@ their final deletion period follows the effective Privacy Policy and the
 owner-approved retention schedule.
 An aggregate failure never traps a visitor on GoneViral.in: redirect continues
 and the server logs only a public listing reference and error class.
+The fixed daily GitHub schedule and guarded activation procedure are documented
+in `GITHUB_SCHEDULED_OPERATIONS.md`.
 
 ## Public activity and sharing
 

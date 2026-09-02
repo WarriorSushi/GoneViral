@@ -65,6 +65,10 @@ sponsorship, current reached time, and lifecycle. Differences create durable ope
 run ID. Provider/API failures mark the run failed and are retried by the
 scheduler; they never create fabricated financial success.
 
+The fixed hourly GitHub schedule, manual recovery selection, secret boundary,
+and disabled-by-default activation procedure are documented in
+`GITHUB_SCHEDULED_OPERATIONS.md`.
+
 ## Projection repair
 
 The repair command is dry-run by default and requires a listing UUID and an

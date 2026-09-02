@@ -85,6 +85,10 @@ connections/locks, function duration, Sentry error rate, Supabase availability,
 and Vercel spend/traffic anomalies. These need real hosted traffic and cannot be
 certified locally.
 
+The selected workflow's fixed route map, safe logs, disabled guard, manual
+recovery, failure notifications, and stale-schedule check are documented in
+`GITHUB_SCHEDULED_OPERATIONS.md`.
+
 ## Health endpoints
 
 - `/api/health/live` proves only that the Next.js process can answer.

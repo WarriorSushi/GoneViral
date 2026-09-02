@@ -147,8 +147,10 @@ The production host and scheduler must follow and pass
 repository GitHub Actions at the owner-approved five-minute email/health,
 hourly reconciliation, and daily cleanup cadences. Supabase Free is accepted
 with the explicit owner risks and self-managed backup obligations in that plan.
-The public-repository gate, scheduler, and automated backup delivery are not
-certified yet.
+The local scheduler implementation and public-repository content audit are
+complete. Hosted secret/configuration, automatic and manual non-production
+schedule certification, failure/staleness notifications, and automated backup
+delivery are not certified yet. Follow `GITHUB_SCHEDULED_OPERATIONS.md`.
 
 Before enabling Dodo test checkout, verify business ID, webhook key, API key,
 and one-time INR pay-what-you-want product all belong to the same test

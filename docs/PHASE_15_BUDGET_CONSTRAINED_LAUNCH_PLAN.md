@@ -61,6 +61,12 @@ Required controls:
 - after 60 days without repository activity, explicitly verify that GitHub has
   not disabled the public-repository schedule.
 
+Implementation status on 2026-09-02: commit
+`3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` adds the inert-by-default workflow,
+fixed runner, and focused verification. The complete configuration and
+certification procedure is in `GITHUB_SCHEDULED_OPERATIONS.md`. No hosted
+secret/variable, route call, or deployment was made.
+
 Official references:
 
 - <https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule>
@@ -144,14 +150,15 @@ Official references:
 
 ## Sequential next work
 
-1. Implement and locally test the GitHub scheduler workflow without secrets or
-   hosted changes. Update the one-minute email expectation to five minutes.
-2. Run the complete public-repository safety audit. If it passes unambiguously,
-   use the owner's recorded authorization to change visibility; otherwise stop
-   and report the exact exposure or ambiguity.
-3. After visibility is public, add secrets through the GitHub/Vercel interfaces
-   without exposing values, then certify scheduled and manual execution against
-   an authorized non-production target.
+1. Completed: implement and locally test the GitHub scheduler workflow without
+   secrets, hosted changes, or route calls; use the five-minute email cadence.
+2. Completed after the owner's visibility change: audit the complete reachable
+   history, fetched public refs, current tree, workflows, tags, and unpublished
+   ignored state. The sanitized clean result is in the Phase 15 checkpoint.
+   Codex did not change repository visibility.
+3. Next: harden the public repository settings, then add configuration through
+   the GitHub/hosting interfaces without exposing values and certify scheduled
+   and manual execution against an authorized non-production target.
 4. Complete only the remaining owner-selected Phase 15 visual/accessibility and
    hosted operational checks; do not repeat settled database, restore, or E2E
    evidence without an invalidating change.

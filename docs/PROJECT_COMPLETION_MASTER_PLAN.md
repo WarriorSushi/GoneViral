@@ -25,29 +25,30 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                           | Status                                | Evidence/source                                       |
-| ----------------------------------------------- | ------------------------------------- | ----------------------------------------------------- |
-| Phases 0–14                                     | Complete                              | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging             | Critical path complete                | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation            | Complete                              | restore and 66/66 database evidence in the checkpoint |
-| Phase 15 production scheduler                   | Decision made; implementation pending | `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`          |
-| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                   | checkpoint exact resume point                         |
-| Production launch                               | Not authorized/not complete           | Phase 15 runbook                                      |
-| Phase 16                                        | Not started                           | implementation plan                                   |
+| Scope                                           | Status                                 | Evidence/source                                       |
+| ----------------------------------------------- | -------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                                     | Complete                               | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging             | Critical path complete                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation            | Complete                               | restore and 66/66 database evidence in the checkpoint |
+| Phase 15 production scheduler                   | Local implementation complete          | `GITHUB_SCHEDULED_OPERATIONS.md`                      |
+| Public-repository content audit                 | Passed; owner already made repo public | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                    | checkpoint exact resume point                         |
+| Production launch                               | Not authorized/not complete            | Phase 15 runbook                                      |
+| Phase 16                                        | Not started                            | implementation plan                                   |
 
 Current branch: `codex/phase-15-staging`.
 
-Latest settled pushed evidence commit at creation of this plan:
-`c5c32cfb0e1ddc45d67c2092d2888b22b7a6de50`.
+The budget-plan commit pushed before scheduler implementation was
+`28378def9f6a19f27129eecb244aec5c6695cf47`.
 
 ## Locked current owner decisions
 
 - Initial database/Auth/Storage plan: Supabase Free, with explicit acceptance
   of no managed PITR, possible inactivity pause, self-managed backup dependence,
   weaker recovery guarantees, and possible recovery downtime.
-- Initial scheduler: GitHub Actions after a full public-repository safety audit
-  passes. The owner has authorized the visibility change after a clean audit;
-  stop if any secret exposure is found or unclear.
+- Initial scheduler: GitHub Actions. The owner made the repository public before
+  this continuation; the subsequent complete content/history audit passed, and
+  Codex did not change visibility.
 - Scheduler cadence compromise: email outbox every five minutes; operational
   health every five minutes; reconciliation hourly; cleanup daily. Delayed or
   dropped scheduled runs catch up through durable/idempotent workers.
@@ -83,26 +84,27 @@ Do not rerun these phases wholesale merely because a new task starts.
 - Read-only proof that Vercel Hobby cannot run the committed sub-daily schedules
   and cannot host the commercial production launch under current terms.
 - Owner selection of Supabase Free risk posture and GitHub Actions scheduling.
+- Guarded GitHub Actions scheduler implementation and focused local
+  verification in `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1`.
+- Complete reachable-history/current-tree/workflow/tag safety audit. The owner
+  had already made the repository public; Codex did not change visibility.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-Implement the GitHub Actions scheduler locally, update affected operational
-cadence documentation/tests, and run focused formatting/lint/type/test checks.
-Do not make the repository public, add hosted secrets, deploy, or invoke hosted
-cron routes during that implementation task.
-
-Then perform the full public-repository safety audit. Present evidence and stop
-if any exposure is found or unclear; otherwise use the owner's recorded
-authorization to change GitHub visibility.
+Harden the public GitHub repository settings, select an authorized
+non-production HTTPS target, and configure the shared scheduler secret plus
+base URL only through GitHub/hosting secret and variable interfaces. Keep the
+enable guard absent/non-`true` until hosted invocation is explicitly
+authorized. Then certify every manual route and the automatic cadences without
+deploying production or using live credentials.
 
 ### Remaining Phase 15 gates
 
-- GitHub scheduler implementation, public-repository audit and authorized
-  visibility change, secret configuration, and non-production schedule
-  certification.
+- GitHub repository hardening, scheduler secret/configuration, and
+  non-production manual/automatic schedule certification.
 - Owner-selected deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint.

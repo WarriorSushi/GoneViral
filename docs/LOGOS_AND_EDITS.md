@@ -27,6 +27,8 @@ The daily `/api/cron/cleanup-logo-assets` job requires the shared scheduler
 `CRON_SECRET`, deletes expired staging/rejected objects and unselected
 replacement objects, then removes their unreferenced database rows. Object
 cleanup remains retryable if Storage is unavailable.
+The fixed daily GitHub schedule and guarded activation procedure are documented
+in `GITHUB_SCHEDULED_OPERATIONS.md`.
 
 ## Edit risk policy
 

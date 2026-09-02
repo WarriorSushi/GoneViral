@@ -18,7 +18,7 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters; application email defaults to its deterministic mock. Owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries, [`docs/PAYMENTS_AND_RAISES.md`](./docs/PAYMENTS_AND_RAISES.md) for sponsorship and raise semantics, [`docs/FINANCIAL_ADJUSTMENTS_AND_RECONCILIATION.md`](./docs/FINANCIAL_ADJUSTMENTS_AND_RECONCILIATION.md) for Dodo adjustment mapping, reconciliation, and ledger-authoritative repair, [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates, [`docs/TRANSACTIONAL_EMAIL_OPERATIONS.md`](./docs/TRANSACTIONAL_EMAIL_OPERATIONS.md) for Resend delivery, idempotency, privacy and support operations, [`docs/OBSERVABILITY_SECURITY_AND_FAILURE_DRILLS.md`](./docs/OBSERVABILITY_SECURITY_AND_FAILURE_DRILLS.md) for Sentry, logs, headers, metrics, rotation, health and recovery drills, [`docs/LOGOS_AND_EDITS.md`](./docs/LOGOS_AND_EDITS.md) for the private staging, sanitization, cleanup, and review policy, [`docs/MODERATION_AND_ADMIN_OPERATIONS.md`](./docs/MODERATION_AND_ADMIN_OPERATIONS.md) for reports, admin enrollment, roles, emergency flags and Dodo refund operations, and [`docs/CLICKS_ACTIVITY_AND_SHARING.md`](./docs/CLICKS_ACTIVITY_AND_SHARING.md) for outbound safety, click privacy/retention and truthful sharing.
+Copy `.env.example` to `.env.local` for local database integration values. Payments default to deterministic local Dodo and Turnstile adapters; application email defaults to its deterministic mock. Owner-flow tests use the real local Supabase Auth service; hosted magic-link delivery requires Resend custom SMTP. See [`docs/DATABASE_WORKFLOW.md`](./docs/DATABASE_WORKFLOW.md) for database boundaries, [`docs/PAYMENTS_AND_RAISES.md`](./docs/PAYMENTS_AND_RAISES.md) for sponsorship and raise semantics, [`docs/FINANCIAL_ADJUSTMENTS_AND_RECONCILIATION.md`](./docs/FINANCIAL_ADJUSTMENTS_AND_RECONCILIATION.md) for Dodo adjustment mapping, reconciliation, and ledger-authoritative repair, [`docs/AUTH_AND_SMTP.md`](./docs/AUTH_AND_SMTP.md) for owner identity and hosted-email gates, [`docs/TRANSACTIONAL_EMAIL_OPERATIONS.md`](./docs/TRANSACTIONAL_EMAIL_OPERATIONS.md) for Resend delivery, idempotency, privacy and support operations, [`docs/OBSERVABILITY_SECURITY_AND_FAILURE_DRILLS.md`](./docs/OBSERVABILITY_SECURITY_AND_FAILURE_DRILLS.md) for Sentry, logs, headers, metrics, rotation, health and recovery drills, [`docs/GITHUB_SCHEDULED_OPERATIONS.md`](./docs/GITHUB_SCHEDULED_OPERATIONS.md) for the guarded GitHub scheduler, [`docs/LOGOS_AND_EDITS.md`](./docs/LOGOS_AND_EDITS.md) for the private staging, sanitization, cleanup, and review policy, [`docs/MODERATION_AND_ADMIN_OPERATIONS.md`](./docs/MODERATION_AND_ADMIN_OPERATIONS.md) for reports, admin enrollment, roles, emergency flags and Dodo refund operations, and [`docs/CLICKS_ACTIVITY_AND_SHARING.md`](./docs/CLICKS_ACTIVITY_AND_SHARING.md) for outbound safety, click privacy/retention and truthful sharing.
 
 ## Commands
 
@@ -28,6 +28,7 @@ pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm test:scheduled-operations
 pnpm build
 pnpm test:e2e
 pnpm security:verify-build
@@ -57,12 +58,14 @@ The local app is available at `http://localhost:3000`. Seeded local board data u
 - The protected Preview and hosted Supabase project are staging-only. Payments
   and provider refunds are disabled, Dodo remains in Test Mode, and staging
   credentials/configuration must never be promoted to production.
-- The complete Phase 15 matrix is not certified. Open gates include an isolated
-  hosted-backup restore rehearsal, exhaustive browser/accessibility coverage,
-  automatic sub-daily scheduler evidence on supporting infrastructure, and
-  production-specific configuration.
+- The local scheduler and public-history safety audit are complete. Its hosted
+  secret/configuration and automatic/manual non-production evidence remain
+  disabled and uncertified. The complete Phase 15 matrix is not certified;
+  deferred hosted restore, exhaustive browser/accessibility coverage, and
+  production-specific configuration also remain open.
 - Production remains blocked on written Dodo model approval, KYC/entity/bank
   setup, live credentials, counsel-reviewed legal requirements, CA-approved
-  accounting/GST/invoice handling, Vercel Pro, Supabase Pro/PITR, production
+  accounting/GST/invoice handling, Vercel Pro, the owner-accepted Supabase Free
+  recovery posture and self-managed backup operations, production
   isolation, domain/DNS/TLS/email authentication, security/access review,
   monitoring, backup/restore, and explicit owner authorization.

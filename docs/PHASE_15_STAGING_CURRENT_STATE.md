@@ -429,6 +429,71 @@ restore procedure; it is intentionally separate from this evidence update.
 
 ## Exact resume point
 
+### GitHub scheduler and public-repository audit
+
+The owner reported making `WarriorSushi/GoneViral` public before this
+continuation. Read-only GitHub verification confirmed public visibility and
+that `codex/phase-15-staging` is the default branch. Codex did not change
+visibility.
+
+Commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` implements the initial
+GitHub Actions scheduler with three UTC schedules plus fixed manual choices.
+It calls the five existing authenticated routes through a checked-in Node
+runner, grants `contents: read`, pins Actions to full SHAs, has one concurrency
+group, requires origin-only HTTPS, bounds connection/total time, fails on
+non-2xx, and logs only fixed route/status/timing. Both workflow and runner
+require repository variable `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` to equal
+exact lowercase `true`; it was absent at verification, so the scheduler is
+inert. No hosted route, secret, variable, deployment, or provider was changed.
+
+Local verification passed `pnpm test:scheduled-operations` (one file, seven
+tests), `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, and `pnpm test` (41
+files, 210 tests). These are implementation/static results, not hosted schedule
+evidence.
+
+The complete public-content audit passed without a credential exposure or
+ambiguous sensitive artifact:
+
+- all fetched public branches, local publishable refs, tags, current tree, and
+  the broader `git --all` reachable set were inspected; that set contained 40
+  commits, 1,454 object/path records, no tags, and no blob over 1 MiB;
+- official Gitleaks 8.30.1 was downloaded outside the repository and verified
+  against its published checksum, then scanned all reachable history with full
+  redaction. Its six generic-key candidates were individually confirmed as
+  deterministic literals in test files, with no recognized provider token,
+  private key, JWT, magic link, or real database credential;
+- custom path/content checks found no tracked backup/archive, `.env`, private
+  key, customer/provider payload, credentialed remote database URL, or private
+  evidence. Database URL candidates were loopback/placeholders or a reserved
+  `.example` fixture. Numeric/card-shaped candidates were schema identifiers,
+  timestamps, binary bytes, or deterministic test fixtures. The non-reserved
+  Gmail address was the intentionally public legal contact;
+- all three distinct historical workflow versions used complete Action SHAs,
+  none used `pull_request_target`, and the only pull-request workflow secret
+  reference was GitHub's generated read-only `GITHUB_TOKEN`. The scheduler's
+  `CRON_SECRET` is reachable only from schedule/manual events after the guard;
+- the worktree had zero non-ignored untracked files. `.vercel`, build/test
+  output, dependencies, and Supabase CLI state were confirmed ignored and
+  untracked without inspecting or publishing their contents. The full Git
+  object integrity check passed.
+
+Read-only repository settings showed zero Actions secrets and zero repository
+variables, default workflow permission `read`, no workflow permission to
+approve pull requests, and first-time-contributor approval for fork workflows.
+Repository secret scanning/push protection, SHA-pin enforcement, and default-
+branch protection are currently disabled; Actions are repository-wide allowed.
+Those are hardening tasks before any scheduler secret is added, not evidence of
+a tracked credential. The checked-in workflows themselves remain SHA-pinned,
+read-only, and do not expose repository secrets to pull-request events.
+
+The next scheduler gate is documented in `GITHUB_SCHEDULED_OPERATIONS.md`:
+harden repository settings, authorize an isolated non-production HTTPS target,
+configure its matching `CRON_SECRET` in GitHub Actions Secrets and the target's
+encrypted server environment, set the approved origin-only base URL repository
+variable, and keep the enable guard non-`true` until route invocation is
+authorized. Hosted manual/automatic schedule, failure notification, missed-run,
+and 60-day-disablement evidence remain unverified.
+
 The risk-based critical staging path is complete. Preserve the private staging
 shutdown: Preview and database payments off, provider refunds off, Dodo Test
 Mode, protected alias only, and the sole active admin at `reviewer`. Do not run
@@ -519,12 +584,13 @@ These controls cannot guarantee an exact fixed INR or US$20 invoice because
 Vercel checks metered spend every few minutes and excludes fixed extras; taxes
 and card conversion may also vary.
 
-The exact evidence, limits, unchanged schedules, sequential remaining Phase 15
-work, and measured paid-upgrade triggers are recorded in
-`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The next authorized implementation
-scope is local implementation and testing of the GitHub scheduler. Deployment,
-`goneviral.in`, live credentials/payments/refunds, prelaunch cleanup, and Phase
-16 still require their existing separate authorizations.
+The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
+measured paid-upgrade triggers are recorded in
+`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The local scheduler and repository
+audit are complete; its hosted secret/configuration and non-production schedule
+certification are next. Deployment, `goneviral.in`, live credentials/payments/
+refunds, prelaunch cleanup, and Phase 16 still require their existing separate
+authorizations.
 
 ## Production boundary
 
