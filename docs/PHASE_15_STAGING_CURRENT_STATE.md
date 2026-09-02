@@ -453,9 +453,9 @@ requires it after the exact enable guard, sends it only in the
 `x-vercel-protection-bypass` header, keeps both credentials out of the command,
 URL, response handling, and logs, and fails closed before a request when the
 bypass value is absent. No secret value was created, read, printed, or stored.
-An immediate read-only GitHub check still showed zero Actions secrets, zero
-repository variables, and zero scheduled-workflow runs, so the hosted scheduler
-remained disabled throughout implementation.
+Read-only GitHub checks before and after the push showed zero Actions secrets,
+zero repository variables, and zero scheduled-workflow runs, so the hosted
+scheduler remained disabled throughout implementation and publication.
 
 Local verification for that patch passed `pnpm test:scheduled-operations` (one
 file, 9 tests), `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, and
@@ -488,14 +488,15 @@ ambiguous sensitive artifact:
   untracked without inspecting or publishing their contents. The full Git
   object integrity check passed.
 
-Read-only repository settings showed zero Actions secrets and zero repository
-variables, default workflow permission `read`, no workflow permission to
-approve pull requests, and first-time-contributor approval for fork workflows.
-Repository secret scanning/push protection, SHA-pin enforcement, and default-
-branch protection are currently disabled; Actions are repository-wide allowed.
-Those are hardening tasks before any scheduler secret is added, not evidence of
-a tracked credential. The checked-in workflows themselves remain SHA-pinned,
-read-only, and do not expose repository secrets to pull-request events.
+The original audit showed secret scanning and push protection disabled. The
+post-patch read-only check now shows both enabled. Actions secrets and repository
+variables remain empty, default workflow permission remains `read`, and
+workflows still cannot approve pull requests. Repository-wide SHA-pin
+enforcement and default-branch rules/protection remain disabled, while Actions
+are repository-wide allowed. Those remaining settings are hardening tasks
+before any scheduler secret is added, not evidence of a tracked credential. The
+checked-in workflows themselves remain SHA-pinned, read-only, and do not expose
+repository secrets to pull-request events.
 
 The next scheduler gate is documented in `GITHUB_SCHEDULED_OPERATIONS.md`:
 harden repository settings; retrieve the existing Preview `CRON_SECRET` from
@@ -513,6 +514,14 @@ independently queried remote refs matched the latter commit. GitHub registered
 the workflow as active, but repository secret and variable counts remained
 zero and the scheduler run list was empty immediately after the push. The
 guard therefore remained disabled and no hosted route was invoked.
+
+Protected-Preview implementation commit
+`a6bc5289a7a0b9dd9222ae6ba9bc332d81b30109` and its documentation/evidence
+commit `aaacf4b8715a0d6255f394e2a8788dfbf72b690a` were subsequently pushed to
+the same origin branch. Before this push-evidence-only update, local, tracking,
+and independently queried remote refs matched the documentation commit. The
+remote workflow contained the expected GitHub-secret binding; no hosted secret,
+variable, run, deployment, provider action, or route invocation occurred.
 
 The risk-based critical staging path is complete. Preserve the private staging
 shutdown: Preview and database payments off, provider refunds off, Dodo Test

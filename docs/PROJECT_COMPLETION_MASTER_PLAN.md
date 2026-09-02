@@ -88,7 +88,8 @@ Do not rerun these phases wholesale merely because a new task starts.
   verification in `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1`.
 - Protected Vercel Preview authentication support, two-secret safe request
   construction, and focused verification in
-  `a6bc5289a7a0b9dd9222ae6ba9bc332d81b30109`.
+  `a6bc5289a7a0b9dd9222ae6ba9bc332d81b30109`, pushed with its primary evidence
+  in `aaacf4b8715a0d6255f394e2a8788dfbf72b690a`.
 - Complete reachable-history/current-tree/workflow/tag safety audit. The owner
   had already made the repository public; Codex did not change visibility.
 - Scheduler implementation and primary evidence pushed to the existing origin
@@ -100,12 +101,14 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Harden the public GitHub repository settings, generate the protected Preview's
-Vercel automation-bypass value, and configure it plus the existing application
-cron secret and stable Preview origin only through GitHub/Vercel secret and
-variable interfaces. Keep the enable guard absent/non-`true` until hosted
-invocation is explicitly authorized. Then certify every manual route and the
-automatic cadences without deploying production or using live credentials.
+Complete public GitHub hardening by adding default-branch change protection and
+repository-wide Action SHA-pin enforcement; secret scanning and push protection
+are now enabled. Then generate the protected Preview's Vercel automation-bypass
+value and configure it plus the existing application cron secret and stable
+Preview origin only through GitHub/Vercel secret and variable interfaces. Keep
+the enable guard absent/non-`true` until hosted invocation is explicitly
+authorized. Then certify every manual route and the automatic cadences without
+deploying production or using live credentials.
 
 ### Remaining Phase 15 gates
 
