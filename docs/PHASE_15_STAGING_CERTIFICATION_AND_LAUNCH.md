@@ -99,6 +99,13 @@ when needed and report concise excerpts and exact failures.
    backend, then verify migrations, schema, row counts/fingerprints, categories,
    financial and identity state, projections, triggers, grants/RLS, Storage
    metadata/object checksums, service health, and recovery duration.
+   Before `pnpm test:database`, snapshot the disposable target's operational
+   flag rows. The database suite may temporarily exercise that isolated
+   target's `payments_enabled` and `provider_refunds_enabled` flags only while
+   `DODO_PAYMENTS_ENVIRONMENT=mock`, no live provider credential is present,
+   and every provider/refund executor is mocked. Restore the exact snapshotted
+   rows in a `finally` step, then verify both flags are disabled again. This
+   test prerequisite never authorizes a hosted or live payment state change.
 
 ## Hosted configuration matrix
 

@@ -1,6 +1,6 @@
 # Phase 15 private staging current state
 
-Last updated: 2026-08-31 (Asia/Kolkata)
+Last updated: 2026-09-02 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for the Phase 15
 private staging work on `codex/phase-15-staging`. Read the authority
@@ -269,7 +269,7 @@ The failed-rehearsal extraction and disposable target remained only until the
 corrected rehearsal evidence was recorded. They are historical failure evidence,
 not the current restore state.
 
-## Corrected isolated backup restore rehearsal: core recovery passed; database suite safety-deferred
+## Corrected isolated backup restore rehearsal: core recovery passed; database suite orchestration incomplete
 
 The remediation in `b4a404743911f72b9a630a42d708214c97272796` added the
 intentionally scoped Auth/Storage migration-history export and the one required
@@ -331,10 +331,13 @@ credential, domain, or payment/refund state was changed.
   A fully routed isolated attempt passed 56/66 tests; its remaining ten mock
   checkout/webhook tests were correctly rejected because the restored staging
   `payments_enabled` flag is `false`. No provider call occurred. The ordinary
-  local ports were restored immediately afterward. Do not flip that flag merely
-  to make the suite green without fresh owner authorization for this disposable,
-  mock-only target; afterwards restore the exact disabled snapshot and rerun the
-  complete 66-test suite.
+  local ports were restored immediately afterward. This exposed a rehearsal
+  orchestration gap, not a need to enable hosted or live payments: on a new
+  disposable target, snapshot the exact operational-flag rows, temporarily set
+  only isolated `payments_enabled=true` while the suite is forced to mock
+  providers/executors with no live credential, permit the suite's own isolated
+  refund-flag exercise, and restore the exact rows in a `finally` step. Then
+  verify both flags are disabled and rerun the complete 66-test suite.
 - The prior split-topology attempt created 12 synthetic Auth users only in the
   ordinary local development database: seven `phase8-*` and five `phase10-*`,
   all created between `2026-08-31T06:48:12Z` and `2026-08-31T06:48:18Z`. They
@@ -358,11 +361,10 @@ Phase 16 or touch production credentials, domains, or live payments.
 
 The formerly Docker-blocked local database, performance, automated E2E, and
 core isolated backup-restore gates are resolved. The complete Phase 15 matrix
-is still not certified: the exact restored snapshot still needs an explicitly
-authorized mock-only isolated `payments_enabled` test prerequisite before the
-complete 66-test database suite can certify. Preserve the restored source state
-with both payments and provider refunds disabled outside that tightly scoped
-test.
+is still not certified: a new restore of the same verified archive needs the
+documented mock-only operational-flag wrapper and a complete 66-test database
+suite pass. Preserve the restored source state with both payments and provider
+refunds disabled before and after that tightly scoped test.
 
 Deferred unless a critical failure makes them necessary: exhaustive manual
 visual/browser/device coverage beyond the passed automated seven-project
