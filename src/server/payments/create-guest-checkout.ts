@@ -165,8 +165,6 @@ export async function createGuestCheckout(input: {
       };
     }
     const expirableStates = new Set([
-      "intent_created",
-      "provider_order_pending",
       "checkout_ready",
       "customer_returned",
       "provider_pending",
@@ -180,8 +178,7 @@ export async function createGuestCheckout(input: {
         SET state = 'expired', expired_at = now(), updated_at = now()
         WHERE public_id = ${existing[0].public_id}
           AND state IN (
-            'intent_created', 'provider_order_pending', 'checkout_ready',
-            'customer_returned', 'provider_pending'
+            'checkout_ready', 'customer_returned', 'provider_pending'
           )
       `;
       return { kind: "pending", publicId: existing[0].public_id };

@@ -1,13 +1,17 @@
-# Cloudflare scheduled operations proposal
+# Cloudflare scheduled operations
 
-Last updated: 2026-09-02 (Asia/Kolkata)
+Last updated: 2026-09-03 (Asia/Kolkata)
 
 ## Boundary and status
 
-This is the owner-selected replacement design for GitHub scheduled events during
-private staging. It is a proposal only. No Cloudflare Worker, account binding,
-secret, variable, Cron Trigger, deployment, or hosted request has been created
-or executed.
+This is the owner-selected replacement for GitHub scheduled events during
+private staging. The Worker, inert Wrangler configuration, and focused tests
+are implemented locally. No Cloudflare account binding, secret, variable, Cron
+Trigger, deployment, or hosted GoneViral request has been created or executed.
+
+The owner confirmed Workers Free and at least three available account-wide Cron
+Trigger slots. The checked-in configuration uses exactly those three slots and
+keeps `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` at exact lowercase `false`.
 
 The Worker will only invoke GoneViral's existing authenticated cron routes. It
 must not contain payment, email, health, reconciliation, logo, retention, or
@@ -19,7 +23,7 @@ disabled, its enable variable is absent, and its checked-in workflow has no
 `schedule` trigger. The historical manual protected-Preview route
 certifications remain valid.
 
-## Proposed architecture
+## Architecture
 
 Use one ES-module Cloudflare Worker with only a `scheduled()` handler and no
 public `fetch()` handler, route, custom domain, storage, queue, Durable Object,
@@ -67,7 +71,7 @@ subrequests are used by one invocation.
 
 ## Required Cloudflare configuration
 
-Proposed Worker name: `goneviral-scheduled-operations-staging`.
+Worker name: `goneviral-scheduled-operations-staging`.
 
 | Binding                                   | Kind                       | Treatment                                                                          |
 | ----------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------- |
@@ -128,14 +132,17 @@ Current official references:
 - <https://developers.cloudflare.com/workers/platform/pricing/>
 - <https://developers.cloudflare.com/workers/observability/logs/workers-logs/>
 
-## Proposed implementation and activation sequence
+## Implementation and activation sequence
 
-1. Owner reviews this design and confirms a Cloudflare account on Workers Free
-   with at least three unused Cron Trigger slots.
-2. Implement the dependency-free Worker, Wrangler configuration, and focused
-   unit/static tests locally. Keep the enable binding `false`; do not deploy.
-3. Owner authenticates Wrangler interactively in the owner's terminal. Codex
-   must not launch or receive the interactive credential flow.
+1. **Complete:** the owner confirmed a Cloudflare account on Workers Free with
+   at least three unused Cron Trigger slots.
+2. **Complete locally:** the dependency-free Worker, Wrangler `4.128.0`,
+   Wrangler configuration, and focused unit/static tests are checked in with
+   the enable binding `false`. `wrangler deploy --dry-run` validates the bundle
+   and exposes only the two non-secret bindings.
+3. **Next manual boundary:** owner authenticates Wrangler interactively in the
+   owner's terminal. Codex must not launch or receive the interactive credential
+   flow.
 4. Deploy the inert reviewed Worker with the enable binding still `false`.
 5. Owner adds the two secret values through the Cloudflare dashboard. Never put
    either value in chat, command arguments, repository files, `.env` files, or
@@ -152,6 +159,39 @@ Current official references:
     disable this Worker or set its enable binding away from `true` first so two
     schedulers can never target the same environment concurrently.
 
-No Cloudflare configuration or deployment is authorized by this proposal
-alone. Production hosting and plan selection remain a separate owner decision
-immediately before commercial launch.
+### Exact next owner actions
+
+From `C:\coding\goneviral` in the owner's own PowerShell, after the protected
+pull request has merged:
+
+```powershell
+pnpm exec wrangler login
+pnpm exec wrangler whoami
+```
+
+Do not paste the browser authorization result or any credential into chat. If
+`whoami` lists more than one account, stop after reporting only that fact; add
+the intended non-secret account ID through a reviewed configuration change
+before deployment.
+
+After the intended account is unambiguous, the owner may run this exact inert
+deployment command:
+
+```powershell
+$env:WRANGLER_SEND_METRICS = "false"
+pnpm exec wrangler deploy --config workers/scheduled-operations/wrangler.jsonc
+```
+
+The first deployment registers the three triggers but cannot invoke GoneViral
+because the checked-in guard is `false`. In the Cloudflare dashboard, open the
+new Worker, verify its name, three cron strings, two non-secret variables, and
+full log sampling. Then add `CRON_SECRET` and
+`VERCEL_AUTOMATION_BYPASS_SECRET` as encrypted Worker secrets using the exact
+values already held in the owner's approved secret stores. Never reveal or
+copy either value into chat, shell arguments, repository files, plaintext
+`.env` files, or logs.
+
+Stop there. Activation is a separate reviewed change and deployment. No
+Cloudflare configuration or deployment has been performed by the local
+implementation. Production hosting and plan selection remain a separate owner
+decision immediately before commercial launch.

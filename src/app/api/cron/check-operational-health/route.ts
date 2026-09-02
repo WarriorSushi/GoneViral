@@ -3,6 +3,7 @@ import {
   collectOperationalMetrics,
   evaluateOperationalHealth,
 } from "@/server/operations/metrics";
+import { expireAbandonedPaymentAttempts } from "@/server/payments/expire-abandoned-payment-attempts";
 import { captureOperationalAlert } from "@/server/telemetry/alerts";
 import { logger } from "@/server/telemetry/logger";
 import {
@@ -22,6 +23,7 @@ export async function GET(request: Request) {
     );
   }
   try {
+    const expiredAbandonedAttempts = await expireAbandonedPaymentAttempts();
     const metrics = await collectOperationalMetrics();
     const alerts = evaluateOperationalHealth(metrics);
     await Promise.all(
@@ -29,6 +31,7 @@ export async function GET(request: Request) {
     );
     logger.info("operational_health_checked", {
       alertCount: alerts.length,
+      expiredAbandonedAttempts,
       requestId,
     });
     return Response.json(

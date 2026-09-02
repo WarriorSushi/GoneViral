@@ -63,6 +63,13 @@ minutes under the selected scheduler. It returns aggregates only and emits
 safe structured/Sentry alerts. It never returns row IDs, owner data, rate-limit
 subject HMACs, provider payment references, or raw payloads.
 
+Before collecting those metrics, the authenticated route atomically changes
+only elapsed `checkout_ready`, `customer_returned`, or `provider_pending`
+attempts to local `expired`. This is idempotent maintenance, not provider-
+failure evidence: it stops checkout reuse and stale polling, and an authentic
+late provider success may still supersede the local expiry. Stale pre-checkout
+states remain alerts for investigation rather than being silently expired.
+
 Current signals are:
 
 | Signal                                  | Alert rule    | Severity |
@@ -85,9 +92,10 @@ connections/locks, function duration, Sentry error rate, Supabase availability,
 and Vercel spend/traffic anomalies. These need real hosted traffic and cannot be
 certified locally.
 
-The selected workflow's fixed route map, safe logs, disabled guard, manual
-recovery, failure notifications, and stale-schedule check are documented in
-`GITHUB_SCHEDULED_OPERATIONS.md`.
+The selected Cloudflare Worker's fixed route map, safe logs, disabled guard,
+activation boundary, and missing-run limitation are documented in
+`CLOUDFLARE_SCHEDULED_OPERATIONS.md`. The retired GitHub scheduler remains
+historical evidence in `GITHUB_SCHEDULED_OPERATIONS.md`.
 
 ## Health endpoints
 

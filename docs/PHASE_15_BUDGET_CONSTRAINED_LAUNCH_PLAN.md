@@ -1,6 +1,6 @@
 # Phase 15 budget-constrained launch plan
 
-Last updated: 2026-09-02 (Asia/Kolkata)
+Last updated: 2026-09-03 (Asia/Kolkata)
 
 ## Owner decisions
 
@@ -219,14 +219,18 @@ Official references:
    no-bypass default-branch PR/strict-CI ruleset are configured. The two
    expected GitHub secret names and the base-URL variable name are present. No
    secret value was disclosed or read.
-4. Current: review and settle `CLOUDFLARE_SCHEDULED_OPERATIONS.md`, then
-   implement and locally verify the inert Worker without deploying it. Hosted
-   setup and activation require the separate manual sequence in that document.
-5. After the scheduler design is settled, implement and verify the approved
-   lifecycle transition for expired abandoned checkouts. The warning was
-   diagnosed read-only as one expired Dodo Test Mode checkout with no provider
-   event, payment, ledger fulfillment, or open reconciliation item.
-6. Complete only the remaining owner-selected Phase 15 visual/accessibility and
+4. Complete locally: the owner confirmed Workers Free and three available
+   trigger slots. The inert Worker, exact three-trigger configuration, pinned
+   Wrangler CLI, and focused tests are implemented with the guard `false` and
+   no deployment or hosted request. Interactive setup and activation remain the
+   separate manual sequence in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
+5. Complete locally: the operational-health path now atomically and
+   idempotently expires elapsed checkout-bearing pending attempts before
+   measuring health. It never treats pre-checkout stalls as expiry, never
+   asserts provider failure, and preserves authentic late-success handling.
+   The known hosted Test Mode row was not repaired ad hoc and remains unchanged
+   until this application change is deployed and the authenticated route runs.
+6. Current after the scheduler manual boundary: complete only the remaining owner-selected Phase 15 visual/accessibility and
    hosted operational checks; do not repeat settled database, restore, or E2E
    evidence without an invalidating change.
 7. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,

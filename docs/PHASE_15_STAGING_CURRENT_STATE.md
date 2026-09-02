@@ -1,6 +1,6 @@
 # Phase 15 private staging current state
 
-Last updated: 2026-09-02 (Asia/Kolkata)
+Last updated: 2026-09-03 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for the Phase 15
 private staging work on `codex/phase-15-staging`. Read the authority
@@ -609,6 +609,46 @@ Cloudflare secrets for `CRON_SECRET` and the protected-Preview automation
 bypass, a disabled-by-default guard, bounded requests, redirect rejection, and
 safe logs. No Cloudflare account setting, Worker, trigger, variable, secret,
 deployment, or request has been created or executed.
+
+The owner subsequently confirmed Workers Free and at least three unused
+account-wide Cron Trigger slots. Local implementation adds the scheduled-only
+Worker, exact three-trigger configuration, full-sampling observability,
+origin-only HTTPS validation, two secret-only headers, 45-second abort,
+redirect/non-2xx/network failure handling, concurrent complete route attempts,
+and credential/body-safe logs. Wrangler is pinned and its required `workerd`
+build is narrowly allowlisted by the repository supply-chain policy. The
+checked-in enable binding remains exact lowercase `false`; the bundle passed a
+local Wrangler dry run and no Cloudflare login, account binding, secret,
+trigger, deployment, or hosted GoneViral request occurred.
+
+Implementation commits are `e08f78c40b6fd47a11d544b08a2cc3d75175e35c`
+for the inert Worker and `4f684dc2716b4308f22f9be8fa2de4605d23a106`
+for abandoned-checkout expiry. Local verification passed the Worker-focused
+suite (8/8), lifecycle/health unit selection (5/5), checkout/webhook integration
+selection (14/14), full unit suite (43 files, 223 tests), full local database
+suite (12 files, 67 tests), retired-workflow safety suite (10/10), formatting,
+lint, typecheck, production build, client-build leak scan (25 assets), and
+dependency audit (no known vulnerabilities). Wrangler `4.128.0` dry-run
+bundled 4.90 KiB and listed only the base URL and guard as non-secret bindings.
+These are local implementation results, not Cloudflare deployment or cadence
+evidence.
+
+Protected pull request `#10` then passed required CI run `33669954613` on exact
+head `f3008c432972a27c23a7ca0777e5c8653da97504`: dependency installation,
+formatting, lint, typecheck, 43-file unit suite, production build, 25-asset
+client leak scan, moderate dependency audit, and Gitleaks all passed. The
+separate Vercel deployment check failed as expected and is not required; no
+deployment was requested or represented as successful.
+
+The abandoned-checkout lifecycle gap is also fixed locally. Before the
+authenticated operational-health route collects metrics, an atomic count-only
+operation changes only elapsed `checkout_ready`, `customer_returned`, and
+`provider_pending` attempts to local `expired`. It is idempotent, leaves
+pre-checkout stalls visible for investigation, does not claim provider failure,
+and preserves the tested rule that authentic late provider success supersedes
+local expiry. The previously diagnosed hosted Test Mode row was not changed;
+it will remain as-is until this application commit is deployed and the route
+runs under separate authorization.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
