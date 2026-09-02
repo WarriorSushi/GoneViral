@@ -493,9 +493,9 @@ post-patch read-only check now shows both enabled. Actions secrets and repositor
 variables were subsequently configured by the owner. Read-only listing verified
 only expected names: Actions secrets `CRON_SECRET` and
 `VERCEL_AUTOMATION_BYPASS_SECRET`, plus repository variable
-`GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL`. Values were neither disclosed nor
-read. `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` remains absent, and the
-scheduled-workflow run list remains empty.
+`GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL`. No secret value was disclosed or
+read. The enable variable was initially absent; its later authorized activation
+and route evidence are recorded below.
 
 Repository hardening is now complete. Default workflow permission remains
 `read`, and workflows cannot approve pull requests. Actions are restricted to
@@ -525,11 +525,24 @@ Vercel's automatic pull-request integration emitted a separate failed
 command or hosted cron request was run by Codex. The failed external check is
 not represented as a successful Preview deployment.
 
-The next scheduler gate is documented in `GITHUB_SCHEDULED_OPERATIONS.md`:
-keep the enable guard absent/non-`true` until route invocation is explicitly
-authorized. Then certify each manual protected-Preview operation before
-observing automatic cadence, failure notification, missed-run, and 60-day-
-disablement behavior. All hosted execution evidence remains unverified.
+The scheduler activation gate and exact sanitized evidence are documented in
+`GITHUB_SCHEDULED_OPERATIONS.md`. Following explicit owner authorization on
+2026-09-02, Codex created the exact lowercase enable variable. Each manual
+protected-Preview operation succeeded independently: email outbox drain run
+`33651848820`, operational health run `33651935090`, payment reconciliation run
+`33652002634`, logo cleanup run `33652063724`, and retention cleanup run
+`33652118316` all returned HTTP 200. Inspected output contained only fixed route,
+status, and duration. No response body or credential was printed or stored.
+
+A separate bounded credential-free Preview request returned HTTP 302 without
+following the redirect or printing a body, confirming Vercel Deployment
+Protection denial. GitHub created no automatic `schedule` event from 16:00
+through 16:23:43 UTC despite the workflow file being present on the default
+branch and API state `active`. Codex refreshed the registration through the
+supported disable/enable API at 16:11 UTC; no event appeared during the remaining
+window. This is unresolved automatic-cadence evidence, not a route failure.
+Five-minute, hourly, daily, duplicate/catch-up, failure-notification,
+stale/missing-run, and 60-day-disablement certification remain open.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
@@ -640,7 +653,8 @@ and card conversion may also vary.
 The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
 measured paid-upgrade triggers are recorded in
 `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The local scheduler and repository
-audit are complete; its hosted secret/configuration and non-production schedule
+audit are complete; hosted configuration names and manual protected-Preview
+route certification are also complete. Automatic cadence and failure/staleness
 certification are next. Deployment, `goneviral.in`, live credentials/payments/
 refunds, prelaunch cleanup, and Phase 16 still require their existing separate
 authorizations.

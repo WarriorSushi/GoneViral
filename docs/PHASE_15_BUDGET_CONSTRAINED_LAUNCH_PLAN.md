@@ -75,6 +75,17 @@ automation-bypass value from GitHub Actions secret
 repository-variable guard is exact lowercase `true`; no hosted configuration
 or request was made by this patch.
 
+Activation evidence on 2026-09-02: after explicit owner authorization, the
+guard was set to exact lowercase `true` for the protected non-production
+Preview. All five independent manual operations returned HTTP 200 with
+route/status/timing-only logs, and a credential-free request was denied by
+Vercel Deployment Protection. GitHub created no automatic `schedule` event
+during the bounded 16:00-16:23:43 UTC observation window, even after the active
+workflow registration was refreshed. Manual route certification therefore
+passed, while automatic cadence, failure/staleness notification, and 60-day
+disablement evidence remain open. Sanitized run IDs and results are in
+`GITHUB_SCHEDULED_OPERATIONS.md`.
+
 Official references:
 
 - <https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule>
@@ -167,12 +178,13 @@ Official references:
 3. Completed through inert configuration: secret scanning/push protection,
    read-only workflow permissions, restricted SHA-pinned Actions, and an active
    no-bypass default-branch PR/strict-CI ruleset are configured. The two
-   expected GitHub secret names and the base-URL variable name are present;
-   values were not disclosed or read. The enable variable remains absent and
-   no hosted run occurred.
-4. Next: only after fresh explicit authorization, add the exact lowercase
-   enable variable, certify each manual Preview operation, and then observe the
-   automatic cadences and failure/staleness behavior.
+   expected GitHub secret names and the base-URL variable name are present. No
+   secret value was disclosed or read.
+4. Partially completed after fresh explicit authorization: the exact lowercase
+   enable variable is present and every manual protected-Preview operation
+   passed. Automatic five-minute/hourly/daily cadence and failure/staleness
+   behavior remain unverified because GitHub emitted no scheduled event during
+   the bounded observation window.
 5. Complete only the remaining owner-selected Phase 15 visual/accessibility and
    hosted operational checks; do not repeat settled database, restore, or E2E
    evidence without an invalidating change.
