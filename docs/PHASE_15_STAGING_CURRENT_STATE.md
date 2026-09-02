@@ -633,6 +633,13 @@ bundled 4.90 KiB and listed only the base URL and guard as non-secret bindings.
 These are local implementation results, not Cloudflare deployment or cadence
 evidence.
 
+Protected pull request `#10` then passed required CI run `33669954613` on exact
+head `f3008c432972a27c23a7ca0777e5c8653da97504`: dependency installation,
+formatting, lint, typecheck, 43-file unit suite, production build, 25-asset
+client leak scan, moderate dependency audit, and Gitleaks all passed. The
+separate Vercel deployment check failed as expected and is not required; no
+deployment was requested or represented as successful.
+
 The abandoned-checkout lifecycle gap is also fixed locally. Before the
 authenticated operational-health route collects metrics, an atomic count-only
 operation changes only elapsed `checkout_ready`, `customer_returned`, and
