@@ -11,7 +11,7 @@
   },
   "vars": {
     "GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL": "https://goneviral-phase15-preview-warriorsushis-projects.vercel.app",
-    "GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED": "false",
+    "GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED": "true",
   },
   "triggers": {
     "crons": ["*/5 * * * *", "17 * * * *", "43 2 * * *"],

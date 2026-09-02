@@ -22,7 +22,7 @@ const enabledEnvironment = {
 afterEach(() => vi.restoreAllMocks());
 
 describe("Cloudflare scheduled-operations Worker", () => {
-  it("checks in the exact inert three-trigger configuration", async () => {
+  it("checks in the exact activated three-trigger configuration", async () => {
     const configText = await readFile(configPath, "utf8");
     const config = JSON.parse(configText.replaceAll(/,\s*([}\]])/g, "$1"));
     expect(config.name).toBe("goneviral-scheduled-operations-staging");
@@ -37,7 +37,7 @@ describe("Cloudflare scheduled-operations Worker", () => {
     expect(config.vars).toEqual({
       GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL:
         "https://goneviral-phase15-preview-warriorsushis-projects.vercel.app",
-      GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: "false",
+      GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: "true",
     });
     expect(JSON.stringify(config)).not.toMatch(
       /CRON_SECRET|VERCEL_AUTOMATION_BYPASS_SECRET/,
