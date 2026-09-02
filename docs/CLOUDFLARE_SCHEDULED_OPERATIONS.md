@@ -5,13 +5,12 @@ Last updated: 2026-09-03 (Asia/Kolkata)
 ## Boundary and status
 
 This is the owner-selected replacement for GitHub scheduled events during
-private staging. The Worker, inert Wrangler configuration, and focused tests
-are implemented locally. No Cloudflare account binding, secret, variable, Cron
-Trigger, deployment, or hosted GoneViral request has been created or executed.
-
-The owner confirmed Workers Free and at least three available account-wide Cron
-Trigger slots. The checked-in configuration uses exactly those three slots and
-keeps `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` at exact lowercase `false`.
+private staging. The Worker, Wrangler configuration, and focused tests are
+implemented. On 2026-09-03 the owner reported that the inert deployment
+succeeded, exactly three Cron Triggers exist, the enable binding remains exact
+lowercase `false`, and both required Worker secret names are present. No secret
+value was disclosed or read. This proves the inert Cloudflare setup only; it is
+not automatic cadence or hosted-route execution evidence.
 
 The Worker will only invoke GoneViral's existing authenticated cron routes. It
 must not contain payment, email, health, reconciliation, logo, retention, or
@@ -143,17 +142,19 @@ Current official references:
    The compatibility date is pinned to `2026-09-02`, which is non-future in
    Cloudflare UTC. An earlier inert deployment attempt was rejected before
    creation because the original `2026-09-03` pin was still a future UTC date.
-3. **Next manual boundary:** owner authenticates Wrangler interactively in the
-   owner's terminal. Codex must not launch or receive the interactive credential
-   flow.
-4. Deploy the inert reviewed Worker with the enable binding still `false`.
-5. Owner adds the two secret values through the Cloudflare dashboard. Never put
-   either value in chat, command arguments, repository files, `.env` files, or
-   logs.
-6. Configure the exact non-secret Preview origin and verify only binding names,
-   Worker identity, trigger strings, observability, and disabled guard.
-7. Make a separate reviewed activation change setting the enable binding to
-   exact `true`, deploy it, and allow up to 15 minutes for trigger propagation.
+3. **Complete:** the owner completed the interactive boundary and successfully
+   ran the deployment from the owner's terminal; no credential or browser
+   authorization result was provided to Codex.
+4. **Complete:** the owner reported that the reviewed inert Worker deployed
+   successfully with the enable binding still `false`.
+5. **Complete:** the owner reported that both required Worker secret names are
+   present. No secret value was disclosed or read.
+6. **Complete for the inert gate:** the owner reported exactly three Cron
+   Triggers and the disabled guard. No automatic route execution or cadence is
+   claimed while the guard is `false`.
+7. **Next, only after explicit owner authorization:** make a separate reviewed
+   activation change setting the enable binding to exact `true`, deploy it, and
+   allow up to 15 minutes for trigger propagation.
 8. Inspect one bounded set of Past Events/logs after the relevant slots. Verify
    fixed route/status/timing-only logs and confirm no credential or body appears.
 9. Observe five-minute, hourly, and daily cadence plus failure/duplicate/catch-up
@@ -162,39 +163,17 @@ Current official references:
     disable this Worker or set its enable binding away from `true` first so two
     schedulers can never target the same environment concurrently.
 
-### Exact next owner actions
+### Current gate and exact next action
 
-From `C:\coding\goneviral` in the owner's own PowerShell, after the protected
-pull request has merged:
+The inert-deployment boundary is complete. No further secret value or
+credential needs to be provided to Codex. Keep
+`GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` at exact lowercase `false` until the
+owner explicitly authorizes scheduler activation.
 
-```powershell
-pnpm exec wrangler login
-pnpm exec wrangler whoami
-```
-
-Do not paste the browser authorization result or any credential into chat. If
-`whoami` lists more than one account, stop after reporting only that fact; add
-the intended non-secret account ID through a reviewed configuration change
-before deployment.
-
-After the intended account is unambiguous, the owner may run this exact inert
-deployment command:
-
-```powershell
-$env:WRANGLER_SEND_METRICS = "false"
-pnpm exec wrangler deploy --config workers/scheduled-operations/wrangler.jsonc
-```
-
-The first deployment registers the three triggers but cannot invoke GoneViral
-because the checked-in guard is `false`. In the Cloudflare dashboard, open the
-new Worker, verify its name, three cron strings, two non-secret variables, and
-full log sampling. Then add `CRON_SECRET` and
-`VERCEL_AUTOMATION_BYPASS_SECRET` as encrypted Worker secrets using the exact
-values already held in the owner's approved secret stores. Never reveal or
-copy either value into chat, shell arguments, repository files, plaintext
-`.env` files, or logs.
-
-Stop there. Activation is a separate reviewed change and deployment. No
-Cloudflare configuration or deployment has been performed by the local
-implementation. Production hosting and plan selection remain a separate owner
+After that explicit authorization, prepare one narrow protected pull request
+that changes only the reviewed guard from `false` to `true`. Deploy the exact
+merged version, allow up to 15 minutes for Cloudflare trigger propagation, and
+inspect one bounded set of Past Events and safe Worker logs covering at least
+one five-minute, one hourly, and one daily slot. Never disclose or read either
+secret value. Production hosting and plan selection remain a separate owner
 decision immediately before commercial launch.

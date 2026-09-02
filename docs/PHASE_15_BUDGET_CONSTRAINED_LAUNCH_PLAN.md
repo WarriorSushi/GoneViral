@@ -30,8 +30,11 @@ contains no application business logic. `CRON_SECRET` and
 `VERCEL_AUTOMATION_BYPASS_SECRET` remain Cloudflare Worker secrets while the
 target is the protected Preview. The exact proposed architecture, Free-plan
 limits, fail-closed controls, configuration, and manual activation sequence are
-in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`. No Cloudflare resource or hosted
-request has been created by this decision.
+in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`. The owner subsequently reported a
+successful inert deployment with exactly three Cron Triggers, the guard still
+`false`, and both required Worker secret names present. No secret value was
+disclosed or read, and no hosted-route or cadence result is claimed while the
+guard remains disabled.
 
 The following GitHub design and evidence are retained as historical audit
 evidence only. GitHub Actions is no longer the selected automatic scheduler.
@@ -219,20 +222,23 @@ Official references:
    no-bypass default-branch PR/strict-CI ruleset are configured. The two
    expected GitHub secret names and the base-URL variable name are present. No
    secret value was disclosed or read.
-4. Complete locally: the owner confirmed Workers Free and three available
-   trigger slots. The inert Worker, exact three-trigger configuration, pinned
-   Wrangler CLI, and focused tests are implemented with the guard `false` and
-   no deployment or hosted request. Interactive setup and activation remain the
-   separate manual sequence in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
+4. Complete through the inert hosted boundary: the owner confirmed Workers
+   Free, reported a successful inert Worker deployment with exactly three Cron
+   Triggers, confirmed the guard remains `false`, and confirmed both required
+   Worker secret names are present. No secret value was disclosed or read.
+   Activation and bounded automatic cadence/failure evidence remain the
+   separate reviewed sequence in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
 5. Complete locally: the operational-health path now atomically and
    idempotently expires elapsed checkout-bearing pending attempts before
    measuring health. It never treats pre-checkout stalls as expiry, never
    asserts provider failure, and preserves authentic late-success handling.
    The known hosted Test Mode row was not repaired ad hoc and remains unchanged
    until this application change is deployed and the authenticated route runs.
-6. Current after the scheduler manual boundary: complete only the remaining owner-selected Phase 15 visual/accessibility and
-   hosted operational checks; do not repeat settled database, restore, or E2E
-   evidence without an invalidating change.
+6. Current scheduler gate: obtain explicit owner authorization for the separate
+   guard-activation change, then deploy the exact reviewed version and collect
+   bounded automatic cadence/failure evidence. Do not repeat the five passed
+   manual routes or settled database, restore, or E2E evidence without an
+   invalidating change.
 7. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
    domain/email, security/access, alerting, and production-isolation gates.
 8. Immediately before commercial launch, make a separate owner decision on the

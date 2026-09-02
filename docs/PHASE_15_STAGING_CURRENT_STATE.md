@@ -656,8 +656,18 @@ Worker creation with Cloudflare error `10021` because compatibility date
 `2026-09-03` was still in the future under Cloudflare's 2026-09-02 UTC date.
 No Worker logic, cron, secret, guard, Preview URL, or hosted configuration was
 changed. The configuration is corrected to the pinned non-future date
-`2026-09-02`; focused tests and a local Wrangler dry run pass. Rerun the same
-inert deployment command only after the protected patch merges.
+`2026-09-02`; focused tests and a local Wrangler dry run passed. Required CI
+run `33673402370` passed, and protected pull request `#12` squash-merged as
+`8d76e62f79cc631c3a2d3997ffe2b82be1d45f11` before the successful owner rerun
+recorded below.
+
+On 2026-09-03 the owner reported that the corrected inert deployment succeeded,
+exactly three Cron Triggers exist, the
+`GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` binding remains exact lowercase
+`false`, and both required Worker secret names are present. Their values were
+not provided or read. This completes the inert hosted setup boundary only: the
+disabled guard prevents GoneViral route invocation, so no automatic cadence,
+route result, or failure/staleness evidence is claimed.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
@@ -759,12 +769,12 @@ then verify its cost, rollback/pause, notification, and residual billing risks.
 
 The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
 measured paid-upgrade triggers are recorded in
-`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The public-repository audit and
-manual protected-Preview route certification are complete. Cloudflare design
-review, implementation, interactive setup, automatic cadence, and failure/
-staleness certification are next. Deployment, `goneviral.in`, live credentials/
-payments/refunds, prelaunch cleanup, and Phase 16 still require their existing
-separate authorizations.
+`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The public-repository audit,
+manual protected-Preview route certification, Cloudflare design/implementation,
+and inert hosted setup are complete. Explicitly authorized guarded activation,
+automatic cadence, and failure/staleness certification are next. Production
+deployment, `goneviral.in`, live credentials/payments/refunds, prelaunch
+cleanup, and Phase 16 still require their existing separate authorizations.
 
 ## Production boundary
 

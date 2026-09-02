@@ -25,17 +25,17 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                           | Status                                   | Evidence/source                                       |
-| ----------------------------------------------- | ---------------------------------------- | ----------------------------------------------------- |
-| Phases 0–14                                     | Complete                                 | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging             | Critical path complete                   | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation            | Complete                                 | restore and 66/66 database evidence in the checkpoint |
-| Phase 15 staging scheduler                      | Worker implemented inertly; not deployed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
-| Public-repository content audit                 | Passed; owner already made repo public   | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Public-repository settings hardening            | Complete                                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                      | checkpoint exact resume point                         |
-| Production launch                               | Not authorized/not complete              | Phase 15 runbook                                      |
-| Phase 16                                        | Not started                              | implementation plan                                   |
+| Scope                                           | Status                                    | Evidence/source                                       |
+| ----------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                                     | Complete                                  | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging             | Critical path complete                    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation            | Complete                                  | restore and 66/66 database evidence in the checkpoint |
+| Phase 15 staging scheduler                      | Inert Worker deployed; activation pending | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Public-repository content audit                 | Passed; owner already made repo public    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Public-repository settings hardening            | Complete                                  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                       | checkpoint exact resume point                         |
+| Production launch                               | Not authorized/not complete               | Phase 15 runbook                                      |
+| Phase 16                                        | Not started                               | implementation plan                                   |
 
 Current branch: `codex/phase-15-staging`.
 
@@ -131,13 +131,15 @@ Do not rerun these phases wholesale merely because a new task starts.
 - The owner selected Cloudflare Workers Cron for private staging and deferred
   any Vercel Pro purchase or production host/plan decision until immediately
   before commercial launch. The exact three-trigger, two-secret, fail-closed
-  proposal is in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`; nothing is deployed or
-  configured in Cloudflare yet.
+  proposal is in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`. That design decision
+  itself made no Cloudflare change; the later inert deployment is recorded
+  below.
 - The owner confirmed Workers Free and at least three unused Cron Trigger
   slots. The dependency-free scheduled-only Worker, exact three-trigger route
   map, disabled guard, safe request/log behavior, pinned Wrangler CLI, and
-  focused tests are implemented locally. No Cloudflare resource, secret,
-  trigger, deployment, or hosted GoneViral request was created.
+  focused tests were implemented locally without creating a Cloudflare
+  resource or hosted GoneViral request. The later inert deployment is recorded
+  below.
 - Elapsed checkout-bearing payment attempts now transition idempotently to
   local `expired` at the start of authenticated operational-health checks.
   Pre-checkout stalls remain visible, no provider failure is inferred, and the
@@ -157,26 +159,29 @@ Do not rerun these phases wholesale merely because a new task starts.
   solely because compatibility date `2026-09-03` was future-dated in
   Cloudflare UTC. The narrow patch pins `2026-09-02`; Worker logic, schedules,
   bindings, guard, secrets, Preview URL, and hosted state remain unchanged.
+- On 2026-09-03 the owner reported that the corrected inert Worker deployment
+  succeeded, exactly three Cron Triggers exist, the guard remains exact
+  lowercase `false`, and both required Worker secret names are present. No
+  secret value was disclosed or read. This is inert setup evidence only; no
+  automatic route execution or cadence result is claimed.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-Complete the interactive Cloudflare boundary in
-`CLOUDFLARE_SCHEDULED_OPERATIONS.md`: the owner authenticates Wrangler, verifies
-the intended account, deploys only the inert guard-false Worker, and adds both
-secrets through the Cloudflare dashboard without disclosing them. Stop before
-activation. Do not deploy production, purchase Vercel Pro, or use live payment
-credentials.
+The inert Cloudflare deployment boundary is complete. The next scheduler task,
+only after fresh explicit owner authorization, is the separate reviewed
+guard-activation change followed by deployment of the exact merged version and
+bounded automatic cadence/failure certification. Do not deploy production,
+purchase Vercel Pro, or use live payment credentials.
 
 ### Remaining Phase 15 gates
 
-- Cloudflare interactive account/secret setup, guarded activation, automatic
-  cadence, and failure/staleness certification. Worker implementation is
-  complete locally. The five
-  manual protected-Preview route certifications are complete and need not be
-  repeated merely because the scheduler changes.
+- Cloudflare guarded activation, automatic cadence, and failure/staleness
+  certification. Worker implementation and inert account/trigger/secret-name
+  setup are complete. The five manual protected-Preview route certifications
+  are complete and need not be repeated merely because the scheduler changes.
 - Owner-selected deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint.
