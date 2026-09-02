@@ -55,9 +55,9 @@ Mock-only payment tests are insufficient. Browser-only “success” tests are a
 
 ### Production
 
-- Vercel Pro + Supabase Free in selected regions;
-- public-repository GitHub Actions scheduler after its safety/certification
-  gate;
+- separately owner-selected commercial host plus Supabase Free in selected
+  regions;
+- Cloudflare Workers Cron scheduler after its safety/certification gate;
 - live provider only after gates;
 - no test fixtures/fake data;
 - controlled founder-owned smoke payment only through real accounting policy.
@@ -838,10 +838,11 @@ Never resolve an incident by restoring an older database over newer provider tra
 
 ## 24. Scheduled jobs
 
-Use the approved public-repository GitHub Actions scheduler initially; endpoints
-remain authenticated and idempotent. The owner accepts a five-minute email
-cadence and possible GitHub delay/drop behavior. Durable work catches up on the
-next run.
+Use the approved Cloudflare Workers Cron scheduler during private staging;
+endpoints remain authenticated and idempotent. The owner accepts a five-minute
+email cadence and external scheduler delay/missed/duplicate behavior. Durable
+work catches up safely on the next run. GitHub automatic scheduling is retired
+and Vercel Cron is not selected for staging.
 
 Suggested schedule:
 
@@ -1054,9 +1055,10 @@ Set budget alerts on Vercel, Supabase, Resend, Sentry and provider where availab
 
 ### Infrastructure
 
-- [ ] Vercel Pro and strict cost controls in the intended region.
+- [ ] Separately owner-selected commercial host/plan and its cost controls in
+      the intended region.
 - [ ] Supabase Free capacity/risk acceptance and fresh encrypted backup.
-- [ ] public-repository GitHub Actions scheduler safety and cadence certified.
+- [ ] Cloudflare Workers Cron scheduler safety and cadence certified.
 - [ ] production/staging completely isolated.
 - [ ] domain/TLS/canonical redirects.
 - [ ] Auth redirect allowlist and Resend DNS/custom SMTP.

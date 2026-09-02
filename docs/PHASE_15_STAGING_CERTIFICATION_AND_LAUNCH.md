@@ -138,27 +138,31 @@ excludes only the production schedule file during upload, and restores it in a
 `finally` block. Manually invoke and verify the authenticated cron routes in
 preview, but do not claim scheduler certification.
 
-The owner plans to purchase Vercel Pro when ready for commercial launch and use
-Supabase Free initially. Vercel Hobby remains preview-only because its current
-published terms prohibit commercial payment use; an external scheduler does
-not change that restriction.
+The owner will make a separate production hosting and plan decision immediately
+before commercial launch and will use Supabase Free initially. Vercel Hobby
+remains preview-only under the currently recorded commercial-use boundary; an
+external scheduler does not change that restriction.
 The production host and scheduler must follow and pass
-`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The initial scheduler is public-
-repository GitHub Actions at the owner-approved five-minute email/health,
-hourly reconciliation, and daily cleanup cadences. Supabase Free is accepted
-with the explicit owner risks and self-managed backup obligations in that plan.
+`PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The staging scheduler is one
+minimal Cloudflare Worker using three UTC Cron Triggers at the owner-approved
+five-minute email/health, hourly reconciliation, and daily cleanup cadences.
+Supabase Free is accepted with the explicit owner risks and self-managed backup
+obligations in that plan.
 The local scheduler implementation and public-repository content audit are
 complete. The scheduler also supports the protected Preview by reading the
 Vercel automation-bypass value from a GitHub Actions secret and sending it only
 as the `x-vercel-protection-bypass` header. The expected GitHub secret and base-
 URL variable names are now present, and repository hardening is complete; no
 secret value was disclosed or read. Following explicit owner authorization,
-the enable variable is now exact lowercase `true` and all five manual protected-
-Preview operations passed with sanitized HTTP 200 evidence. Automatic cadence
-did not emit a GitHub `schedule` event during the bounded observation window,
-so five-minute/hourly/daily cadence, failure/staleness notifications, and
-automated backup delivery are not certified yet. Follow
-`GITHUB_SCHEDULED_OPERATIONS.md`.
+all five manual protected-Preview operations passed with sanitized HTTP 200
+evidence. Automatic cadence never emitted a GitHub `schedule` event for either
+the application workflow or an isolated credential-free canary. The owner ended
+that diagnostic; both workflows are manually disabled, the enable variable is
+absent, the canary is removed, and the remaining manual-recovery workflow has
+no automatic trigger. The historical evidence remains in
+`GITHUB_SCHEDULED_OPERATIONS.md`. Follow
+`CLOUDFLARE_SCHEDULED_OPERATIONS.md` for the replacement proposal. No
+Cloudflare Worker or trigger is deployed yet.
 
 Before enabling Dodo test checkout, verify business ID, webhook key, API key,
 and one-time INR pay-what-you-want product all belong to the same test
@@ -210,9 +214,10 @@ cleanup report beside the encrypted backup.
 ## Production and live-money hard gates
 
 Do not promote or attach `goneviral.in` until the user separately confirms the
-specific action and genuine evidence exists for Vercel Pro with the documented
-cost controls, the certified GitHub Actions scheduler, Supabase Free capacity
-and owner-accepted recovery posture, production isolation, DNS/TLS/email
+specific action and genuine evidence exists for the separately owner-selected
+commercial production host and plan with its documented controls, the
+certified Cloudflare Workers Cron scheduler, Supabase Free capacity and owner-
+accepted recovery posture, production isolation, DNS/TLS/email
 authentication, backup/restore, alerts,
 access/MFA, security review, counsel-reviewed legal/privacy/refund/content/
 disclosure/grievance requirements, CA-approved accounting/GST/invoice/place-of-

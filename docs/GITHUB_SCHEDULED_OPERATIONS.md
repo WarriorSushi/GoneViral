@@ -2,15 +2,17 @@
 
 ## Boundary and current state
 
-`.github/workflows/scheduled-operations.yml` is the initial owner-selected
-GitHub Actions scheduler. It calls existing authenticated route handlers; it
-does not contain payment, email, health, asset, or retention business logic.
+`.github/workflows/scheduled-operations.yml` is the retired GitHub Actions
+scheduler and retained guarded manual-recovery definition. It calls existing
+authenticated route handlers; it does not contain payment, email, health,
+asset, or retention business logic.
 The implementation is committed as
 `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1`. Protected Vercel Preview support
 is committed as `a6bc5289a7a0b9dd9222ae6ba9bc332d81b30109`.
 
-The workflow is disabled by default. A push, visibility change, fork, or manual
-dispatch cannot invoke a hosted route unless the repository variable
+The workflow is manually disabled and has no automatic `schedule` trigger. A
+push, visibility change, fork, or manual dispatch cannot invoke a hosted route
+unless the repository variable
 `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED` exists with the exact lowercase value
 `true`. The checked-in runner repeats this check before it reads configuration.
 No hosted secret, repository variable, deployment, domain, or route invocation
@@ -18,12 +20,15 @@ was added during either implementation step. The owner later configured the
 two required GitHub repository secret names and the base-URL repository
 variable without disclosing a secret value or recording the configured origin.
 On 2026-09-02 the owner authorized activation and Codex created the exact
-lowercase enable variable. The guard currently remains enabled for the approved
-protected non-production Preview only.
+lowercase enable variable. After the final diagnostic, the owner retired GitHub
+automatic scheduling; Codex manually disabled the workflow and deleted that
+enable variable. The two secrets and base-URL variable were left untouched.
 
-## Fixed schedule and route map
+## Historical schedule and route map
 
-GitHub evaluates schedules in UTC and only from the default branch.
+GitHub evaluated the retired schedules in UTC and only from the default branch.
+The cron strings below are historical evidence and are no longer present as
+automatic triggers in the workflow.
 
 | Schedule (UTC)   | Fixed authenticated routes                                        |
 | ---------------- | ----------------------------------------------------------------- |
@@ -49,7 +54,7 @@ does not place either value in the command, URL, response handling, or logs.
 
 Workflow permissions are `contents: read`. Checkout credentials are not
 persisted. Every referenced Action is pinned to a complete commit SHA. The
-workflow has only `schedule` and `workflow_dispatch` triggers and never uses
+workflow now has only `workflow_dispatch`; it never uses
 `pull_request_target`.
 
 ## Hosted configuration
@@ -203,20 +208,21 @@ and UTC timestamp, proving the canary job itself is valid. GitHub created no run
 for its first fair `17:32 UTC` scheduled slot by the single bounded check at
 17:35:41 UTC. At that same check, both active workflows still had zero schedule
 events. This removes GoneViral routes, secrets, variables, Vercel, and the
-production scheduler job logic from the failing path. It remains possible that
-GitHub will deliver a delayed event, so keep the harmless canary temporarily and
-inspect both histories once after a longer passive observation window.
+production scheduler job logic from the failing path.
 
-Still required: observe successful automatic five-minute, hourly, and daily
-runs; verify duplicate/catch-up behavior from hosted evidence; enable or verify
-the owner's GitHub Actions failure notifications; add an owner-visible
-stale/missing-run check; and perform the documented 60-day activity check. The
-manual recovery path is certified, but it does not substitute for those gates.
+The later bounded check again returned zero scheduled events for both active
+workflow registrations. The owner then ended the diagnostic and selected
+Cloudflare Workers Cron for private staging. Codex manually disabled workflow
+IDs `348420162` and `348634880`, deleted only
+`GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED`, and verified both API states as
+`disabled_manually`. The two repository secrets and base-URL variable were left
+untouched. The canary workflow/test are removed and this workflow no longer has
+a `schedule` trigger. No route was invoked during retirement.
 
-To stop calls immediately, remove or change the enable variable away from exact
-`true`. During a suspected scheduler-secret compromise, disable the guard,
-rotate the hosting and GitHub values atomically through their interfaces, and
-certify each route again before re-enabling.
+GitHub automatic cadence, duplicate/catch-up, failure notification, missing-run,
+and 60-day evidence are permanently recorded as not certified. The five manual
+route certifications remain valid. Follow `CLOUDFLARE_SCHEDULED_OPERATIONS.md`
+for the replacement proposal.
 
 ## Local verification
 

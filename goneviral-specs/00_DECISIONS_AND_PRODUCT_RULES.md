@@ -752,11 +752,9 @@ Original ₹10,001 -> exact 10% ₹1,000.10 -> ceil ₹1,001 -> minimum ₹1,001
 
 Owner decision effective 2026-09-02:
 
-- use Vercel Pro for the commercial production launch when the owner is ready
-  to purchase it, with the strongest available cost controls and no optional
-  paid seats/add-ons/integrations;
-- do not claim that Vercel can guarantee an exact fixed INR or US$20 invoice;
-  its spend pause is checked periodically and excludes fixed extras;
+- do not purchase or require Vercel Pro during private staging; make a separate
+  owner decision on the commercial production host and plan immediately before
+  live launch, including applicable cost controls and residual billing risk;
 - Supabase Free is accepted with no managed PITR, weaker recovery guarantees,
   possible inactivity pause, dependence on GoneViral's encrypted logical and
   Storage backups, and potential recovery downtime;
@@ -764,11 +762,16 @@ Owner decision effective 2026-09-02:
   not be represented as managed provider recovery;
 - Vercel Hobby may remain a private preview environment, but it cannot host the
   commercial payment launch under Vercel's published non-commercial terms;
-- after a complete current-tree and Git-history secret audit, the owner permits
-  making the repository public and using free standard GitHub Actions runners
-  as the initial scheduler;
-- accept a five-minute email-outbox cadence and GitHub schedule delay/drop risk;
-  durable idempotent workers must catch up on the next run;
+- the public-repository audit passed, but GitHub Actions automatic scheduling
+  is retired after both the guarded workflow and an isolated canary received no
+  scheduled events; keep it disabled with no automatic trigger or enable guard;
+- use one minimal Cloudflare Worker on Workers Free as the private-staging
+  scheduler, with three UTC Cron Triggers, Cloudflare secrets for the route and
+  protected-Preview credentials, fixed route mapping, and no application
+  business logic;
+- accept a five-minute email-outbox cadence and external scheduler delay,
+  missed-run, or duplicate-delivery risk; durable idempotent workers must catch
+  up safely on the next run;
 - the owner's existing VPS is reserved for OTTR and is not a GoneViral runtime.
 
 The detailed evidence, schedule requirements, public-repository gate, next

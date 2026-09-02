@@ -900,14 +900,14 @@ Do not enable production payments until all are true:
 - live KYC/entity/bank credentials;
 - counsel-approved Terms/Privacy/refund/content/disclosure/grievance process;
 - CA-approved GST/invoice/place-of-supply/accounting setup;
-- Vercel Pro in the selected region with exactly one paid deploying seat, no
-  paid add-ons/integrations, the lowest permitted on-demand budget, explicit
-  production-pause action, and spend notifications verified;
+- an owner-selected commercial production host and plan, chosen immediately
+  before live launch with its applicable region, cost controls, pause/rollback
+  action, notifications, and residual billing risk verified;
 - Supabase Free in the selected region with the owner's explicit no-PITR,
   possible-pause, self-managed-backup, and recovery-downtime risk acceptance;
-- an authenticated GitHub Actions scheduler certified at the owner-approved
-  five-minute email/health, hourly reconciliation, and daily cleanup cadences,
-  including delayed/missed/duplicate-run behavior;
+- an authenticated Cloudflare Workers Cron scheduler certified at the owner-
+  approved five-minute email/health, hourly reconciliation, and daily cleanup
+  cadences, including delayed/missed/duplicate-run behavior;
 - production domain/DNS/TLS/email authentication;
 - production webhook and reconciliation tested;
 - backup/restore and incident runbooks verified;
@@ -915,9 +915,9 @@ Do not enable production payments until all are true:
 
 The 2026-09-02 budget decision and required Phase 15 adaptation sequence are
 recorded in `../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. Vercel Hobby
-is preview-only. Vercel's controls reduce but cannot mathematically eliminate
-all invoice variance from periodic metering, taxes, or card conversion; this
-residual risk must be shown to the owner before purchase/launch.
+is preview-only. Do not purchase or require Vercel Pro during staging;
+production hosting and plan selection remain a separate owner decision
+immediately before commercial launch.
 
 ## Staging certification
 

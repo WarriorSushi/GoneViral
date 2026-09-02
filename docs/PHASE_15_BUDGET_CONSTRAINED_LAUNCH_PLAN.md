@@ -7,22 +7,34 @@ Last updated: 2026-09-02 (Asia/Kolkata)
 - Use Supabase Free initially. The owner accepts no managed PITR, weaker
   provider recovery guarantees, possible inactivity pause, dependence on
   GoneViral's encrypted backup procedure, and possible recovery downtime.
-- Use GitHub Actions scheduled workflows for the initial production scheduler.
-  The owner authorizes making the repository public after a complete current-
-  tree and Git-history secret audit passes. No repeated confirmation is needed
-  if the audit is unambiguously clean; stop if any exposure is found or unclear.
-- Accept a five-minute email-outbox cadence instead of one minute. Accept that
-  GitHub scheduled workflows may occasionally be delayed or dropped; durable,
-  idempotent workers must catch up on the next run.
+- Use Cloudflare Workers Cron as the staging scheduler. Keep GitHub scheduled
+  operations manually disabled with no enable variable, and remove its
+  temporary canary. Do not use Vercel Cron for staging.
+- Accept a five-minute email-outbox cadence instead of one minute. Any external
+  scheduler can be delayed, missed, or duplicated; durable, idempotent workers
+  must catch up safely on the next run.
 - Do not use the owner's existing VPS; it is reserved for OTTR.
-- Use Vercel Pro for a commercial GoneViral launch when the owner is ready to
-  purchase it. Vercel Hobby remains private-preview/development only because
-  its published terms prohibit commercial payment use.
+- Do not purchase or require Vercel Pro during private staging. Production
+  hosting and plan selection are a separate owner decision immediately before
+  commercial launch. Vercel Hobby remains private-preview/development only
+  under the currently recorded commercial-use boundary.
 - Upgrade Vercel or Supabase further only after measured traffic, reliability,
   or revenue justifies it. No purchase, production deployment, domain change,
   live credential, or live payment is authorized by this plan alone.
 
-## GitHub Actions scheduler design
+## Scheduler decision and GitHub evidence
+
+The current owner-selected design is one minimal Cloudflare Worker with three
+UTC Cron Triggers. It invokes the five existing authenticated routes and
+contains no application business logic. `CRON_SECRET` and
+`VERCEL_AUTOMATION_BYPASS_SECRET` remain Cloudflare Worker secrets while the
+target is the protected Preview. The exact proposed architecture, Free-plan
+limits, fail-closed controls, configuration, and manual activation sequence are
+in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`. No Cloudflare resource or hosted
+request has been created by this decision.
+
+The following GitHub design and evidence are retained as historical audit
+evidence only. GitHub Actions is no longer the selected automatic scheduler.
 
 The public-repository allowance removes hosted-runner minute charges for
 standard runners, but it does not improve scheduler precision. GitHub's
@@ -100,9 +112,13 @@ credential-free schedule canary. Pull request `#6` added the isolated workflow
 and its static safety test; 10/10 focused tests and required CI passed, and it
 squash-merged as `cf7e991bcbd0cc97b0069ecfe2124bd07fd365b7`. Its
 manual run passed, but GitHub created no event for the first fair scheduled slot
-within the bounded observation window. Leave the harmless canary temporarily,
-check both workflows once after a longer passive delay, and select another
-owner-approved scheduler if both remain empty.
+within the bounded observation window. A later bounded check still found zero
+scheduled events for both active workflow registrations. On 2026-09-02 the
+owner ended the diagnostic. Both workflows were manually disabled, the enable
+variable was deleted, the canary was removed from the repository, and the main
+workflow's automatic `schedule` trigger was removed. Its guarded manual
+recovery definition and historical implementation remain; it cannot run
+automatically.
 
 Official references:
 
@@ -150,12 +166,15 @@ Official references:
 - <https://supabase.com/docs/guides/platform/free-project-pausing>
 - <https://supabase.com/docs/guides/platform/backups>
 
-## Vercel Pro cost boundary
+## Deferred Vercel Pro candidate cost boundary
 
-Vercel Pro is currently advertised at US$20 per month with one deploying seat
-and US$20 of included usage credit. The final card charge is not a fixed INR
-amount: taxes and card/foreign-exchange charges may apply. Additional deploying
-seats, Marketplace integrations, and add-ons are separate fixed charges.
+This section is conditional reference material, not a current staging
+requirement or purchase authorization. If the owner later selects Vercel Pro
+for commercial production, it is currently advertised at US$20 per month with
+one deploying seat and US$20 of included usage credit. The final card charge is
+not a fixed INR amount: taxes and card/foreign-exchange charges may apply.
+Additional deploying seats, Marketplace integrations, and add-ons are separate
+fixed charges.
 Metered usage beyond included allocations/credit is billed on demand.
 
 The owner requires no intentional on-demand spending. Before the first Pro
@@ -187,8 +206,10 @@ Official references:
 
 ## Sequential next work
 
-1. Completed: implement and locally test the GitHub scheduler workflow without
-   secrets, hosted changes, or route calls; use the five-minute email cadence.
+1. Completed and retired: implement, harden, and diagnose the GitHub scheduler.
+   Manual protected-Preview route certification passed, but both the production
+   definition and isolated canary received zero scheduled events. GitHub hosted
+   scheduling is now disabled and has no automatic trigger.
 2. Completed after the owner's visibility change: audit the complete reachable
    history, fetched public refs, current tree, workflows, tags, and unpublished
    ignored state. The sanitized clean result is in the Phase 15 checkpoint.
@@ -198,24 +219,23 @@ Official references:
    no-bypass default-branch PR/strict-CI ruleset are configured. The two
    expected GitHub secret names and the base-URL variable name are present. No
    secret value was disclosed or read.
-4. Partially completed after fresh explicit authorization: the exact lowercase
-   enable variable is present and every manual protected-Preview operation
-   passed. Automatic five-minute/hourly/daily cadence and failure/staleness
-   behavior remain unverified because GitHub emitted no scheduled event during
-   the bounded observation window. The operational-health warning was separately
-   diagnosed through a redacted, read-only aggregate query as one expired Dodo
-   Test Mode checkout with no provider event, payment, ledger fulfillment, or
-   open reconciliation item; no state was changed.
-5. Complete only the remaining owner-selected Phase 15 visual/accessibility and
+4. Current: review and settle `CLOUDFLARE_SCHEDULED_OPERATIONS.md`, then
+   implement and locally verify the inert Worker without deploying it. Hosted
+   setup and activation require the separate manual sequence in that document.
+5. After the scheduler design is settled, implement and verify the approved
+   lifecycle transition for expired abandoned checkouts. The warning was
+   diagnosed read-only as one expired Dodo Test Mode checkout with no provider
+   event, payment, ledger fulfillment, or open reconciliation item.
+6. Complete only the remaining owner-selected Phase 15 visual/accessibility and
    hosted operational checks; do not repeat settled database, restore, or E2E
    evidence without an invalidating change.
-6. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
+7. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
    domain/email, security/access, alerting, and production-isolation gates.
-7. When the owner is ready, purchase/configure Vercel Pro with the cost controls
-   above. Production remains payments-off until the exact release suite and
-   minimal production smoke pass.
-8. Request separate immediate authorization before the one legitimate founder-
+8. Immediately before commercial launch, make a separate owner decision on the
+   production host and plan. Production remains payments-off until the exact
+   release suite and minimal production smoke pass.
+9. Request separate immediate authorization before the one legitimate founder-
    owned live transaction, before enabling payments/refunds, and before
    destructive prelaunch cleanup.
-9. Begin Phase 16 only after a completed launch. Upgrade plans or architecture
-   only from measured traffic, incidents, limits, or revenue.
+10. Begin Phase 16 only after a completed launch. Upgrade plans or architecture
+    only from measured traffic, incidents, limits, or revenue.

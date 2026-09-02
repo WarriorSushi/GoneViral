@@ -25,17 +25,17 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                           | Status                                    | Evidence/source                                       |
-| ----------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
-| Phases 0–14                                     | Complete                                  | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging             | Critical path complete                    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation            | Complete                                  | restore and 66/66 database evidence in the checkpoint |
-| Phase 15 production scheduler                   | Protected-Preview implementation complete | `GITHUB_SCHEDULED_OPERATIONS.md`                      |
-| Public-repository content audit                 | Passed; owner already made repo public    | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Public-repository settings hardening            | Complete                                  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                       | checkpoint exact resume point                         |
-| Production launch                               | Not authorized/not complete               | Phase 15 runbook                                      |
-| Phase 16                                        | Not started                               | implementation plan                                   |
+| Scope                                           | Status                                   | Evidence/source                                       |
+| ----------------------------------------------- | ---------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                                     | Complete                                 | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging             | Critical path complete                   | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation            | Complete                                 | restore and 66/66 database evidence in the checkpoint |
+| Phase 15 staging scheduler                      | Cloudflare design proposed; not deployed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Public-repository content audit                 | Passed; owner already made repo public   | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Public-repository settings hardening            | Complete                                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 exhaustive/manual and production gates | Incomplete/deferred                      | checkpoint exact resume point                         |
+| Production launch                               | Not authorized/not complete              | Phase 15 runbook                                      |
+| Phase 16                                        | Not started                              | implementation plan                                   |
 
 Current branch: `codex/phase-15-staging`.
 
@@ -47,16 +47,18 @@ The budget-plan commit pushed before scheduler implementation was
 - Initial database/Auth/Storage plan: Supabase Free, with explicit acceptance
   of no managed PITR, possible inactivity pause, self-managed backup dependence,
   weaker recovery guarantees, and possible recovery downtime.
-- Initial scheduler: GitHub Actions. The owner made the repository public before
-  this continuation; the subsequent complete content/history audit passed, and
-  Codex did not change visibility.
+- Staging scheduler: one minimal Cloudflare Worker on Workers Free. GitHub
+  automatic scheduling is retired, manually disabled, stripped of its
+  automatic trigger, and has no enable variable. Vercel Cron is not selected
+  for staging.
 - Scheduler cadence compromise: email outbox every five minutes; operational
   health every five minutes; reconciliation hourly; cleanup daily. Delayed or
   dropped scheduled runs catch up through durable/idempotent workers.
 - Existing VPS is reserved for OTTR and is out of scope for GoneViral.
-- Commercial Vercel launch requires Pro under current Vercel terms. Purchase
-  timing remains with the owner. Configure strongest cost controls and disclose
-  that Vercel cannot guarantee an exact fixed INR or US$20 final invoice.
+- Do not purchase or require Vercel Pro during staging. The owner will choose
+  the production host and plan immediately before commercial launch, with the
+  applicable cost, commercial-use, rollback, and operational controls reviewed
+  then.
 - Upgrade Supabase/Vercel further only after measured traffic, reliability need,
   or revenue justifies it.
 - No production deployment, domain attachment, live credential/payment/refund,
@@ -84,7 +86,8 @@ Do not rerun these phases wholesale merely because a new task starts.
   cleanup.
 - Read-only proof that Vercel Hobby cannot run the committed sub-daily schedules
   and cannot host the commercial production launch under current terms.
-- Owner selection of Supabase Free risk posture and GitHub Actions scheduling.
+- Owner selection of Supabase Free risk posture. The initial GitHub Actions
+  scheduler was later retired after the bounded diagnostic below.
 - Guarded GitHub Actions scheduler implementation and focused local
   verification in `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1`.
 - Protected Vercel Preview authentication support, two-secret safe request
@@ -120,33 +123,41 @@ Do not rerun these phases wholesale merely because a new task starts.
   identifier was returned or recorded, and no row was modified.
 - After declining a GitHub Support case, the owner authorized an isolated,
   credential-free schedule canary. Its manual run passed, but neither active
-  workflow had a schedule event by the first bounded post-slot check. The canary
-  is retained temporarily for passive observation.
+  workflow ever received a scheduled event by the later bounded recheck. The
+  owner ended further debugging. Both workflows were manually disabled, the
+  enable variable was deleted, the canary files were removed, and the main
+  GitHub workflow's automatic trigger was removed. The two GitHub secrets and
+  non-secret base-URL variable were left untouched.
+- The owner selected Cloudflare Workers Cron for private staging and deferred
+  any Vercel Pro purchase or production host/plan decision until immediately
+  before commercial launch. The exact three-trigger, two-secret, fail-closed
+  proposal is in `CLOUDFLARE_SCHEDULED_OPERATIONS.md`; nothing is deployed or
+  configured in Cloudflare yet.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-Keep the scheduler scoped to the approved protected non-production Preview.
-Do not continue short-interval polling. Recheck the production scheduler and
-temporary canary once after a longer passive provider delay. The owner declined
-a GitHub Support case; if both histories remain empty, select a different owner-
-approved scheduler and then remove the canary. Separately decide and verify the
-narrow, non-production-safe lifecycle treatment for the confirmed expired Test
-Mode checkout before changing its state; do not perform an ad hoc database
-repair. Do not represent passed manual runs as automatic cadence certification,
-deploy production, or use live credentials.
+Have the owner review the exact Cloudflare proposal and confirm a Workers Free
+account with at least three unused account-wide Cron Trigger slots. Then
+implement and locally verify the inert Worker with its enable binding `false`;
+do not deploy until the interactive Cloudflare setup boundary is completed.
+After the scheduler plan is settled, implement and verify the narrow lifecycle
+treatment for expired abandoned checkouts; do not perform an ad hoc database
+repair. Do not deploy production, purchase Vercel Pro, or use live credentials.
 
 ### Remaining Phase 15 gates
 
-- Automatic GitHub scheduler cadence plus failure/staleness certification; the
-  repository hardening, secret/configuration names, and manual protected-
-  Preview route certification are complete.
+- Cloudflare Worker implementation, interactive account/secret setup, guarded
+  activation, automatic cadence, and failure/staleness certification. The five
+  manual protected-Preview route certifications are complete and need not be
+  repeated merely because the scheduler changes.
 - Owner-selected deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint.
-- Production host purchase/configuration and Vercel cost-control evidence.
+- Separate production host/plan decision and its purchase/configuration/cost-
+  control evidence immediately before commercial launch.
 - Production-specific project isolation, region, environment, DNS/TLS,
   `goneviral.in`, Supabase Auth URLs, email authentication, webhook URLs,
   secrets, monitoring, alerts, backup cadence, and rollback verification.

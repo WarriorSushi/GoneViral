@@ -94,12 +94,13 @@ CRON_SECRET=<server secret>
 
 `RESEND_REPLY_TO` is optional. Local and test environments use
 `EMAIL_DELIVERY_MODE=mock`; the application rejects that mode in production.
-The owner-selected initial GitHub Actions scheduler invokes this worker every
-five minutes. Durable rows wait safely through a delayed/dropped schedule and
-the next run catches up without changing the worker/outbox contract. A future
-Vercel Cron migration may restore a one-minute cadence after measured need.
-Configuration, the disabled-by-default guard, manual recovery, and schedule
-certification are documented in `GITHUB_SCHEDULED_OPERATIONS.md`.
+The owner-selected Cloudflare Workers Cron scheduler will invoke this worker
+every five minutes. Durable rows wait safely through a delayed or missed
+schedule and the next run catches up without changing the worker/outbox
+contract. Configuration, the disabled-by-default guard, manual setup, and
+schedule certification are documented in
+`CLOUDFLARE_SCHEDULED_OPERATIONS.md`. GitHub automatic scheduling is retired;
+production hosting and any later scheduler change remain separate decisions.
 
 Create a Resend webhook for `https://goneviral.in/api/webhooks/resend` and
 subscribe to sent, delivered, delivery-delayed, bounced, complained, failed,
