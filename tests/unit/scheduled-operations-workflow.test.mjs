@@ -17,15 +17,17 @@ const workflowPath = new URL(
   "../../.github/workflows/scheduled-operations.yml",
   import.meta.url,
 );
+const retiredCanaryPath = new URL(
+  "../../.github/workflows/schedule-canary.yml",
+  import.meta.url,
+);
 
 describe("scheduled operations workflow", () => {
-  it("defines the exact schedules, manual choices, minimal permissions, guard, and concurrency", async () => {
+  it("has no automatic trigger and retains guarded manual recovery", async () => {
     const workflow = await readFile(workflowPath, "utf8");
 
-    expect(workflow.match(/- cron:/g)).toHaveLength(3);
-    expect(workflow).toContain('- cron: "*/5 * * * *"');
-    expect(workflow).toContain('- cron: "17 * * * *"');
-    expect(workflow).toContain('- cron: "43 2 * * *"');
+    expect(workflow).not.toMatch(/^\s*schedule:/m);
+    expect(workflow).not.toContain("cron:");
     expect(workflow).toContain("workflow_dispatch:");
     for (const operation of Object.keys(OPERATION_ROUTES)) {
       expect(workflow).toContain(`          - ${operation}`);
@@ -39,6 +41,12 @@ describe("scheduled operations workflow", () => {
     expect(workflow).toContain(
       "if: ${{ vars.GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED == 'true' }}",
     );
+  });
+
+  it("removes the temporary schedule canary", async () => {
+    await expect(readFile(retiredCanaryPath, "utf8")).rejects.toMatchObject({
+      code: "ENOENT",
+    });
   });
 
   it("pins every action and keeps the secret out of the command", async () => {
