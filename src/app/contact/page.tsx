@@ -48,6 +48,12 @@ export default function ContactPage() {
         </p>
       </section>
       <section>
+        <h2>Public operator address</h2>
+        <address>
+          4th Cross Road, Noor Khan Colony, Kalaburagi, Karnataka 585104, India
+        </address>
+      </section>
+      <section>
         <h2>Grievance officer</h2>
         <p>
           Syed Irfan Ullah Quadri is the Grievance Officer for privacy,

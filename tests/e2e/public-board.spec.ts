@@ -189,6 +189,13 @@ test("robots, sitemap, canonicals, and effective legal metadata stay public-safe
     ),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.goto("/contact");
+  await expect(
+    page.getByText(
+      "4th Cross Road, Noor Khan Colony, Kalaburagi, Karnataka 585104, India",
+    ),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test("signed-out management is generic, same-origin, and not publicly cached", async ({
