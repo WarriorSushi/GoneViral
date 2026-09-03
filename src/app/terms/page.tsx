@@ -50,6 +50,14 @@ export default function TermsPage() {
           disputed amounts do not create or retain confirmed placement.
         </p>
         <p>
+          Dodo Payments provides hosted checkout and acts as merchant of record
+          for the customer transaction. Dodo handles customer-side transaction
+          taxes and payment documents under its terms. GoneViral keeps the
+          placement, provider-event, and reconciliation records needed to
+          operate the service; those records are not a replacement for Dodo’s
+          customer invoice.
+        </p>
+        <p>
           Later sponsorship may move a listing up. Later sponsorship for other
           listings, refunds, chargebacks, adjustments, moderation, and the
           published tie-break rules may move it down. We do not promise a
@@ -57,7 +65,17 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>4. Your content and licence</h2>
+        <h2>4. No votes, prizes, or financial return</h2>
+        <p>
+          Paid placement is not a vote, contest, lottery, game of chance, prize
+          or winnings programme, investment, fundraising product, stored value,
+          or promise of profit or financial return. Payment grants only the
+          advertising placement described in these terms. It does not grant
+          ownership of GoneViral or any listing.
+        </p>
+      </section>
+      <section>
+        <h2>5. Your content and licence</h2>
         <p>
           You retain your rights in content you submit. You grant us a
           worldwide, non-exclusive, royalty-free licence to host, reproduce,
@@ -74,7 +92,7 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>5. Acceptable use</h2>
+        <h2>6. Acceptable use</h2>
         <p>
           You must not attack, scrape abusively, bypass controls, manipulate
           ranks or clicks, submit deceptive reports, introduce malicious code,
@@ -84,7 +102,7 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>6. Refunds and disputes</h2>
+        <h2>7. Refunds and disputes</h2>
         <p>
           Refund eligibility, exclusions, timing, and the effect of chargebacks
           are governed by our <Link href="/refunds">Refund policy</Link>. A
@@ -93,7 +111,7 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>7. Availability and changes</h2>
+        <h2>8. Availability and changes</h2>
         <p>
           We may maintain, change, suspend, or discontinue features to protect
           users, comply with law or provider requirements, or operate the
@@ -104,7 +122,7 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>8. Intellectual property</h2>
+        <h2>9. Intellectual property</h2>
         <p>
           The service software, design, branding, and original materials belong
           to us or our licensors. These terms do not transfer those rights. See
@@ -113,7 +131,7 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>9. Disclaimers and liability</h2>
+        <h2>10. Disclaimers and liability</h2>
         <p>
           To the maximum extent permitted by applicable law, the service is
           provided on an “as available” basis and we exclude implied warranties
@@ -129,7 +147,7 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>10. Responsibility for claims</h2>
+        <h2>11. Responsibility for claims</h2>
         <p>
           To the extent permitted by law, you will compensate us for reasonable
           losses and costs arising from your unlawful content, infringement,
@@ -139,7 +157,7 @@ export default function TermsPage() {
         </p>
       </section>
       <section>
-        <h2>11. Governing law and contact</h2>
+        <h2>12. Governing law and contact</h2>
         <p>
           These terms are governed by Indian law. Subject to non-waivable
           consumer-forum rights and other mandatory jurisdiction, courts at

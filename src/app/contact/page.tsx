@@ -41,12 +41,13 @@ export default function ContactPage() {
         </p>
       </section>
       <section>
-        <h2>Grievance contact</h2>
+        <h2>Grievance officer</h2>
         <p>
-          Syed Irfan Ullah Quadri receives privacy, consumer, content,
-          intellectual-property, and service grievances at the email above. Use
-          a clear subject, identify the relevant listing or payment without
-          exposing secrets, explain the issue, and include necessary evidence.
+          Syed Irfan Ullah Quadri is the Grievance Officer for privacy,
+          consumer, content, intellectual-property, and service grievances and
+          receives them at the email and mobile number above. Use a clear
+          subject, identify the relevant listing or payment without exposing
+          secrets, explain the issue, and include necessary evidence.
         </p>
         <p>
           We aim to acknowledge messages within 48 hours and resolve ordinary

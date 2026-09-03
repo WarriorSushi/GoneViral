@@ -5,7 +5,7 @@ import { publicPageMetadata } from "@/config/seo";
 
 export const metadata: Metadata = publicPageMetadata({
   description:
-    "Add your work, pay at least ₹499, and move up when a larger confirmed total changes the order.",
+    "Add your work, pay at least ₹499, and join a paid list ordered by cumulative provider-confirmed totals.",
   path: "/how-it-works",
   title: "How it works",
 });
@@ -14,7 +14,7 @@ export default function HowItWorksPage() {
   return (
     <main id="main-content" className="how-main">
       <section className="how-hero">
-        <h1>Pay. Get seen.</h1>
+        <h1>Pay. Join the list.</h1>
         <p>
           Get on the GoneViral.in leaderboard. No sign-up. No API. No nonsense.
         </p>
@@ -36,14 +36,20 @@ export default function HowItWorksPage() {
             <span aria-hidden="true">2</span>
             <div>
               <h2>Pay ₹499 or more</h2>
-              <p>You are on the leaderboard. People can find you.</p>
+              <p>
+                Provider-confirmed payment supplies placement if the listing
+                remains eligible under our content rules.
+              </p>
             </div>
           </li>
           <li>
             <span aria-hidden="true">3</span>
             <div>
               <h2>Want a higher spot?</h2>
-              <p>Pay more. Move up. Very advanced maths.</p>
+              <p>
+                A larger confirmed cumulative total can move you up. Other
+                listings can move too.
+              </p>
             </div>
           </li>
         </ol>
@@ -54,11 +60,15 @@ export default function HowItWorksPage() {
         <ul>
           <li>A click on your card goes straight to your website.</li>
           <li>Today starts over at midnight IST.</li>
-          <li>Payment gets you a spot. It does not promise clicks or sales.</li>
+          <li>
+            Rank and duration can change. Payment does not promise traffic,
+            clicks, sales, or any other result.
+          </li>
         </ul>
         <p id="manage">
-          Ready to be seen? <Link href="/join">Join the list</Link>. Tools to
-          edit a listing will arrive later.
+          Ready to join? <Link href="/join">Add your work</Link>. Existing
+          owners can use their secure manage link to update an eligible listing
+          or add another payment.
         </p>
       </section>
     </main>

@@ -38,10 +38,10 @@ describe("guest join validation", () => {
       refunds: REFUND_POLICY_VERSION,
       terms: TERMS_VERSION,
     }).toEqual({
-      content: "2026-08-29-v1",
-      privacy: "2026-08-29-v1",
-      refunds: "2026-08-29-v1",
-      terms: "2026-08-29-v1",
+      content: "2026-09-04-v2",
+      privacy: "2026-09-04-v2",
+      refunds: "2026-09-04-v2",
+      terms: "2026-09-04-v2",
     });
   });
 
