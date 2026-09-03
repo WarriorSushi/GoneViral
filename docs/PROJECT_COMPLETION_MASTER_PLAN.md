@@ -1,6 +1,6 @@
 # GoneViral project completion master plan
 
-Last updated: 2026-09-03 (Asia/Kolkata)
+Last updated: 2026-09-04 (Asia/Kolkata)
 
 ## Purpose and authority
 
@@ -28,7 +28,7 @@ contents in this file.
 | Scope                                           | Status                                 | Evidence/source                                       |
 | ----------------------------------------------- | -------------------------------------- | ----------------------------------------------------- |
 | Phases 0–14                                     | Complete                               | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging             | Critical path complete                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 risk-based private staging             | Frozen Preview RC; lifecycle verified  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 isolated backup remediation            | Complete                               | restore and 66/66 database evidence in the checkpoint |
 | Phase 15 staging scheduler                      | 5m/hourly passed; daily pending        | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
 | Public-repository content audit                 | Passed; owner already made repo public | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
@@ -178,18 +178,37 @@ Do not rerun these phases wholesale merely because a new task starts.
   event fired and reconciliation returned `200 / ok`. No errors were visible
   in the observed window. The daily trigger had not yet reached its next
   scheduled time and remains pending, not failed.
+- Read-only Vercel inspection proved the protected alias still served old
+  application commit `682969e41cbfba73bb4b2d81681eb2abd2dbe509`, without the
+  abandoned-checkout lifecycle fix. The authorized Preview-only deployment of
+  exact clean commit `b8298a798efce1195b7c5ad38add60d8a54b2fd1` became READY as
+  `dpl_8bkWCCVgSwqXZEy9LN5fqggbPTcN`, registered zero Vercel crons, remained
+  protected, and became the stable alias target. Production was untouched.
+- The next normal authenticated Cloudflare health operation ran on the new
+  deployment, expired exactly one elapsed checkout-bearing Test Mode attempt,
+  and reported zero alerts. Aggregate database evidence confirmed zero
+  remaining elapsed checkout-bearing nonterminal attempts and no provider
+  event/payment, fulfilment, ledger, success, or open reconciliation side
+  effect for the transitioned attempt. No hosted row was edited manually.
+- Application commit `b8298a798efce1195b7c5ad38add60d8a54b2fd1` is the frozen
+  Preview release candidate. Its exact tree passed required CI run
+  `33798001313` and the complete final local release matrix, including 223/223
+  unit, 67/67 database, and 77/77 seven-project Playwright tests. The
+  production-readiness decision is no-go until the external and
+  production-specific gates below close.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-Proceed with the next owner-selected Phase 15 visual/accessibility or safe
-hosted operational workstream without waiting or polling for the daily
-Cloudflare event. Later add the daily scheduler evidence separately after it
-naturally occurs. Do not change or redeploy the scheduler, manually invoke the
-five already-certified routes, deploy production, purchase Vercel Pro, or use
-live payment credentials.
+The single next launch-critical task is owner/provider closure of Dodo's written
+approval for the exact sponsored-advertising model and completion of merchant
+KYC/entity/bank readiness, with only sanitized evidence recorded. Counsel and
+CA/accounting review should proceed as owner/provider gates, while the daily
+Cloudflare result is recorded separately after it naturally occurs. Do not
+change or redeploy the scheduler, begin an optional sweep, deploy production,
+attach `goneviral.in`, or use live credentials/payments.
 
 ### Remaining Phase 15 gates
 
@@ -199,9 +218,10 @@ live payment credentials.
   and activated deployment are complete. The five manual protected-Preview
   route certifications are complete and need not be repeated merely because
   the scheduler changes.
-- Owner-selected deferred exhaustive visual/manual-device, keyboard,
+- Optional deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
-  operational coverage recorded in the checkpoint.
+  operational coverage recorded in the checkpoint. These are not current
+  launch blockers absent a relevant new failure or owner risk decision.
 - Separate production host/plan decision and its purchase/configuration/cost-
   control evidence immediately before commercial launch.
 - Production-specific project isolation, region, environment, DNS/TLS,
@@ -211,7 +231,6 @@ live payment credentials.
 - Genuine counsel and CA approval of legal/privacy/refund/content/grievance and
   GST/invoice/accounting/place-of-supply obligations.
 - Authorized prelaunch cleanup, if still required by the runbook.
-- Full release suite on the exact candidate commit.
 - Separately authorized minimal payments-off production smoke.
 - Separately authorized legitimate founder-owned low-value transaction and
   exact end-to-end reconciliation before payment enablement.

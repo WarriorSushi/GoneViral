@@ -1,6 +1,6 @@
 # Phase 15 budget-constrained launch plan
 
-Last updated: 2026-09-03 (Asia/Kolkata)
+Last updated: 2026-09-04 (Asia/Kolkata)
 
 ## Owner decisions
 
@@ -234,12 +234,17 @@ Official references:
    `200 / ok` and no visible errors. The daily trigger had not yet reached its
    next scheduled time and remains pending, not failed. Exact status remains in
    `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
-5. Complete locally: the operational-health path now atomically and
+5. Complete in protected Preview: the operational-health path now atomically and
    idempotently expires elapsed checkout-bearing pending attempts before
    measuring health. It never treats pre-checkout stalls as expiry, never
    asserts provider failure, and preserves authentic late-success handling.
-   The known hosted Test Mode row was not repaired ad hoc and remains unchanged
-   until this application change is deployed and the authenticated route runs.
+   Read-only inspection first proved the alias was behind. Exact application
+   commit `b8298a798efce1195b7c5ad38add60d8a54b2fd1` was deployed only to
+   Preview, verified READY/protected with zero Vercel crons, and assigned to the
+   stable protected alias. The next normal authenticated Cloudflare health run
+   expired the one known elapsed Test Mode attempt; aggregate evidence found no
+   provider, fulfilment, ledger, success, or open reconciliation side effect.
+   No row was repaired ad hoc and Production was untouched.
 6. Current scheduler gate: the separate guard-activation change is authorized,
    merged, and deployed by owner report with the dashboard guard showing
    `true`. Five-minute and hourly automatic cadence passed by owner report;
@@ -247,7 +252,11 @@ Official references:
    wait or poll for the daily event, change or redeploy the scheduler, repeat
    the five passed manual routes, or repeat settled database, restore, or E2E
    evidence without an invalidating change.
-7. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
+7. Frozen application candidate
+   `b8298a798efce1195b7c5ad38add60d8a54b2fd1` passed its exact-tree required CI
+   and complete local release matrix. The current production-readiness decision
+   is no-go. Resolve the genuine provider, KYC/bank, counsel,
+   accounting/GST/invoice,
    domain/email, security/access, alerting, and production-isolation gates.
 8. Immediately before commercial launch, make a separate owner decision on the
    production host and plan. Production remains payments-off until the exact

@@ -1,6 +1,6 @@
 # Phase 15 private staging current state
 
-Last updated: 2026-09-03 (Asia/Kolkata)
+Last updated: 2026-09-04 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for the Phase 15
 private staging work on `codex/phase-15-staging`. Read the authority
@@ -45,10 +45,13 @@ addresses, or backup passphrases here.
   `https://goneviral-phase15-preview-warriorsushis-projects.vercel.app`
 - Vercel project ID: `prj_pvt3u8wDLvJ3C4X9QTB7AlHUvL12`
 - Vercel scope: `warriorsushis-projects`
-- Deployment behind the stable alias when this checkpoint was written:
-  `https://goneviral-2dviyh4iv-warriorsushis-projects.vercel.app`
-- Deployment ID at this checkpoint:
-  `dpl_Cri4g8B93gRUsWHokoLGMEe4kDfB`
+- Current deployment behind the stable alias:
+  `https://goneviral-8ksj2tbx1-warriorsushis-projects.vercel.app`
+- Current deployment ID: `dpl_8bkWCCVgSwqXZEy9LN5fqggbPTcN`
+- Current deployed application commit and frozen Preview release candidate:
+  `b8298a798efce1195b7c5ad38add60d8a54b2fd1`
+- The prior alias target was deployment `dpl_Cri4g8B93gRUsWHokoLGMEe4kDfB`
+  from application commit `682969e41cbfba73bb4b2d81681eb2abd2dbe509`.
 - The repository is linked and the Vercel CLI is authenticated. Use
   `pnpm.cmd exec vercel ...` from the workspace. Production Vercel state must
   remain untouched.
@@ -641,15 +644,15 @@ leak scan, moderate dependency audit, and Gitleaks all passed. The
 separate Vercel deployment check failed as expected and is not required; no
 deployment was requested or represented as successful.
 
-The abandoned-checkout lifecycle gap is also fixed locally. Before the
+The abandoned-checkout lifecycle gap is fixed and verified in protected
+Preview. Before the
 authenticated operational-health route collects metrics, an atomic count-only
 operation changes only elapsed `checkout_ready`, `customer_returned`, and
 `provider_pending` attempts to local `expired`. It is idempotent, leaves
 pre-checkout stalls visible for investigation, does not claim provider failure,
 and preserves the tested rule that authentic late provider success supersedes
-local expiry. The previously diagnosed hosted Test Mode row was not changed;
-it will remain as-is until this application commit is deployed and the route
-runs under separate authorization.
+local expiry. The hosted verification and release-candidate evidence are
+recorded below.
 
 The owner's first inert Cloudflare deployment attempt was rejected before
 Worker creation with Cloudflare error `10021` because compatibility date
@@ -699,6 +702,60 @@ failed. No raw logs or secret values were provided. Per owner direction, do not
 change or redeploy the scheduler and do not wait or poll for the daily event;
 continue other Phase 15 work and add sanitized daily evidence separately after
 it occurs.
+
+## Frozen Preview candidate and abandoned-checkout verification
+
+On 2026-09-04, read-only Vercel inspection resolved the stable protected alias
+to READY Preview deployment `dpl_Cri4g8B93gRUsWHokoLGMEe4kDfB`, whose Vercel
+metadata identified application commit
+`682969e41cbfba73bb4b2d81681eb2abd2dbe509`. That commit predates lifecycle-fix
+merge `fd7a59bd44e167633bb877e5b2837c00ac200e2b`, so the served Preview did not
+contain the fix.
+
+The owner's continuation instruction authorized the single required
+Preview-only update. `pnpm ops:deploy:preview` deployed exact clean commit
+`b8298a798efce1195b7c5ad38add60d8a54b2fd1` using `vercel.preview.json`. Vercel
+reported READY deployment `dpl_8bkWCCVgSwqXZEy9LN5fqggbPTcN` at
+`https://goneviral-8ksj2tbx1-warriorsushis-projects.vercel.app`; authenticated
+API inspection confirmed Preview resolution, Mumbai functions, Hobby plan,
+the exact commit metadata, and zero Vercel crons. A credential-free health
+request received the expected Vercel protection redirect. The existing stable
+protected alias was then repointed only to that deployment, and a second
+read-only resolution confirmed the new deployment ID and Preview target.
+Production was not deployed, promoted, aliased, or otherwise changed.
+
+At the next normal five-minute Cloudflare event, the Worker used its existing
+authenticated route path against the stable alias. Vercel runtime evidence at
+`2026-09-03T20:35:14.095Z` recorded fixed event
+`operational_health_checked`, `expiredAbandonedAttempts=1`, and `alertCount=0`
+on deployment `dpl_8bkWCCVgSwqXZEy9LN5fqggbPTcN`. Independent aggregate-only
+Supabase queries found zero elapsed checkout-bearing nonterminal attempts and
+exactly one newly expired attempt. That attempt still had its expected provider
+order but had zero provider events, provider payments, fulfilment, success
+timestamp, financial-ledger entries, or open/investigating reconciliation
+items. No hosted row was edited manually and no provider action was taken.
+
+Application commit `b8298a798efce1195b7c5ad38add60d8a54b2fd1` is now the
+frozen Preview release candidate. Its exact Git tree matched required CI run
+`33798001313`, which passed install, format, lint, typecheck, unit, production
+build, client-leak, dependency-audit, and Gitleaks checks. The final local
+release matrix also passed on the exact commit: formatting; lint; generated-
+route typecheck; 43 files/223 unit tests; coverage at 95.40% statements, 91.51%
+branches, 97.00% functions, and 95.91% lines; 12 files/67 database tests; query
+plans; the synthetic performance test; production build; 25-asset client leak
+scan; 10 migrations; schema and Data API isolation; database lint/advisors;
+dependency audit; and 77/77 Playwright tests across the seven configured
+projects. The first database command could not connect because the ordinary
+local Supabase stack was stopped; Docker Desktop and only the local stack were
+started, and the complete affected gate then passed. No hosted database was a
+test target.
+
+The Phase 15 production-readiness decision remains **no-go**. The application
+candidate and lifecycle behavior are ready, but the genuine provider, KYC/bank,
+counsel, accounting, commercial-host, production-isolation/configuration,
+alerting, and remaining scheduler certification gates below are not complete.
+Optional exhaustive visual/accessibility and edge-case sweeps remain deferred
+and are not launch blockers unless a new failure makes one relevant.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
