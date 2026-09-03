@@ -12,6 +12,9 @@ import worker, {
 const configPath = fileURLToPath(
   new URL("../../workers/scheduled-operations/wrangler.jsonc", import.meta.url),
 );
+const vercelConfigPath = fileURLToPath(
+  new URL("../../vercel.json", import.meta.url),
+);
 const enabledEnvironment = {
   CRON_SECRET: "cron-secret-fixture",
   GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL: "https://scheduled.example",
@@ -22,6 +25,12 @@ const enabledEnvironment = {
 afterEach(() => vi.restoreAllMocks());
 
 describe("Cloudflare scheduled-operations Worker", () => {
+  it("keeps Vercel production deployments free of a second scheduler", async () => {
+    const config = JSON.parse(await readFile(vercelConfigPath, "utf8"));
+    expect(config.regions).toEqual(["bom1"]);
+    expect(config).not.toHaveProperty("crons");
+  });
+
   it("checks in the exact activated three-trigger configuration", async () => {
     const configText = await readFile(configPath, "utf8");
     const config = JSON.parse(configText.replaceAll(/,\s*([}\]])/g, "$1"));

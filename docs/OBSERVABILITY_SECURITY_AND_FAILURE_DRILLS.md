@@ -269,8 +269,9 @@ not rerun blindly.
 ## Remaining human/hosted gates
 
 No production Sentry, Vercel, Supabase, Resend, Turnstile, Dodo, DNS, backup,
-alert destination, penetration test, or security approval is claimed. Dodo
-live mode remains blocked by written provider approval, KYC, legal/accounting
-review, and controlled certification. No credentials, approvals, public
-activity, delivery results, security findings, or drill results may be
-fabricated.
+alert destination, penetration test, or security approval is claimed. The owner
+confirms Dodo merchant/KYC/business/bank/live capability and brand setup; live
+mode still requires current provider status, exact live configuration, owner-
+accepted legal/accounting treatment, explicit authorization, and controlled
+certification. No credentials, approvals, public activity, delivery results,
+security findings, or drill results may be fabricated.

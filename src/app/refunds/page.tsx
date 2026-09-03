@@ -29,20 +29,22 @@ export default function RefundsPage() {
       <section>
         <h2>2. When a refund may be available</h2>
         <p>
-          We will review a request for duplicate charges, a payment confirmed
-          where the corresponding placement was never provided because of our
-          verified technical failure, an unauthorised transaction supported by
-          appropriate evidence, or another ground required by applicable law. We
-          may offer a full or partial refund where fair and operationally
-          possible.
+          We will review a request for a duplicate or otherwise erroneous
+          charge, a payment confirmed where the corresponding placement was
+          never provided because of our verified technical failure, an
+          adjustment required by Dodo Payments or another payment provider, or a
+          remedy required by applicable law. Evidence and identity or authority
+          checks may be required.
         </p>
       </section>
       <section>
         <h2>3. What is not normally refundable</h2>
         <p>
-          A changed rank, another listing paying more, lack of traffic, clicks,
-          leads, sales, publicity, or any other hoped-for result is not a refund
-          ground. Removal or restriction for a material breach of the{" "}
+          Once provider-confirmed placement has been supplied, the purchase is
+          final and non-refundable except for a ground in section 2. A changed
+          rank, another listing paying more, lack of traffic, clicks, leads,
+          sales, publicity, rank duration, or any other hoped-for result is not
+          a refund ground. Removal or restriction for a material breach of the{" "}
           <Link href="/content-policy">Content policy</Link> or{" "}
           <Link href="/terms">Terms</Link> is not normally refundable. This does
           not limit non-waivable statutory rights.

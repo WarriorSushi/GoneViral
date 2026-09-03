@@ -751,11 +751,12 @@ started, and the complete affected gate then passed. No hosted database was a
 test target.
 
 The Phase 15 production-readiness decision remains **no-go**. The application
-candidate and lifecycle behavior are ready, but the genuine provider, KYC/bank,
-counsel, accounting, commercial-host, production-isolation/configuration,
-alerting, and remaining scheduler certification gates below are not complete.
-Optional exhaustive visual/accessibility and edge-case sweeps remain deferred
-and are not launch blockers unless a new failure makes one relevant.
+candidate and lifecycle behavior are ready, but commercial hosting,
+production-isolation/configuration, the complete public principal address,
+provider-live configuration, invoice/payout/accounting evidence, alerting, and
+explicit Production/live-action gates are not complete. Optional exhaustive
+visual/accessibility and edge-case sweeps remain deferred and are not launch
+blockers unless a new failure makes one relevant.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
@@ -813,7 +814,8 @@ schedule, or hosted service was changed.
   expressions that run more frequently fail deployment. Hobby daily invocation
   timing is also imprecise within the selected hour. This supersedes the old
   two-job count but does not remove the cadence blocker.
-- `vercel.json` has five authenticated jobs. Daily logo cleanup and retention
+- At the time of this read-only check, `vercel.json` had five authenticated
+  jobs. Daily logo cleanup and retention
   cleanup meet Hobby frequency syntax. Hourly payment reconciliation,
   every-minute email outbox draining, and five-minute operational health checks
   do not. Weakening those safety cadences would contradict the operational
@@ -827,6 +829,11 @@ schedule, or hosted service was changed.
   the linked team remains Hobby and only Preview deployment is authorized. The
   owner selected Cloudflare Workers Cron instead for private staging. No Vercel
   purchase or production deployment is required or authorized at this stage.
+
+The later 2026-09-04 owner topology decision selects Cloudflare as the only
+Production scheduler. The new launch candidate removes the unused Vercel cron
+definitions while keeping the Mumbai function region. This changes no deployed
+scheduler or hosted service.
 
 ## Owner budget-constrained production decision and next gate
 
@@ -851,9 +858,10 @@ in approved provider secret stores. The owner's VPS is reserved for OTTR.
 
 Vercel Hobby remains private-preview-only. Its published terms prohibit
 commercial use and explicitly include requesting or processing payments, so an
-external scheduler alone cannot make it a valid production host. The owner will
-select the commercial production host and plan immediately before launch and
-then verify its cost, rollback/pause, notification, and residual billing risks.
+external scheduler alone cannot make it a valid production host. The owner
+selected Vercel plus Supabase for Production. Vercel Pro is required immediately
+before commercial launch, when its cost, rollback/pause, notification, and
+residual billing risks must be verified.
 
 The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
 measured paid-upgrade triggers are recorded in
@@ -868,11 +876,133 @@ pending while other Phase 15 work continues. Production deployment,
 
 ## Production boundary
 
-Do not repeat the whole staging suite in production. If production is later
-authorized only after the written provider, legal, accounting, infrastructure,
-isolation, backup, and security gates pass, run the automated release suite on
-the exact release commit and then a minimal non-destructive production smoke
-test for production-specific credentials/configuration, DNS/TLS, Auth/email,
+Do not repeat the whole staging suite in Production. If Production is later
+authorized only after the current provider, owner-approved legal/accounting,
+infrastructure, isolation, backup, and security gates pass, run the automated
+release suite on the exact release commit and then a minimal non-destructive
+Production smoke test for production-specific credentials/configuration,
+DNS/TLS, Auth/email,
 webhooks, cron, security isolation, monitoring, rollback, backup, and one
 explicitly authorized legitimate founder-owned transaction. No production gate
 is currently satisfied merely because private staging works.
+
+## 2026-09-04 owner launch decisions and legal/configuration audit
+
+The owner confirmed Dodo merchant/KYC/business/bank/live capability and the
+GoneViral brand are configured for the sponsored-listing model. The former
+generic written-model-approval and merchant-setup blockers are closed by this
+owner attestation unless Dodo requests a separate artifact. This is not a claim
+of GoneViral-specific written approval or future provider state. Dodo remains in
+Test Mode in Preview; no live credential, transaction, refund, or provider
+setting was accessed or changed.
+
+The owner also selected Vercel plus Supabase for Production, Cloudflare as the
+only scheduler, and owner-drafted legal/tax treatment without indefinite lawyer
+or CA approval gates. Vercel Pro is required immediately before commercial
+Production because current Vercel terms restrict Hobby to non-commercial use;
+it is not required for staging. No purchase, Production deployment, domain,
+scheduler, or hosted environment was changed.
+
+The code/configuration audit found genuine launch-critical changes: remove the
+unused Vercel cron definitions to prevent a second Production scheduler; update
+the public refund rule and paid-placement/model disclosures; accurately explain
+Dodo's merchant-of-record, tax, invoice, and data role; correct stale
+how-it-works copy; and snapshot new checkout acceptances at policy version
+`2026-09-04-v2`. Historical acceptances and in-flight attempts retain their
+stored versions and no financial history is reinterpreted. The owner has since
+authorized a privacy-minimized geographic address for the final public Contact/
+operator disclosure. Omitted premise-level residential details remain
+prohibited and were not inferred, reconstructed, or committed.
+
+Launch-critical implementation commit
+`0809cc5851320f42862bd4cef64cf8bbd74d9e49` passed the two affected Vitest
+files (18 tests), the focused public-board Playwright file (11 tests), Prettier,
+ESLint, and TypeScript checking. The single required final CI suite remains
+deferred until the complete launch-critical policy/address candidate is ready,
+so it runs only once at the actual final release-candidate boundary. The
+protected Preview remains the previously certified application
+commit `b8298a798efce1195b7c5ad38add60d8a54b2fd1`; it was not redeployed and no
+provider or hosted state changed during this audit.
+
+The ordered remaining preparation, authorization boundaries, exact Production
+configuration inventory, genuine blockers, owner/provider/accounting gates,
+and optional deferrals are in `PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md`.
+
+## 2026-09-04 GST/operator and private-address decision
+
+The owner supplied authoritative GST-certificate facts: Syed Irfan Ullah
+Quadri is the legal proprietor; AltCorp is the GST trade name/operator; the
+constitution is proprietorship; the Karnataka Regular registration is
+effective from 11 December 2025; and GoneViral is the product/website brand.
+The certificate's unrelated additional trade name is out of scope and does not
+appear in GoneViral code or documentation.
+
+The exact GSTIN was supplied for owner/provider/accounting reconciliation but
+is intentionally not copied into the public repository or website. GSTN's
+public taxpayer search can expose principal-place information from a GSTIN.
+The full registered principal place is the owner's residential/home address and
+is private; it was not copied, inferred, reconstructed, printed, or committed.
+
+Current official-source research found that Consumer Protection (E-Commerce)
+Rule 4(2), rather than each individual policy or the GST website-display rules,
+requires the operator's legal name and principal geographic address clearly,
+accessibly, and prominently on the platform. One dedicated Contact/operator
+disclosure, prominently linked from the footer, checkout, and relevant legal
+surfaces, is the least-duplicative implementation; the full address need not be
+repeated in every policy, footer, checkout form, disclosure, or metadata.
+
+The owner authorizes only `4th Cross Road, Noor Khan Colony, Kalaburagi,
+Karnataka 585104, India` for the dedicated public Contact/operator disclosure.
+The house/flat number, building/premises name, and nearby landmark remain
+private and must never be published, committed, rendered, logged, inferred, or
+reconstructed. The address must not be duplicated in the footer, metadata,
+checkout, or unrelated policies. The owner accepts the residual compliance/
+privacy risk that omitting premise-level details may not satisfy every
+interpretation of Rule 4(2). This is not lawyer approval and no longer blocks
+remaining engineering work. A future genuine shared/co-working headquarters
+with valid possession records can reduce this risk only after the applicable
+GST/business records are amended; a cosmetic mail-forwarding address cannot.
+
+CGST Rule 46 requires an invoice issued by a registered supplier to carry that
+supplier's name, address, and GSTIN. Dodo documents itself as legal seller and
+merchant of record on the customer transaction and says its customer invoice
+carries Dodo tax details; on that model AltCorp's residential address is not a
+customer-invoice field. The genuine Dodo live customer invoice and Indian-
+business payout/reverse invoice must still be inspected before activation, and
+the owner must settle the actual AltCorp-to-Dodo GST/accounting treatment from
+those documents without inventing it. Full analysis and primary links are in
+`PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`.
+
+Public operator/invoice-copy implementation commit
+`d56777e744fc4cd5fc8b510de51ec6038fbaf153` uses the authoritative
+AltCorp/proprietorship identity without storing the GSTIN or residential
+address, adds the GST registration-status and Dodo invoice distinction on the
+Contact surface, and clarifies Dodo's role immediately before checkout. The
+focused public-board Playwright file passed 11/11 tests; Prettier, ESLint, and
+TypeScript checking also passed. The authorized redacted-address implementation
+is commit `7daf6a421fabc2545f1710d633a92558d3e56d45`. It places the
+authorized address only on Contact and adds its public-board assertion. The
+focused browser matrix passed 77/77 tests across configured desktop, mobile,
+tablet, Firefox, and WebKit profiles; Prettier, ESLint, and TypeScript checking
+also passed. The single final CI/merge/Preview refresh boundary is next. No
+Preview, scheduler, provider, database, or other hosted state changed at this
+checkpoint.
+
+## 2026-09-04 support and Reply-To identity decision
+
+The owner selected `goneviral.in@gmail.com` for public support, legal,
+grievance, privacy-linked, and copyright correspondence and for transactional
+application-email Reply-To. The branded application From and Supabase Auth SMTP
+sender remain `notifications@updates.goneviral.in` and are intentionally
+separate. Repository implementation updates the central legal identity and the
+safe Preview-provider provisioning source; reserved test/example addresses are
+unchanged. Preview `RESEND_REPLY_TO` was updated and read back as
+`goneviral.in@gmail.com`; `RESEND_FROM_EMAIL` was read back unchanged as
+`notifications@updates.goneviral.in`. No sender/domain authentication,
+Supabase Auth SMTP, Production configuration, secret, or hosted data changed.
+Implementation commit `c018f2e785bdb66a30eb2c0ee4261d5193dc846f`
+updates the central legal email, safe provisioning source, and Contact/Copyright
+browser assertions. The focused desktop legal-page test passed 1/1; repository
+formatting, ESLint, TypeScript checking, PowerShell parsing, and diff checks
+passed. The tracked repository contains zero occurrences of the superseded
+address.

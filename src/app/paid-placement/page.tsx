@@ -17,6 +17,16 @@ export default function PaidPlacementPage() {
       description="GoneViral.in is advertising-style paid placement: money decides the order under transparent rules."
     >
       <section>
+        <h2>What this product is not</h2>
+        <p>
+          This is paid advertising placement. It is not a vote, contest,
+          lottery, game of chance, prize or winnings programme, investment,
+          fundraising product, stored value, or promise of a financial return.
+          Customers receive placement under the published rules, not ownership
+          or a share of GoneViral or any listing.
+        </p>
+      </section>
+      <section>
         <h2>What payment buys</h2>
         <p>
           An eligible listing is ordered by its effective confirmed sponsorship
@@ -49,10 +59,13 @@ export default function PaidPlacementPage() {
       <section>
         <h2>Payment provider and adjustments</h2>
         <p>
-          Checkout is provided by Dodo Payments. We accept payment and
-          adjustment authority only from authenticated provider events recorded
-          in our immutable ledger. Duplicate events are idempotent and
-          inconsistent financial events are quarantined for review.
+          Dodo Payments provides hosted checkout and acts as merchant of record
+          for the customer transaction. Dodo handles the customer payment,
+          transaction-tax calculation and invoice under its terms. GoneViral
+          accepts payment and adjustment authority only from authenticated
+          provider events recorded in our immutable ledger. Duplicate events are
+          idempotent and inconsistent financial events are quarantined for
+          review.
         </p>
       </section>
       <section>

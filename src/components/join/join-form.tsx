@@ -277,8 +277,9 @@ export function JoinForm({
             : "Continue to secure checkout"}
       </button>
       <p className="provider-note">
-        Checkout is provided by Dodo Payments. Your listing stays pending until
-        payment is verified.{" "}
+        Dodo Payments provides checkout, acts as merchant of record for the
+        customer transaction, and supplies its invoice. Your listing stays
+        pending until payment is verified.{" "}
         <Link href="/contact">Contact or report abuse</Link>.
       </p>
     </form>

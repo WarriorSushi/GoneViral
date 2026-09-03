@@ -1,27 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "regions": ["bom1"],
-  "crons": [
-    {
-      "path": "/api/cron/cleanup-logo-assets",
-      "schedule": "17 2 * * *"
-    },
-    {
-      "path": "/api/cron/reconcile-payments",
-      "schedule": "13 * * * *"
-    },
-    {
-      "path": "/api/cron/cleanup-retention",
-      "schedule": "43 1 * * *"
-    },
-    {
-      "path": "/api/cron/drain-email-outbox",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/cron/check-operational-health",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  "regions": ["bom1"]
 }

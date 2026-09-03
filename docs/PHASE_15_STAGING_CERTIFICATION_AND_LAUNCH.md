@@ -13,9 +13,11 @@ money. This runbook does not authorise production promotion, public domain
 attachment, or a live payment. Each requires separate explicit confirmation
 immediately before the action.
 
-The policies at version `2026-08-29-v1` are effective owner-approved copy.
-That status does not claim independent counsel, CA/accounting, Dodo
-underwriting, KYC, security, or infrastructure approval.
+The policies at version `2026-09-04-v2` are effective owner-approved copy. That
+status does not claim independent counsel or CA approval. The owner confirms
+Dodo merchant/KYC/business/bank/live capability and the GoneViral brand setup;
+that is not represented as a separate written model approval or a future
+provider-state guarantee.
 
 ## Secret-handling rule
 
@@ -138,10 +140,11 @@ excludes only the production schedule file during upload, and restores it in a
 `finally` block. Manually invoke and verify the authenticated cron routes in
 preview, but do not claim scheduler certification.
 
-The owner will make a separate production hosting and plan decision immediately
-before commercial launch and will use Supabase Free initially. Vercel Hobby
-remains preview-only under the currently recorded commercial-use boundary; an
-external scheduler does not change that restriction.
+The owner selected Vercel plus Supabase for Production and will use Supabase
+Free initially. Vercel Hobby remains preview-only under the currently recorded
+commercial-use boundary; Vercel Pro is required immediately before commercial
+Production. Cloudflare remains the only selected scheduler and does not change
+the Vercel plan restriction.
 The production host and scheduler must follow and pass
 `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The staging scheduler is one
 minimal Cloudflare Worker using three UTC Cron Triggers at the owner-approved
@@ -216,16 +219,27 @@ cleanup report beside the encrypted backup.
 ## Production and live-money hard gates
 
 Do not promote or attach `goneviral.in` until the user separately confirms the
-specific action and genuine evidence exists for the separately owner-selected
-commercial production host and plan with its documented controls, the
-certified Cloudflare Workers Cron scheduler, Supabase Free capacity and owner-
-accepted recovery posture, production isolation, DNS/TLS/email
-authentication, backup/restore, alerts,
-access/MFA, security review, counsel-reviewed legal/privacy/refund/content/
-disclosure/grievance requirements, CA-approved accounting/GST/invoice/place-of-
-supply handling, Dodo written model approval, KYC/entity/bank setup, and live
-credentials. The effective owner-approved policies are product copy, not
-evidence that the separate counsel and CA launch gates have passed.
+specific action and genuine evidence exists for Vercel Pro and its documented
+cost controls, the production-isolated Cloudflare Workers Cron scheduler,
+Supabase Free capacity and owner-accepted recovery posture, production
+isolation, DNS/TLS/email authentication, backup/restore, alerts, access/MFA,
+security review, the owner-authorized privacy-minimized geographic address on
+the dedicated operator/contact disclosure, current Dodo live status and exact live
+configuration, and the owner-accepted
+invoice/payout/GST/accounting evidence path. The owner confirms Dodo merchant,
+KYC/business, bank/payout, live capability, and brand setup. Do not fabricate a
+separate written Dodo approval, lawyer approval, or CA approval; require an
+additional provider artifact only if Dodo requests it. External lawyer and CA
+review are optional risk reduction rather than indefinite engineering gates.
+
+Follow `PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md` for the ordered remaining work
+and exact preparation-versus-authorization boundary.
+The owner-authorized redacted-address decision, accepted residual Rule 4(2)
+risk, GST operator identity, customer-versus-provider invoice distinction, and
+legitimate alternative-location path are in
+`PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`. Never copy, reconstruct, or
+log the omitted premise-level home-address details, and keep the exact GSTIN
+out of general source and website copy.
 
 Even after those gates, deploy first with payments disabled. Smoke public,
 Auth, admin, cron, webhook, and reconciliation reads. Register exact live URLs,

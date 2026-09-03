@@ -24,8 +24,15 @@ export default function ContactPage() {
       <section>
         <h2>Operator</h2>
         <p>
-          GoneViral.in is operated by Syed Irfan Ullah Quadri, sole proprietor,
-          trading as AltCorp, Kalaburagi, Karnataka, India.
+          GoneViral.in is operated by AltCorp, a proprietorship of Syed Irfan
+          Ullah Quadri, registered in Karnataka, India.
+        </p>
+        <p>
+          AltCorp is registered as a regular taxpayer under GST in Karnataka.
+          Dodo Payments acts as merchant of record for customer transactions and
+          supplies the customer transaction invoice under its terms. AltCorp’s
+          registration details appear only on applicable tax documents it issues
+          or receives.
         </p>
       </section>
       <section>
@@ -41,12 +48,19 @@ export default function ContactPage() {
         </p>
       </section>
       <section>
-        <h2>Grievance contact</h2>
+        <h2>Public operator address</h2>
+        <address>
+          4th Cross Road, Noor Khan Colony, Kalaburagi, Karnataka 585104, India
+        </address>
+      </section>
+      <section>
+        <h2>Grievance officer</h2>
         <p>
-          Syed Irfan Ullah Quadri receives privacy, consumer, content,
-          intellectual-property, and service grievances at the email above. Use
-          a clear subject, identify the relevant listing or payment without
-          exposing secrets, explain the issue, and include necessary evidence.
+          Syed Irfan Ullah Quadri is the Grievance Officer for privacy,
+          consumer, content, intellectual-property, and service grievances and
+          receives them at the email and mobile number above. Use a clear
+          subject, identify the relevant listing or payment without exposing
+          secrets, explain the issue, and include necessary evidence.
         </p>
         <p>
           We aim to acknowledge messages within 48 hours and resolve ordinary

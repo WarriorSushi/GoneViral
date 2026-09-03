@@ -82,13 +82,23 @@ export default function PrivacyPage() {
         <h2>5. Service providers and disclosures</h2>
         <p>
           We use Supabase for database, authentication, and storage; Vercel for
-          hosting and delivery; Dodo Payments for checkout and payment events;
-          Resend for transactional email; Sentry for controlled error
-          monitoring; and Cloudflare Turnstile for abuse prevention. They
-          process data under their terms and security controls. Data may also be
-          disclosed when legally required, to protect rights or safety, to
-          professional advisers under confidentiality, or as part of a lawful
-          business transfer. We do not sell personal data.
+          hosting and delivery; Resend for transactional email; Sentry for
+          controlled error monitoring; and Cloudflare Turnstile for abuse
+          prevention. They process data under their terms and security controls.
+        </p>
+        <p>
+          Dodo Payments provides hosted checkout and acts as merchant of record
+          for the customer transaction. It separately collects and processes
+          payment method, billing address, tax-identification, fraud, invoice,
+          refund, dispute, and compliance data as applicable under its own terms
+          and privacy notice. GoneViral receives only the provider identifiers,
+          status, amount, currency, and other bounded event data needed to
+          fulfil and reconcile placement; we do not store full card details.
+        </p>
+        <p>
+          Data may also be disclosed when legally required, to protect rights or
+          safety, to professional advisers under confidentiality, or as part of
+          a lawful business transfer. We do not sell personal data.
         </p>
       </section>
       <section>

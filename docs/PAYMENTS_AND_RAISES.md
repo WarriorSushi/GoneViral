@@ -15,9 +15,12 @@ same signed webhook handler as the hosted integration. `test_mode` and
 webhook identity, reconciliation, and refunds. Both require complete,
 environment-matching credentials. `PAYMENTS_ENABLED=false` is the default and
 keeps non-mock checkout creation disabled even when credentials are present.
-Live activation additionally requires the written provider, KYC, legal,
-accounting, infrastructure, backup, and security gates in the Phase 15 runbook;
-none are fabricated by this repository.
+The owner confirms Dodo merchant/KYC/business/bank/live capability and brand
+setup. Live activation still requires current provider status and exact live
+configuration plus the owner-approved legal/accounting, infrastructure, backup,
+security, and explicit authorization gates in the Phase 15 runbook; none are
+fabricated by this repository. A separate written model approval is required
+only if Dodo requests one.
 
 ## Initial sponsorship
 

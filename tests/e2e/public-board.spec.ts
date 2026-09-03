@@ -181,9 +181,28 @@ test("robots, sitemap, canonicals, and effective legal metadata stay public-safe
     );
   expect(legalRobots.join(",")).not.toMatch(/noindex/i);
   await expect(page.getByText("Effective owner-approved policy")).toBeVisible();
-  await expect(page.getByText("2026-08-29-v1")).toBeVisible();
-  await expect(page.getByText("29 August 2026")).toBeVisible();
+  await expect(page.getByText("2026-09-04-v2")).toBeVisible();
+  await expect(page.getByText("4 September 2026")).toBeVisible();
+  await expect(
+    page.getByText(
+      "GoneViral.in is operated by AltCorp, a proprietorship of Syed Irfan Ullah Quadri, registered in Karnataka, India.",
+    ),
+  ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.goto("/contact");
+  await expect(
+    page.getByText(
+      "4th Cross Road, Noor Khan Colony, Kalaburagi, Karnataka 585104, India",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "goneviral.in@gmail.com" }),
+  ).toHaveAttribute("href", "mailto:goneviral.in@gmail.com");
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.goto("/copyright");
+  await expect(
+    page.getByRole("link", { name: "goneviral.in@gmail.com" }),
+  ).toHaveAttribute("href", "mailto:goneviral.in@gmail.com");
 });
 
 test("signed-out management is generic, same-origin, and not publicly cached", async ({
@@ -468,7 +487,7 @@ test("Main, Today, category, and listing navigation use real public projections"
 
   await page.goto("/how-it-works");
   await expect(
-    page.getByRole("heading", { level: 1, name: "Pay. Get seen." }),
+    page.getByRole("heading", { level: 1, name: "Pay. Join the list." }),
   ).toBeVisible();
   await expect(
     page.getByText("No sign-up. No API. No nonsense."),

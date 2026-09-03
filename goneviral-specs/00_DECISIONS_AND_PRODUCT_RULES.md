@@ -780,6 +780,48 @@ workstreams, and upgrade triggers are in
 an infrastructure/risk decision and does not change product policy version,
 money semantics, provider authority, or any live-payment gate.
 
+Owner decision effective 2026-09-04:
+
+- Production remains on Vercel plus Supabase, with Cloudflare Workers Cron as
+  the only automatic scheduler; Vercel Cron is not part of the final topology.
+- Vercel Pro is required immediately before commercial Production because the
+  published Hobby boundary is non-commercial. It is not required for staging.
+- The owner confirms Dodo merchant/KYC/business/bank/live capability and the
+  GoneViral brand are configured for this sponsored-listing model. A separate
+  written model-approval artifact is not a gate unless Dodo requests it; the
+  provider's live account status and merchant-acceptance policy remain ongoing
+  conditions.
+- The public policies are effective owner-drafted terms. External lawyer and CA
+  review are optional risk reduction, not indefinite engineering gates. The
+  owner accepts responsibility for current legal, GST, invoice, payout, and
+  accounting treatment without representing professional approval.
+- Production deployment/domain, live credentials, payments/refunds, cleanup,
+  and Phase 16 retain their separate authorization boundaries.
+
+Owner-supplied GST/operator decision effective 2026-09-04:
+
+- Syed Irfan Ullah Quadri is the legal proprietor; AltCorp is the GST trade
+  name/operator; the constitution is proprietorship; the registration is
+  Karnataka Regular effective 11 December 2025; and GoneViral is only the
+  product/website brand.
+- The unrelated additional trade name on the GST certificate must not appear on
+  GoneViral legal, tax, invoice, footer, policy, or customer copy.
+- The GST-registered principal place is a private residential address. The
+  owner authorizes only `4th Cross Road, Noor Khan Colony, Kalaburagi,
+  Karnataka 585104, India` for the dedicated public Contact/operator
+  disclosure. Never publish, commit, infer, reconstruct, or log the omitted
+  house/flat number, building/premises name, or nearby landmark.
+- Do not duplicate the authorized redacted address in the footer, metadata,
+  checkout, or unrelated policies. The owner accepts the residual compliance/
+  privacy risk that omitting premise-level details may not satisfy every
+  interpretation of Consumer Protection (E-Commerce) Rule 4(2); this is not a
+  claim of lawyer approval and is no longer an engineering blocker.
+- The exact GSTIN stays out of general website/source copy and is used only in
+  genuine provider/accounting records or applicable AltCorp-issued tax
+  documents. A future genuine alternative business headquarters may further
+  reduce the address risk only after the applicable business/GST records are
+  amended.
+
 ---
 
 ## 30. Policy evolution

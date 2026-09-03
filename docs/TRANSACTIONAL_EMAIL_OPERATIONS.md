@@ -94,6 +94,10 @@ CRON_SECRET=<server secret>
 
 `RESEND_REPLY_TO` is optional. Local and test environments use
 `EMAIL_DELIVERY_MODE=mock`; the application rejects that mode in production.
+For GoneViral hosted environments, keep the branded transactional From as
+`notifications@updates.goneviral.in` and route application-email replies to the
+public support address `goneviral.in@gmail.com`. Supabase Auth uses the same
+branded sender independently and is not changed by `RESEND_REPLY_TO`.
 The owner-selected Cloudflare Workers Cron scheduler will invoke this worker
 every five minutes. Durable rows wait safely through a delayed or missed
 schedule and the next run catches up without changing the worker/outbox

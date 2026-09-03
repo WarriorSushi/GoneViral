@@ -117,7 +117,7 @@ try {
     DODO_PAYMENTS_BUSINESS_ID = "bus_0Na3wgD5PCSJBuqMJ3qdP"
     DODO_PAYMENTS_PRODUCT_ID = "pdt_0NmSnEdwALRKJDCADcAai"
     RESEND_FROM_EMAIL = "notifications@updates.goneviral.in"
-    RESEND_REPLY_TO = "pashaseenainc@gmail.com"
+    RESEND_REPLY_TO = "goneviral.in@gmail.com"
     SENTRY_ORG = "altcorp-ri"
     SENTRY_PROJECT = "goneviral"
   }

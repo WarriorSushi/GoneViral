@@ -7,15 +7,16 @@ Last updated: 2026-09-04 (Asia/Kolkata)
 - Use Supabase Free initially. The owner accepts no managed PITR, weaker
   provider recovery guarantees, possible inactivity pause, dependence on
   GoneViral's encrypted backup procedure, and possible recovery downtime.
-- Use Cloudflare Workers Cron as the staging scheduler. Keep GitHub scheduled
+- Use Cloudflare Workers Cron as the staging and final Production scheduler
+  topology. Keep GitHub scheduled
   operations manually disabled with no enable variable, and remove its
   temporary canary. Do not use Vercel Cron for staging.
 - Accept a five-minute email-outbox cadence instead of one minute. Any external
   scheduler can be delayed, missed, or duplicated; durable, idempotent workers
   must catch up safely on the next run.
 - Do not use the owner's existing VPS; it is reserved for OTTR.
-- Do not purchase or require Vercel Pro during private staging. Production
-  hosting and plan selection are a separate owner decision immediately before
+- Do not purchase or require Vercel Pro during private staging. Production uses
+  Vercel plus Supabase, and Vercel Pro is required immediately before
   commercial launch. Vercel Hobby remains private-preview/development only
   under the currently recorded commercial-use boundary.
 - Upgrade Vercel or Supabase further only after measured traffic, reliability,
@@ -252,14 +253,16 @@ Official references:
    wait or poll for the daily event, change or redeploy the scheduler, repeat
    the five passed manual routes, or repeat settled database, restore, or E2E
    evidence without an invalidating change.
-7. Frozen application candidate
+7. The prior frozen application candidate
    `b8298a798efce1195b7c5ad38add60d8a54b2fd1` passed its exact-tree required CI
-   and complete local release matrix. The current production-readiness decision
-   is no-go. Resolve the genuine provider, KYC/bank, counsel,
-   accounting/GST/invoice,
-   domain/email, security/access, alerting, and production-isolation gates.
-8. Immediately before commercial launch, make a separate owner decision on the
-   production host and plan. Production remains payments-off until the exact
+   and complete local release matrix. A later genuine launch-critical policy
+   and topology change supersedes it only after focused tests and required CI.
+   The owner-authorized redacted public address closes the engineering address
+   gate with a recorded residual compliance/privacy risk. Resolve current live-
+   provider configuration, invoice/payout/accounting evidence, domain/email,
+   security/access, alerting, and production-isolation gates.
+8. Immediately before commercial launch, authorize and purchase Vercel Pro with
+   the reviewed spend controls. Production remains payments-off until the exact
    release suite and minimal production smoke pass.
 9. Request separate immediate authorization before the one legitimate founder-
    owned live transaction, before enabling payments/refunds, and before
