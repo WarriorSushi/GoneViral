@@ -27,12 +27,17 @@ lawyer or CA pre-approve these policies before launch.
 
 ## Launch blockers
 
-1. The public Contact page identifies the proprietor, trading name, city,
-   state, country, email, mobile number, and Grievance Officer, but the
-   repository contains no complete principal geographic/postal address. The
-   owner must provide or confirm the exact non-secret address that may be
-   published before the release candidate can be final. Do not infer it from a
-   provider account or GST registration.
+1. The owner confirmed that AltCorp's GST-registered principal place is a
+   private residential address; it is the only authoritative principal business
+   address currently supplied. Consumer Protection
+   (E-Commerce) Rule 4(2) requires the legal name and principal geographic
+   address to be displayed clearly, accessibly, and prominently on the
+   platform. The owner has not authorized publishing the home address. Before
+   the release candidate can be final, the owner must either confirm it as the
+   relevant headquarters and authorize that exact publication, or establish a
+   genuine non-residential business headquarters and amend the applicable GST/
+   business records. Do not infer, reconstruct, commit, or publish the
+   residential address.
 2. The owner must authorize and complete the Vercel Pro purchase with the
    accepted spend controls before any commercial Production deployment or
    `goneviral.in` attachment.
@@ -82,10 +87,14 @@ and Dodo's merchant-of-record role.
 
 The Consumer Protection (E-Commerce) Rules require prominent operator and
 principal-address details, customer-care/grievance contacts, an adequate
-grievance process, and accurate refund and service information. The complete
-public principal address is therefore the one known missing disclosure. The
+grievance process, and accurate refund and service information. They require
+the address on the platform but do not require it to be repeated in Terms,
+Privacy, Refunds, paid-placement copy, checkout, every footer, or metadata. The
+least-duplicative implementation is one dedicated Contact/operator disclosure,
+prominently linked from the footer, checkout, and relevant policies. The
 current 48-hour acknowledgement and 30-day ordinary-resolution targets match
-the rule's outer timings.
+the rule's outer timings. The exact address/privacy analysis is in
+`PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`.
 
 The 13 November 2025 commencement notification phases most substantive Digital
 Personal Data Protection Act duties and corresponding Rules to eighteen months
@@ -99,26 +108,34 @@ current professional approval.
 
 Dodo publicly documents that it acts as merchant of record/legal seller for the
 customer transaction, calculates and remits customer-side transaction taxes,
-and generates an invoice for each successful transaction. The current design
-therefore treats the Dodo document as the customer transaction invoice and does
-not issue a second GoneViral customer tax invoice. The application keeps the
-placement ledger and bounded provider payment/adjustment identifiers; it does
-not store customer billing addresses, tax breakdowns, Dodo fees, or payout
-settlements and is not the statutory accounting ledger. Any required operator-
-to-Dodo supplier invoice, self-billing, payout, GST, or income-recognition
-treatment remains an owner accounting decision based on the genuine provider
-agreement and documents.
+and generates an invoice carrying Dodo's tax details for each successful
+transaction. The current design therefore treats the Dodo document as the
+customer transaction invoice and does not issue a second GoneViral/AltCorp
+customer tax invoice. The application keeps the placement ledger and bounded
+provider payment/adjustment identifiers; it does not store customer billing
+addresses, tax breakdowns, Dodo fees, or payout settlements and is not the
+statutory accounting ledger. Any required operator-to-Dodo supplier invoice,
+self-billing, payout, GST, or income-recognition treatment remains an owner
+accounting decision based on the genuine provider agreement and documents.
+
+The owner supplied authoritative operator/tax data: Syed Irfan Ullah Quadri is
+the legal proprietor, AltCorp is the GST trade name/operator, the constitution
+is proprietorship, and the Karnataka Regular registration is effective from
+11 December 2025. GoneViral is the product brand. The unrelated additional
+trade name must not appear on GoneViral surfaces. The exact GSTIN is intentionally
+not stored in this public repository or rendered on the site while its public
+lookup would expose the unresolved principal-place details.
 
 Before live activation, the owner must verify one genuine Dodo live invoice
-shows the correct legal seller, GoneViral product/brand, customer details, and
-tax breakdown; export the corresponding Dodo transaction, refund, fee, and
-payout reports; and define how net Dodo payouts and provider documents are
-recorded in AltCorp's books and GST/income-tax filings. No GSTIN value is stored
-in the repository, so none is displayed or invented. The owner's existing GST
-registration remains an owner-controlled record. CBIC rules still require the
-registered person responsible for any applicable invoice/record to maintain the
-prescribed supplier/recipient, tax, place-of-supply, serial, and books-and-
-records evidence.
+shows Dodo as the correct legal seller, GoneViral product/brand, customer
+details, Dodo tax details, and tax breakdown; inspect the corresponding Indian-
+business payout/reverse invoice; export the transaction, refund, fee, and payout
+reports; and define how net payouts and provider documents are recorded in
+AltCorp's books and GST/income-tax filings. CBIC rules require an AltCorp-issued
+tax invoice, if one is genuinely required for a separate supply, to carry the
+supplier's legal name, genuine address, and GSTIN plus the other prescribed
+fields. Do not expose those fields on Dodo's customer invoice merely as brand
+details.
 
 ## Ordered production rollout
 
@@ -126,8 +143,10 @@ records evidence.
 
 1. Keep `vercel.json` free of cron definitions so Cloudflare remains the only
    scheduler. Preserve Mumbai (`bom1`) application/database proximity.
-2. Finalize policy version `2026-09-04-v2`, its checkout acceptance snapshot,
-   and the exact public principal address. Historical `2026-08-29-v1`
+2. Finalize policy version `2026-09-04-v2` and its checkout acceptance snapshot
+   after the owner resolves the private-address gate: authorize the current
+   address for the dedicated Contact disclosure, or first register and approve
+   a genuine replacement business headquarters. Historical `2026-08-29-v1`
    acceptances and in-flight attempts retain their stored versions; no payment
    or ledger history is reinterpreted or migrated.
 3. Freeze one release candidate after focused tests and the single required CI

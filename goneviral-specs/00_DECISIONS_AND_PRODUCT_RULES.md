@@ -798,6 +798,24 @@ Owner decision effective 2026-09-04:
 - Production deployment/domain, live credentials, payments/refunds, cleanup,
   and Phase 16 retain their separate authorization boundaries.
 
+Owner-supplied GST/operator decision effective 2026-09-04:
+
+- Syed Irfan Ullah Quadri is the legal proprietor; AltCorp is the GST trade
+  name/operator; the constitution is proprietorship; the registration is
+  Karnataka Regular effective 11 December 2025; and GoneViral is only the
+  product/website brand.
+- The unrelated additional trade name on the GST certificate must not appear on
+  GoneViral legal, tax, invoice, footer, policy, or customer copy.
+- The GST-registered principal place is a private residential address. Never
+  publish, commit, infer, or reconstruct it without separate owner authorization.
+  The exact GSTIN also stays out of general website/source copy and is used only
+  in genuine provider/accounting records or applicable AltCorp-issued tax
+  documents.
+- Commercial launch requires one owner decision: authorize the current
+  headquarters address for the dedicated public operator/contact disclosure,
+  or first establish a genuine alternative business headquarters and amend the
+  applicable GST/business records.
+
 ---
 
 ## 30. Policy evolution

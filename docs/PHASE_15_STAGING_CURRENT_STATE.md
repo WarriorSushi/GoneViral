@@ -912,7 +912,8 @@ how-it-works copy; and snapshot new checkout acceptances at policy version
 stored versions and no financial history is reinterpreted. The repository still
 lacks the complete principal geographic/postal address required for the final
 public Contact disclosure. No GSTIN value or full address was inferred or
-invented.
+invented. The later owner-supplied GST facts and private-address decision are
+recorded below without copying either value into the repository.
 
 Launch-critical implementation commit
 `0809cc5851320f42862bd4cef64cf8bbd74d9e49` passed the two affected Vitest
@@ -926,3 +927,55 @@ provider or hosted state changed during this audit.
 The ordered remaining preparation, authorization boundaries, exact Production
 configuration inventory, genuine blockers, owner/provider/accounting gates,
 and optional deferrals are in `PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md`.
+
+## 2026-09-04 GST/operator and private-address decision
+
+The owner supplied authoritative GST-certificate facts: Syed Irfan Ullah
+Quadri is the legal proprietor; AltCorp is the GST trade name/operator; the
+constitution is proprietorship; the Karnataka Regular registration is
+effective from 11 December 2025; and GoneViral is the product/website brand.
+The certificate's unrelated additional trade name is out of scope and does not
+appear in GoneViral code or documentation.
+
+The exact GSTIN was supplied for owner/provider/accounting reconciliation but
+is intentionally not copied into the public repository or website. GSTN's
+public taxpayer search can expose principal-place information from a GSTIN.
+The full registered principal place is the owner's residential/home address and
+is private; it was not copied, inferred, reconstructed, printed, or committed.
+
+Current official-source research found that Consumer Protection (E-Commerce)
+Rule 4(2), rather than each individual policy or the GST website-display rules,
+requires the operator's legal name and principal geographic address clearly,
+accessibly, and prominently on the platform. One dedicated Contact/operator
+disclosure, prominently linked from the footer, checkout, and relevant legal
+surfaces, is the least-duplicative implementation; the full address need not be
+repeated in every policy, footer, checkout form, disclosure, or metadata.
+
+The current home address is therefore a launch blocker but remains behind a
+single owner privacy decision: authorize its exact public disclosure, or first
+establish a genuine non-residential headquarters and amend the applicable GST/
+business records. A real shared/co-working location with valid possession
+documents can qualify; a cosmetic mail-forwarding address cannot safely replace
+the actual headquarters/place of business. Merely adding a branch does not
+remove the headquarters disclosure.
+
+CGST Rule 46 requires an invoice issued by a registered supplier to carry that
+supplier's name, address, and GSTIN. Dodo documents itself as legal seller and
+merchant of record on the customer transaction and says its customer invoice
+carries Dodo tax details; on that model AltCorp's residential address is not a
+customer-invoice field. The genuine Dodo live customer invoice and Indian-
+business payout/reverse invoice must still be inspected before activation, and
+the owner must settle the actual AltCorp-to-Dodo GST/accounting treatment from
+those documents without inventing it. Full analysis and primary links are in
+`PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`.
+
+Public operator/invoice-copy implementation commit
+`d56777e744fc4cd5fc8b510de51ec6038fbaf153` uses the authoritative
+AltCorp/proprietorship identity without storing the GSTIN or residential
+address, adds the GST registration-status and Dodo invoice distinction on the
+Contact surface, and clarifies Dodo's role immediately before checkout. The
+focused public-board Playwright file passed 11/11 tests; Prettier, ESLint, and
+TypeScript checking also passed. The required final CI suite remains deferred
+until the owner resolves the address path, so it runs once on the actual final
+release candidate. No Preview, scheduler, provider, database, or other hosted
+state changed.

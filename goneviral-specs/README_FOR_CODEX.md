@@ -163,9 +163,11 @@ Codex may build through sandbox phases, but production payments remain disabled 
 - [ ] current Dodo status, exact live credentials/product/URLs, and any actual
       provider-requested approval are verified immediately before live use;
 - [ ] owner-approved Terms, Privacy, paid-ranking disclosure, content, refund,
-      and grievance process include the complete public principal address;
-- [ ] owner verifies genuine Dodo invoice/payout evidence and accepts the
-      GST/invoicing/accounting treatment;
+      and grievance process include an owner-authorized principal geographic
+      address on the dedicated public Contact/operator disclosure;
+- [ ] owner verifies genuine Dodo customer-invoice and Indian-business payout/
+      reverse-invoice evidence and accepts the GST/invoicing/accounting
+      treatment;
 - [ ] `goneviral.in` and authenticated email sending are configured;
 - [ ] Vercel Pro and its cost controls are active in the selected region;
 - [ ] Supabase Free capacity, encrypted backup freshness, and owner-accepted

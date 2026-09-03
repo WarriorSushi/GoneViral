@@ -257,7 +257,7 @@ Official references:
    `b8298a798efce1195b7c5ad38add60d8a54b2fd1` passed its exact-tree required CI
    and complete local release matrix. A later genuine launch-critical policy
    and topology change supersedes it only after focused tests and required CI.
-   Resolve the complete public principal address, current live-provider
+   Resolve the private principal-address disclosure, current live-provider
    configuration, invoice/payout/accounting evidence, domain/email,
    security/access, alerting, and production-isolation gates.
 8. Immediately before commercial launch, authorize and purchase Vercel Pro with

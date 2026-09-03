@@ -66,6 +66,13 @@ The budget-plan commit pushed before scheduler implementation was
 - The owner will launch with owner-drafted public policies and owner-managed
   GST/invoice/payout/accounting treatment. External lawyer and CA review are
   optional risk reduction and must not be represented as completed.
+- The owner supplied authoritative GST/operator data: Syed Irfan Ullah Quadri
+  is the legal proprietor, AltCorp is the Karnataka Regular GST trade
+  name/operator effective 11 December 2025, and GoneViral is the product brand.
+  The exact GSTIN and private residential principal-place address stay outside
+  the public repository and website unless a specific legal/document gate
+  requires them. The unrelated additional trade name must never appear on
+  GoneViral surfaces.
 - Upgrade Supabase/Vercel further only after measured traffic, reliability need,
   or revenue justifies it.
 - No production deployment, domain attachment, live credential/payment/refund,
@@ -209,11 +216,13 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-The single next launch-critical task is to complete and freeze the legal/
-production-topology release candidate, including the exact public principal
-geographic address, policy version `2026-09-04-v2`, and Cloudflare-only
-scheduler configuration. Then proceed through the ordered Production checklist
-only at its explicit authorization boundaries. The daily Cloudflare result is
+The single next launch-critical task is the owner's private-address compliance
+decision: if the registered home is the relevant headquarters, explicitly
+authorize its use on the dedicated public Contact/operator disclosure; or first
+establish a genuine non-residential business headquarters and amend the
+applicable GST and business records. Then add only the approved address and run
+the one final CI boundary for policy version `2026-09-04-v2`. The daily
+Cloudflare result is
 recorded separately after it naturally occurs. Do not change or redeploy the
 current scheduler, begin an optional sweep, deploy Production, attach
 `goneviral.in`, or use live credentials/payments without the stated gate.
@@ -239,9 +248,10 @@ current scheduler, begin an optional sweep, deploy Production, attach
   webhook/return/payout-bank verification. Merchant/KYC/business/bank/live
   capability is owner-confirmed; separate written approval is required only if
   Dodo requests it.
-- Complete public principal geographic address and owner verification of the
-  Dodo merchant-of-record invoice/payout/GST/accounting evidence path. External
-  lawyer and CA review are optional, not launch gates.
+- Owner resolution of the private residential-address gate and verification of
+  the Dodo merchant-of-record customer invoice plus Indian-business payout/
+  reverse-invoice/GST/accounting evidence path. External lawyer and CA review
+  are optional, not launch gates.
 - Authorized prelaunch cleanup, if still required by the runbook.
 - Separately authorized minimal payments-off production smoke.
 - Separately authorized legitimate founder-owned low-value transaction and
@@ -249,6 +259,8 @@ current scheduler, begin an optional sweep, deploy Production, attach
 
 The exact sequence and provider-specific configuration inventory are in
 `PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md`.
+The address, GSTIN, invoice, and legitimate alternative-business-location
+analysis is in `PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`.
 
 ## Phase 16: only after launch
 

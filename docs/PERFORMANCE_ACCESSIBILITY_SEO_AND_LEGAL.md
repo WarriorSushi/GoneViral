@@ -124,7 +124,8 @@ optional risk reduction.
 - current Dodo live status and exact live credential/product/URL verification;
 - hosted Sentry, alert delivery, Storage, and restore evidence;
 - external penetration testing;
-- the complete public principal geographic address and owner verification of a
-  genuine Dodo invoice/payout/GST/accounting evidence path;
+- owner resolution of the private principal-address disclosure and verification
+  of a genuine Dodo customer invoice plus Indian-business payout/reverse-
+  invoice/GST/accounting evidence path;
 - optional external lawyer and CA review;
 - manual NVDA/VoiceOver/TalkBack and real-device/staging certification.

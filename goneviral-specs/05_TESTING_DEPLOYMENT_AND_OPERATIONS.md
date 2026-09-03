@@ -1051,10 +1051,13 @@ Set budget alerts on Vercel, Supabase, Resend, Sentry and provider where availab
       live credentials/product/URLs, and no pending provider action. Require a
       separate written model approval only if Dodo requests one.
 - [ ] Terms/Privacy/Refund/Content/How-it-works owner-approved and the complete
-      public principal geographic address supplied.
+      principal geographic address authorized for the dedicated public
+      Contact/operator disclosure. Do not publish the current residential
+      address without a separate owner decision.
 - [ ] Sponsored ranking/no-guarantee disclosure visible.
 - [ ] Owner verifies a genuine Dodo merchant-of-record invoice and defines the
-      payout/GST/accounting evidence process; optional CA review is not a gate.
+      Indian-business payout/reverse-invoice/GST/accounting evidence process;
+      optional CA review is not a gate.
 - [ ] grievance/support/contact process staffed.
 
 ### Infrastructure

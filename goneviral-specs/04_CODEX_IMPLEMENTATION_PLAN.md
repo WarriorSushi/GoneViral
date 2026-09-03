@@ -901,7 +901,8 @@ Do not enable production payments until all are true:
   listing model, with no pending provider action; a separate written approval
   is required only if Dodo requests one;
 - effective owner-approved Terms/Privacy/refund/content/disclosure/grievance
-  process and complete public operator/principal-address details;
+  process and an owner-authorized principal geographic address on the dedicated
+  public operator/contact disclosure;
 - owner-accepted GST/invoice/place-of-supply/payout/accounting process based on
   genuine Dodo merchant-of-record documents and existing registration records;
   optional lawyer/CA review is not an engineering blocker;
@@ -922,6 +923,13 @@ The owner's merchant/KYC/business/bank/live-capability and GoneViral-brand
 attestation closes those generic provider setup gates. It does not fabricate a
 written model approval or future Dodo status. Live credentials and every live
 action remain behind their separate authorization.
+
+The owner-supplied GST certificate identifies Syed Irfan Ullah Quadri as the
+legal proprietor, AltCorp as the Karnataka Regular GST trade name/operator, and
+GoneViral as the product brand. The registered principal place is a private home
+address and is not authorized for publication. Resolve the dedicated public
+address gate by owner authorization or a genuine amended business headquarters;
+do not copy the residential address or exact GSTIN into the repository.
 
 The 2026-09-02 budget decision and required Phase 15 adaptation sequence are
 recorded in `../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. Vercel Hobby
