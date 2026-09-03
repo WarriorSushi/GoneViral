@@ -8,6 +8,6 @@ export const CONTENT_POLICY_VERSION = LEGAL_POLICY_VERSION;
 
 export const LEGAL_OPERATOR =
   "GoneViral.in is operated by AltCorp, a proprietorship of Syed Irfan Ullah Quadri, registered in Karnataka, India." as const;
-export const LEGAL_EMAIL = "pashaseenainc@gmail.com" as const;
+export const LEGAL_EMAIL = "goneviral.in@gmail.com" as const;
 export const LEGAL_PHONE_DISPLAY = "+91 92022 03896" as const;
 export const LEGAL_PHONE_HREF = "+919202203896" as const;

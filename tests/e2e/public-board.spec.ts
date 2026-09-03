@@ -195,7 +195,14 @@ test("robots, sitemap, canonicals, and effective legal metadata stay public-safe
       "4th Cross Road, Noor Khan Colony, Kalaburagi, Karnataka 585104, India",
     ),
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "goneviral.in@gmail.com" }),
+  ).toHaveAttribute("href", "mailto:goneviral.in@gmail.com");
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.goto("/copyright");
+  await expect(
+    page.getByRole("link", { name: "goneviral.in@gmail.com" }),
+  ).toHaveAttribute("href", "mailto:goneviral.in@gmail.com");
 });
 
 test("signed-out management is generic, same-origin, and not publicly cached", async ({

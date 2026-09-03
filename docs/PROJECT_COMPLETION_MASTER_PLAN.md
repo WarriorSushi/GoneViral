@@ -75,6 +75,11 @@ The budget-plan commit pushed before scheduler implementation was
   residual Rule 4(2) interpretation risk is owner-accepted, not lawyer-
   approved. The unrelated additional trade name must never appear on GoneViral
   surfaces.
+- The public support, legal, grievance, privacy, and copyright address is
+  `goneviral.in@gmail.com`. Transactional Reply-To uses the same address. The
+  branded application and Supabase Auth senders remain
+  `notifications@updates.goneviral.in`; support/Reply-To and From identities
+  are intentionally separate.
 - Upgrade Supabase/Vercel further only after measured traffic, reliability need,
   or revenue justifies it.
 - No production deployment, domain attachment, live credential/payment/refund,

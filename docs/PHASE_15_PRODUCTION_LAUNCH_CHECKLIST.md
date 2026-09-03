@@ -161,7 +161,8 @@ details.
      `DODO_PAYMENTS_PRODUCT_ID`, `DODO_PAYMENTS_WEBHOOK_KEY`, and
      `PAYMENTS_ENABLED=false`;
    - email/abuse/crypto: `EMAIL_DELIVERY_MODE=resend`, `RESEND_API_KEY`,
-     `RESEND_FROM_EMAIL`, optional `RESEND_REPLY_TO`,
+     `RESEND_FROM_EMAIL=notifications@updates.goneviral.in`,
+     `RESEND_REPLY_TO=goneviral.in@gmail.com`,
      `RESEND_WEBHOOK_SECRET`, `TURNSTILE_MODE=cloudflare`,
      `TURNSTILE_SECRET_KEY`, `SUBMISSION_HMAC_SECRET`,
      `CLICK_HMAC_SECRET_CURRENT`, optional rotation predecessors,

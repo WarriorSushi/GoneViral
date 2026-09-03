@@ -987,3 +987,16 @@ tablet, Firefox, and WebKit profiles; Prettier, ESLint, and TypeScript checking
 also passed. The single final CI/merge/Preview refresh boundary is next. No
 Preview, scheduler, provider, database, or other hosted state changed at this
 checkpoint.
+
+## 2026-09-04 support and Reply-To identity decision
+
+The owner selected `goneviral.in@gmail.com` for public support, legal,
+grievance, privacy-linked, and copyright correspondence and for transactional
+application-email Reply-To. The branded application From and Supabase Auth SMTP
+sender remain `notifications@updates.goneviral.in` and are intentionally
+separate. Repository implementation updates the central legal identity and the
+safe Preview-provider provisioning source; reserved test/example addresses are
+unchanged. Preview `RESEND_REPLY_TO` was updated and read back as
+`goneviral.in@gmail.com`; `RESEND_FROM_EMAIL` was read back unchanged as
+`notifications@updates.goneviral.in`. No sender/domain authentication,
+Supabase Auth SMTP, Production configuration, secret, or hosted data changed.
