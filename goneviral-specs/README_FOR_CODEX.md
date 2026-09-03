@@ -150,22 +150,24 @@ Customer-facing copy uses **add your work**, **pay**, **move up**, **paid list**
 **sponsorship**, or **sponsored rank**; those remain internal business, provider,
 database, and legal terms. Avoid defining the transaction as an auction, game,
 bet, prize or investment. Every board and checkout discloses paid ordering and
-no guarantee of impressions, clicks, sales or virality. Indian counsel and a
-chartered accountant are launch gates for Terms, DPDP/privacy,
-content/grievance duties, refunds, GST invoices and place-of-supply.
+no guarantee of impressions, clicks, sales or virality. The owner approves the
+legal and accounting treatment; external lawyer and chartered-accountant review
+are optional risk reduction and must never be fabricated.
 
 ## Commercial launch gates
 
 Codex may build through sandbox phases, but production payments remain disabled until:
 
-- [ ] lawful merchant entity and bank account are ready;
-- [ ] Dodo Payments or an approved replacement provider has approved the exact model in writing;
-- [ ] KYC and live credentials are approved;
-- [ ] Indian counsel has reviewed Terms, Privacy, sponsored-ranking disclosure, content and refund policy;
-- [ ] CA has approved GST/invoicing/accounting treatment;
+- [x] owner confirms Dodo merchant/KYC/business/bank/live capability and the
+      GoneViral brand are configured for the sponsored-listing model;
+- [ ] current Dodo status, exact live credentials/product/URLs, and any actual
+      provider-requested approval are verified immediately before live use;
+- [ ] owner-approved Terms, Privacy, paid-ranking disclosure, content, refund,
+      and grievance process include the complete public principal address;
+- [ ] owner verifies genuine Dodo invoice/payout evidence and accepts the
+      GST/invoicing/accounting treatment;
 - [ ] `goneviral.in` and authenticated email sending are configured;
-- [ ] the separately selected commercial production host/plan and its cost
-      controls are active in the selected region;
+- [ ] Vercel Pro and its cost controls are active in the selected region;
 - [ ] Supabase Free capacity, encrypted backup freshness, and owner-accepted
       recovery posture are verified;
 - [ ] the Cloudflare Workers Cron scheduler safety and cadence gates pass;

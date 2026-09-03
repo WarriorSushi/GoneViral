@@ -55,10 +55,17 @@ The budget-plan commit pushed before scheduler implementation was
   health every five minutes; reconciliation hourly; cleanup daily. Delayed or
   dropped scheduled runs catch up through durable/idempotent workers.
 - Existing VPS is reserved for OTTR and is out of scope for GoneViral.
-- Do not purchase or require Vercel Pro during staging. The owner will choose
-  the production host and plan immediately before commercial launch, with the
-  applicable cost, commercial-use, rollback, and operational controls reviewed
-  then.
+- Do not purchase or require Vercel Pro during staging. Production will use
+  Vercel plus Supabase, with Vercel Pro purchased immediately before commercial
+  launch and its cost, rollback/pause, and operational controls reviewed then.
+- Cloudflare Workers Cron is the final scheduler topology. Vercel Cron must not
+  be registered in Production.
+- The owner confirms Dodo merchant/KYC/business/bank/live capability and the
+  GoneViral brand setup for the sponsored-listing model. Do not retain a
+  separate written model approval as a blocker unless Dodo requests it.
+- The owner will launch with owner-drafted public policies and owner-managed
+  GST/invoice/payout/accounting treatment. External lawyer and CA review are
+  optional risk reduction and must not be represented as completed.
 - Upgrade Supabase/Vercel further only after measured traffic, reliability need,
   or revenue justifies it.
 - No production deployment, domain attachment, live credential/payment/refund,
@@ -202,13 +209,14 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-The single next launch-critical task is owner/provider closure of Dodo's written
-approval for the exact sponsored-advertising model and completion of merchant
-KYC/entity/bank readiness, with only sanitized evidence recorded. Counsel and
-CA/accounting review should proceed as owner/provider gates, while the daily
-Cloudflare result is recorded separately after it naturally occurs. Do not
-change or redeploy the scheduler, begin an optional sweep, deploy production,
-attach `goneviral.in`, or use live credentials/payments.
+The single next launch-critical task is to complete and freeze the legal/
+production-topology release candidate, including the exact public principal
+geographic address, policy version `2026-09-04-v2`, and Cloudflare-only
+scheduler configuration. Then proceed through the ordered Production checklist
+only at its explicit authorization boundaries. The daily Cloudflare result is
+recorded separately after it naturally occurs. Do not change or redeploy the
+current scheduler, begin an optional sweep, deploy Production, attach
+`goneviral.in`, or use live credentials/payments without the stated gate.
 
 ### Remaining Phase 15 gates
 
@@ -222,18 +230,25 @@ attach `goneviral.in`, or use live credentials/payments.
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint. These are not current
   launch blockers absent a relevant new failure or owner risk decision.
-- Separate production host/plan decision and its purchase/configuration/cost-
-  control evidence immediately before commercial launch.
+- Vercel Pro purchase/configuration/cost-control evidence immediately before
+  commercial launch; Hobby remains Preview-only.
 - Production-specific project isolation, region, environment, DNS/TLS,
   `goneviral.in`, Supabase Auth URLs, email authentication, webhook URLs,
   secrets, monitoring, alerts, backup cadence, and rollback verification.
-- Genuine Dodo model approval, KYC/entity/bank/live credentials.
-- Genuine counsel and CA approval of legal/privacy/refund/content/grievance and
-  GST/invoice/accounting/place-of-supply obligations.
+- Current Dodo live status and exact live business/brand/product/credential/
+  webhook/return/payout-bank verification. Merchant/KYC/business/bank/live
+  capability is owner-confirmed; separate written approval is required only if
+  Dodo requests it.
+- Complete public principal geographic address and owner verification of the
+  Dodo merchant-of-record invoice/payout/GST/accounting evidence path. External
+  lawyer and CA review are optional, not launch gates.
 - Authorized prelaunch cleanup, if still required by the runbook.
 - Separately authorized minimal payments-off production smoke.
 - Separately authorized legitimate founder-owned low-value transaction and
   exact end-to-end reconciliation before payment enablement.
+
+The exact sequence and provider-specific configuration inventory are in
+`PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md`.
 
 ## Phase 16: only after launch
 

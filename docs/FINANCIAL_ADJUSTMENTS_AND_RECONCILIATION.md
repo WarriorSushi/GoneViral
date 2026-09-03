@@ -94,7 +94,9 @@ interface; Phase 10 owns reviewed admin workflows.
 ## Human and infrastructure gates
 
 No Dodo test or production calls have been claimed without real credentials.
-Hosted cron execution, alert routing, provider reconciliation against a real
-Dodo test business, and legal/accounting/refund-policy approval remain human or
-infrastructure gates. Production credentials and provider state must never be
+The owner confirms the merchant/KYC/business/bank/live-capability and brand
+setup. Production still requires current Dodo status, exact live configuration,
+hosted scheduler/alerts, genuine reconciliation, and owner-accepted legal,
+refund, invoice, payout, GST, and accounting evidence. Optional professional
+review is not a gate. Production credentials and provider state must never be
 fabricated.

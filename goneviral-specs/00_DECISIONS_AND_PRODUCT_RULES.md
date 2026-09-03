@@ -780,6 +780,24 @@ workstreams, and upgrade triggers are in
 an infrastructure/risk decision and does not change product policy version,
 money semantics, provider authority, or any live-payment gate.
 
+Owner decision effective 2026-09-04:
+
+- Production remains on Vercel plus Supabase, with Cloudflare Workers Cron as
+  the only automatic scheduler; Vercel Cron is not part of the final topology.
+- Vercel Pro is required immediately before commercial Production because the
+  published Hobby boundary is non-commercial. It is not required for staging.
+- The owner confirms Dodo merchant/KYC/business/bank/live capability and the
+  GoneViral brand are configured for this sponsored-listing model. A separate
+  written model-approval artifact is not a gate unless Dodo requests it; the
+  provider's live account status and merchant-acceptance policy remain ongoing
+  conditions.
+- The public policies are effective owner-drafted terms. External lawyer and CA
+  review are optional risk reduction, not indefinite engineering gates. The
+  owner accepts responsibility for current legal, GST, invoice, payout, and
+  accounting treatment without representing professional approval.
+- Production deployment/domain, live credentials, payments/refunds, cleanup,
+  and Phase 16 retain their separate authorization boundaries.
+
 ---
 
 ## 30. Policy evolution

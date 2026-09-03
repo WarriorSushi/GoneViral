@@ -1045,18 +1045,21 @@ Set budget alerts on Vercel, Supabase, Resend, Sentry and provider where availab
 
 ### Business/provider/legal
 
-- [ ] Merchant entity/account approved.
-- [ ] Written provider approval of exact model.
-- [ ] Live credentials and settlement bank verified.
-- [ ] Terms/Privacy/Refund/Content/How-it-works approved.
+- [x] Owner confirms Dodo merchant/KYC/business/bank/live capability and the
+      GoneViral brand are configured for the sponsored-listing model.
+- [ ] Immediately before the live test, verify current provider status, exact
+      live credentials/product/URLs, and no pending provider action. Require a
+      separate written model approval only if Dodo requests one.
+- [ ] Terms/Privacy/Refund/Content/How-it-works owner-approved and the complete
+      public principal geographic address supplied.
 - [ ] Sponsored ranking/no-guarantee disclosure visible.
-- [ ] GST/invoice/accounting process approved.
+- [ ] Owner verifies a genuine Dodo merchant-of-record invoice and defines the
+      payout/GST/accounting evidence process; optional CA review is not a gate.
 - [ ] grievance/support/contact process staffed.
 
 ### Infrastructure
 
-- [ ] Separately owner-selected commercial host/plan and its cost controls in
-      the intended region.
+- [ ] Vercel Pro and its cost controls active in the intended region.
 - [ ] Supabase Free capacity/risk acceptance and fresh encrypted backup.
 - [ ] Cloudflare Workers Cron scheduler safety and cadence certified.
 - [ ] production/staging completely isolated.

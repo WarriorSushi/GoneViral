@@ -882,7 +882,8 @@ Meet launch quality without changing product mechanics.
 - [ ] Accessibility checklist passes automated and manual review.
 - [ ] Financial transaction p95/lock time stays comfortably within provider timeout/retry behaviour.
 - [ ] Production build has no unexpected client bundle bloat/hydration warning.
-- [ ] All legal/disclosure surfaces are present pending/after counsel-approved content.
+- [ ] All legal/disclosure surfaces are present with effective owner-approved
+      content; external counsel review is optional risk reduction.
 
 ---
 
@@ -896,13 +897,17 @@ Promote a proven, legally/provider-approved staging build to production with rol
 
 Do not enable production payments until all are true:
 
-- written provider approval of exact sponsored advertising model;
-- live KYC/entity/bank credentials;
-- counsel-approved Terms/Privacy/refund/content/disclosure/grievance process;
-- CA-approved GST/invoice/place-of-supply/accounting setup;
-- an owner-selected commercial production host and plan, chosen immediately
-  before live launch with its applicable region, cost controls, pause/rollback
-  action, notifications, and residual billing risk verified;
+- current Dodo live account/brand capability for the disclosed sponsored-
+  listing model, with no pending provider action; a separate written approval
+  is required only if Dodo requests one;
+- effective owner-approved Terms/Privacy/refund/content/disclosure/grievance
+  process and complete public operator/principal-address details;
+- owner-accepted GST/invoice/place-of-supply/payout/accounting process based on
+  genuine Dodo merchant-of-record documents and existing registration records;
+  optional lawyer/CA review is not an engineering blocker;
+- Vercel Pro active for commercial Production with applicable region, cost
+  controls, pause/rollback action, notifications, and residual billing risk
+  verified;
 - Supabase Free in the selected region with the owner's explicit no-PITR,
   possible-pause, self-managed-backup, and recovery-downtime risk acceptance;
 - an authenticated Cloudflare Workers Cron scheduler certified at the owner-
@@ -912,6 +917,11 @@ Do not enable production payments until all are true:
 - production webhook and reconciliation tested;
 - backup/restore and incident runbooks verified;
 - security/access review complete.
+
+The owner's merchant/KYC/business/bank/live-capability and GoneViral-brand
+attestation closes those generic provider setup gates. It does not fabricate a
+written model approval or future Dodo status. Live credentials and every live
+action remain behind their separate authorization.
 
 The 2026-09-02 budget decision and required Phase 15 adaptation sequence are
 recorded in `../docs/PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. Vercel Hobby
@@ -1091,5 +1101,6 @@ Codex must not:
 - add fake production entries/activity/clicks/testimonials;
 - hotlink arbitrary logos or fetch arbitrary destination previews;
 - add Redis/WebSockets/microservices/VPS to “future-proof”;
-- enable live payments without written provider/legal/accounting gates;
+- enable live payments without current provider capability, owner-approved
+  legal/accounting treatment, infrastructure evidence, and explicit live gate;
 - continue to next phase with failing/incomplete acceptance checks.

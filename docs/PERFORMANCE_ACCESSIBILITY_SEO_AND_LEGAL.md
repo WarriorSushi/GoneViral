@@ -109,23 +109,22 @@ active categories.
 
 Terms, Privacy, Refunds, Content Policy, Paid Placement, Copyright/Trademark,
 and Contact are effective owner-approved public policies at version
-`2026-08-29-v1`, effective 29 August 2026. They are canonical, indexable, and
+`2026-09-04-v2`, effective 4 September 2026. They are canonical, indexable, and
 included in the public sitemap. Checkout acceptance records the matching Terms,
 Privacy, Refund, and Content versions. The footer, report, checkout, and owner
 surfaces link to these policies. Owner approval is not represented as counsel,
-tax, accounting, provider, or CA approval; those distinct launch gates remain
-open until genuine evidence exists.
+tax, accounting, provider, or CA approval. External professional review is
+optional risk reduction.
 
 ## Gates that remain open
 
 - real mobile field LCP, INP, and CLS from genuine traffic;
 - hosted Supabase plans, pool behaviour, and lock observations;
 - Vercel CDN/shared-cache hit measurements;
-- genuine Dodo test/live credentials and provider certification;
+- current Dodo live status and exact live credential/product/URL verification;
 - hosted Sentry, alert delivery, Storage, and restore evidence;
 - external penetration testing;
-- counsel review of the legal/privacy/refund/content/disclosure/grievance
-  requirements and CA/accounting approval of tax, invoicing, GST, and
-  place-of-supply operations before production; the effective owner-approved
-  policies do not satisfy those separate launch gates;
+- the complete public principal geographic address and owner verification of a
+  genuine Dodo invoice/payout/GST/accounting evidence path;
+- optional external lawyer and CA review;
 - manual NVDA/VoiceOver/TalkBack and real-device/staging certification.

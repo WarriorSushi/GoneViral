@@ -751,11 +751,12 @@ started, and the complete affected gate then passed. No hosted database was a
 test target.
 
 The Phase 15 production-readiness decision remains **no-go**. The application
-candidate and lifecycle behavior are ready, but the genuine provider, KYC/bank,
-counsel, accounting, commercial-host, production-isolation/configuration,
-alerting, and remaining scheduler certification gates below are not complete.
-Optional exhaustive visual/accessibility and edge-case sweeps remain deferred
-and are not launch blockers unless a new failure makes one relevant.
+candidate and lifecycle behavior are ready, but commercial hosting,
+production-isolation/configuration, the complete public principal address,
+provider-live configuration, invoice/payout/accounting evidence, alerting, and
+explicit Production/live-action gates are not complete. Optional exhaustive
+visual/accessibility and edge-case sweeps remain deferred and are not launch
+blockers unless a new failure makes one relevant.
 
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
@@ -813,7 +814,8 @@ schedule, or hosted service was changed.
   expressions that run more frequently fail deployment. Hobby daily invocation
   timing is also imprecise within the selected hour. This supersedes the old
   two-job count but does not remove the cadence blocker.
-- `vercel.json` has five authenticated jobs. Daily logo cleanup and retention
+- At the time of this read-only check, `vercel.json` had five authenticated
+  jobs. Daily logo cleanup and retention
   cleanup meet Hobby frequency syntax. Hourly payment reconciliation,
   every-minute email outbox draining, and five-minute operational health checks
   do not. Weakening those safety cadences would contradict the operational
@@ -827,6 +829,11 @@ schedule, or hosted service was changed.
   the linked team remains Hobby and only Preview deployment is authorized. The
   owner selected Cloudflare Workers Cron instead for private staging. No Vercel
   purchase or production deployment is required or authorized at this stage.
+
+The later 2026-09-04 owner topology decision selects Cloudflare as the only
+Production scheduler. The new launch candidate removes the unused Vercel cron
+definitions while keeping the Mumbai function region. This changes no deployed
+scheduler or hosted service.
 
 ## Owner budget-constrained production decision and next gate
 
@@ -851,9 +858,10 @@ in approved provider secret stores. The owner's VPS is reserved for OTTR.
 
 Vercel Hobby remains private-preview-only. Its published terms prohibit
 commercial use and explicitly include requesting or processing payments, so an
-external scheduler alone cannot make it a valid production host. The owner will
-select the commercial production host and plan immediately before launch and
-then verify its cost, rollback/pause, notification, and residual billing risks.
+external scheduler alone cannot make it a valid production host. The owner
+selected Vercel plus Supabase for Production. Vercel Pro is required immediately
+before commercial launch, when its cost, rollback/pause, notification, and
+residual billing risks must be verified.
 
 The exact evidence, limits, schedules, sequential remaining Phase 15 work, and
 measured paid-upgrade triggers are recorded in
@@ -868,11 +876,53 @@ pending while other Phase 15 work continues. Production deployment,
 
 ## Production boundary
 
-Do not repeat the whole staging suite in production. If production is later
-authorized only after the written provider, legal, accounting, infrastructure,
-isolation, backup, and security gates pass, run the automated release suite on
-the exact release commit and then a minimal non-destructive production smoke
-test for production-specific credentials/configuration, DNS/TLS, Auth/email,
+Do not repeat the whole staging suite in Production. If Production is later
+authorized only after the current provider, owner-approved legal/accounting,
+infrastructure, isolation, backup, and security gates pass, run the automated
+release suite on the exact release commit and then a minimal non-destructive
+Production smoke test for production-specific credentials/configuration,
+DNS/TLS, Auth/email,
 webhooks, cron, security isolation, monitoring, rollback, backup, and one
 explicitly authorized legitimate founder-owned transaction. No production gate
 is currently satisfied merely because private staging works.
+
+## 2026-09-04 owner launch decisions and legal/configuration audit
+
+The owner confirmed Dodo merchant/KYC/business/bank/live capability and the
+GoneViral brand are configured for the sponsored-listing model. The former
+generic written-model-approval and merchant-setup blockers are closed by this
+owner attestation unless Dodo requests a separate artifact. This is not a claim
+of GoneViral-specific written approval or future provider state. Dodo remains in
+Test Mode in Preview; no live credential, transaction, refund, or provider
+setting was accessed or changed.
+
+The owner also selected Vercel plus Supabase for Production, Cloudflare as the
+only scheduler, and owner-drafted legal/tax treatment without indefinite lawyer
+or CA approval gates. Vercel Pro is required immediately before commercial
+Production because current Vercel terms restrict Hobby to non-commercial use;
+it is not required for staging. No purchase, Production deployment, domain,
+scheduler, or hosted environment was changed.
+
+The code/configuration audit found genuine launch-critical changes: remove the
+unused Vercel cron definitions to prevent a second Production scheduler; update
+the public refund rule and paid-placement/model disclosures; accurately explain
+Dodo's merchant-of-record, tax, invoice, and data role; correct stale
+how-it-works copy; and snapshot new checkout acceptances at policy version
+`2026-09-04-v2`. Historical acceptances and in-flight attempts retain their
+stored versions and no financial history is reinterpreted. The repository still
+lacks the complete principal geographic/postal address required for the final
+public Contact disclosure. No GSTIN value or full address was inferred or
+invented.
+
+Launch-critical implementation commit
+`0809cc5851320f42862bd4cef64cf8bbd74d9e49` passed the two affected Vitest
+files (18 tests), the focused public-board Playwright file (11 tests), Prettier,
+ESLint, and TypeScript checking. The single required final CI suite is deferred
+until the missing address is added, so it runs only on the actual final release
+candidate. The protected Preview remains the previously certified application
+commit `b8298a798efce1195b7c5ad38add60d8a54b2fd1`; it was not redeployed and no
+provider or hosted state changed during this audit.
+
+The ordered remaining preparation, authorization boundaries, exact Production
+configuration inventory, genuine blockers, owner/provider/accounting gates,
+and optional deferrals are in `PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md`.
