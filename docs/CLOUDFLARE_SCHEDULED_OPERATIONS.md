@@ -20,6 +20,14 @@ that deployment succeeded and the Cloudflare dashboard shows the guard as
 exact `true`. No secret value or raw deployment output was provided. Automatic
 cadence and failure/staleness evidence remain pending.
 
+On 2026-09-04 the owner reported partial automatic cadence evidence: the
+five-minute trigger fired repeatedly and both `drain-email-outbox` and
+`check-operational-health` returned `200 / ok`; the hourly trigger fired and
+`reconcile-payments` returned `200 / ok`; no error was visible in the observed
+log window. The daily `43 2 * * *` trigger had not yet reached its next
+scheduled time, so daily evidence remains pending rather than failed. No raw
+log output or secret value was provided.
+
 The Worker will only invoke GoneViral's existing authenticated cron routes. It
 must not contain payment, email, health, reconciliation, logo, retention, or
 other application business logic. The existing route authentication and
@@ -165,10 +173,13 @@ Current official references:
    routes, schedules, Preview origin, or secret handling. **Deployment
    complete by owner report:** the deployment succeeded and the dashboard guard
    shows exact `true`. Allow up to 15 minutes for trigger propagation.
-8. Inspect one bounded set of Past Events/logs after the relevant slots. Verify
-   fixed route/status/timing-only logs and confirm no credential or body appears.
-9. Observe five-minute, hourly, and daily cadence plus failure/duplicate/catch-up
-   behavior before marking the scheduler certified.
+8. **Partially complete by owner report:** one bounded observed window confirms
+   repeated five-minute events and one hourly event, with all three assigned
+   operations returning `200 / ok` and no visible errors. Daily evidence remains
+   pending because its next scheduled time had not arrived.
+9. Later record the daily event and remaining failure/staleness behavior before
+   marking the scheduler fully certified. Do not wait or poll for the daily
+   event; continue other Phase 15 work meanwhile.
 10. Before any future scheduler replacement or production scheduler activation,
     disable this Worker or set its enable binding away from `true` first so two
     schedulers can never target the same environment concurrently.
@@ -179,13 +190,10 @@ The activated deployment is complete by owner report. No secret value,
 credential, or raw deployment output needs to be provided to Codex. Do not
 redeploy or manually invoke any route for certification.
 
-Using the reported deployment time window, the first fair post-propagation
-slots are 2026-09-02 20:30 UTC (2026-09-03 02:00 Asia/Kolkata) for the
-five-minute trigger, 2026-09-02 21:17 UTC (02:47 Asia/Kolkata) for the hourly
-trigger, and 2026-09-03 02:43 UTC (08:13 Asia/Kolkata) for the daily trigger.
-After the daily slot, inspect one bounded set of Cron Trigger Past Events and
-safe Worker logs covering those three trigger types. Verify expected fixed
-operation names, 2xx statuses, timing, and no credential, URL, body, or raw
-exception content. Report only sanitized results. Production hosting and plan
-selection remain a separate owner decision immediately before commercial
-launch.
+Five-minute and hourly automatic cadence are confirmed by sanitized owner
+report. The daily trigger has not yet reached its next scheduled time and is
+pending, not failed. Do not change or redeploy the scheduler, manually invoke
+routes, wait in this task, or poll for the daily event. Continue the next Phase
+15 workstream and add sanitized daily evidence separately after it naturally
+occurs. Production hosting and plan selection remain a separate owner decision
+immediately before commercial launch.
