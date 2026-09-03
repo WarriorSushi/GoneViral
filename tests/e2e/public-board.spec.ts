@@ -183,6 +183,11 @@ test("robots, sitemap, canonicals, and effective legal metadata stay public-safe
   await expect(page.getByText("Effective owner-approved policy")).toBeVisible();
   await expect(page.getByText("2026-09-04-v2")).toBeVisible();
   await expect(page.getByText("4 September 2026")).toBeVisible();
+  await expect(
+    page.getByText(
+      "GoneViral.in is operated by AltCorp, a proprietorship of Syed Irfan Ullah Quadri, registered in Karnataka, India.",
+    ),
+  ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 

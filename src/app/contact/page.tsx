@@ -24,8 +24,15 @@ export default function ContactPage() {
       <section>
         <h2>Operator</h2>
         <p>
-          GoneViral.in is operated by Syed Irfan Ullah Quadri, sole proprietor,
-          trading as AltCorp, Kalaburagi, Karnataka, India.
+          GoneViral.in is operated by AltCorp, a proprietorship of Syed Irfan
+          Ullah Quadri, registered in Karnataka, India.
+        </p>
+        <p>
+          AltCorp is registered as a regular taxpayer under GST in Karnataka.
+          Dodo Payments acts as merchant of record for customer transactions and
+          supplies the customer transaction invoice under its terms. AltCorp’s
+          registration details appear only on applicable tax documents it issues
+          or receives.
         </p>
       </section>
       <section>
