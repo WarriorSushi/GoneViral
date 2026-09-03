@@ -223,8 +223,8 @@ specific action and genuine evidence exists for Vercel Pro and its documented
 cost controls, the production-isolated Cloudflare Workers Cron scheduler,
 Supabase Free capacity and owner-accepted recovery posture, production
 isolation, DNS/TLS/email authentication, backup/restore, alerts, access/MFA,
-security review, an owner-authorized principal geographic address on the
-dedicated operator/contact disclosure, current Dodo live status and exact live
+security review, the owner-authorized privacy-minimized geographic address on
+the dedicated operator/contact disclosure, current Dodo live status and exact live
 configuration, and the owner-accepted
 invoice/payout/GST/accounting evidence path. The owner confirms Dodo merchant,
 KYC/business, bank/payout, live capability, and brand setup. Do not fabricate a
@@ -234,10 +234,12 @@ review are optional risk reduction rather than indefinite engineering gates.
 
 Follow `PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md` for the ordered remaining work
 and exact preparation-versus-authorization boundary.
-The private residential-address gate, GST operator identity, customer-versus-
-provider invoice distinction, and legitimate alternative-location path are in
-`PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`. Never copy the home address or
-exact GSTIN into the repository or website without the applicable owner gate.
+The owner-authorized redacted-address decision, accepted residual Rule 4(2)
+risk, GST operator identity, customer-versus-provider invoice distinction, and
+legitimate alternative-location path are in
+`PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`. Never copy, reconstruct, or
+log the omitted premise-level home-address details, and keep the exact GSTIN
+out of general source and website copy.
 
 Even after those gates, deploy first with payments disabled. Smoke public,
 Auth, admin, cron, webhook, and reconciliation reads. Register exact live URLs,

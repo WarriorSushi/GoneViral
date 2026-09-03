@@ -1050,10 +1050,11 @@ Set budget alerts on Vercel, Supabase, Resend, Sentry and provider where availab
 - [ ] Immediately before the live test, verify current provider status, exact
       live credentials/product/URLs, and no pending provider action. Require a
       separate written model approval only if Dodo requests one.
-- [ ] Terms/Privacy/Refund/Content/How-it-works owner-approved and the complete
-      principal geographic address authorized for the dedicated public
-      Contact/operator disclosure. Do not publish the current residential
-      address without a separate owner decision.
+- [ ] Terms/Privacy/Refund/Content/How-it-works owner-approved and the
+      owner-authorized privacy-minimized geographic address visible only on the
+      dedicated public Contact/operator disclosure. The owner accepts the
+      residual Rule 4(2) interpretation risk; never publish or reconstruct the
+      omitted premise-level residential details.
 - [ ] Sponsored ranking/no-guarantee disclosure visible.
 - [ ] Owner verifies a genuine Dodo merchant-of-record invoice and defines the
       Indian-business payout/reverse-invoice/GST/accounting evidence process;

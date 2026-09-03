@@ -60,23 +60,28 @@ purpose, disclosure, security practices, and an accessible grievance process;
 they do not add a full operator postal-address field to the Privacy Policy. The
 phased DPDP Act/Rules require business contact information for a responsible
 person and accessible rights/grievance methods, not a residential address in
-each privacy notice. The full-address launch gate therefore remains the
+each privacy notice. The underlying public-address duty is therefore the
 platform-level Consumer Rule 4(2) duty, not a reason to duplicate the home
 address throughout the policy set.
 
-Because the GST-registered home is the only authoritative principal business
-address currently supplied, the current release remains blocked on one owner
-privacy decision. Do not publish it automatically. Before commercial launch
-the owner must either:
+The owner resolved the engineering decision by authorizing this
+privacy-minimized public geographic address only for the dedicated
+operator/contact disclosure:
 
-1. confirm it as the relevant headquarters and explicitly authorize publication
-   of that exact address on the dedicated operator/contact disclosure; or
-2. establish a genuine non-residential business headquarters, update the
-   applicable GST/business records, and only then publish the approved amended
-   business address.
+`4th Cross Road, Noor Khan Colony, Kalaburagi, Karnataka 585104, India`
 
-City, state, and PIN alone do not satisfy a requirement for a principal
-geographic address.
+The authorization expressly excludes the residence's house/flat number,
+building or premises name, nearby landmark, and any reconstructed equivalent.
+Do not duplicate the authorized address in the global footer, metadata,
+checkout, or unrelated pages.
+
+Rule 4(2) does not prescribe address components or expressly approve a redacted
+address. Omitting premise-level details may be challenged under a strict reading
+of "principal geographic address." No lawyer approval or definitive compliance
+conclusion is claimed. The owner accepts that residual compliance risk in order
+to protect the residence while allowing remaining launch engineering to
+continue. A future genuine non-residential headquarters and corresponding
+GST/business-record amendment remains the stronger privacy-preserving option.
 
 ### GSTIN and tax-document address
 
@@ -145,8 +150,8 @@ records, not to add a cosmetic correspondence address.
 - **Legal/operator identity:** appropriate in the shared legal-policy identity
   and dedicated Contact page as "GoneViral.in is operated by AltCorp, a
   proprietorship of Syed Irfan Ullah Quadri, registered in Karnataka, India."
-- **Dedicated Contact/operator page:** eventual location for the one full,
-  owner-authorized principal geographic address and grievance details.
+- **Dedicated Contact/operator page:** implemented location for the one owner-
+  authorized privacy-minimized geographic address and grievance details.
 - **Terms, Privacy, Refunds, paid-placement/payment disclosures:** operator
   identity and accurate cross-links are appropriate; the full address need not
   be duplicated in each document.

@@ -806,15 +806,21 @@ Owner-supplied GST/operator decision effective 2026-09-04:
   product/website brand.
 - The unrelated additional trade name on the GST certificate must not appear on
   GoneViral legal, tax, invoice, footer, policy, or customer copy.
-- The GST-registered principal place is a private residential address. Never
-  publish, commit, infer, or reconstruct it without separate owner authorization.
-  The exact GSTIN also stays out of general website/source copy and is used only
-  in genuine provider/accounting records or applicable AltCorp-issued tax
-  documents.
-- Commercial launch requires one owner decision: authorize the current
-  headquarters address for the dedicated public operator/contact disclosure,
-  or first establish a genuine alternative business headquarters and amend the
-  applicable GST/business records.
+- The GST-registered principal place is a private residential address. The
+  owner authorizes only `4th Cross Road, Noor Khan Colony, Kalaburagi,
+  Karnataka 585104, India` for the dedicated public Contact/operator
+  disclosure. Never publish, commit, infer, reconstruct, or log the omitted
+  house/flat number, building/premises name, or nearby landmark.
+- Do not duplicate the authorized redacted address in the footer, metadata,
+  checkout, or unrelated policies. The owner accepts the residual compliance/
+  privacy risk that omitting premise-level details may not satisfy every
+  interpretation of Consumer Protection (E-Commerce) Rule 4(2); this is not a
+  claim of lawyer approval and is no longer an engineering blocker.
+- The exact GSTIN stays out of general website/source copy and is used only in
+  genuine provider/accounting records or applicable AltCorp-issued tax
+  documents. A future genuine alternative business headquarters may further
+  reduce the address risk only after the applicable business/GST records are
+  amended.
 
 ---
 

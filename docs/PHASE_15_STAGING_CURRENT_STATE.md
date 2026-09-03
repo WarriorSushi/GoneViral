@@ -909,18 +909,18 @@ the public refund rule and paid-placement/model disclosures; accurately explain
 Dodo's merchant-of-record, tax, invoice, and data role; correct stale
 how-it-works copy; and snapshot new checkout acceptances at policy version
 `2026-09-04-v2`. Historical acceptances and in-flight attempts retain their
-stored versions and no financial history is reinterpreted. The repository still
-lacks the complete principal geographic/postal address required for the final
-public Contact disclosure. No GSTIN value or full address was inferred or
-invented. The later owner-supplied GST facts and private-address decision are
-recorded below without copying either value into the repository.
+stored versions and no financial history is reinterpreted. The owner has since
+authorized a privacy-minimized geographic address for the final public Contact/
+operator disclosure. Omitted premise-level residential details remain
+prohibited and were not inferred, reconstructed, or committed.
 
 Launch-critical implementation commit
 `0809cc5851320f42862bd4cef64cf8bbd74d9e49` passed the two affected Vitest
 files (18 tests), the focused public-board Playwright file (11 tests), Prettier,
-ESLint, and TypeScript checking. The single required final CI suite is deferred
-until the missing address is added, so it runs only on the actual final release
-candidate. The protected Preview remains the previously certified application
+ESLint, and TypeScript checking. The single required final CI suite remains
+deferred until the complete launch-critical policy/address candidate is ready,
+so it runs only once at the actual final release-candidate boundary. The
+protected Preview remains the previously certified application
 commit `b8298a798efce1195b7c5ad38add60d8a54b2fd1`; it was not redeployed and no
 provider or hosted state changed during this audit.
 
@@ -951,13 +951,17 @@ disclosure, prominently linked from the footer, checkout, and relevant legal
 surfaces, is the least-duplicative implementation; the full address need not be
 repeated in every policy, footer, checkout form, disclosure, or metadata.
 
-The current home address is therefore a launch blocker but remains behind a
-single owner privacy decision: authorize its exact public disclosure, or first
-establish a genuine non-residential headquarters and amend the applicable GST/
-business records. A real shared/co-working location with valid possession
-documents can qualify; a cosmetic mail-forwarding address cannot safely replace
-the actual headquarters/place of business. Merely adding a branch does not
-remove the headquarters disclosure.
+The owner authorizes only `4th Cross Road, Noor Khan Colony, Kalaburagi,
+Karnataka 585104, India` for the dedicated public Contact/operator disclosure.
+The house/flat number, building/premises name, and nearby landmark remain
+private and must never be published, committed, rendered, logged, inferred, or
+reconstructed. The address must not be duplicated in the footer, metadata,
+checkout, or unrelated policies. The owner accepts the residual compliance/
+privacy risk that omitting premise-level details may not satisfy every
+interpretation of Rule 4(2). This is not lawyer approval and no longer blocks
+remaining engineering work. A future genuine shared/co-working headquarters
+with valid possession records can reduce this risk only after the applicable
+GST/business records are amended; a cosmetic mail-forwarding address cannot.
 
 CGST Rule 46 requires an invoice issued by a registered supplier to carry that
 supplier's name, address, and GSTIN. Dodo documents itself as legal seller and
@@ -975,7 +979,11 @@ AltCorp/proprietorship identity without storing the GSTIN or residential
 address, adds the GST registration-status and Dodo invoice distinction on the
 Contact surface, and clarifies Dodo's role immediately before checkout. The
 focused public-board Playwright file passed 11/11 tests; Prettier, ESLint, and
-TypeScript checking also passed. The required final CI suite remains deferred
-until the owner resolves the address path, so it runs once on the actual final
-release candidate. No Preview, scheduler, provider, database, or other hosted
-state changed.
+TypeScript checking also passed. The authorized redacted-address implementation
+is commit `7daf6a421fabc2545f1710d633a92558d3e56d45`. It places the
+authorized address only on Contact and adds its public-board assertion. The
+focused browser matrix passed 77/77 tests across configured desktop, mobile,
+tablet, Firefox, and WebKit profiles; Prettier, ESLint, and TypeScript checking
+also passed. The single final CI/merge/Preview refresh boundary is next. No
+Preview, scheduler, provider, database, or other hosted state changed at this
+checkpoint.

@@ -163,8 +163,10 @@ Codex may build through sandbox phases, but production payments remain disabled 
 - [ ] current Dodo status, exact live credentials/product/URLs, and any actual
       provider-requested approval are verified immediately before live use;
 - [ ] owner-approved Terms, Privacy, paid-ranking disclosure, content, refund,
-      and grievance process include an owner-authorized principal geographic
-      address on the dedicated public Contact/operator disclosure;
+      and grievance process include the owner-authorized privacy-minimized
+      geographic address only on the dedicated public Contact/operator
+      disclosure, with the residual Rule 4(2) interpretation risk accepted by
+      the owner and no claim of lawyer approval;
 - [ ] owner verifies genuine Dodo customer-invoice and Indian-business payout/
       reverse-invoice evidence and accepts the GST/invoicing/accounting
       treatment;

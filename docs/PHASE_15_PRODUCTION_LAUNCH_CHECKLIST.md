@@ -27,28 +27,17 @@ lawyer or CA pre-approve these policies before launch.
 
 ## Launch blockers
 
-1. The owner confirmed that AltCorp's GST-registered principal place is a
-   private residential address; it is the only authoritative principal business
-   address currently supplied. Consumer Protection
-   (E-Commerce) Rule 4(2) requires the legal name and principal geographic
-   address to be displayed clearly, accessibly, and prominently on the
-   platform. The owner has not authorized publishing the home address. Before
-   the release candidate can be final, the owner must either confirm it as the
-   relevant headquarters and authorize that exact publication, or establish a
-   genuine non-residential business headquarters and amend the applicable GST/
-   business records. Do not infer, reconstruct, commit, or publish the
-   residential address.
-2. The owner must authorize and complete the Vercel Pro purchase with the
+1. The owner must authorize and complete the Vercel Pro purchase with the
    accepted spend controls before any commercial Production deployment or
    `goneviral.in` attachment.
-3. Production-isolated Vercel, Supabase, Cloudflare, Dodo, Resend, Turnstile,
+2. Production-isolated Vercel, Supabase, Cloudflare, Dodo, Resend, Turnstile,
    Sentry, and DNS configuration has not been created or certified. No Preview
    credential may be copied into Production.
-4. The exact final release commit must pass required CI and the final release
+3. The exact final release commit must pass required CI and the final release
    suite once, after the last launch-critical code/configuration change. A
    separately authorized payments-off Production deployment and narrow smoke
    must then pass before any live transaction.
-5. Live payment/refund activation requires a fresh owner authorization after a
+4. Live payment/refund activation requires a fresh owner authorization after a
    separately authorized founder-owned low-value live transaction reconciles
    exactly once through Dodo, the provider event, payment record, immutable
    ledger, projections, board, email, and reconciliation.
@@ -95,6 +84,14 @@ prominently linked from the footer, checkout, and relevant policies. The
 current 48-hour acknowledgement and 30-day ordinary-resolution targets match
 the rule's outer timings. The exact address/privacy analysis is in
 `PHASE_15_GST_OPERATOR_AND_ADDRESS_RESEARCH.md`.
+
+The owner authorized only `4th Cross Road, Noor Khan Colony, Kalaburagi,
+Karnataka 585104, India` for that dedicated disclosure. House/flat number,
+premises/building name, landmark, and reconstructed premise-level details remain
+private and prohibited from source or public output. Because Rule 4(2) does not
+define the required component-level precision, the owner accepts the residual
+compliance risk that this privacy-minimized form may be considered incomplete.
+It is not lawyer-approved and is no longer an engineering blocker.
 
 The 13 November 2025 commencement notification phases most substantive Digital
 Personal Data Protection Act duties and corresponding Rules to eighteen months
@@ -144,9 +141,8 @@ details.
 1. Keep `vercel.json` free of cron definitions so Cloudflare remains the only
    scheduler. Preserve Mumbai (`bom1`) application/database proximity.
 2. Finalize policy version `2026-09-04-v2` and its checkout acceptance snapshot
-   after the owner resolves the private-address gate: authorize the current
-   address for the dedicated Contact disclosure, or first register and approve
-   a genuine replacement business headquarters. Historical `2026-08-29-v1`
+   with the authorized privacy-minimized address only on the dedicated Contact
+   disclosure. Historical `2026-08-29-v1`
    acceptances and in-flight attempts retain their stored versions; no payment
    or ledger history is reinterpreted or migrated.
 3. Freeze one release candidate after focused tests and the single required CI
