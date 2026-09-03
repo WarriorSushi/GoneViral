@@ -30,7 +30,7 @@ contents in this file.
 | Phases 0–14                                     | Complete                               | Git history and phase documents under `docs/`         |
 | Phase 15 risk-based private staging             | Critical path complete                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 isolated backup remediation            | Complete                               | restore and 66/66 database evidence in the checkpoint |
-| Phase 15 staging scheduler                      | Active; cadence evidence pending       | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Phase 15 staging scheduler                      | 5m/hourly passed; daily pending        | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
 | Public-repository content audit                 | Passed; owner already made repo public | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Public-repository settings hardening            | Complete                               | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 exhaustive/manual and production gates | Incomplete/deferred                    | checkpoint exact resume point                         |
@@ -173,25 +173,32 @@ Do not rerun these phases wholesale merely because a new task starts.
   succeeded and the Cloudflare dashboard shows the guard as exact `true`. No
   secret value or raw deployment output was provided. Automatic five-minute,
   hourly, daily, and failure/staleness evidence remains pending.
+- On 2026-09-04 the owner reported repeated successful five-minute events:
+  email outbox and operational health each returned `200 / ok`. One hourly
+  event fired and reconciliation returned `200 / ok`. No errors were visible
+  in the observed window. The daily trigger had not yet reached its next
+  scheduled time and remains pending, not failed.
 
 Exact sanitized evidence and commits are in
 `PHASE_15_STAGING_CURRENT_STATE.md`. Preserve the existing staging shutdown.
 
 ### Next task
 
-The activated Cloudflare Worker is deployed by owner report. After the first
-fair five-minute, hourly, and daily trigger slots, collect one bounded set of
-sanitized Past Events/log evidence. Do not redeploy, manually invoke the five
-already-certified routes, deploy production, purchase Vercel Pro, or use live
-payment credentials.
+Proceed with the next owner-selected Phase 15 visual/accessibility or safe
+hosted operational workstream without waiting or polling for the daily
+Cloudflare event. Later add the daily scheduler evidence separately after it
+naturally occurs. Do not change or redeploy the scheduler, manually invoke the
+five already-certified routes, deploy production, purchase Vercel Pro, or use
+live payment credentials.
 
 ### Remaining Phase 15 gates
 
-- Cloudflare automatic cadence and failure/staleness certification. Worker
+- Cloudflare daily cadence and remaining failure/staleness certification.
+  Five-minute and hourly automatic cadence passed by owner report. Worker
   implementation, account/trigger/secret-name setup, reviewed guard change,
-  and activated deployment are complete by owner report. The five manual
-  protected-Preview route certifications are complete and need not be repeated
-  merely because the scheduler changes.
+  and activated deployment are complete. The five manual protected-Preview
+  route certifications are complete and need not be repeated merely because
+  the scheduler changes.
 - Owner-selected deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint.

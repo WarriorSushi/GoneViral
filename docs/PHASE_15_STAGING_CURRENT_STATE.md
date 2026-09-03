@@ -689,6 +689,17 @@ post-propagation slots are 2026-09-02 20:30 UTC for the five-minute trigger,
 2026-09-02 21:17 UTC for the hourly trigger, and 2026-09-03 02:43 UTC for the
 daily trigger.
 
+On 2026-09-04 the owner reported partial automatic cadence evidence from a
+bounded observed log window. The five-minute trigger fired repeatedly;
+`drain-email-outbox` and `check-operational-health` each returned `200 / ok`.
+The hourly trigger fired and `reconcile-payments` returned `200 / ok`. No errors
+were visible in the observed window. The daily `43 2 * * *` trigger had not yet
+reached its next scheduled time, so daily evidence remains pending rather than
+failed. No raw logs or secret values were provided. Per owner direction, do not
+change or redeploy the scheduler and do not wait or poll for the daily event;
+continue other Phase 15 work and add sanitized daily evidence separately after
+it occurs.
+
 Implementation commit `3b6e8a8327ecadbf1242b2ba8114d7a228e1c9d1` and
 documentation/evidence commit `b161f55bf952360e551085b5e630a9cb8e328656`
 were pushed together to the existing origin branch. Local, tracking, and
@@ -792,8 +803,9 @@ measured paid-upgrade triggers are recorded in
 `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The public-repository audit,
 manual protected-Preview route certification, Cloudflare design/implementation,
 and inert hosted setup are complete. The activation change is authorized,
-merged, and deployed by owner report; bounded automatic cadence and
-failure/staleness certification are next. Production deployment,
+merged, and deployed by owner report; five-minute and hourly automatic cadence
+passed. Daily cadence and remaining failure/staleness certification are
+pending while other Phase 15 work continues. Production deployment,
 `goneviral.in`, live credentials/payments/refunds, prelaunch cleanup, and Phase
 16 still require their existing separate authorizations.
 

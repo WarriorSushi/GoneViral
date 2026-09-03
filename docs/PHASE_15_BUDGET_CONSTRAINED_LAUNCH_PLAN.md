@@ -229,7 +229,10 @@ Official references:
    The owner subsequently authorized activation, and the narrow reviewed guard
    change merged. The owner then reported a successful deployment and dashboard
    guard `true`, without providing secret values or raw output. Bounded
-   automatic cadence/failure evidence remains in
+   observation subsequently confirmed repeated five-minute runs and one hourly
+   run, with email outbox, operational health, and reconciliation all returning
+   `200 / ok` and no visible errors. The daily trigger had not yet reached its
+   next scheduled time and remains pending, not failed. Exact status remains in
    `CLOUDFLARE_SCHEDULED_OPERATIONS.md`.
 5. Complete locally: the operational-health path now atomically and
    idempotently expires elapsed checkout-bearing pending attempts before
@@ -239,10 +242,11 @@ Official references:
    until this application change is deployed and the authenticated route runs.
 6. Current scheduler gate: the separate guard-activation change is authorized,
    merged, and deployed by owner report with the dashboard guard showing
-   `true`. Collect one bounded set of automatic cadence/failure evidence after
-   the first fair five-minute, hourly, and daily slots. Do not repeat the five
-   passed manual routes or settled database, restore, or E2E evidence without
-   an invalidating change.
+   `true`. Five-minute and hourly automatic cadence passed by owner report;
+   daily cadence and remaining failure/staleness evidence are pending. Do not
+   wait or poll for the daily event, change or redeploy the scheduler, repeat
+   the five passed manual routes, or repeat settled database, restore, or E2E
+   evidence without an invalidating change.
 7. Resolve the genuine provider, KYC/bank, counsel, accounting/GST/invoice,
    domain/email, security/access, alerting, and production-isolation gates.
 8. Immediately before commercial launch, make a separate owner decision on the
