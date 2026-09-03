@@ -1,6 +1,6 @@
 # Cloudflare scheduled operations
 
-Last updated: 2026-09-03 (Asia/Kolkata)
+Last updated: 2026-09-04 (Asia/Kolkata)
 
 ## Boundary and status
 
@@ -27,6 +27,16 @@ five-minute trigger fired repeatedly and both `drain-email-outbox` and
 log window. The daily `43 2 * * *` trigger had not yet reached its next
 scheduled time, so daily evidence remains pending rather than failed. No raw
 log output or secret value was provided.
+
+After the stable protected Preview alias was updated to application commit
+`b8298a798efce1195b7c5ad38add60d8a54b2fd1`, the next ordinary five-minute
+event provided targeted lifecycle evidence without a scheduler change or
+manual route invocation. Vercel logged `operational_health_checked` with one
+expired abandoned attempt and zero alerts, and an independent aggregate
+database query confirmed the transition with no payment, fulfilment, ledger,
+success, or open reconciliation side effect. This is additional five-minute
+route evidence only; it does not certify the still-pending daily or
+failure/staleness gates.
 
 The Worker will only invoke GoneViral's existing authenticated cron routes. It
 must not contain payment, email, health, reconciliation, logo, retention, or

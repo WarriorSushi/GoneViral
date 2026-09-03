@@ -161,8 +161,10 @@ that diagnostic; both workflows are manually disabled, the enable variable is
 absent, the canary is removed, and the remaining manual-recovery workflow has
 no automatic trigger. The historical evidence remains in
 `GITHUB_SCHEDULED_OPERATIONS.md`. Follow
-`CLOUDFLARE_SCHEDULED_OPERATIONS.md` for the replacement proposal. No
-Cloudflare Worker or trigger is deployed yet.
+`CLOUDFLARE_SCHEDULED_OPERATIONS.md` for the current implementation and
+evidence. The Worker is activated by owner report; five-minute and hourly
+cadence passed, while daily and remaining failure/staleness evidence are still
+pending. Do not wait or poll for the daily event or redeploy the scheduler.
 
 Before enabling Dodo test checkout, verify business ID, webhook key, API key,
 and one-time INR pay-what-you-want product all belong to the same test
