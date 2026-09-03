@@ -1000,3 +1000,9 @@ unchanged. Preview `RESEND_REPLY_TO` was updated and read back as
 `goneviral.in@gmail.com`; `RESEND_FROM_EMAIL` was read back unchanged as
 `notifications@updates.goneviral.in`. No sender/domain authentication,
 Supabase Auth SMTP, Production configuration, secret, or hosted data changed.
+Implementation commit `c018f2e785bdb66a30eb2c0ee4261d5193dc846f`
+updates the central legal email, safe provisioning source, and Contact/Copyright
+browser assertions. The focused desktop legal-page test passed 1/1; repository
+formatting, ESLint, TypeScript checking, PowerShell parsing, and diff checks
+passed. The tracked repository contains zero occurrences of the superseded
+address.
