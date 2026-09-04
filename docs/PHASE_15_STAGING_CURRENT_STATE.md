@@ -1120,13 +1120,28 @@ query secret, browser session, or private listing data is recorded here.
 
 Before enabling the database payment flag, the owner paused the operation and
 requested a guidance-first founder console suitable for a non-specialist
-operator. Local implementation on `codex/phase-15-founder-console` preserves
-the existing Server Actions, admin authorization, fresh AAL2 requirement,
-reason validation, and immutable audit trail while replacing database-style
-labels with plain-language controls. It adds the current three-step Test Mode
-launch path, runtime/payment/refund/read-only status, queue counts, expandable
-control explanations, explicit effects, disabled current-state buttons, a
-responsive premium layout, and a short exact-current-gate instruction. No
-hosted flag or data changed. Focused admin/MFA/auth tests passed 24/24; Prettier,
-ESLint, TypeScript checking, and the Next.js 16.3.3 production build passed.
-Merge/Production deployment and an authenticated visual check remain pending.
+operator. Implementation preserves the existing Server Actions, admin
+authorization, fresh AAL2 requirement, reason validation, and immutable audit
+trail while replacing database-style labels with plain-language controls. It
+adds the current three-step Test Mode launch path, runtime/payment/refund/read-
+only status, queue counts, expandable control explanations, explicit effects,
+disabled current-state buttons, a responsive premium layout, and a short exact-
+current-gate instruction.
+
+Pull request `#21` passed required `quality` run `33823519926`, including
+formatting, lint, TypeScript, the full unit suite, Production build, browser-
+bundle secret/source-map checks, dependency audit, and repository secret scan.
+It was squash-merged as exact commit
+`00c90b1c6fb03decb50667e65caaea7fea82840b`. Vercel Production deployment
+`dpl_Adn8YtBDGEiqVDmXbENmq1uZ8i7q` is READY from that exact commit and owns the
+Production aliases. The database payment flag and hosted business data remain
+unchanged. One authenticated owner visual review of the new console is next.
+
+The owner's first Production screenshot correctly showed the pre-AAL2 gate,
+not the authenticated console, and exposed that this gate still used the old
+bare presentation. A follow-up on
+`codex/phase-15-founder-console-evidence` gives the gate the same guided visual
+system, explains what authenticator verification does and does not do, and
+links to `/manage/security?reauth=admin` so successful verification returns
+directly to the founder console. It does not alter authentication, authorization,
+payments, or hosted data.

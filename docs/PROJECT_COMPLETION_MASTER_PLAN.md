@@ -37,7 +37,7 @@ contents in this file.
 | Commercial Production launch               | Not authorized/not complete            | Phase 15 runbook                                      |
 | Phase 16                                   | Not started                            | implementation plan                                   |
 
-Current working branch: `codex/phase-15-founder-console`; merge target:
+Current working branch: `codex/phase-15-founder-console-evidence`; merge target:
 `codex/phase-15-staging`.
 
 The budget-plan commit pushed before scheduler implementation was
@@ -232,16 +232,18 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Merge and deploy the guidance-first founder console now being verified on
-`codex/phase-15-founder-console`, then use its plain-language, authenticated
-admin/AAL2 control to enable only the database `payments_enabled` flag. Run the
-remaining narrow Production smoke and one synthetic Dodo Test Mode purchase.
-Dodo Test Mode and the new Resend webhook target Production; two genuine signed
-Resend events returned `200`, the old Preview webhook is disabled without
-deletion or rotation, and repeated natural five-minute Cloudflare events plus
-the hourly reconciliation event returned `200`. Do not create another Supabase
-project, upgrade Vercel, use Dodo Live Mode, perform cleanup, run a real
-transaction, issue refunds, or commercially launch.
+Have the owner visually review the guidance-first founder console now served by
+READY Production deployment `dpl_Adn8YtBDGEiqVDmXbENmq1uZ8i7q` from exact
+merged commit `00c90b1c6fb03decb50667e65caaea7fea82840b`, then use its plain-
+language, authenticated admin/AAL2 control to enable only the database
+`payments_enabled` flag. Run the remaining narrow Production smoke and one
+synthetic Dodo Test Mode purchase. Dodo Test Mode and the new Resend webhook
+target Production; two genuine signed Resend events returned `200`, the old
+Preview webhook is disabled without deletion or rotation, and repeated natural
+five-minute Cloudflare events plus the hourly reconciliation event returned
+`200`. Do not create another Supabase project, upgrade Vercel, use Dodo Live
+Mode, perform cleanup, run a real transaction, issue refunds, or commercially
+launch.
 
 ### Remaining Phase 15 gates
 

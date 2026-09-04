@@ -116,19 +116,42 @@ export default async function AdminPage() {
   if (auth.kind !== "authenticated") {
     return (
       <main id="main-content" className="public-main admin-page">
-        <section className="join-heading">
-          <p className="eyebrow">Restricted operations</p>
-          <h1>Admin verification required</h1>
-          <p>
-            Use an allowlisted Supabase account with a verified MFA factor. A
-            fresh AAL2 session is required before administrative data or actions
-            are available.
+        <section className="admin-access-gate" aria-labelledby="access-heading">
+          <div className="admin-access-mark" aria-hidden="true">
+            <span />
+          </div>
+          <p className="eyebrow">One private security step</p>
+          <h1 id="access-heading">Confirm it’s really you.</h1>
+          <p className="admin-access-lede">
+            You are signed in and allowlisted. Founder controls need a fresh
+            authenticator check before any operational data or action appears.
           </p>
-          {auth.kind === "mfa_required" ? (
-            <Link href="/manage/security">Verify with authenticator</Link>
-          ) : (
-            <Link href="/manage">Return to account access</Link>
-          )}
+          <div className="admin-access-facts">
+            <div>
+              <strong>This does</strong>
+              <span>
+                Protect the founder console with a fresh AAL2 session.
+              </span>
+            </div>
+            <div>
+              <strong>This does not</strong>
+              <span>Enable payments, change data, or start Live Mode.</span>
+            </div>
+          </div>
+          <div className="admin-access-actions">
+            <Link
+              className="button button-primary admin-access-primary"
+              href="/manage/security?reauth=admin"
+            >
+              Verify with authenticator
+            </Link>
+            <Link className="admin-access-secondary" href="/manage">
+              Back to your listings
+            </Link>
+          </div>
+          <small>
+            Keep your QR code, authenticator secret, and six-digit code private.
+          </small>
         </section>
       </main>
     );
