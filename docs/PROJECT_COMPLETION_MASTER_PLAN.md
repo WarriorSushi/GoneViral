@@ -232,12 +232,14 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Have the owner refresh and visually review the guided admin security gate and
-founder console now served by READY Production deployment
-`dpl_8CshPQ9K3nDNFpBHs1rL8wVKjgAh` from exact merged commit
-`d00ca998b5d32fc163fedfc860d54d812dc0c333`, then use its plain-language,
-authenticated admin/AAL2 control to enable only the database
-`payments_enabled` flag. Run the remaining narrow Production smoke and one
+Merge and deploy the focused admin UX follow-up on
+`codex/phase-15-prelaunch-evidence`, then have the owner refresh the authenticated
+console and confirm that `Safety controls` reaches a clear read-only section for
+the current `reviewer` role and that the verification copy is appropriately
+minimal. The current role cannot change the database `payments_enabled` flag;
+do not bypass that permission. Resolve the separately controlled owner-level
+authorization step before enabling only that flag. Then run the remaining
+narrow Production smoke and one
 synthetic Dodo Test Mode purchase. Dodo Test Mode and the new Resend webhook
 target Production; two genuine signed Resend events returned `200`, the old
 Preview webhook is disabled without deletion or rotation, and repeated natural

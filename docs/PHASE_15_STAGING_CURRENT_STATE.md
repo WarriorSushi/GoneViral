@@ -1151,3 +1151,17 @@ checks passed. The pull request was squash-merged as exact commit
 review the explanatory security gate, and may privately complete MFA to inspect
 the console. Neither review nor MFA enables payments; the database payment flag
 remains disabled pending explicit owner action in the console.
+
+The owner completed the Production admin verification privately and reached the
+founder console as the active `reviewer`. The visual review found that the
+always-visible `Safety controls` navigation link targeted a section omitted for
+roles without `flags:manage`, so it looked interactive but had no destination.
+The focused follow-up on `codex/phase-15-prelaunch-evidence` now always renders
+that section: authorized roles receive the existing audited forms, while other
+roles receive an explicit read-only explanation. The change does not broaden
+permissions. The follow-up also removes unnecessary authentication internals,
+verification timing, code-format detail, and the account email from the admin
+UI while retaining the existing Supabase MFA flow and server-side role checks.
+Local formatting, lint, TypeScript, 24 focused MFA/auth/permission tests, and the
+Next.js Production build pass. Merge, Production deployment, and owner refresh
+remain pending; the database payment flag is still disabled.

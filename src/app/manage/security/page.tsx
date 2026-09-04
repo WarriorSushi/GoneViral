@@ -31,11 +31,13 @@ export default async function ManageSecurityPage({
       </Link>
       <header className="mfa-security-heading">
         <p className="eyebrow">Account security</p>
-        <h1>Protect sensitive access</h1>
+        <h1>
+          {refreshAdminAccess ? "Admin verification" : "Protect your account"}
+        </h1>
         <p>
-          Set up or verify an authenticator code for this signed-in account.
-          GoneViral.in never needs the QR code, secret, or six-digit code in
-          support messages.
+          {refreshAdminAccess
+            ? "Enter your admin verification code to continue. Never share it."
+            : "Set up or verify your authenticator for this signed-in account. Keep all codes and setup details private."}
         </p>
       </header>
       <MfaSecuritySetup refreshAdminAccess={refreshAdminAccess} />

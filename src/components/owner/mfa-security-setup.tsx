@@ -9,8 +9,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Screen = "challenge" | "enroll" | "loading" | "verified";
 
-const genericError =
-  "We could not complete that security check. Try again with a fresh authenticator code.";
+const genericError = "We could not verify that code. Try again.";
 
 export function MfaSecuritySetup({
   refreshAdminAccess = false,
@@ -90,7 +89,7 @@ export function MfaSecuritySetup({
 
   async function verifyCode() {
     if (!factorId || !isValidTotpCode(verificationCode)) {
-      setError("Enter the current six-digit code from your authenticator app.");
+      setError("Enter your admin verification code.");
       return;
     }
 
@@ -129,7 +128,7 @@ export function MfaSecuritySetup({
   if (screen === "loading") {
     return (
       <section className="mfa-security-card" aria-busy="true">
-        <p role="status">Checking this session’s security level…</p>
+        <p role="status">Checking access…</p>
       </section>
     );
   }
@@ -137,12 +136,9 @@ export function MfaSecuritySetup({
   if (screen === "verified") {
     return (
       <section className="mfa-security-card mfa-security-success">
-        <p className="eyebrow">AAL2 verified</p>
-        <h2>This session has two-step verification</h2>
-        <p>
-          MFA proves control of this account. It does not grant an admin role;
-          that remains a separate direct-database ceremony.
-        </p>
+        <p className="eyebrow">Verified</p>
+        <h2>Admin access confirmed</h2>
+        <p>You can continue to the private admin area.</p>
       </section>
     );
   }
@@ -153,23 +149,19 @@ export function MfaSecuritySetup({
       <p className="eyebrow">
         {screen === "challenge"
           ? refreshAdminAccess
-            ? "Fresh admin verification"
+            ? "Admin verification"
             : "Verify this session"
           : "Authenticator app"}
       </p>
       <h2 id="mfa-setup-title">
         {screen === "challenge"
           ? refreshAdminAccess
-            ? "Refresh sensitive access"
-            : "Enter your current code"
+            ? "Enter your admin code"
+            : "Enter your verification code"
           : "Add two-step verification"}
       </h2>
       {screen === "challenge" ? (
-        <p>
-          {refreshAdminAccess
-            ? "Sensitive admin changes require a fresh verification every 30 minutes. Enter the current six-digit code to return to the console."
-            : "Use the six-digit code currently shown by your authenticator app."}
-        </p>
+        <p>Enter the code from your authenticator app to continue.</p>
       ) : enrolling ? (
         <p>
           Scan this QR code with your authenticator app. Do not photograph,
@@ -209,7 +201,11 @@ export function MfaSecuritySetup({
             void verifyCode();
           }}
         >
-          <label htmlFor="mfa-code">Six-digit authenticator code</label>
+          <label htmlFor="mfa-code">
+            {refreshAdminAccess
+              ? "Admin verification code"
+              : "Verification code"}
+          </label>
           <input
             autoComplete="one-time-code"
             disabled={busy}
@@ -229,7 +225,7 @@ export function MfaSecuritySetup({
             disabled={busy}
             type="submit"
           >
-            {busy ? "Verifying…" : "Verify code"}
+            {busy ? "Verifying…" : "Continue"}
           </button>
         </form>
       ) : (
