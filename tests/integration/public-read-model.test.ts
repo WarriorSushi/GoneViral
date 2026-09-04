@@ -105,6 +105,7 @@ describe("Phase 3 public read model", () => {
       slug: "monsoon-studio",
     });
     expect(detail).not.toBeNull();
+    expect(detail?.featuredSince).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     expect(detail?.movements).toEqual([
       expect.objectContaining({ kind: "joined", amountDeltaPaise: "2500000" }),
     ]);

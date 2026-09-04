@@ -452,14 +452,19 @@ test("Main, Today, category, and listing navigation use real public projections"
   await expect(
     page.getByRole("link", { name: "Visit Monsoon Studio website" }),
   ).toHaveAttribute("href", "/go/monsoon-studio");
+  await expect(page.getByLabel("Overall rank")).toContainText("#1");
   await expect(
-    page
-      .locator(".listing-signal-grid article")
-      .filter({ hasText: "Outbound engagement" }),
-  ).toContainText("1");
+    page.getByRole("heading", { name: "Want this position?" }),
+  ).toBeVisible();
+  await expect(page.getByText("currently outranks this listing")).toBeVisible();
+  await expect(page.getByLabel("Listing status")).toBeVisible();
+  await expect(page.getByText("Outbound engagement")).toHaveCount(0);
   await expect(
     page.getByRole("region", { name: "Share this current result" }),
   ).toContainText("#1");
+  await expect(
+    page.getByText("Links are safety-checked by GoneViral"),
+  ).toBeVisible();
   const metadataDescription = await page
     .locator('meta[name="description"]')
     .getAttribute("content");

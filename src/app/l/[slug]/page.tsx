@@ -54,6 +54,30 @@ const movementLabels: Record<PublicMovementKind, string> = {
   restored: "Money restored",
 };
 
+function rankTier(rank: string) {
+  const value = Number.parseInt(rank, 10);
+  if (value <= 3) return "Top 3";
+  if (value <= 10) return "Top 10";
+  return `Ranked #${rank}`;
+}
+
+function ArrowUpRightIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M7 17 17 7M8 7h9v9" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M12 3 5.5 5.7v5.5c0 4.1 2.6 7.7 6.5 9.8 3.9-2.1 6.5-5.7 6.5-9.8V5.7L12 3Z" />
+      <path d="m9.1 12 1.8 1.8 4.2-4.3" />
+    </svg>
+  );
+}
+
 export default async function ListingPage(props: PageProps<"/l/[slug]">) {
   await connection();
   const { slug } = await props.params;
@@ -63,6 +87,21 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
   if (!listing) {
     notFound();
   }
+
+  const tier = rankTier(listing.currentMainRank);
+  const featuredSince = new Date(listing.featuredSince).toLocaleDateString(
+    "en-IN",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Kolkata",
+    },
+  );
+  const shareDescription =
+    Number.parseInt(listing.currentMainRank, 10) <= 3
+      ? "Let people know this listing is one of the leaderboard’s top picks."
+      : "Turn this live leaderboard position into a ready-made social post.";
 
   return (
     <main id="main-content" className="public-main listing-page">
@@ -74,98 +113,125 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
       </nav>
       <SponsoredDisclosure />
       <section className="listing-hero">
-        {listing.logoUrl ? (
-          <Image
-            alt={`${listing.name} logo`}
-            className="listing-mark listing-mark-large listing-logo"
-            height={96}
-            preload
-            sizes="96px"
-            src={listing.logoUrl}
-            width={96}
-          />
-        ) : (
-          <div className="listing-mark listing-mark-large" aria-hidden="true">
-            {listing.name.trim().charAt(0).toUpperCase()}
-          </div>
-        )}
-        <div className="listing-heading">
-          <p className="listing-category">{listing.category.name}</p>
-          <h1>{listing.name}</h1>
-          <p>{listing.tagline}</p>
-          <span className="destination-label">
-            {new URL(listing.destinationUrl).host}
-          </span>
-          <a
-            aria-label={`Visit ${listing.name} website`}
-            className="button button-secondary listing-visit"
-            href={`/go/${listing.slug}`}
-            rel="nofollow noopener"
-          >
-            Visit website →
-          </a>
-        </div>
-        <div className="listing-rank-block">
-          <span className="rank">#{listing.currentMainRank}</span>
-          <Money paise={listing.confirmedTotalPaise} />
-          <small>current total</small>
-        </div>
-      </section>
-
-      <section
-        className="listing-signal-grid"
-        aria-label="Current listing details"
-      >
-        <article>
-          <p className="signal-label">All time</p>
-          <strong>#{listing.currentMainRank}</strong>
-          <span>Current spot</span>
-        </article>
-        <article>
-          <p className="signal-label">Today</p>
-          {listing.todayRank && listing.todayNetPaise ? (
-            <>
-              <strong>#{listing.todayRank}</strong>
-              <span>
-                <Money paise={listing.todayNetPaise} /> net today
-              </span>
-            </>
+        <div className="listing-identity">
+          {listing.logoUrl ? (
+            <Image
+              alt={`${listing.name} logo`}
+              className="listing-mark listing-mark-large listing-logo"
+              height={128}
+              preload
+              sizes="(max-width: 700px) 84px, 128px"
+              src={listing.logoUrl}
+              width={128}
+            />
           ) : (
-            <>
-              <strong>—</strong>
-              <span>No move today</span>
-            </>
+            <div className="listing-mark listing-mark-large" aria-hidden="true">
+              {listing.name.trim().charAt(0).toUpperCase()}
+            </div>
           )}
-        </article>
-        <article className="listing-quote">
-          <p className="signal-label">Move up</p>
-          <strong>
-            <Money paise={listing.takeoverQuote.requiredPaymentPaise} />
+          <div className="listing-heading">
+            <p className="listing-category">{listing.category.name}</p>
+            <h1>{listing.name}</h1>
+            <p>{listing.tagline}</p>
+            <div className="listing-destination">
+              <span className="destination-label">
+                {new URL(listing.destinationUrl).host}
+              </span>
+              <a
+                aria-label={`Visit ${listing.name} website`}
+                className="button button-secondary listing-visit"
+                href={`/go/${listing.slug}`}
+                rel="nofollow noopener"
+              >
+                Visit website
+                <ArrowUpRightIcon />
+              </a>
+            </div>
+          </div>
+        </div>
+        <aside className="listing-rank-block" aria-label="Overall rank">
+          <span className="listing-rank-label">Overall rank</span>
+          <strong className="listing-rank-number">
+            #{listing.currentMainRank}
           </strong>
-          <span>to pass #{listing.currentMainRank}</span>
-          <Link className="button button-primary" href="/how-it-works#join">
-            Take #{listing.currentMainRank}
-          </Link>
+          <span className="listing-rank-tier">{tier}</span>
+          <span className="listing-rank-rule" aria-hidden="true" />
+          <Money paise={listing.confirmedTotalPaise} />
+          <small>total placement</small>
+        </aside>
+      </section>
+
+      <section className="listing-challenge" aria-labelledby="challenge-title">
+        <div className="listing-challenge-mark" aria-hidden="true">
+          <span>#{listing.currentMainRank}</span>
+        </div>
+        <div className="listing-challenge-copy">
+          <h2 id="challenge-title">Want this position?</h2>
+          <p>
+            <Money paise={listing.takeoverQuote.requiredPaymentPaise} />
+            <span>currently outranks this listing</span>
+          </p>
+          <small>
+            Current estimate to place above #{listing.currentMainRank}. The spot
+            is not held.
+          </small>
+        </div>
+        <Link className="button button-primary" href="/how-it-works#join">
+          Outrank this listing
+          <ArrowUpRightIcon />
+        </Link>
+        <p className="listing-estimate-note">
+          Estimate checked at{" "}
+          <time dateTime={listing.takeoverQuote.estimatedAt}>
+            {new Date(listing.takeoverQuote.estimatedAt).toLocaleTimeString(
+              "en-IN",
+              { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" },
+            )}{" "}
+            IST
+          </time>
+          . Checkout uses Dodo Payments.
+        </p>
+      </section>
+
+      <section className="listing-status-row" aria-label="Listing status">
+        <article>
+          <span>Today</span>
+          <strong>
+            {listing.todayRank
+              ? `#${listing.todayRank} today`
+              : "No rank today"}
+          </strong>
+          <small>
+            {listing.todayNetPaise ? (
+              <>
+                <Money paise={listing.todayNetPaise} /> net today
+              </>
+            ) : (
+              "No paid movement today"
+            )}
+          </small>
         </article>
         <article>
-          <p className="signal-label">Outbound engagement</p>
-          <strong>{listing.uniqueClicks}</strong>
-          <span>privacy-preserving tracked clicks</span>
+          <span>Featured since</span>
+          <strong>
+            <time dateTime={listing.featuredSince}>{featuredSince}</time>
+          </strong>
+          <small>Live on the paid leaderboard</small>
+        </article>
+        <article>
+          <span>All-time rank</span>
+          <strong>#{listing.currentMainRank}</strong>
+          <small>{tier} overall</small>
         </article>
       </section>
 
-      <p className="estimate-note listing-estimate-note">
-        This quote was calculated at{" "}
-        <time dateTime={listing.takeoverQuote.estimatedAt}>
-          {new Date(listing.takeoverQuote.estimatedAt).toLocaleTimeString(
-            "en-IN",
-            { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" },
-          )}{" "}
-          IST
-        </time>
-        . This is an estimate. The spot is not held. Checkout uses Dodo
-        Payments.
-      </p>
+      <ShareControls
+        currentRank={listing.currentMainRank}
+        description={shareDescription}
+        heading={`Share your current #${listing.currentMainRank} position`}
+        listingName={listing.name}
+        listingPath={`/l/${listing.slug}`}
+      />
 
       <section className="movement-section" aria-labelledby="movement-title">
         <div className="section-title-row">
@@ -202,20 +268,13 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
         )}
       </section>
 
-      <ShareControls
-        currentRank={listing.currentMainRank}
-        listingName={listing.name}
-        listingPath={`/l/${listing.slug}`}
-      />
-
-      <aside className="listing-safety-note">
-        <strong>Safe outbound link</strong>
-        <p>
-          The stored destination is rechecked before redirecting. Tracked clicks
-          are deduplicated and never affect rank.
-        </p>
-        <Link href={`/l/${slug}/report` as Route}>Report this listing</Link>
-      </aside>
+      <footer className="listing-safety-note">
+        <span>
+          <ShieldIcon />
+          Links are safety-checked by GoneViral
+        </span>
+        <Link href={`/l/${slug}/report` as Route}>Report listing</Link>
+      </footer>
     </main>
   );
 }
