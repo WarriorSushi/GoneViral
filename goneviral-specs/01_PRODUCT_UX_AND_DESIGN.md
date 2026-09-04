@@ -63,18 +63,18 @@ Use semantic CSS variables. The values below are the initial system, not optiona
 
 ```css
 :root {
-  --canvas: #f4f1ea;
-  --surface: #fffcf7;
+  --canvas: #fbfaf7;
+  --surface: #ffffff;
   --surface-raised: #ffffff;
-  --surface-muted: #ebe6dc;
-  --ink: #14120f;
-  --ink-soft: #5f5a52;
-  --ink-faint: #8c867c;
-  --line: #d8d1c5;
-  --line-strong: #a9a094;
-  --signal: #ff5a36;
-  --signal-hover: #ea4322;
-  --signal-soft: #ffe0d7;
+  --surface-muted: #f5f2ec;
+  --ink: #1c1917;
+  --ink-soft: #6c6760;
+  --ink-faint: #6d675f;
+  --line: #e8e3db;
+  --line-strong: #d8d0c5;
+  --signal: #9f2d36;
+  --signal-hover: #7d202b;
+  --signal-soft: #faeeee;
   --success: #1d6f4a;
   --success-soft: #dceee4;
   --warning: #9a5a00;
@@ -92,7 +92,7 @@ Use semantic CSS variables. The values below are the initial system, not optiona
 ### Colour rules
 
 - Canvas is warm stone, not pure white.
-- Primary CTA is signal orange-red.
+- Primary CTA is deep burgundy. Do not introduce a competing orange CTA.
 - Gold appears only as a restrained #1 accent, never as a full theme.
 - Green means confirmed/success, never “good ranking.”
 - Red means error/destructive, not rank movement.
@@ -212,7 +212,7 @@ Centre/primary nav:
 Right:
 
 - Manage my listing;
-- primary `Join the list`.
+- primary `Get listed`.
 
 ### Mobile
 
@@ -234,15 +234,21 @@ Right:
 ### First viewport hierarchy
 
 1. Compact masthead:
-   - no eyebrow or decorative pre-heading;
-   - headline: `Pay. Get seen.`;
-   - one-line explanation: `Get on the GoneViral.in leaderboard. No sign-up. No API. No nonsense.`
-2. Plain disclosure: `Paid leaderboard. More money gets a higher spot.`
-3. Board switcher: Main / Today.
-4. Category filters.
-5. Live board.
+   - restrained eyebrow: `INDIA'S PUBLIC SPONSORED LEADERBOARD`;
+   - headline: `Pay more. Rank higher.`;
+   - compact explanation: `Put your brand, product or profile on the board. Higher confirmed spend takes the higher spot.`;
+   - primary action: `Get listed from ₹499`;
+   - lightweight secondary link: `How it works →`.
+2. Board switcher: Main / Today, without an explanatory label.
+3. One category row, without an explanatory label.
+4. Live board.
 
-The first board rows should be visible without scrolling on a typical laptop.
+The homepage masthead does not repeat the no-votes/no-algorithm/no-account or
+paid-leaderboard disclosure. Those truths remain available on How it works,
+paid placement, rules, and legal surfaces.
+
+Multiple board rows should be visible without scrolling on a typical laptop.
+At 390×844, the beginning of rank #1 must appear in the first viewport.
 
 ### Empty state
 
@@ -283,22 +289,34 @@ Do not invent absent ranks or fake activity.
 
 A dense row should be scan-friendly, approximately 72–88px tall.
 
+Public board routes show 10 paid listings per page and use stable cursor
+pagination for additional positions.
+
+The first three rank markers use one matching outline-laurel family around the
+rank number: restrained gold for #1, cool silver for #2, and bronze for #3.
+Rank #1 may include a tiny `LEADER` label. Their row surfaces carry matching,
+very subtle tonal cues. A quiet `TOP 3` boundary appears only when rank #4
+exists. A `TOP 20` boundary appears only when the board extends beyond rank #20;
+neither boundary implies scarcity.
+
 ### Mobile row/card
 
-Top line:
+Top row:
 
-- rank;
-- logo/name;
-- amount.
+- rank ornament;
+- logo;
+- name, two-line-max description, category, truncated domain, and the quiet
+  independent `See details →` link.
 
-Second line:
+Bottom row:
 
-- tagline/category.
+- confirmed spend, `confirmed total`, and public click count on the left;
+- the exact `Take #N · ₹X` action on the right.
 
-Action line:
-
-- `View`;
-- `Take #N for ₹X` where relevant.
+Cards and Recent Moves never require horizontal scrolling. On mobile, Recent
+Moves is a compact vertical list. The category rail is the only horizontally
+scrollable homepage content because its full option set cannot fit one row; its
+scrollbar is visually hidden while touch scrolling remains available.
 
 ### Top three treatment
 
@@ -311,7 +329,8 @@ Action line:
 
 - clicking anywhere on a listing row, except its action buttons, opens the
   listing's approved HTTPS website in the same tab;
-- a clear `More info` button opens the GoneViral listing-detail route;
+- a quiet inline `See details` text link opens the GoneViral listing-detail
+  route without competing with the card-wide website destination;
 - on hover or keyboard focus, the `Take #N · ₹X` action sits across the card's
   top border; it stays visible on touch devices where hover does not exist;
 - the take-rank button opens the join flow with a target snapshot;
@@ -336,7 +355,10 @@ Server-render the board. Use route-level skeleton only during navigation/revalid
 
 ### Staleness
 
-Board can show a quiet `Updated moments ago` and a manual refresh button. Do not imply every row is a reservation. After payment confirmation, the affected board is invalidated and the customer sees actual result.
+Board shows a quiet exact IST update time and a manual refresh button. Do not
+label cached data as realtime or use a fake live-status indicator. Do not imply
+every row is a reservation. After payment confirmation, the affected board is
+invalidated and the customer sees actual result.
 
 ---
 
@@ -805,7 +827,7 @@ Do not claim “India's #1” without substantiation.
 
 ### Preferred
 
-- `Join the list`
+- `Get listed`
 - `Take #3 · ₹2,001`
 - `Move up`
 - `Payment confirmed`

@@ -56,6 +56,7 @@ export default async function CategoryPage(
       entries={board.entries}
       generatedAt={board.generatedAt}
       helper={`See paid spots in ${category.name}.`}
+      isPaginated={cursor.value !== null}
       nextCursor={board.nextCursor}
       pageHref={`/category/${slug}`}
       refreshContext={{ kind: "category", slug }}

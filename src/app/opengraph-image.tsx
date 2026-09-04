@@ -25,10 +25,10 @@ export default function OpenGraphImage() {
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ fontSize: 86, fontWeight: 800, letterSpacing: "-4px" }}>
-          Pay. Get seen.
+          Pay more. Rank higher.
         </div>
         <div style={{ fontSize: 30, marginTop: 24 }}>
-          Get on the GoneViral.in leaderboard. No nonsense.
+          Confirmed totals determine the order.
         </div>
       </div>
       <div

@@ -3,18 +3,23 @@ import { notFound } from "next/navigation";
 
 import { BoardPage } from "@/components/public/board-page";
 import { publicPageMetadata } from "@/config/seo";
+import { INITIAL_SPONSORSHIP_MIN_PAISE } from "@/domain/policy";
+import { PUBLIC_BOARD_PAGE_SIZE } from "@/domain/public-board";
 import {
   getCachedMainBoard,
   getCachedPublicActivity,
   getCachedPublicCategories,
 } from "@/server/cache/public-read-model";
-import { parseMainBoardCursor } from "@/server/db/repositories/leaderboards";
+import {
+  estimateNewListingRank,
+  parseMainBoardCursor,
+} from "@/server/db/repositories/leaderboards";
 
 export const metadata: Metadata = publicPageMetadata({
   description:
-    "A transparent paid leaderboard: current confirmed totals determine the order.",
+    "Pay more, rank higher on India’s transparent public paid leaderboard.",
   path: "/",
-  title: "Main board",
+  title: "Pay more. Rank higher.",
 });
 
 export default async function Home(props: PageProps<"/">) {
@@ -33,6 +38,23 @@ export default async function Home(props: PageProps<"/">) {
     getCachedPublicCategories(),
     getCachedPublicActivity(),
   ]);
+  let projectedAcquisitionRank: string | null = null;
+
+  if (
+    cursor.value === null &&
+    board.entries.length > 0 &&
+    board.entries.length < PUBLIC_BOARD_PAGE_SIZE &&
+    !board.nextCursor
+  ) {
+    try {
+      const projection = await estimateNewListingRank({
+        amountPaise: INITIAL_SPONSORSHIP_MIN_PAISE,
+      });
+      projectedAcquisitionRank = projection.estimatedRank;
+    } catch {
+      projectedAcquisitionRank = null;
+    }
+  }
 
   return (
     <BoardPage
@@ -41,11 +63,13 @@ export default async function Home(props: PageProps<"/">) {
       categories={categories}
       entries={board.entries}
       generatedAt={board.generatedAt}
-      helper="Get on the GoneViral.in leaderboard. No sign-up. No API. No nonsense."
+      helper="Put your brand, product or profile on the board. Higher confirmed spend takes the higher spot."
+      isPaginated={cursor.value !== null}
       nextCursor={board.nextCursor}
       pageHref="/"
+      projectedAcquisitionRank={projectedAcquisitionRank}
       refreshContext={{ kind: "main" }}
-      title="Pay. Get seen."
+      title="Pay more. Rank higher."
     />
   );
 }

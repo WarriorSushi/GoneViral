@@ -2,6 +2,8 @@ import { moneyPaise, type MoneyPaise } from "./money";
 import { INITIAL_SPONSORSHIP_MIN_PAISE } from "./policy";
 import { calculateTakeoverQuote } from "./ranking";
 
+export const PUBLIC_BOARD_PAGE_SIZE = 10;
+
 export type PublicBoardCtaState =
   "empty-board" | "open-position" | "take-position";
 

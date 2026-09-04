@@ -1252,3 +1252,115 @@ redesign of the successful-payment screen and its generated listing share card,
 including the GoneViral mark and the listing logo when available. This is a
 presentation-only follow-up: payment logic, safety controls, permissions,
 financial data, Dodo mode, and cleanup remain unchanged.
+
+Pull request `#24` completed that focused follow-up and passed required CI run
+`33867712592`: formatting, lint, TypeScript, unit tests, Production build,
+browser secret/source-map inspection, npm's moderate dependency audit, and the
+repository secret scan all passed. npm responded normally, so the OSV fallback
+was correctly skipped. The pull request was squash-merged as exact commit
+`8c2f675274aa2e43659b38159613d32f67f9276c`. Vercel Production deployment
+`dpl_5VGgaKDBPhjjwYRyzcPg6rnL64zr` is READY from that commit and owns the apex
+and `www` aliases. Live visual verification confirmed the premium rank-reveal
+screen and the 1200×630 downloadable card, including the GoneViral mark and the
+actual sanitized listing logo. Because stored listing logos are WebP and the
+social-image renderer does not accept WebP directly, the route converts only
+the fetched public logo bytes to PNG in memory and falls back to the GoneViral
+mark on failure; stored assets are unchanged. No Safety Control changed.
+
+The owner then requested a focused redesign of only the public listing detail
+surface and its downloadable card. Pull request `#25` passed required CI run
+`33872785916` and both Vercel checks, then squash-merged normally as exact
+commit `397a037b508a9be240ee3f1446b11cb0ac225dfb`. Production deployment
+`dpl_9Jd3WKBqZw7xA4RjVespCLyYMNE3` is READY from that commit and owns the apex
+and `www` aliases. Live desktop and 390px mobile checks found no horizontal
+overflow, browser errors, or WCAG A/AA violations. The public listing and its
+1200×630 card render the actual listing logo, dynamic rank, confirmed placement
+total, and rank-check date. No payment, ranking, database-write, checkout,
+webhook, admin, scheduler, or Safety Control behavior changed. The next action
+is owner visual approval only; do not continue Phase 15 work from this gate.
+
+The owner's visual review found the rank hierarchy ambiguous and the page too
+tall. Pull request `#26` clarified the overall and Today's leaderboard ranks in
+one side-by-side panel, reduced the competitive checkout prompt to a small
+explicit estimated target, compacted the page through its sharing controls, and
+softened the social-card background/rank panel while moving its sponsored label
+to the lower-left edge. Required CI run `33880545146` and both Vercel checks
+passed; the pull request squash-merged normally as exact commit
+`0bfd050115a79c3237ab5b9cfd94a1a0432bfc8e`. Production deployment
+`dpl_BW43Ajkxf4gyrAc7Z8fx5mGEFLUu` is READY on the apex and `www` aliases.
+Live Production inspection confirmed that the desktop viewport includes the
+listing, both clearly labeled ranks, checkout target, and share controls above
+the fold, and that the 1200×630 image renders the actual logo, softer gradient,
+translucent rank panel, placement amount, rank-check date, and tiny lower-left
+sponsored label. No business logic or control state changed. The next action is
+owner visual approval only; do not continue Phase 15 work from this gate.
+
+The owner approved this final public-listing presentation and chose to keep the
+public page identical for signed-in owners and ordinary visitors. Owner-only
+actions remain confined to the authenticated `/manage` surfaces; no conditional
+owner disclosure or public-page behavior should be added. The presentation gate
+is closed. The next launch-critical workstream is the remaining bounded,
+non-destructive Production certification (monitoring/alert delivery, Turnstile,
+Storage, backup freshness, and rollback/pause evidence where still outstanding).
+Do not change Safety Controls, Dodo mode, hosted data, or begin pre-live cleanup
+without their existing separate authorization gates.
+
+The owner then authorized a focused homepage/leaderboard presentation follow-up
+and explicitly retained the product's tracked card-click behavior: the whole
+listing card opens the submitted website through `/go/[slug]`; there is no
+separate `Visit website` control. The owner also chose 10 public listings per
+page followed by stable cursor pagination. The local, uncommitted implementation
+adds the compact premium hero and board treatment, keeps the paid-placement and
+manual-refresh truth disclosures, shows only one truthful open-position prompt,
+limits recent activity to four real events, preserves tracked click totals, and
+keeps details/takeover controls independently operable. Local formatting, lint,
+TypeScript, 23 focused unit tests, 8 database read-model tests, the Production
+build, and focused desktop/390px Production-browser scenarios pass, including
+WCAG checks, no horizontal overflow, outbound redirect/click persistence, and
+Main/Today/category/listing navigation. No hosted state, Safety Control,
+payment/ranking behavior, provider mode, or Production deployment changed.
+
+The owner's subsequent visual-review decision makes the card-wide submitted-
+website destination deliberately dominant. The prominent `View details` button
+is now a quiet inline `See details` metadata link, still independently operable,
+and the public metric reads `clicks` rather than `tracked clicks`. The tracked
+`/go/[slug]` redirect, click collection/deduplication/totals, takeover action,
+and all payment/ranking/security behavior are unchanged. Focused desktop and
+390px Production-browser verification passes, including accessibility and
+overflow checks. This refinement is local and uncommitted; no hosted or
+Production state changed.
+
+The owner next approved the focused visual-hierarchy pass without changing the
+architecture or product logic. The local homepage now has the compact premium
+hero and `Get listed` wording, truthful `Live leaderboard` heading with exact
+freshness/manual refresh, grouped filters, denser 1180px cards, gold/silver/
+bronze top-three rank markers, and a restrained laurel/leader treatment for
+number one. The `Top 3` divider renders only when a lower-ranked listing follows;
+the matching `Top 20` divider is data-dependent and does not appear until the
+board continues beyond rank 20. Recent movements and the grouped footer were
+polished using the existing real records and links. The dominant card-wide
+tracked `/go/[slug]` destination, quiet independent `See details`, independent
+takeover action, public clicks, ten-item stable cursor pagination, and all
+ranking/payment/tracking/privacy/security/business behavior remain unchanged.
+Formatting, lint, TypeScript, 23 focused unit tests, the Production build, and
+four focused desktop/mobile Production-browser scenarios pass. Review captures
+are in `artifacts/homepage-polish-2026-09-04/`. This work remains local and
+uncommitted; no hosted or Production state changed.
+
+The owner rejected the first polish as still over-explained and directed an
+Outbid-inspired density pass without copying Outbid's identity. Live desktop
+and 390px reference inspection established that only the category rail should
+scroll horizontally; leaderboard cards and Recent Moves should remain compact
+vertical rows. The local homepage now removes the repeated trust/disclosure
+copy from the masthead, uses a lightweight How it works link, shortens the hero,
+replaces the mobile Menu label with an accessible icon, removes control-label
+clutter, uses one matching outline-laurel family and restrained tonal surfaces
+for all three podium ranks, intentionally composes mobile cards into identity
+and spend/action rows, and tightens Recent Moves and the mobile footer. At
+390×844, rank #1 begins at about 531px; neither the page nor Recent Moves has
+horizontal overflow. Ranking, payments, tracked `/go/[slug]`, public clicks,
+details, takeover quotes, activity data, cursor pagination, security, database,
+and hosted state are unchanged. Formatting, lint, TypeScript, 23 focused unit
+tests, the Production build, and focused 1440px/390px browser checks pass. New
+review captures are in `artifacts/homepage-refinement-2026-09-04/`. This remains
+local and uncommitted.

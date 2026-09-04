@@ -8,7 +8,7 @@ const menuLinks = [
   { href: "/", label: "Main board" },
   { href: "/today", label: "Today" },
   { href: "/how-it-works", label: "How it works" },
-  { href: "/join", label: "Join the list" },
+  { href: "/join", label: "Get listed" },
   { href: "/manage", label: "Manage my listing" },
 ] as const;
 
@@ -30,17 +30,22 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
-          <Link href="/">Home</Link>
+          <Link href="/">Leaderboard</Link>
           <Link href="/how-it-works">How it works</Link>
           <Link href={"/manage" as Route}>Manage</Link>
         </nav>
         <div className="header-actions">
           <Link className="button button-primary" href="/join">
-            Join the list
+            Get listed
           </Link>
         </div>
         <details className="mobile-menu">
-          <summary>Menu</summary>
+          <summary aria-label="Open navigation menu">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+            <span className="visually-hidden">Menu</span>
+          </summary>
           <nav aria-label="Mobile navigation">
             {menuLinks.map((link) => (
               <Link key={link.href} href={link.href as Route}>

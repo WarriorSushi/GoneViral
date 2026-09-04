@@ -14,9 +14,10 @@ export default function HowItWorksPage() {
   return (
     <main id="main-content" className="how-main">
       <section className="how-hero">
-        <h1>Pay. Join the list.</h1>
+        <h1>Pay more. Rank higher.</h1>
         <p>
-          Get on the GoneViral.in leaderboard. No sign-up. No API. No nonsense.
+          No votes. No algorithm. No account before checkout. Confirmed totals
+          determine the order.
         </p>
         <Link className="text-link" href="/">
           See the leaderboard

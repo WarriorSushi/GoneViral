@@ -46,6 +46,7 @@ export default async function TodayPage(props: PageProps<"/today">) {
       entries={board.entries}
       generatedAt={board.generatedAt}
       helper="See who moved up today. The list starts over at midnight IST."
+      isPaginated={cursor.value !== null}
       nextCursor={board.nextCursor}
       pageHref="/today"
       refreshContext={{ kind: "today", businessDate }}
