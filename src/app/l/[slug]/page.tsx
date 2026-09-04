@@ -130,7 +130,13 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
             </div>
           )}
           <div className="listing-heading">
-            <p className="listing-category">{listing.category.name}</p>
+            <div className="listing-context">
+              <span className="listing-category">{listing.category.name}</span>
+              <span>
+                Featured since{" "}
+                <time dateTime={listing.featuredSince}>{featuredSince}</time>
+              </span>
+            </div>
             <h1>{listing.name}</h1>
             <p>{listing.tagline}</p>
             <div className="listing-destination">
@@ -149,32 +155,55 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
             </div>
           </div>
         </div>
-        <aside className="listing-rank-block" aria-label="Overall rank">
-          <span className="listing-rank-label">Overall rank</span>
-          <strong className="listing-rank-number">
-            #{listing.currentMainRank}
-          </strong>
-          <span className="listing-rank-tier">{tier}</span>
-          <span className="listing-rank-rule" aria-hidden="true" />
-          <Money paise={listing.confirmedTotalPaise} />
-          <small>total placement</small>
+        <aside
+          className="listing-rank-block"
+          aria-label="Current leaderboard ranks"
+        >
+          <div className="listing-rank-columns">
+            <div>
+              <span>Overall leaderboard</span>
+              <strong>#{listing.currentMainRank}</strong>
+              <small>{tier} overall</small>
+            </div>
+            <div>
+              <span>Today’s leaderboard</span>
+              <strong>
+                {listing.todayRank ? `#${listing.todayRank}` : "—"}
+              </strong>
+              <small>
+                {listing.todayNetPaise ? (
+                  <>
+                    <Money paise={listing.todayNetPaise} /> net today
+                  </>
+                ) : (
+                  "No paid movement today"
+                )}
+              </small>
+            </div>
+          </div>
+          <div className="listing-rank-total">
+            <span>Total placement</span>
+            <Money paise={listing.confirmedTotalPaise} />
+          </div>
         </aside>
       </section>
 
       <section className="listing-challenge" aria-labelledby="challenge-title">
-        <div className="listing-challenge-mark" aria-hidden="true">
-          <span>#{listing.currentMainRank}</span>
-        </div>
         <div className="listing-challenge-copy">
           <h2 id="challenge-title">Want this position?</h2>
           <p>
             <Money paise={listing.takeoverQuote.requiredPaymentPaise} />
-            <span>currently outranks this listing</span>
+            <span>estimated minimum to outrank this listing</span>
           </p>
           <small>
-            Current estimate to place above #{listing.currentMainRank}. The spot
+            A new listing would enter above this one at current totals. The spot
             is not held.
           </small>
+        </div>
+        <div className="listing-target-rank">
+          <span>Estimated target</span>
+          <strong>#{listing.takeoverQuote.targetRank}</strong>
+          <small>overall</small>
         </div>
         <Link className="button button-primary" href="/how-it-works#join">
           Outrank this listing
@@ -191,38 +220,6 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           </time>
           . Checkout uses Dodo Payments.
         </p>
-      </section>
-
-      <section className="listing-status-row" aria-label="Listing status">
-        <article>
-          <span>Today</span>
-          <strong>
-            {listing.todayRank
-              ? `#${listing.todayRank} today`
-              : "No rank today"}
-          </strong>
-          <small>
-            {listing.todayNetPaise ? (
-              <>
-                <Money paise={listing.todayNetPaise} /> net today
-              </>
-            ) : (
-              "No paid movement today"
-            )}
-          </small>
-        </article>
-        <article>
-          <span>Featured since</span>
-          <strong>
-            <time dateTime={listing.featuredSince}>{featuredSince}</time>
-          </strong>
-          <small>Live on the paid leaderboard</small>
-        </article>
-        <article>
-          <span>All-time rank</span>
-          <strong>#{listing.currentMainRank}</strong>
-          <small>{tier} overall</small>
-        </article>
       </section>
 
       <ShareControls

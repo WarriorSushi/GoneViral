@@ -75,7 +75,7 @@ export default async function Image({
     <div
       style={{
         background:
-          "linear-gradient(125deg, #07111f 0%, #0b1322 54%, #281015 100%)",
+          "radial-gradient(circle at 92% -8%, rgba(159,45,54,0.38) 0%, rgba(159,45,54,0.14) 24%, transparent 48%), radial-gradient(circle at 12% 112%, rgba(247,166,62,0.13) 0%, rgba(247,166,62,0.05) 27%, transparent 53%), linear-gradient(125deg, #091321 0%, #101725 58%, #24151d 100%)",
         color: "#fffaf3",
         display: "flex",
         flexDirection: "column",
@@ -89,36 +89,8 @@ export default async function Image({
     >
       <div
         style={{
-          background:
-            "linear-gradient(135deg, rgba(159,45,54,0.68), rgba(247,166,62,0.14))",
-          borderRadius: 999,
-          display: "flex",
-          height: 470,
-          position: "absolute",
-          right: -190,
-          top: -250,
-          transform: "rotate(-16deg)",
-          width: 620,
-        }}
-      />
-      <div
-        style={{
-          background: "rgba(247,166,62,0.12)",
-          borderRadius: 999,
-          bottom: -210,
-          display: "flex",
-          height: 420,
-          left: -120,
-          position: "absolute",
-          width: 720,
-        }}
-      />
-
-      <div
-        style={{
           alignItems: "center",
           display: "flex",
-          justifyContent: "space-between",
           position: "relative",
         }}
       >
@@ -148,19 +120,6 @@ export default async function Image({
             </span>
           </div>
         </div>
-        <span
-          style={{
-            border: "1px solid rgba(247,166,62,0.72)",
-            borderRadius: 999,
-            color: "#ffd59c",
-            fontSize: 15,
-            fontWeight: 800,
-            letterSpacing: 2.6,
-            padding: "10px 18px",
-          }}
-        >
-          SPONSORED RANKING
-        </span>
       </div>
 
       {listing ? (
@@ -251,8 +210,8 @@ export default async function Image({
             style={{
               alignItems: "center",
               background:
-                "linear-gradient(145deg, rgba(255,255,255,0.095), rgba(255,255,255,0.035))",
-              border: "1px solid rgba(247,166,62,0.5)",
+                "linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))",
+              border: "1px solid rgba(247,166,62,0.3)",
               borderRadius: 28,
               display: "flex",
               flexDirection: "column",
@@ -376,11 +335,23 @@ export default async function Image({
           position: "relative",
         }}
       >
+        <span
+          style={{
+            border: "1px solid rgba(247,166,62,0.35)",
+            borderRadius: 999,
+            color: "#d9b77f",
+            fontSize: 9,
+            fontWeight: 800,
+            letterSpacing: 1.8,
+            padding: "6px 10px",
+          }}
+        >
+          SPONSORED RANKING
+        </span>
         <span>FEATURED ON GONEVIRAL.IN</span>
         <span style={{ color: "#ffd59c", fontWeight: 800 }}>
           PAY MORE. RANK HIGHER.
         </span>
-        <span>GONEVIRAL.IN</span>
       </div>
     </div>,
     size,
