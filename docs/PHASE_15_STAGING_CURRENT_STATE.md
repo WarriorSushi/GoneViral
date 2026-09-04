@@ -1139,9 +1139,15 @@ unchanged. One authenticated owner visual review of the new console is next.
 
 The owner's first Production screenshot correctly showed the pre-AAL2 gate,
 not the authenticated console, and exposed that this gate still used the old
-bare presentation. A follow-up on
-`codex/phase-15-founder-console-evidence` gives the gate the same guided visual
-system, explains what authenticator verification does and does not do, and
-links to `/manage/security?reauth=admin` so successful verification returns
+bare presentation. Follow-up pull request `#22` gave the gate the same guided
+visual system, explains what authenticator verification does and does not do,
+and links to `/manage/security?reauth=admin` so successful verification returns
 directly to the founder console. It does not alter authentication, authorization,
-payments, or hosted data.
+payments, or hosted data. Required `quality` run `33824955240` and both Vercel
+checks passed. The pull request was squash-merged as exact commit
+`d00ca998b5d32fc163fedfc860d54d812dc0c333`; Vercel Production deployment
+`dpl_8CshPQ9K3nDNFpBHs1rL8wVKjgAh` is READY from that commit and owns
+`goneviral.in` and `www.goneviral.in`. The owner should now refresh `/admin`,
+review the explanatory security gate, and may privately complete MFA to inspect
+the console. Neither review nor MFA enables payments; the database payment flag
+remains disabled pending explicit owner action in the console.

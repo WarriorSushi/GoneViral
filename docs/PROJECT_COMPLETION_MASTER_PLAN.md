@@ -37,7 +37,7 @@ contents in this file.
 | Commercial Production launch               | Not authorized/not complete            | Phase 15 runbook                                      |
 | Phase 16                                   | Not started                            | implementation plan                                   |
 
-Current working branch: `codex/phase-15-founder-console-evidence`; merge target:
+Current working branch: `codex/phase-15-prelaunch-evidence`; merge target:
 `codex/phase-15-staging`.
 
 The budget-plan commit pushed before scheduler implementation was
@@ -232,10 +232,11 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Have the owner visually review the guidance-first founder console now served by
-READY Production deployment `dpl_Adn8YtBDGEiqVDmXbENmq1uZ8i7q` from exact
-merged commit `00c90b1c6fb03decb50667e65caaea7fea82840b`, then use its plain-
-language, authenticated admin/AAL2 control to enable only the database
+Have the owner refresh and visually review the guided admin security gate and
+founder console now served by READY Production deployment
+`dpl_8CshPQ9K3nDNFpBHs1rL8wVKjgAh` from exact merged commit
+`d00ca998b5d32fc163fedfc860d54d812dc0c333`, then use its plain-language,
+authenticated admin/AAL2 control to enable only the database
 `payments_enabled` flag. Run the remaining narrow Production smoke and one
 synthetic Dodo Test Mode purchase. Dodo Test Mode and the new Resend webhook
 target Production; two genuine signed Resend events returned `200`, the old
