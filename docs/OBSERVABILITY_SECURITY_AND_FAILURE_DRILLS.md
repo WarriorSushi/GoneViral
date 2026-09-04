@@ -109,17 +109,20 @@ Code/configuration presence, local mock proof, deployed check-ins, a deployed
 synthetic failure, and an owner-received notification are separate evidence
 levels. Never infer the latter levels from the former.
 
-The pre-launch failure drill uses a temporary isolated path only. A disposable
-scheduled-only Worker has no public route, no business credentials, no storage,
-and no schedule until the reviewed application candidate is live. Its sole
-request targets a temporary internal endpoint protected by a one-time
-high-entropy Worker secret whose SHA-256 verifier is the only committed value.
-The endpoint can only emit one fixed PII-free Sentry error and return `503`; it
-cannot read or mutate payment, listing, email, Supabase, Dodo, Resend, or cleanup
-state. The Worker discards the response and deliberately fails the same
-scheduled event. After one observed run, remove the Cron Trigger, delete the
-disposable Worker, and remove the temporary endpoint/verifier in the second and
-final bounded pull request.
+The pre-launch failure drill used a temporary isolated path only. At
+`2026-09-04T22:40:59Z`, its single natural Cloudflare event reached the
+temporary internal endpoint, received the deliberate `503`, logged only
+`synthetic_scheduler_certification status=503`, and finished as a failed
+scheduled invocation. Vercel then recorded only the fixed PII-free application
+event with `sentryFlushed: true`. This proves the scheduler-to-application
+failure path and successful SDK flush; it does not by itself prove Sentry issue
+creation or owner email receipt. The disposable Worker had no public route,
+business credentials, storage, or other schedule and could not read or mutate
+payment, listing, email, Supabase, Dodo, Resend, or cleanup state. It and its
+one-time secret were deleted immediately after the event, and Cloudflare now
+reports that the Worker does not exist. The second and final bounded pull
+request removes the temporary endpoint, verifier, Worker source, and focused
+tests from the application repository.
 
 The selected Cloudflare Worker's fixed route map, safe logs, disabled guard,
 activation boundary, and missing-run limitation are documented in

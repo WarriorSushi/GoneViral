@@ -25,17 +25,17 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                      | Status                                                 | Evidence/source                                       |
-| ------------------------------------------ | ------------------------------------------------------ | ----------------------------------------------------- |
-| Phases 0–14                                | Complete                                               | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging        | Frozen Preview RC; lifecycle verified                  | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation       | Complete                                               | restore and 66/66 database evidence in the checkpoint |
-| Pre-launch scheduler hardening             | 1m/5m/hourly/daily candidate; rollout evidence pending | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
-| Public-repository content audit            | Passed; owner already made repo public                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Public-repository settings hardening       | Complete                                               | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 production-shaped pre-launch gate | Deployed; bounded certification active                 | checkpoint exact resume point                         |
-| Commercial Production launch               | Not authorized/not complete                            | Phase 15 runbook                                      |
-| Phase 16                                   | Not started                                            | implementation plan                                   |
+| Scope                                      | Status                                            | Evidence/source                                       |
+| ------------------------------------------ | ------------------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                                | Complete                                          | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging        | Frozen Preview RC; lifecycle verified             | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation       | Complete                                          | restore and 66/66 database evidence in the checkpoint |
+| Pre-launch scheduler hardening             | 1m/5m/hourly/daily deployed; natural 1m/5m passed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Public-repository content audit            | Passed; owner already made repo public            | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Public-repository settings hardening       | Complete                                          | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 production-shaped pre-launch gate | Deployed; bounded certification active            | checkpoint exact resume point                         |
+| Commercial Production launch               | Not authorized/not complete                       | Phase 15 runbook                                      |
+| Phase 16                                   | Not started                                       | implementation plan                                   |
 
 Active integration branch: `codex/phase-15-staging`.
 
@@ -459,19 +459,28 @@ GoneViral reaches 100% V1 completion only when:
 - this plan, the Phase 15 checkpoint, runbooks, and Git history identify the
   exact deployed commit and remaining noncritical follow-up work.
 
-## 2026-09-05 bounded pre-launch hardening candidate
+## 2026-09-05 bounded pre-launch hardening rollout
 
 This is not Phase 16 and does not authorize commercial launch. The current
-candidate implements durable-then-immediate payment-success email delivery,
+rollout implements durable-then-immediate payment-success email delivery,
 one-minute outbox recovery, five-minute operational health, one Sentry Free-plan
 missing-run monitor, and the intercepted/shared How It Works modal and direct
 page. Public copy calls the current-day view `Daily`, retains `/today` for link
 compatibility, and distinguishes non-resetting all-time ranking from the daily
-midnight-IST reset. Local focused code, database, Worker, accessibility, desktop, and mobile
-checks pass; full CI, deployment, natural Cloudflare execution, and hosted
-monitor evidence remain the next gates. Daily automated backup remains deferred
-for the documented security/runtime reasons; the verified manual encrypted
-backup process remains authoritative. See
+midnight-IST reset. Pull request `#31` passed required CI, merged as
+`bd784dbd49056695bccd88acffb15a04b403526c`, and reached Production as Vercel
+deployment `dpl_GyB8UqzHAfShvcdbqFrjtmPxXwvg`. The updated Cloudflare Worker
+version `92a7a5a9-1655-4d8d-9657-a3838191600c` has all four intended triggers;
+natural one-minute outbox and five-minute health events both returned `200`.
+Focused code, database, Worker, accessibility, desktop, and mobile checks pass.
+One isolated natural event then proved Cloudflare's failure status, the
+application's deliberate `503`, and a successful Sentry SDK flush. Its
+disposable Worker, trigger, and one-time secret were deleted immediately; the
+final bounded cleanup removes all temporary repository code. Sentry issue
+creation and owner email receipt remain unclaimed without provider-side or
+owner evidence. Daily automated backup remains deferred for the documented
+security/runtime reasons; the verified manual encrypted backup process remains
+authoritative. See
 `TRANSACTIONAL_EMAIL_OPERATIONS.md`,
 `CLOUDFLARE_SCHEDULED_OPERATIONS.md`,
 `OBSERVABILITY_SECURITY_AND_FAILURE_DRILLS.md`, and the Phase 15 checkpoint.

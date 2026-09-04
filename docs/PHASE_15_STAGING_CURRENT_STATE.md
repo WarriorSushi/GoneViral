@@ -1499,22 +1499,34 @@ notify when an invocation never occurs. No route was manually invoked; no
 failure was forced; and no trigger, binding, secret, Worker version, scheduler,
 or hosted business state changed.
 
-## 2026-09-05 pre-launch hardening and How It Works candidate
+## 2026-09-05 pre-launch hardening and How It Works rollout
 
 This bounded continuation is not Phase 16 and does not reopen Phase 15
 certification. Dodo remains in Test Mode and commercial launch remains
-unauthorized. The candidate keeps payment, ledger, listing projection, and
+unauthorized. The rollout keeps payment, ledger, listing projection, and
 email-outbox persistence in one authoritative transaction, then uses supported
 Next.js post-response work to make a targeted, idempotent best-effort send. A
 failed immediate send remains queued; the recovery Worker changes from five
 minutes to one minute while operational health stays at five minutes.
 
-The candidate adds one independent Sentry Free-plan Cron Monitor to the
+The rollout adds one independent Sentry Free-plan Cron Monitor to the
 authenticated outbox route, with a three-minute missing-run margin, explicit
 start/success/failure states, and no payment authority. Cloudflare uses four of
-five available trigger slots and remains scheduled-only. Deployed cadence,
-natural execution, synthetic failure, Sentry incident, and owner notification
-are not claimed until separately observed after normal review and deployment.
+five available trigger slots and remains scheduled-only. Pull request `#31`
+passed required CI, merged as `bd784dbd49056695bccd88acffb15a04b403526c`,
+and reached Production as deployment `dpl_GyB8UqzHAfShvcdbqFrjtmPxXwvg`.
+Cloudflare Worker version `92a7a5a9-1655-4d8d-9657-a3838191600c` has the exact
+one-minute, five-minute, hourly, and daily triggers. Natural events on that
+version returned `200` for five-minute operational health at
+`2026-09-04T22:20:16Z` and one-minute outbox recovery at
+`2026-09-04T22:22:21Z`. The isolated certification event ran once at
+`2026-09-04T22:40:59Z`: Cloudflare observed the deliberate `503` and failed the
+scheduled event, while Vercel recorded the fixed PII-free application event
+with `sentryFlushed: true`. The disposable Worker, trigger, and one-time secret
+were deleted immediately, and Cloudflare confirms that Worker no longer exists.
+The final bounded cleanup removes the temporary endpoint, verifier, Worker
+source, and tests. Sentry issue creation and owner email receipt remain
+unclaimed without provider-side or owner evidence.
 
 Daily backup automation remains explicitly deferred. The proven encrypted job
 requires an interactive passphrase and native dump/archive tooling, and there
@@ -1522,7 +1534,7 @@ is no approved free unattended private-Drive identity or always-on runner.
 Weakening passphrase separation, retaining plaintext, keeping a personal
 desktop running, or adding billing is outside this task.
 
-The same candidate replaces the spread-out How It Works presentation with one
+The same rollout replaces the spread-out How It Works presentation with one
 shared compact light-mode content component. Client navigation from the board
 intercepts `/how-it-works` as an accessible desktop dialog or mobile full-height
 sheet; Back, Escape, and the close control restore board context and focus,
