@@ -1,6 +1,6 @@
 # Phase 15 staging and production-shaped pre-launch current state
 
-Last updated: 2026-09-04 (Asia/Kolkata)
+Last updated: 2026-09-05 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for Phase 15 work
 on `codex/phase-15-staging`. Read the authority
@@ -875,11 +875,11 @@ measured paid-upgrade triggers are recorded in
 `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The public-repository audit,
 manual protected-Preview route certification, Cloudflare design/implementation,
 and inert hosted setup are complete. The activation change is authorized,
-merged, and deployed by owner report; five-minute and hourly automatic cadence
-passed. Daily cadence and remaining failure/staleness certification are
-pending while other Phase 15 work continues. Production deployment,
-`goneviral.in`, live credentials/payments/refunds, prelaunch cleanup, and Phase
-16 still require their existing separate authorizations.
+merged, and deployed by owner report; five-minute, hourly, and daily automatic
+cadence passed. Failure-notification delivery and independent owner-visible
+stale/missing-run detection remain pending while other Phase 15 work continues.
+Commercial launch, Dodo Live Mode credentials/payments/refunds, prelaunch
+cleanup, and Phase 16 still require their existing separate authorizations.
 
 ## Production boundary
 
@@ -1309,8 +1309,8 @@ The owner then authorized a focused homepage/leaderboard presentation follow-up
 and explicitly retained the product's tracked card-click behavior: the whole
 listing card opens the submitted website through `/go/[slug]`; there is no
 separate `Visit website` control. The owner also chose 10 public listings per
-page followed by stable cursor pagination. The local, uncommitted implementation
-adds the compact premium hero and board treatment, keeps the paid-placement and
+page followed by stable cursor pagination. The implementation adds the compact
+premium hero and board treatment, keeps the paid-placement and
 manual-refresh truth disclosures, shows only one truthful open-position prompt,
 limits recent activity to four real events, preserves tracked click totals, and
 keeps details/takeover controls independently operable. Local formatting, lint,
@@ -1327,11 +1327,10 @@ and the public metric reads `clicks` rather than `tracked clicks`. The tracked
 `/go/[slug]` redirect, click collection/deduplication/totals, takeover action,
 and all payment/ranking/security behavior are unchanged. Focused desktop and
 390px Production-browser verification passes, including accessibility and
-overflow checks. This refinement is local and uncommitted; no hosted or
-Production state changed.
+overflow checks. At that review point no hosted or Production state changed.
 
 The owner next approved the focused visual-hierarchy pass without changing the
-architecture or product logic. The local homepage now has the compact premium
+architecture or product logic. The homepage has the compact premium
 hero and `Get listed` wording, truthful `Live leaderboard` heading with exact
 freshness/manual refresh, grouped filters, denser 1180px cards, gold/silver/
 bronze top-three rank markers, and a restrained laurel/leader treatment for
@@ -1344,14 +1343,14 @@ takeover action, public clicks, ten-item stable cursor pagination, and all
 ranking/payment/tracking/privacy/security/business behavior remain unchanged.
 Formatting, lint, TypeScript, 23 focused unit tests, the Production build, and
 four focused desktop/mobile Production-browser scenarios pass. Review captures
-are in `artifacts/homepage-polish-2026-09-04/`. This work remains local and
-uncommitted; no hosted or Production state changed.
+are in `artifacts/homepage-polish-2026-09-04/`. At that review point no hosted
+or Production state changed.
 
 The owner rejected the first polish as still over-explained and directed an
 Outbid-inspired density pass without copying Outbid's identity. Live desktop
 and 390px reference inspection established that only the category rail should
 scroll horizontally; leaderboard cards and Recent Moves should remain compact
-vertical rows. The local homepage now removes the repeated trust/disclosure
+vertical rows. The homepage removes the repeated trust/disclosure
 copy from the masthead, uses a lightweight How it works link, shortens the hero,
 replaces the mobile Menu label with an accessible icon, removes control-label
 clutter, uses one matching outline-laurel family and restrained tonal surfaces
@@ -1362,8 +1361,7 @@ horizontal overflow. Ranking, payments, tracked `/go/[slug]`, public clicks,
 details, takeover quotes, activity data, cursor pagination, security, database,
 and hosted state are unchanged. Formatting, lint, TypeScript, 23 focused unit
 tests, the Production build, and focused 1440px/390px browser checks pass. New
-review captures are in `artifacts/homepage-refinement-2026-09-04/`. This remains
-local and uncommitted.
+review captures are in `artifacts/homepage-refinement-2026-09-04/`.
 
 The owner then authorized a presentation-only join-flow continuation. Public
 `Get listed` and `Take #...` client navigations now reuse the existing form in
@@ -1376,6 +1374,127 @@ confirmation while untouched close does not prompt. Focused TypeScript, lint,
 nine join-domain unit tests, and local 1440px/390px browser scenarios pass,
 including valid submission to deterministic local mock checkout and no
 horizontal overflow. Captures are in `artifacts/join-overlay-2026-09-05/`.
-The work is approved for the repository's normal landing workflow. At approval
-time, no hosted state, provider configuration, Safety Control, or Production
-deployment had changed.
+At approval time no hosted state, provider configuration, Safety Control, or
+Production deployment had changed.
+
+The complete approved homepage and intercepted join-flow series was committed
+as `cac7dfabe72598701cc259036c1cb360e6aded71` and landed through protected pull
+request `#28`. Required `quality` CI run `33911327013` passed, both Vercel
+checks passed, and the pull request squash-merged as
+`3299fef13770f3ce7657ca0045a31540d9a30dbf` on the default
+`codex/phase-15-staging` branch. Vercel Production deployment
+`dpl_AFfg2NBdTCe6ZXeBd4n2qNVRPumj` is READY from that merge and owns the apex
+and `www` aliases.
+
+The bounded live smoke passed: the homepage loaded; desktop `Get listed` and a
+targeted `Take #...` opened the correct overlay and target/price context; the
+backdrop did not dismiss it; deliberate close worked; direct `/join` remained
+standalone; and 390px mobile used the full-height scrollable sheet with correct
+scroll locking and no horizontal overflow. No payment was submitted. Local and
+remote `codex/phase-15-staging` matched the merge commit and the worktree was
+clean before the scoped documentation/evidence branch began. The approved
+homepage and join overlay must not be redesigned or reverted. The current work
+is limited to the remaining bounded, non-destructive Production certification
+and naturally available Cloudflare daily/failure/staleness evidence.
+
+## 2026-09-05 bounded Production certification evidence
+
+Sentry Production configuration, ingestion, and genuine alert delivery are
+certified. Vercel lists the intentionally public DSN plus the build-only
+organization, project, and auth-token variables on Production. Build logs for
+exact release `3299fef13770f3ce7657ca0045a31540d9a30dbf` show successful
+client and server artifact-bundle/source-map uploads to Sentry and deletion of
+uploaded maps from the public build. One fixed, synthetic, PII-free error event
+carrying only the Phase 15 certification label, `production` environment, and
+exact release was accepted by the configured Sentry ingest endpoint with HTTP 200. The event did not contain customer, payment, provider, request, credential,
+or private business data. On 2026-09-05 the owner reported receiving the
+resulting Sentry email, which supplies genuine notification-delivery evidence
+without storing the recipient, subject, event URL, or payload. No delivery was
+inferred from HTTP acceptance alone.
+
+Turnstile Production configuration and safe verification are certified without
+another form submission. The live `https://goneviral.in/join` page loads the
+Cloudflare Turnstile script and renders one challenge container with a present
+24-character Production site key, response field, and exact `join` action. The
+Production environment uses `TURNSTILE_MODE=cloudflare` with an encrypted
+secret. A read-only sanitized Cloudflare listing found exactly one account
+widget, in managed mode, restricted to exactly `goneviral.in` and
+`www.goneviral.in`; the listing exposed no secret field. The server accepts a
+Turnstile result only when Cloudflare returns success, action `join`, and
+hostname equal to the configured Production site hostname. The
+already-certified ₹501 Production Dodo Test Mode purchase could not have reached
+checkout creation without passing that real server-side boundary, so it
+supplies the genuine Production verification without creating another attempt
+or payment. No challenge was solved, token was printed/reused, form was
+submitted, or hosted data was changed during this bounded recheck.
+
+Supabase Storage Production verification is certified against the authorized
+shared project with aggregate/read-only evidence. Both expected buckets exist:
+`goneviral-logo-public` remains public and currently contains four sanitized
+objects, while `goneviral-logo-staging` remains private and currently contains
+zero objects. There are zero `storage.objects` SELECT/ALL policies granted to
+browser roles. One existing public logo returned HTTP 200 as `image/webp` with
+5,342 bytes directly from the linked project's Storage endpoint, consistent
+with the live Production board rendering. No object name/path, response body,
+credential, private record, or hosted mutation was exposed or performed.
+
+Encrypted-backup staleness detection and current freshness are certified. The
+first bounded check found the then-newest archive 108.38 hours old, well outside
+the documented 24-hour baseline, and correctly reported a real blocking stale
+state. The owner then ran `pnpm ops:backup:hosted` in their own terminal, entered
+the passphrase only through 7-Zip's masked prompts, and reported `Everything is
+Ok` plus successful encrypted-archive verification. The fresh archive is
+`D:\GoneViral-Backups\20260904T201904Z-fndssapjkaicxzeruuvv.7z`, 77,952 bytes,
+last written `2026-09-04T20:20:18.9970020Z`, with its matching `.7z.sha256` and
+exact source commit `3299fef13770f3ce7657ca0045a31540d9a30dbf`. An independent
+local check confirmed both files are present, the recomputed SHA-256 matches,
+and the corresponding plaintext directory count is zero.
+
+Daily automated backup cadence remains open: Windows Task Scheduler contains
+zero GoneViral/Supabase backup tasks. The owner reported copying only this `.7z`
+and matching `.7z.sha256` to a private Google Drive location, with the
+passphrase kept separately in the approved password manager. No Drive account,
+folder, share link, or credential is recorded. Codex did not start the
+interactive prompt, read or store the passphrase, access backup contents, prune
+archives, or change hosted state.
+
+Rollback and payment-pause capability/procedure evidence is certified without
+performing a live state change. The current PR `#28` Production deployment
+`dpl_AFfg2NBdTCe6ZXeBd4n2qNVRPumj` and earlier known-good PR `#26` deployment
+`dpl_BW43Ajkxf4gyrAc7Z8fx5mGEFLUu` both remain READY. The authenticated Vercel
+CLI exposes `vercel rollback <deployment>` and `vercel promote <deployment>`;
+its status check reports no rollback in progress. During an approved incident,
+the rollback procedure is to target the known-good deployment, verify the apex,
+`www`, health, and affected surface, then re-promote the current deployment
+after recovery. No rollback/promotion command was run.
+
+The current hosted flags are exactly Test checkout on, provider refund calls
+off, read-only safety mode off, and outbound links on. The sole `super_admin`
+can use the existing fresh-AAL2 `/admin` Safety Controls form to pause only new
+checkout creation by setting `payments_enabled=false` with a reason; the
+transaction writes the flag and immutable audit together. Signed inbound Dodo
+events and reconciliation intentionally remain available so authoritative
+provider state can converge. Aggregate evidence shows two payment-flag audit
+events, including the certified Production `false` to `true` event, and the
+earlier staging shutdown plus database/integration evidence already prove the
+disabled path. The incident recovery procedure is to inspect/reconcile first,
+then use the same audited control to re-enable only after owner approval. No
+Safety Control or Production traffic state changed during this check.
+
+Cloudflare daily automatic cadence is now certified from naturally available,
+read-only provider analytics. Successful scheduled invocations appeared at
+`02:40:15Z`, `02:43:08Z`, and `02:45:15Z` on 2026-09-04. The isolated middle
+event is the exact daily `43 2 * * *` slot and recorded one request, zero Worker
+errors, and two subrequests, matching the two fixed daily cleanup routes. The
+Worker throws when any assigned route is non-2xx, redirected, timed out, or
+fails at the network layer, so the successful scheduled outcome certifies both
+daily operations. The bounded Production window contained 331 successful
+Worker invocations, zero runtime errors, and 638 subrequests.
+
+That same window contained no naturally occurring failure, so genuine failure-
+notification delivery remains pending rather than inferred from implementation
+tests. Owner-visible stale/missing-run detection also remains pending: the
+current Worker records invocations but has no independent monitor that can
+notify when an invocation never occurs. No route was manually invoked; no
+failure was forced; and no trigger, binding, secret, Worker version, scheduler,
+or hosted business state changed.
