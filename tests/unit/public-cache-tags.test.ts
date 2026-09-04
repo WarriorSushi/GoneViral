@@ -9,6 +9,7 @@ import {
   publicCacheTagsForImpact,
   revalidatePublicCacheImpact,
 } from "@/server/cache/invalidate-public";
+import { publicRefreshTags } from "@/server/cache/public-refresh";
 
 const impact = {
   businessDate: "2026-08-29",
@@ -40,5 +41,14 @@ describe("exact public cache invalidation", () => {
     expect(revalidateTag).toHaveBeenCalledWith("board:category:local", {
       expire: 0,
     });
+  });
+});
+
+describe("manual public refresh", () => {
+  it("refreshes both visible homepage data sets", () => {
+    const form = new FormData();
+    form.set("kind", "main");
+
+    expect(publicRefreshTags(form)).toEqual(["board:main", "activity:public"]);
   });
 });

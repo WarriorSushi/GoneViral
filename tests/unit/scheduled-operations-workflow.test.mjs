@@ -79,8 +79,10 @@ describe("scheduled operations workflow", () => {
       "cleanup-logo-assets": "/api/cron/cleanup-logo-assets",
       "cleanup-retention": "/api/cron/cleanup-retention",
     });
-    expect(selectOperations("schedule", { schedule: "*/5 * * * *" })).toEqual([
+    expect(selectOperations("schedule", { schedule: "* * * * *" })).toEqual([
       "drain-email-outbox",
+    ]);
+    expect(selectOperations("schedule", { schedule: "*/5 * * * *" })).toEqual([
       "check-operational-health",
     ]);
     expect(selectOperations("schedule", { schedule: "17 * * * *" })).toEqual([
@@ -97,7 +99,7 @@ describe("scheduled operations workflow", () => {
       ).toEqual([operation]);
     }
     expect(() =>
-      selectOperations("schedule", { schedule: "* * * * *" }),
+      selectOperations("schedule", { schedule: "*/2 * * * *" }),
     ).toThrow("unsupported_schedule");
     expect(() =>
       selectOperations("workflow_dispatch", {
@@ -106,7 +108,8 @@ describe("scheduled operations workflow", () => {
     ).toThrow("unsupported_operation");
 
     expect(SCHEDULE_OPERATIONS).toEqual({
-      "*/5 * * * *": ["drain-email-outbox", "check-operational-health"],
+      "* * * * *": ["drain-email-outbox"],
+      "*/5 * * * *": ["check-operational-health"],
       "17 * * * *": ["reconcile-payments"],
       "43 2 * * *": ["cleanup-logo-assets", "cleanup-retention"],
     });
@@ -197,13 +200,13 @@ describe("scheduled operations workflow", () => {
         GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL: "https://scheduled.example",
         GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: "true",
       },
-      event: { schedule: "*/5 * * * *" },
+      event: { schedule: "* * * * *" },
       eventName: "schedule",
       logger,
       request,
     });
 
-    expect(request).toHaveBeenCalledTimes(2);
+    expect(request).toHaveBeenCalledOnce();
     expect(request).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -214,15 +217,6 @@ describe("scheduled operations workflow", () => {
         totalTimeoutMs: TOTAL_TIMEOUT_MS,
       }),
     );
-    expect(request).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({
-        url: new URL(
-          "https://scheduled.example/api/cron/check-operational-health",
-        ),
-      }),
-    );
-
     const logs = logger.info.mock.calls.flat().join(" ");
     expect(logs).toContain("route=/api/cron/drain-email-outbox status=204");
     expect(logs).not.toContain(cronSecret);

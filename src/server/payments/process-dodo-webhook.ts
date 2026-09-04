@@ -24,6 +24,7 @@ import {
 export type DodoWebhookResult = Readonly<{
   businessDate?: string;
   categorySlug?: string;
+  emailOutboxId?: string;
   kind: "duplicate" | "processed" | "quarantined";
   listingPublicId?: string;
   listingSlug?: string;
@@ -529,8 +530,8 @@ export async function processDodoWebhook(input: {
       LIMIT 1
     `;
     if (!owner && isInitial) throw new Error("pending_owner_missing");
-    if (owner)
-      await transactionSql`
+    const [emailOutbox] = owner
+      ? await transactionSql<{ id: string }[]>`
       INSERT INTO private.email_outbox (
         kind, recipient_encrypted, recipient_hash, template_version,
         payload, idempotency_key, state, next_attempt_at
@@ -546,7 +547,9 @@ export async function processDodoWebhook(input: {
         ${`${isInitial ? "sponsorship-confirmed" : "raise-confirmed"}:${attempt.id}:${EMAIL_TEMPLATE_VERSION}`},
         'pending', transaction_timestamp()
       ) ON CONFLICT (idempotency_key) DO NOTHING
-    `;
+      RETURNING id
+    `
+      : [];
     if (!owner && isRaise) {
       await createOperationsReview({
         attemptId: attempt.id,
@@ -591,6 +594,7 @@ export async function processDodoWebhook(input: {
       businessDate:
         adjustmentResult?.businessDate ?? ledger.applied_business_date,
       categorySlug: listing.category_slug,
+      ...(emailOutbox ? { emailOutboxId: emailOutbox.id } : {}),
       kind: "processed",
       listingPublicId: listing.public_id,
       listingSlug: listing.slug,

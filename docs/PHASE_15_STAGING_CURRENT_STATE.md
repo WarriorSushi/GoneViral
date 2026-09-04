@@ -1498,3 +1498,38 @@ current Worker records invocations but has no independent monitor that can
 notify when an invocation never occurs. No route was manually invoked; no
 failure was forced; and no trigger, binding, secret, Worker version, scheduler,
 or hosted business state changed.
+
+## 2026-09-05 pre-launch hardening and How It Works candidate
+
+This bounded continuation is not Phase 16 and does not reopen Phase 15
+certification. Dodo remains in Test Mode and commercial launch remains
+unauthorized. The candidate keeps payment, ledger, listing projection, and
+email-outbox persistence in one authoritative transaction, then uses supported
+Next.js post-response work to make a targeted, idempotent best-effort send. A
+failed immediate send remains queued; the recovery Worker changes from five
+minutes to one minute while operational health stays at five minutes.
+
+The candidate adds one independent Sentry Free-plan Cron Monitor to the
+authenticated outbox route, with a three-minute missing-run margin, explicit
+start/success/failure states, and no payment authority. Cloudflare uses four of
+five available trigger slots and remains scheduled-only. Deployed cadence,
+natural execution, synthetic failure, Sentry incident, and owner notification
+are not claimed until separately observed after normal review and deployment.
+
+Daily backup automation remains explicitly deferred. The proven encrypted job
+requires an interactive passphrase and native dump/archive tooling, and there
+is no approved free unattended private-Drive identity or always-on runner.
+Weakening passphrase separation, retaining plaintext, keeping a personal
+desktop running, or adding billing is outside this task.
+
+The same candidate replaces the spread-out How It Works presentation with one
+shared compact light-mode content component. Client navigation from the board
+intercepts `/how-it-works` as an accessible desktop dialog or mobile full-height
+sheet; Back, Escape, and the close control restore board context and focus,
+while direct URL visits remain a compact standalone route. Focused desktop and
+390px automated checks pass for inert background, scroll lock, focus trap,
+focus restoration, CTA navigation, accessibility scan, and horizontal overflow.
+The owner subsequently standardized public terminology: the existing `/today`
+URL and internal contracts stay stable, but all visitor-facing labels now say
+`Daily`; the explanatory rule states that all-time ranking never resets and the
+daily ranking resets at midnight IST.

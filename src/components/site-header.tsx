@@ -6,7 +6,7 @@ import goneViralLogo from "@/app/GoneViral.in logo.png";
 
 const menuLinks = [
   { href: "/", label: "Main board" },
-  { href: "/today", label: "Today" },
+  { href: "/today", label: "Daily" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/join", label: "Get listed" },
   { href: "/manage", label: "Manage my listing" },

@@ -2,6 +2,12 @@ const ENABLED_VALUE = "true";
 const REQUEST_TIMEOUT_MS = 45_000;
 
 export const SCHEDULED_OPERATIONS = Object.freeze({
+  "* * * * *": Object.freeze([
+    Object.freeze({
+      name: "drain-email-outbox",
+      route: "/api/cron/drain-email-outbox",
+    }),
+  ]),
   "17 * * * *": Object.freeze([
     Object.freeze({
       name: "reconcile-payments",
@@ -19,10 +25,6 @@ export const SCHEDULED_OPERATIONS = Object.freeze({
     }),
   ]),
   "*/5 * * * *": Object.freeze([
-    Object.freeze({
-      name: "drain-email-outbox",
-      route: "/api/cron/drain-email-outbox",
-    }),
     Object.freeze({
       name: "check-operational-health",
       route: "/api/cron/check-operational-health",

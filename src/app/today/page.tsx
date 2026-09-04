@@ -13,9 +13,9 @@ import { parseTodayBoardCursor } from "@/server/db/repositories/leaderboards";
 
 export const metadata: Metadata = publicPageMetadata({
   description:
-    "Confirmed money added today, net of reversals posted today. Resets at midnight IST.",
+    "Confirmed money added during the current IST day, net of same-day reversals. The daily ranking resets at midnight IST.",
   path: "/today",
-  title: "Today’s board",
+  title: "Daily leaderboard",
 });
 
 export default async function TodayPage(props: PageProps<"/today">) {
@@ -45,12 +45,12 @@ export default async function TodayPage(props: PageProps<"/today">) {
       categories={categories}
       entries={board.entries}
       generatedAt={board.generatedAt}
-      helper="See who moved up today. The list starts over at midnight IST."
+      helper="Confirmed spend during the current IST day. This ranking resets at midnight IST."
       isPaginated={cursor.value !== null}
       nextCursor={board.nextCursor}
       pageHref="/today"
       refreshContext={{ kind: "today", businessDate }}
-      title="Who moved up today?"
+      title="Daily leaderboard"
     />
   );
 }

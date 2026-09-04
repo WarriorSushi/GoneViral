@@ -103,7 +103,7 @@ export default async function OwnerListingPage({
           </small>
         </div>
         <div>
-          <span>Today (IST)</span>
+          <span>Daily (IST)</span>
           <strong>
             <Money paise={listing.todayTotalPaise} />
           </strong>

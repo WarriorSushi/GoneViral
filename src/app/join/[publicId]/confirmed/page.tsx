@@ -118,7 +118,7 @@ export default async function ConfirmedPaymentPage({
           <p>
             {reversed
               ? "If you did not expect this, contact support and include the payment reference from your original checkout."
-              : "We’re sending an email with your secure management link. It may take a few minutes to arrive."}
+              : "Your secure management link is being sent now and should arrive shortly. If delivery is delayed, it stays safely queued for retry."}
           </p>
         </div>
         {!reversed && attempt.listingPath ? (

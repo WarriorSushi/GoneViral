@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { revalidatePaymentResult } from "@/server/cache/revalidate-payment-result";
+import { deliverEmailOutboxById } from "@/server/email/outbox";
 import {
   getDodoWebhookConfiguration,
   verifyAndNormalizeDodoWebhook,
@@ -27,7 +28,10 @@ function response(
   });
 }
 
-export async function handleDodoWebhook(request: Request): Promise<Response> {
+export async function handleDodoWebhook(
+  request: Request,
+  scheduleAfterResponse: typeof after = after,
+): Promise<Response> {
   const requestId = requestCorrelationId(request);
   const declaredLength = Number(request.headers.get("content-length") ?? "0");
   if (Number.isFinite(declaredLength) && declaredLength > MAX_WEBHOOK_BYTES) {
@@ -65,6 +69,27 @@ export async function handleDodoWebhook(request: Request): Promise<Response> {
       expectedBusinessId: configuration.businessId,
       providerEnvironment: configuration.environment,
     });
+
+    if (result.emailOutboxId) {
+      const emailOutboxId = result.emailOutboxId;
+      scheduleAfterResponse(async () => {
+        try {
+          const delivery = await deliverEmailOutboxById(emailOutboxId);
+          logger.info("payment_confirmation_email_attempted", {
+            ...delivery,
+            requestId,
+          });
+        } catch (deliveryError) {
+          logger.error("payment_confirmation_email_attempt_failed", {
+            errorName:
+              deliveryError instanceof Error
+                ? deliveryError.name
+                : "UnknownError",
+            requestId,
+          });
+        }
+      });
+    }
 
     if (result.listingPublicId) {
       try {

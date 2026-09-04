@@ -14,6 +14,6 @@
     "GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED": "true",
   },
   "triggers": {
-    "crons": ["*/5 * * * *", "17 * * * *", "43 2 * * *"],
+    "crons": ["* * * * *", "*/5 * * * *", "17 * * * *", "43 2 * * *"],
   },
 }

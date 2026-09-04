@@ -49,6 +49,19 @@ access/retention policy, issue ownership, and alert destinations as a second
 layer. A local successful build does not prove a Sentry project, upload, event,
 or alert exists.
 
+The authenticated email-outbox cron route uses the existing Sentry project as
+an independent Cron Monitor when the Production DSN is present. It records an
+`in_progress` check-in only after cron authentication, then records `ok` or
+`error` with bounded SDK flush. The monitor expects `* * * * *` in UTC, allows
+three minutes of check-in margin and one minute of runtime, opens an issue on
+the first failure or miss, and requires two successes for recovery. Sentry
+errors cannot fail the outbox route. This is deliberately the single Free-plan
+monitor: it detects absence of the highest-frequency delivery-recovery path
+without pretending that Cloudflare can watch itself or consuming paid monitor
+capacity. Hourly reconciliation and daily cleanup retain their existing safe
+failure telemetry but do not each get a separate missing-run monitor on the
+current free plan.
+
 Official references:
 
 - Sentry Next.js setup: https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
@@ -91,6 +104,22 @@ relative to provider activity, cron failures/missed invocations, database
 connections/locks, function duration, Sentry error rate, Supabase availability,
 and Vercel spend/traffic anomalies. These need real hosted traffic and cannot be
 certified locally.
+
+Code/configuration presence, local mock proof, deployed check-ins, a deployed
+synthetic failure, and an owner-received notification are separate evidence
+levels. Never infer the latter levels from the former.
+
+The pre-launch failure drill uses a temporary isolated path only. A disposable
+scheduled-only Worker has no public route, no business credentials, no storage,
+and no schedule until the reviewed application candidate is live. Its sole
+request targets a temporary internal endpoint protected by a one-time
+high-entropy Worker secret whose SHA-256 verifier is the only committed value.
+The endpoint can only emit one fixed PII-free Sentry error and return `503`; it
+cannot read or mutate payment, listing, email, Supabase, Dodo, Resend, or cleanup
+state. The Worker discards the response and deliberately fails the same
+scheduled event. After one observed run, remove the Cron Trigger, delete the
+disposable Worker, and remove the temporary endpoint/verifier in the second and
+final bounded pull request.
 
 The selected Cloudflare Worker's fixed route map, safe logs, disabled guard,
 activation boundary, and missing-run limitation are documented in
@@ -227,6 +256,18 @@ For an off-device copy, upload only the resulting `.7z` and matching
 or SQL files.
 `-PruneExpired` requires a second typed confirmation and removes only matching
 encrypted archives older than the configured rolling period.
+
+Daily automation is intentionally deferred on the present free architecture.
+The proven job requires an interactive 7-Zip passphrase, native PostgreSQL and
+archive tooling, temporary local plaintext, and an authenticated private Drive
+destination. Cloudflare Workers cannot run that toolchain within its runtime;
+Vercel Hobby is not a durable archive host; the existing Google Drive copy has
+no approved unattended service identity; and keeping the owner's desktop
+running would not be autonomous. Moving the passphrase into an unsafe script or
+adding a paid runner/storage service would weaken the certified process. The
+manual encrypted archive, checksum, separate passphrase, and private off-device
+copy therefore remain valid while scheduling stays a tracked pre-launch
+operational follow-up.
 
 For restore, initialize a disposable target with the PostgreSQL image recorded
 in the format-v2 manifest so platform roles and bootstrap grants exist. Stop its

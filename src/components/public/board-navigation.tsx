@@ -12,7 +12,7 @@ export function BoardTabs({ active }: { readonly active: "main" | "today" }) {
         aria-current={active === "today" ? "page" : undefined}
         href="/today"
       >
-        Today
+        Daily
       </Link>
     </nav>
   );

@@ -4,6 +4,13 @@ Last updated: 2026-09-05 (Asia/Kolkata)
 
 ## Boundary and status
 
+The 2026-09-05 pre-launch hardening candidate splits email recovery from the
+non-trivial database health operation: outbox drain every minute, operational
+health every five minutes, reconciliation hourly, and cleanup daily. It updates
+the same scheduled-only Worker in place and adds no route, storage, dependency,
+or billing. Until the reviewed candidate is deployed and a natural event is
+observed, the earlier three-trigger deployment remains the hosted authority.
+
 This is the owner-selected replacement for GitHub scheduled events during
 private staging. The Worker, Wrangler configuration, and focused tests are
 implemented. On 2026-09-03 the owner reported that the inert deployment
@@ -99,16 +106,17 @@ their existing locking and idempotency controls.
 
 ## UTC trigger and route map
 
-Cloudflare Cron Triggers execute in UTC. Three account-level Cron Trigger slots
+Cloudflare Cron Triggers execute in UTC. Four account-level Cron Trigger slots
 cover all five routes:
 
-| Cron expression | Fixed routes                                                         |
-| --------------- | -------------------------------------------------------------------- |
-| `*/5 * * * *`   | `/api/cron/drain-email-outbox`, `/api/cron/check-operational-health` |
-| `17 * * * *`    | `/api/cron/reconcile-payments`                                       |
-| `43 2 * * *`    | `/api/cron/cleanup-logo-assets`, `/api/cron/cleanup-retention`       |
+| Cron expression | Fixed routes                                                   |
+| --------------- | -------------------------------------------------------------- |
+| `* * * * *`     | `/api/cron/drain-email-outbox`                                 |
+| `*/5 * * * *`   | `/api/cron/check-operational-health`                           |
+| `17 * * * *`    | `/api/cron/reconcile-payments`                                 |
+| `43 2 * * *`    | `/api/cron/cleanup-logo-assets`, `/api/cron/cleanup-retention` |
 
-The two-route groups may execute concurrently so one route failure does not
+The daily two-route group may execute concurrently so one route failure does not
 prevent the other attempt. The handler waits for both and reports the Cron
 event as failed if either failed. At most two outgoing connections and two
 subrequests are used by one invocation.
@@ -125,7 +133,7 @@ single existing Worker in place and avoid duplicate scheduling).
 | `GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL` | non-secret Worker variable | Exact active HTTPS origin, currently `https://goneviral.in`, with no path/query/fragment |
 | `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED`  | non-secret Worker variable | Checked in as `false`; change to exact `true` only in a reviewed activation change       |
 
-The Worker configuration will initially contain the three triggers but keep the
+The original Worker configuration contained three triggers with the
 enable binding `false`. Therefore even an inert first deployment can register
 the schedules without invoking a GoneViral route. After the two secrets and
 base URL are configured and their names/shape are verified without reading
@@ -139,8 +147,8 @@ between expected slots.
 
 ## Workers Free plan fit and limitations
 
-At the proposed cadence, the Worker receives approximately 313 scheduled
-invocations per UTC day and makes approximately 602 outbound route calls. This
+At the four-trigger cadence, the Worker receives approximately 1,753 scheduled
+invocations per UTC day and makes approximately 1,754 outbound route calls. This
 is comfortably below the current Workers Free request limit of 100,000 per day.
 Each invocation uses at most two of the 50 permitted subrequests and two of the
 six permitted simultaneous outgoing connections.
@@ -148,7 +156,7 @@ six permitted simultaneous outgoing connections.
 Important Free-plan limits and operational constraints:
 
 - only five Cron Triggers are available per Cloudflare account; GoneViral uses
-  three, so the owner must first confirm at least three slots are free;
+  four, leaving one account-level slot under the previously confirmed headroom;
 - Free Workers receive 10 milliseconds of CPU time per invocation. Network wait
   time does not count as CPU time, so the tiny validation-and-fetch handler is
   suitable, but it must avoid dependencies, response parsing, and heavy setup;

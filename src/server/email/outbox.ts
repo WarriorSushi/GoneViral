@@ -53,6 +53,31 @@ async function claimEmailBatch(limit: number): Promise<ClaimedEmail[]> {
   );
 }
 
+async function claimEmailById(id: string): Promise<ClaimedEmail[]> {
+  return getSqlClient().begin(
+    (transaction) => transaction<ClaimedEmail[]>`
+    WITH selected AS (
+      SELECT id
+      FROM private.email_outbox
+      WHERE id = ${id}
+        AND state IN ('pending', 'failed_retryable', 'sending')
+        AND next_attempt_at <= transaction_timestamp()
+      FOR UPDATE SKIP LOCKED
+    )
+    UPDATE private.email_outbox AS outbox
+    SET state = 'sending', attempt_count = outbox.attempt_count + 1,
+        next_attempt_at = transaction_timestamp() + interval '10 minutes',
+        last_error_code = NULL
+    FROM selected
+    WHERE outbox.id = selected.id
+    RETURNING outbox.id, outbox.kind, outbox.recipient_encrypted AS "recipientEncrypted",
+              outbox.template_version AS "templateVersion", outbox.payload,
+              outbox.idempotency_key AS "idempotencyKey",
+              outbox.attempt_count AS "attemptCount"
+  `,
+  );
+}
+
 async function markSent(id: string, providerMessageId: string) {
   await getSqlClient()`
     UPDATE private.email_outbox
@@ -86,14 +111,10 @@ async function markFailed(
   `;
 }
 
-export async function drainEmailOutbox(
-  input: {
-    limit?: number;
-    provider?: EmailDeliveryProvider;
-  } = {},
+async function deliverClaimedEmails(
+  emails: ClaimedEmail[],
+  provider: EmailDeliveryProvider,
 ) {
-  const emails = await claimEmailBatch(input.limit ?? 10);
-  const provider = input.provider ?? getEmailDeliveryProvider();
   const siteUrl = readPublicEnv().NEXT_PUBLIC_SITE_URL;
   let sent = 0;
   let retryable = 0;
@@ -128,4 +149,23 @@ export async function drainEmailOutbox(
     }
   }
   return { claimed: emails.length, deadLetter, retryable, sent } as const;
+}
+
+export async function deliverEmailOutboxById(
+  id: string,
+  provider: EmailDeliveryProvider = getEmailDeliveryProvider(),
+) {
+  return deliverClaimedEmails(await claimEmailById(id), provider);
+}
+
+export async function drainEmailOutbox(
+  input: {
+    limit?: number;
+    provider?: EmailDeliveryProvider;
+  } = {},
+) {
+  return deliverClaimedEmails(
+    await claimEmailBatch(input.limit ?? 10),
+    input.provider ?? getEmailDeliveryProvider(),
+  );
 }
