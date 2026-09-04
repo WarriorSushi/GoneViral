@@ -798,6 +798,25 @@ Owner decision effective 2026-09-04:
 - Production deployment/domain, live credentials, payments/refunds, cleanup,
   and Phase 16 retain their separate authorization boundaries.
 
+Owner pre-launch data-plane decision effective 2026-09-04:
+
+- Use the existing hosted Supabase project `goneviral` in `ap-south-1` as the
+  single Database/Auth/Storage data plane for both Preview and Production
+  throughout the non-commercial, Dodo Test Mode pre-launch period. Do not
+  create, reset, or duplicate a Supabase project for current Production setup.
+- Controlled Preview/Production sharing is an explicit temporary owner
+  exception to environment isolation. Preserve the existing schema,
+  migrations, Storage, Auth configuration, required system data, and hosted
+  business data during this setup.
+- Before any Dodo Live Mode activation, obtain a separate destructive-cleanup
+  authorization and use only the repository's safe cleanup architecture to
+  remove synthetic/Test Mode business data. Never delete arbitrary payment,
+  ledger, or financial rows manually.
+- After cleanup, prove the leaderboard is clean and that no Test Mode financial
+  artifact can affect live ranking. Prevent accidental Preview contamination
+  before live activation; a broader post-launch Preview-isolation redesign is
+  operational hardening and does not block the current pre-launch path.
+
 Owner-supplied GST/operator decision effective 2026-09-04:
 
 - Syed Irfan Ullah Quadri is the legal proprietor; AltCorp is the GST trade

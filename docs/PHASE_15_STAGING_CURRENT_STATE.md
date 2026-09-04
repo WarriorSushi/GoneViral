@@ -1,9 +1,9 @@
-# Phase 15 private staging current state
+# Phase 15 staging and production-shaped pre-launch current state
 
 Last updated: 2026-09-04 (Asia/Kolkata)
 
-This is a sanitized, non-authoritative certification record for the Phase 15
-private staging work on `codex/phase-15-staging`. Read the authority
+This is a sanitized, non-authoritative certification record for Phase 15 work
+on `codex/phase-15-staging`. Read the authority
 order and acceptance rules in the specifications and
 `PHASE_15_STAGING_CERTIFICATION_AND_LAUNCH.md` before making decisions. Update
 this file after material external-state changes. Do not place secret values,
@@ -12,9 +12,17 @@ addresses, or backup passphrases here.
 
 ## Scope and owner decision
 
-- Private staging only. Production, `goneviral.in`, live credentials, live
-  payments, and Phase 16 are not authorized.
-- Dodo remains in Test Mode. The Preview is protected and noindex.
+- The owner has authorized a non-commercial, production-shaped Vercel
+  Production environment on Hobby at `goneviral.in`, using Dodo Test Mode with
+  payments enabled. This is not authorization for Dodo Live Mode, a real
+  transaction, refunds, destructive cleanup, Vercel Pro purchase, commercial
+  launch, or Phase 16.
+- The existing hosted Supabase project `fndssapjkaicxzeruuvv` is intentionally
+  the single shared pre-launch Database/Auth/Storage data plane for Preview and
+  Production. Do not create another Supabase project. Synthetic Test Mode data
+  is expected and must later be removed only through the separately authorized
+  safe pre-live cleanup.
+- Dodo remains in Test Mode. The Preview remains protected and noindex.
 - The owner chose a risk-based critical path to conserve Codex usage. Prioritize
   money correctness, authorization, data privacy, infrastructure isolation, and
   safe shutdown. Record all other checks honestly as deferred/unverified; do
@@ -53,10 +61,9 @@ addresses, or backup passphrases here.
 - The prior alias target was deployment `dpl_Cri4g8B93gRUsWHokoLGMEe4kDfB`
   from application commit `682969e41cbfba73bb4b2d81681eb2abd2dbe509`.
 - The repository is linked and the Vercel CLI is authenticated. Use
-  `pnpm.cmd exec vercel ...` from the workspace. Production Vercel state must
-  remain untouched.
-- Hosted Supabase staging project: `fndssapjkaicxzeruuvv`, Mumbai. The Supabase
-  plugin/MCP connection is authenticated to the correct staging project.
+  `pnpm.cmd exec vercel ...` from the workspace.
+- Hosted shared pre-launch Supabase project: `fndssapjkaicxzeruuvv`, Mumbai.
+  The Supabase CLI connection is authenticated to the correct project.
   Prefer aggregate/redacted read-only evidence and follow the Supabase skill.
 - Application transactional email genuinely uses Resend in Preview, and the
   signed webhook has advanced tested messages to `delivered`. Supabase Auth
@@ -1006,3 +1013,120 @@ browser assertions. The focused desktop legal-page test passed 1/1; repository
 formatting, ESLint, TypeScript checking, PowerShell parsing, and diff checks
 passed. The tracked repository contains zero occurrences of the superseded
 address.
+
+## 2026-09-04 production-shaped pre-launch transition
+
+The owner authorized a non-commercial Production-shaped gate on Vercel Hobby
+with Dodo remaining in Test Mode and explicitly selected the existing hosted
+Supabase project `fndssapjkaicxzeruuvv` (`goneviral`, `ap-south-1`) as the
+single Database/Auth/Storage data plane for Preview and Production. No second
+Supabase project may be created, and the existing schema, migrations, Storage,
+Auth configuration, required system data, and hosted business data must not be
+reset or duplicated. The shared data plane is an accepted temporary exception;
+safe cleanup and pre-live Preview contamination controls retain separate future
+authorization boundaries.
+
+The exact release candidate is protected-branch merge
+`a44649064f2334ecd8340439cec9235481ca34d5`; required pull-request check
+`quality` passed. Vercel Production deployment
+`dpl_HgCf1iqWaAHskdgidJVpZsE23qLg` is READY from that exact commit, uses Mumbai
+functions on Hobby, contains zero Vercel crons, and is aliased to
+`goneviral.in`, `www.goneviral.in`, and the project domains. Live DNS/TLS checks
+returned `200` from the apex through Vercel and a permanent canonical redirect
+from `www` to the apex. Public/legal routes, `robots.txt`, and `sitemap.xml`
+returned `200` with the Production canonical URL; the unauthenticated health
+cron route returned the required `401` fail-closed response.
+
+The pre-existing secret and provider values were extended to Vercel Production
+without reading or printing them. Production-specific configuration sets
+`NEXT_PUBLIC_SITE_URL=https://goneviral.in` and `PAYMENTS_ENABLED=true`, while
+Dodo stays exactly `test_mode`. A new managed Turnstile widget is restricted to
+the apex and `www` hostnames; its public site key and unread secret were stored
+only in Production. Supabase Auth now uses the Production apex as Site URL and
+allows the exact Production callback while preserving Preview and local
+callbacks. The existing custom SMTP configuration was preserved.
+
+Supabase CLI inspection found the ten local migrations equal to the ten hosted
+migrations and table inspection succeeded. The only warning-level security
+advisor result was the known leaked-password-protection setting. Hosted flags
+remain fail closed: `payments_enabled=false`, `provider_refunds_enabled=false`,
+`read_only=false`, and `outbound_redirects_enabled=true`. Production's Vercel
+flag alone therefore cannot activate checkout. The database payment flag may
+be enabled only through the authenticated admin/AAL2 workflow, never by an ad
+hoc SQL bypass.
+
+Aggregate-only inspection found five listings, six Test Mode attempts, five
+Test Mode provider-payment records, five Test Mode financial-ledger entries,
+and zero open/investigating reconciliation items. These records are preserved
+for current pre-launch testing. Before Dodo Live Mode, a separately authorized
+run of the repository's safe cleanup architecture must remove all synthetic/
+Test Mode business data without manual financial-row deletion, preserve
+infrastructure and required system data, and prove that neither the leaderboard
+nor live ranking can be affected by Test Mode financial artifacts.
+
+Cloudflare remains the sole scheduler. The existing Worker
+`goneviral-scheduled-operations-staging` was updated in place so its only base
+URL is `https://goneviral.in`; the enable guard remains `true`, both required
+secret bindings remain present without disclosure, and the three schedules are
+unchanged. Deployed Worker version
+`cbeab8d8-234a-47f1-ada4-a8266125d5f0` contains this transition. The focused
+Worker suite passed 9/9 and the Wrangler dry run succeeded.
+
+One later bounded, read-only Vercel log query closed that transition check.
+Starting with the first natural event at `2026-09-03T23:55:14.414Z`, the Worker
+repeatedly invoked both five-minute Production routes and received `200`; the
+natural hourly reconciliation invocation at `2026-09-04T00:17:08.822Z` also
+received `200`. Later five-minute events continued on replacement Production
+deployment `dpl_46QxV3nXmjz9wYQKs28r6kumNsbs`. No route was invoked manually,
+no payload or secret was inspected, and the daily/failure-staleness evidence
+retains its separately deferred status.
+
+The remaining provider-side work is narrow. By sanitized owner report, the
+existing Dodo Test Mode webhook was edited in place from protected Preview to
+`https://goneviral.in/api/webhooks/dodo`; no product, credential, signing-secret
+rotation, Live Mode action, or test event was requested. The existing Resend
+webhook could not be edited in the provider UI, so the owner created a second
+enabled endpoint at `https://goneviral.in/api/webhooks/resend`, saved its new
+signing secret outside the repository, and updated the existing sensitive
+`RESEND_WEBHOOK_SECRET` Vercel variable without disclosing its value. Vercel
+metadata confirms that variable was updated at `2026-09-04T00:15:30.982Z` and
+still targets Preview and Production.
+
+Production was then redeployed from the existing artifact so no dirty local
+documentation entered the build. Deployment
+`dpl_46QxV3nXmjz9wYQKs28r6kumNsbs` is READY from exact commit
+`a44649064f2334ecd8340439cec9235481ca34d5`, uses Mumbai functions on Hobby,
+contains zero Vercel crons, and owns the Production aliases. An unsigned POST
+to the Resend route returned the expected `400 invalid_webhook`, proving the
+public route exists and rejects unauthenticated input without fabricating a
+provider event. The subsequent genuine magic-link email produced two signed
+POST deliveries to the Production Resend route at
+`2026-09-04T00:25:43.669Z` and `2026-09-04T00:25:44.544Z`; both returned `200`
+on that deployment. Payloads and recipient data were not inspected. The old
+Preview Resend webhook may now be disabled but must not be deleted or have its
+secret rotated. No Dodo Live Mode action, data cleanup, real payment, refund,
+Vercel Pro purchase, commercial launch, or Phase 16 action is authorized.
+
+The owner then disabled, without deleting or rotating, the old protected-
+Preview Resend webhook. The Production webhook is now the sole enabled Resend
+event destination for this shared pre-launch topology.
+
+The owner then completed a genuine Production Supabase magic-link flow in the
+owner's own browser. The consumed link returned to the exact Production callback
+and rendered the authenticated `goneviral.in/manage?claimed=1` listing dashboard
+against the existing shared hosted data. This closes the basic Production Auth
+redirect/session/database-read smoke. No email address, magic-link token, URL
+query secret, browser session, or private listing data is recorded here.
+
+Before enabling the database payment flag, the owner paused the operation and
+requested a guidance-first founder console suitable for a non-specialist
+operator. Local implementation on `codex/phase-15-founder-console` preserves
+the existing Server Actions, admin authorization, fresh AAL2 requirement,
+reason validation, and immutable audit trail while replacing database-style
+labels with plain-language controls. It adds the current three-step Test Mode
+launch path, runtime/payment/refund/read-only status, queue counts, expandable
+control explanations, explicit effects, disabled current-state buttons, a
+responsive premium layout, and a short exact-current-gate instruction. No
+hosted flag or data changed. Focused admin/MFA/auth tests passed 24/24; Prettier,
+ESLint, TypeScript checking, and the Next.js 16.3.3 production build passed.
+Merge/Production deployment and an authenticated visual check remain pending.

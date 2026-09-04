@@ -6,12 +6,13 @@ Product and money invariants follow
 `goneviral-specs/00_DECISIONS_AND_PRODUCT_RULES.md`, then the database, payment,
 and security contracts in
 `goneviral-specs/03_DATABASE_PAYMENTS_AND_SECURITY.md`, then the Phase 15 plan
-and operational specification. The user-approved execution prompt may narrow
-or replace topology choices for this phase; it authorises one empty hosted
-Supabase Free project for private staging certification, not commercial live
-money. This runbook does not authorise production promotion, public domain
-attachment, or a live payment. Each requires separate explicit confirmation
-immediately before the action.
+and operational specification. The current owner instruction authorizes a
+non-commercial production-shaped Vercel Production environment on Hobby at
+`goneviral.in`, backed by the existing hosted Supabase Free project and Dodo
+Test Mode with payments enabled. Preview and Production may share that Supabase
+project during pre-launch. It does not authorize Dodo Live Mode, a real
+transaction, refunds, destructive cleanup, Vercel Pro purchase, commercial
+launch, or Phase 16.
 
 The policies at version `2026-09-04-v2` are effective owner-approved copy. That
 status does not claim independent counsel or CA approval. The owner confirms
@@ -122,7 +123,11 @@ The staging deployment must use the linked staging Supabase project, Dodo
 Turnstile, and a staging Sentry project. It must start with
 `PAYMENTS_ENABLED=false`; the database `payments_enabled` and
 `provider_refunds_enabled` flags also remain false until their individual test
-steps. Preview credentials must never be copied into Production scope.
+steps. During this owner-authorized pre-launch exception, the existing
+Supabase, Dodo Test Mode, Resend, Sentry, and scheduler-related values may be
+shared with Production without exposing them. New production-domain values
+such as the site URL and Turnstile widget remain scope-specific. Before Dodo
+Live Mode, prevent Preview from contaminating live business data.
 
 Required server settings include transaction-pool `DATABASE_URL`, direct
 administrative `DATABASE_DIRECT_URL`, Supabase secret key, independent HMAC and
@@ -140,11 +145,12 @@ excludes only the production schedule file during upload, and restores it in a
 `finally` block. Manually invoke and verify the authenticated cron routes in
 preview, but do not claim scheduler certification.
 
-The owner selected Vercel plus Supabase for Production and will use Supabase
-Free initially. Vercel Hobby remains preview-only under the currently recorded
-commercial-use boundary; Vercel Pro is required immediately before commercial
-Production. Cloudflare remains the only selected scheduler and does not change
-the Vercel plan restriction.
+The owner selected Vercel plus the existing hosted `goneviral` Supabase Free
+project for Production. Preview and Production intentionally share that data
+plane during the non-commercial Dodo Test Mode pre-launch period. Vercel Hobby
+may host this production-shaped pre-launch deployment; Vercel Pro remains
+required immediately before commercial Production. Cloudflare remains the
+only selected scheduler and does not change the Vercel plan restriction.
 The production host and scheduler must follow and pass
 `PHASE_15_BUDGET_CONSTRAINED_LAUNCH_PLAN.md`. The staging scheduler is one
 minimal Cloudflare Worker using three UTC Cron Triggers at the owner-approved
@@ -218,11 +224,11 @@ cleanup report beside the encrypted backup.
 
 ## Production and live-money hard gates
 
-Do not promote or attach `goneviral.in` until the user separately confirms the
-specific action and genuine evidence exists for Vercel Pro and its documented
-cost controls, the production-isolated Cloudflare Workers Cron scheduler,
-Supabase Free capacity and owner-accepted recovery posture, production
-isolation, DNS/TLS/email authentication, backup/restore, alerts, access/MFA,
+The current production-shaped deployment and `goneviral.in` attachment are
+authorized. Close this gate only with genuine evidence for the Hobby plan,
+single Cloudflare Workers Cron target, shared Supabase Free capacity and
+owner-accepted recovery posture, DNS/TLS/email authentication, backup/restore,
+alerts, access/MFA,
 security review, the owner-authorized privacy-minimized geographic address on
 the dedicated operator/contact disclosure, current Dodo live status and exact live
 configuration, and the owner-accepted
@@ -241,12 +247,12 @@ legitimate alternative-location path are in
 log the omitted premise-level home-address details, and keep the exact GSTIN
 out of general source and website copy.
 
-Even after those gates, deploy first with payments disabled. Smoke public,
-Auth, admin, cron, webhook, and reconciliation reads. Register exact live URLs,
-then request a separate immediate confirmation for one controlled low-value
-founder-owned live transaction. Verify provider event to exactly one payment,
-ledger entry, lifetime/daily projection, board, email, and reconciliation.
-Never fabricate a transaction or sign-off.
+The current gate uses Dodo Test Mode and `PAYMENTS_ENABLED=true` so a complete
+synthetic purchase can be certified. Before any Live Mode change, run the
+separately authorized safe cleanup, verify no synthetic/Test Mode artifact can
+affect live ranking, and prevent accidental Preview contamination. Only then
+request separate authorization for one controlled low-value founder-owned live
+transaction. Never fabricate a transaction or sign-off.
 
 ## Incident and rollback rule
 

@@ -594,7 +594,13 @@ A simple trunk-based process is sufficient:
 
 ### Projects/environments
 
-Prefer separate staging and production projects or rigorously isolated environments with distinct credentials. Production domain is `goneviral.in` with canonical redirect (`www` policy chosen once).
+Production domain is `goneviral.in` with a canonical `www` redirect. During
+the owner-authorized non-commercial pre-launch period, Preview and Production
+share the existing hosted `goneviral` Supabase project while Dodo remains in
+Test Mode. Do not create a second Supabase project merely for current
+Production setup. Before Dodo Live Mode, run the separately authorized safe
+cleanup and prevent Preview from contaminating live business data. Broader
+Preview isolation may follow as post-launch operational hardening.
 
 ### Region
 
@@ -632,8 +638,9 @@ and taxes/card conversion may vary. Verify current terms/pricing at launch.
 
 ### Project/region
 
-Production Supabase Free in the closest available Mumbai/South Asia region
-(`ap-south-1` at specification time). Staging is separate. The owner accepts no
+Use the existing hosted Supabase Free project `goneviral` in `ap-south-1` as
+the single pre-launch Database/Auth/Storage plane. Preview and Production
+temporarily share it by explicit owner decision. The owner accepts no
 managed PITR, possible inactivity pause, self-managed backup dependence, weaker
 provider recovery guarantees, and possible recovery downtime. Re-evaluate Pro
 from measured traffic, reliability need, or revenue.
@@ -1066,7 +1073,8 @@ Set budget alerts on Vercel, Supabase, Resend, Sentry and provider where availab
 - [ ] Vercel Pro and its cost controls active in the intended region.
 - [ ] Supabase Free capacity/risk acceptance and fresh encrypted backup.
 - [ ] Cloudflare Workers Cron scheduler safety and cadence certified.
-- [ ] production/staging completely isolated.
+- [ ] pre-live Preview contamination controls active; full Preview isolation
+      may follow as post-launch operational hardening.
 - [ ] domain/TLS/canonical redirects.
 - [ ] Auth redirect allowlist and Resend DNS/custom SMTP.
 - [ ] provider webhook/return URLs and secrets.

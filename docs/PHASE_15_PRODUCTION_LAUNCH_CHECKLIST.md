@@ -4,11 +4,13 @@ Last reviewed: 2026-09-04 (Asia/Kolkata)
 
 ## Current decision
 
-GoneViral's production topology is Vercel for the Next.js application, a
-production-isolated Supabase project for Database/Auth/Storage, and a
-production-isolated Cloudflare Worker for the five authenticated scheduled
-operations. Dodo Payments is the merchant of record, Resend handles application
-and Supabase Auth email, and Sentry handles application errors.
+GoneViral's production topology is Vercel for the Next.js application, the
+existing Supabase Free project `fndssapjkaicxzeruuvv` in `ap-south-1` for
+Database/Auth/Storage, and Cloudflare Workers Cron for the five authenticated
+scheduled operations. Preview and Production intentionally share this Supabase
+project during non-commercial Dodo Test Mode pre-launch testing. Dodo Payments
+is the merchant of record, Resend handles application and Supabase Auth email,
+and Sentry handles application errors.
 
 Vercel Pro is required for commercial Production. Vercel's current Hobby terms
 limit it to personal, non-commercial use, and its fair-use guidance expressly
@@ -16,8 +18,9 @@ classifies requesting/processing payment and advertising a service as
 commercial. Cloudflare scheduling removes the Vercel Cron feature dependency;
 it does not remove the Vercel commercial-plan requirement. Pro is currently
 advertised at US$20/month with US$20 included usage credit, but usage, seats,
-tax, card conversion, integrations, and add-ons can change the final bill. No
-purchase or production deployment is authorized by this document.
+tax, card conversion, integrations, and add-ons can change the final bill. The
+owner has authorized production-shaped pre-launch deployment on Hobby.
+Vercel Pro purchase remains a final pre-commercial-launch gate.
 
 The public policies are owner-drafted, not lawyer-approved. The owner chooses to
 launch without an external lawyer or chartered-accountant sign-off and accepts
@@ -27,16 +30,14 @@ lawyer or CA pre-approve these policies before launch.
 
 ## Launch blockers
 
-1. The owner must authorize and complete the Vercel Pro purchase with the
-   accepted spend controls before any commercial Production deployment or
-   `goneviral.in` attachment.
-2. Production-isolated Vercel, Supabase, Cloudflare, Dodo, Resend, Turnstile,
-   Sentry, and DNS configuration has not been created or certified. No Preview
-   credential may be copied into Production.
-3. The exact final release commit must pass required CI and the final release
-   suite once, after the last launch-critical code/configuration change. A
-   separately authorized payments-off Production deployment and narrow smoke
-   must then pass before any live transaction.
+1. The owner must complete the Vercel Pro purchase and cost controls before
+   commercial launch, not before the current production-shaped pre-launch gate.
+2. Production Vercel, domain/TLS, Dodo Test Mode, Resend, Turnstile, Sentry,
+   Supabase Auth, and Cloudflare target configuration must be certified. The
+   shared Supabase exception and controlled credential sharing are authorized.
+3. Exact release candidate `a44649064f2334ecd8340439cec9235481ca34d5`
+   passed required CI. The production-shaped non-destructive smoke and one full
+   synthetic Dodo Test Mode purchase must pass before this gate closes.
 4. Live payment/refund activation requires a fresh owner authorization after a
    separately authorized founder-owned low-value live transaction reconciles
    exactly once through Dodo, the provider event, payment record, immutable
@@ -148,18 +149,21 @@ details.
 3. Freeze one release candidate after focused tests and the single required CI
    boundary. Batch policy, topology, and evidence documentation in that same
    candidate.
-4. Prepare unique Production values without copying or exposing Preview values.
-   Vercel Production must contain:
+4. Configure the exact Production values without exposing their contents. The
+   owner explicitly permits controlled reuse of the existing Preview Supabase,
+   Dodo Test Mode, Resend, Sentry, and scheduler-related values during
+   pre-launch. Vercel Production must contain:
 
    - public: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`,
      `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
      `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `NEXT_PUBLIC_SENTRY_DSN`;
    - database/storage: `DATABASE_URL` (transaction pool),
      `DATABASE_DIRECT_URL` (direct/session), `SUPABASE_SECRET_KEY`;
-   - payment: `DODO_PAYMENTS_ENVIRONMENT=live_mode`,
+   - payment for the current pre-launch gate:
+     `DODO_PAYMENTS_ENVIRONMENT=test_mode`,
      `DODO_PAYMENTS_API_KEY`, `DODO_PAYMENTS_BUSINESS_ID`,
      `DODO_PAYMENTS_PRODUCT_ID`, `DODO_PAYMENTS_WEBHOOK_KEY`, and
-     `PAYMENTS_ENABLED=false`;
+     `PAYMENTS_ENABLED=true`;
    - email/abuse/crypto: `EMAIL_DELIVERY_MODE=resend`, `RESEND_API_KEY`,
      `RESEND_FROM_EMAIL=notifications@updates.goneviral.in`,
      `RESEND_REPLY_TO=goneviral.in@gmail.com`,
@@ -173,13 +177,16 @@ details.
 
 ### Final owner authorization boundary
 
-5. Upgrade the intended Vercel team to Pro. Keep one paid deploying seat where
+5. For the authorized pre-launch gate, keep Vercel Hobby and do not purchase or
+   upgrade the plan. Immediately before commercial launch, upgrade the intended
+   Vercel team to Pro. Keep one paid deploying seat where
    practical, inventory team-wide projects/add-ons, set the lowest acceptable
    on-demand budget, enable the available hard pause for production deployments,
    and verify web/email/SMS alerts. Record only sanitized plan and control
    evidence.
-6. Create or identify a clean Production Supabase project in Mumbai, apply the
-   reviewed migrations, verify schema/Data API isolation and advisors, set exact
+6. Preserve and use the existing hosted `goneviral` Supabase project in Mumbai;
+   do not create, reset, or duplicate it. Verify its reviewed migrations,
+   schema/Data API boundaries and advisors, set exact
    `https://goneviral.in` Site URL and `/auth/callback`, configure verified
    Resend custom SMTP with link tracking disabled, set rate limits, enroll the
    production admin with MFA/AAL2, and establish the accepted encrypted daily
@@ -187,25 +194,31 @@ details.
    possible inactivity pause, no managed PITR, self-managed backup dependence,
    and recovery downtime.
 7. Configure and verify the Production email domain/subdomains, SPF, DKIM, and
-   DMARC; application Resend webhook; Dodo live return/webhook URLs; Turnstile
-   production hostnames; Sentry project, source-map upload, environment, safe
-   test event, issue alert, and owner notification destination.
-8. Configure a separate Cloudflare production Worker environment from the
-   reviewed Worker source, with the same three UTC triggers and five fixed
-   routes, a Production base URL, a unique `CRON_SECRET`, no Preview bypass
-   secret, and an inert guard until the payments-off Production smoke is ready.
-   Do not repoint or redeploy the current staging Worker as preparation.
-9. Take and verify the final staging/pre-production backup, confirm payments and
-   provider refunds are off in both deployment configuration and database
-   operational flags, run the final release suite on the exact commit, then
-   deploy Production with payments off. Attach and verify `goneviral.in`, TLS,
+   DMARC; application Resend webhook; the current Dodo Test Mode webhook and
+   dynamic return URL; Turnstile production hostnames; Sentry project,
+   source-map upload, environment, safe test event, issue alert, and owner
+   notification destination. Replace and re-verify Dodo URLs again only at the
+   later separately authorized Live Mode gate.
+8. Move the sole Cloudflare scheduler target from Preview to the Production
+   base URL only after `goneviral.in` is verified and serving. Preserve the same
+   three UTC triggers and five fixed routes, and prevent duplicate Preview plus
+   Production business execution. A separate Worker is not required for this
+   pre-launch gate.
+9. Preserve the verified backup architecture, confirm provider refunds remain
+   off, deploy Production with Dodo Test Mode and payments enabled, then attach
+   and verify `goneviral.in`, TLS,
    canonical/robots/sitemap behavior, and DNS only under that authorization.
-10. Run the narrow payments-off Production smoke: public/legal pages, Auth magic
+10. Run the narrow Production-shaped smoke: public/legal pages, Auth magic
     link, owner/admin authorization, Storage, Resend delivery/webhook,
     Turnstile, Sentry alert delivery, Dodo webhook authentication without a
     fabricated event, Cloudflare scheduled-route authorization, operational
     health/reconciliation reads, backup freshness, and rollback/pause action.
-11. Obtain separate immediate authorization for one legitimate founder-owned
+11. Before Dodo Live Mode, obtain one destructive-cleanup authorization, use the
+    repository cleanup command to remove all synthetic/Test Mode business data,
+    and verify the board and every ranking-affecting Test Mode financial artifact
+    are clean while schema, migrations, configuration, secrets, and required
+    system data remain. Then prevent accidental Preview contamination. Only
+    after that obtain separate immediate authorization for one founder-owned
     low-value live transaction. Verify exactly-once end to end and inspect its
     genuine Dodo invoice/accounting evidence. Only then obtain separate approval
     to enable new payments; keep provider refunds disabled until their own gate.

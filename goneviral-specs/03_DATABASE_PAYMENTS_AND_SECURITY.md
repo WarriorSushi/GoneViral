@@ -1430,7 +1430,9 @@ Initial migration order:
 
 - [ ] Provider written approval and live credentials.
 - [ ] Exact webhook signature docs implemented with raw body tests.
-- [ ] Production/staging secrets isolated and rotated from development.
+- [ ] Production runtime secrets are correctly scoped; the temporary
+      owner-authorized shared Supabase/Dodo Test Mode values are inventoried,
+      and Preview cannot contaminate live business data before Dodo Live Mode.
 - [ ] Domain tables private; grants/RLS/advisors reviewed.
 - [ ] Owner/admin authorisation tested for IDOR/BOLA.
 - [ ] CSP/security headers tested end-to-end.

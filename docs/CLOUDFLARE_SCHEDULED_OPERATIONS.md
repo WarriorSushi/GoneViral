@@ -96,14 +96,15 @@ subrequests are used by one invocation.
 
 ## Required Cloudflare configuration
 
-Worker name: `goneviral-scheduled-operations-staging`.
+Worker name: `goneviral-scheduled-operations-staging` (retained to update the
+single existing Worker in place and avoid duplicate scheduling).
 
-| Binding                                   | Kind                       | Treatment                                                                          |
-| ----------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------- |
-| `CRON_SECRET`                             | Cloudflare Worker secret   | Exact server-side secret already used by the protected Preview routes              |
-| `VERCEL_AUTOMATION_BYPASS_SECRET`         | Cloudflare Worker secret   | Exact Vercel Protection Bypass for Automation value                                |
-| `GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL` | non-secret Worker variable | Exact protected Preview HTTPS origin, with no path/query/fragment                  |
-| `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED`  | non-secret Worker variable | Checked in as `false`; change to exact `true` only in a reviewed activation change |
+| Binding                                   | Kind                       | Treatment                                                                                |
+| ----------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- |
+| `CRON_SECRET`                             | Cloudflare Worker secret   | Exact server-side secret already used by the protected Preview routes                    |
+| `VERCEL_AUTOMATION_BYPASS_SECRET`         | Cloudflare Worker secret   | Exact Vercel Protection Bypass for Automation value                                      |
+| `GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL` | non-secret Worker variable | Exact active HTTPS origin, currently `https://goneviral.in`, with no path/query/fragment |
+| `GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED`  | non-secret Worker variable | Checked in as `false`; change to exact `true` only in a reviewed activation change       |
 
 The Worker configuration will initially contain the three triggers but keep the
 enable binding `false`. Therefore even an inert first deployment can register
@@ -207,3 +208,20 @@ routes, wait in this task, or poll for the daily event. Continue the next Phase
 15 workstream and add sanitized daily evidence separately after it naturally
 occurs. Production hosting and plan selection remain a separate owner decision
 immediately before commercial launch.
+
+On 2026-09-04 the owner authorized the production-shaped pre-launch topology.
+The same sole Worker was updated in place to target
+`https://goneviral.in`; the enable guard remains `true`, both secret bindings
+remain present without disclosure, and all three Cron Triggers are unchanged.
+Deployed version `cbeab8d8-234a-47f1-ada4-a8266125d5f0` contains this target
+transition. The focused Worker suite passed 9/9 and `wrangler deploy --dry-run`
+succeeded before deployment.
+
+A later bounded, read-only Vercel log query verified the transition without
+manual invocation: repeated natural five-minute events reached both Production
+routes with `200`, beginning at `2026-09-03T23:55:14.414Z`, and the natural
+hourly reconciliation event returned `200` at
+`2026-09-04T00:17:08.822Z`. Five-minute events continued successfully after
+the application was redeployed to load the rotated Resend webhook secret. The
+previously deferred daily and failure/staleness evidence remains separate and
+must not be manufactured by polling or redeployment.
