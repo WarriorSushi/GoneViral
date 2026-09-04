@@ -1451,11 +1451,12 @@ local check confirmed both files are present, the recomputed SHA-256 matches,
 and the corresponding plaintext directory count is zero.
 
 Daily automated backup cadence remains open: Windows Task Scheduler contains
-zero GoneViral/Supabase backup tasks. The owner was instructed that an optional
-off-device private copy must contain only this `.7z` and matching `.7z.sha256`,
-with the passphrase kept separately in the approved password manager; no upload
-is claimed here. Codex did not start the interactive prompt, read or store the
-passphrase, access backup contents, prune archives, or change hosted state.
+zero GoneViral/Supabase backup tasks. The owner reported copying only this `.7z`
+and matching `.7z.sha256` to a private Google Drive location, with the
+passphrase kept separately in the approved password manager. No Drive account,
+folder, share link, or credential is recorded. Codex did not start the
+interactive prompt, read or store the passphrase, access backup contents, prune
+archives, or change hosted state.
 
 Rollback and payment-pause capability/procedure evidence is certified without
 performing a live state change. The current PR `#28` Production deployment

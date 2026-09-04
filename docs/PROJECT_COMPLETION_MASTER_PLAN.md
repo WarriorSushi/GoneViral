@@ -361,7 +361,10 @@ the archive and sidecar present, the recomputed SHA-256 matching, and zero
 matching plaintext directories. Freshness therefore passes. Daily automated
 backup cadence remains open because there is no GoneViral/Supabase scheduled
 backup task. Codex did not launch the passphrase prompt, access backup contents,
-prune archives, or receive/store the passphrase.
+prune archives, or receive/store the passphrase. The owner subsequently
+reported copying only the archive and matching `.7z.sha256` to a private Google
+Drive location while keeping the passphrase separately in the approved password
+manager; no account, folder, link, or credential is recorded.
 
 Rollback/payment-pause capability and procedure are now certified without a
 live control change. Both the current PR `#28` Production artifact and earlier
