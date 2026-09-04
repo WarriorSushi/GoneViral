@@ -440,3 +440,26 @@ cursor page from a genuinely empty board. The projection remains explicitly
 non-guaranteed and falls back to rank-neutral copy on failure. Focused unit
 coverage and TypeScript pass; ranking, payment, database schema, hosted state,
 and Production remain unchanged.
+
+## 2026-09-05 join overlay decision
+
+The owner authorized a presentation-only continuation of the existing public
+join flow. Client-side `Get listed` and `Take #...` navigation now presents the
+unchanged join form in an intercepted desktop dialog or mobile full-height
+sheet, while direct visits and refreshes at `/join` retain the standalone page.
+The target slug, current takeover quote, server validation, Dodo adapter,
+Turnstile path, idempotency, listing creation, ranking, and ownership behavior
+remain unchanged.
+
+The overlay locks background scroll, makes the board inert, traps and restores
+focus, ignores backdrop interaction, and exposes only deliberate desktop or
+mobile close controls. Any entered change causes close, desktop Escape, and
+Browser Back to show a keep-editing/discard confirmation; untouched forms close
+without prompting. Focused TypeScript, lint, nine join-domain unit tests, and
+local desktop/390px browser scenarios pass, including direct `/join`, target
+pricing, Back/close safety, no horizontal overflow, and a valid modal submission
+to deterministic local mock checkout. Review captures are under
+`artifacts/join-overlay-2026-09-05/`. The implementation is local and
+approved for the repository's normal landing workflow. At approval time, no
+hosted data, provider configuration, Safety Control, or Production state had
+changed.

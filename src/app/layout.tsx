@@ -38,18 +38,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  joinModal,
+}: Readonly<{ children: React.ReactNode; joinModal: React.ReactNode }>) {
   return (
     <html lang="en-IN" data-scroll-behavior="smooth">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <a className="skip-link" href="#main-content">
-          Skip to content
-        </a>
-        <div className="site-frame">
-          <SiteHeader />
-          <div className="route-frame">{children}</div>
-          <SiteFooter />
+        <div id="site-content">
+          <a className="skip-link" href="#main-content">
+            Skip to content
+          </a>
+          <div className="site-frame">
+            <SiteHeader />
+            <div className="route-frame">{children}</div>
+            <SiteFooter />
+          </div>
         </div>
+        {joinModal}
       </body>
     </html>
   );
