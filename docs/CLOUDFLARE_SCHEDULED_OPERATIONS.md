@@ -4,12 +4,15 @@ Last updated: 2026-09-05 (Asia/Kolkata)
 
 ## Boundary and status
 
-The 2026-09-05 pre-launch hardening candidate splits email recovery from the
-non-trivial database health operation: outbox drain every minute, operational
-health every five minutes, reconciliation hourly, and cleanup daily. It updates
-the same scheduled-only Worker in place and adds no route, storage, dependency,
-or billing. Until the reviewed candidate is deployed and a natural event is
-observed, the earlier three-trigger deployment remains the hosted authority.
+The 2026-09-05 pre-launch hardening split email recovery from the non-trivial
+database health operation: outbox drain every minute, operational health every
+five minutes, reconciliation hourly, and cleanup daily. Protected pull request
+`#31` passed required CI and merged as
+`bd784dbd49056695bccd88acffb15a04b403526c`. The same scheduled-only Worker was
+updated in place as version `92a7a5a9-1655-4d8d-9657-a3838191600c` with four
+triggers and no new route, storage, dependency, or billing. Natural events on
+that exact version returned `200`: five-minute health at `2026-09-04T22:20:16Z`
+and the new one-minute outbox branch at `2026-09-04T22:22:21Z`.
 
 This is the owner-selected replacement for GitHub scheduled events during
 private staging. The Worker, Wrangler configuration, and focused tests are
@@ -224,16 +227,17 @@ Current official references:
 
 ### Current gate and exact next action
 
-The activated deployment is complete by owner report. No secret value,
-credential, or raw deployment output needs to be provided to Codex. Do not
-redeploy or manually invoke any route for certification.
-
-Five-minute and hourly automatic cadence are confirmed by sanitized owner
-report, and the later read-only analytics evidence above certifies daily
-cadence. Do not change or redeploy the scheduler or manually invoke routes for
-certification. Failure-notification delivery and the independent owner-visible
-missing-run monitor remain pending. Production hosting and plan selection
-remain a separate owner decision immediately before commercial launch.
+Worker version `92a7a5a9-1655-4d8d-9657-a3838191600c` is the current deployed
+authority with the exact four-trigger map above. Natural one-minute and
+five-minute events returned `200`; earlier evidence remains authoritative for
+hourly and daily behavior. The isolated failure certification ran once at
+`2026-09-04T22:40:59Z`: Cloudflare observed the deliberate application `503`
+and marked the event failed, while Vercel recorded the fixed PII-free event with
+`sentryFlushed: true`. The disposable certification Worker, trigger, and secret
+were then deleted; a read-back confirms that Worker no longer exists. Sentry
+issue creation and owner email receipt remain unclaimed without provider-side
+or owner evidence. Do not change or redeploy the production scheduler merely
+to manufacture more evidence.
 
 On 2026-09-04 the owner authorized the production-shaped pre-launch topology.
 The same sole Worker was updated in place to target
