@@ -37,8 +37,7 @@ contents in this file.
 | Commercial Production launch               | Not authorized/not complete                         | Phase 15 runbook                                      |
 | Phase 16                                   | Not started                                         | implementation plan                                   |
 
-Current working branch: `codex/phase-15-production-certification`; merge target:
-`codex/phase-15-staging`.
+Active integration branch: `codex/phase-15-staging`.
 
 The budget-plan commit pushed before scheduler implementation was
 `28378def9f6a19f27129eecb244aec5c6695cf47`.
@@ -386,6 +385,12 @@ delivery remains pending; the current topology also lacks an independent owner-
 visible missing-run detector and cannot alert on an invocation that never
 occurred. No failure, route call, scheduler change, or redeployment was
 manufactured for evidence.
+
+The synchronized documentation and certification evidence passed formatting,
+diff-integrity, sensitive-marker, required `quality` CI, and both Vercel checks.
+Protected pull request `#29` squash-merged into the integration branch as
+`ac89f8cf9ed752e76a7a5ff5750b790f9eb1c2b1`. The target was synchronized and
+clean after the merge.
 
 ### Remaining Phase 15 gates
 
