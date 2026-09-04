@@ -2202,12 +2202,387 @@ textarea:focus-visible {
   color: var(--ink-soft);
 }
 
-.share-controls > .success-status {
+.share-controls .success-status {
   color: var(--success-strong);
 }
 
-.share-controls > .error-status {
+.share-controls .error-status {
   color: var(--danger-strong);
+}
+
+.share-controls-content {
+  display: block !important;
+  min-width: 0;
+}
+
+.share-controls-copy > strong {
+  display: block;
+  font-size: 1.12rem;
+  letter-spacing: -0.02em;
+}
+
+.share-controls-copy p {
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.share-actions .button {
+  gap: 7px;
+}
+
+.share-actions svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.share-controls-content > span {
+  display: block;
+  min-height: 1.3em;
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+}
+
+.celebration-main {
+  padding: clamp(20px, 4vw, 52px) 0 64px;
+}
+
+.celebration-card {
+  width: min(100%, 1060px);
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 24px 70px rgb(55 41 31 / 0.13);
+}
+
+.celebration-brand-row {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px clamp(20px, 4vw, 42px);
+  border-bottom: 1px solid var(--line);
+}
+
+.celebration-card .payment-brand {
+  margin: 0;
+}
+
+.celebration-receipt {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: var(--success-strong);
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+.celebration-receipt > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--success);
+  box-shadow: 0 0 0 4px var(--success-soft);
+}
+
+.celebration-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: stretch;
+  padding: clamp(34px, 6vw, 70px) clamp(20px, 4vw, 42px) clamp(30px, 5vw, 54px);
+  background:
+    linear-gradient(122deg, rgb(250 238 238 / 0.82), transparent 42%),
+    var(--surface);
+}
+
+.celebration-card .payment-status-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 0;
+  text-align: left;
+}
+
+.celebration-card .payment-status-header h1 {
+  max-width: 650px;
+  margin: 18px 0 12px;
+  font-size: clamp(3rem, 6vw, 5.25rem);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+}
+
+.celebration-card .payment-status-header > p:last-child {
+  max-width: 48ch;
+  margin: 0;
+  font-size: clamp(1rem, 1.8vw, 1.17rem);
+  line-height: 1.5;
+}
+
+.celebration-card .confirmed-mark,
+.celebration-card .returned-mark {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+}
+
+.celebration-card .confirmed-mark svg,
+.celebration-card .returned-mark svg,
+.celebration-card .payment-next-step svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.celebration-card .confirmed-rank {
+  display: flex;
+  min-height: 310px;
+  flex-direction: column;
+  gap: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 0;
+  padding: clamp(25px, 4vw, 38px);
+  border: 0;
+  border-radius: 14px;
+  background: var(--ink);
+  color: var(--canvas);
+  animation: celebration-reveal 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.celebration-card .confirmed-rank > p:first-child {
+  color: #f3c3c6;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+}
+
+.celebration-card .confirmed-rank > strong {
+  color: var(--canvas);
+  font-size: clamp(5.5rem, 13vw, 9rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 0.78;
+}
+
+.celebration-card .confirmed-rank > strong > span {
+  color: var(--signal-soft-strong);
+  font-size: 0.42em;
+  vertical-align: top;
+}
+
+.celebration-card .confirmed-rank > p:last-child {
+  color: #d8d1c8;
+  font-size: 0.86rem;
+}
+
+.celebration-card .payment-summary {
+  margin: 0 clamp(20px, 4vw, 42px);
+  padding: 0;
+  border-block: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.celebration-card .payment-summary > div {
+  padding: 18px 0;
+  background: transparent;
+}
+
+.celebration-card .payment-summary > div:last-child {
+  padding-left: 28px;
+  border-left: 1px solid var(--line);
+}
+
+.celebration-card .payment-summary dt {
+  color: var(--ink-soft);
+}
+
+.celebration-card .payment-summary dd {
+  font-size: 1.12rem;
+}
+
+.celebration-card .payment-next-step {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  max-width: none;
+  margin: 22px clamp(20px, 4vw, 42px) 0;
+  color: var(--ink-soft);
+  text-align: left;
+}
+
+.celebration-card .payment-next-step svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  color: var(--signal);
+}
+
+.celebration-card .payment-next-step p {
+  margin: 0;
+}
+
+.celebration-card .share-controls-featured {
+  display: grid;
+  width: auto;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(300px, 1.05fr);
+  gap: 0;
+  align-items: stretch;
+  margin: 28px clamp(20px, 4vw, 42px) 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-soft);
+  text-align: left;
+}
+
+.celebration-card .share-card-preview {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  background: var(--ink);
+}
+
+.share-card-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.celebration-card .share-controls-content {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(22px, 4vw, 34px);
+}
+
+.celebration-card .share-controls-copy > strong {
+  font-size: clamp(1.45rem, 2.8vw, 2rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.celebration-card .share-actions {
+  justify-content: flex-start;
+}
+
+.celebration-card .payment-actions {
+  justify-content: flex-start;
+  margin: 0;
+  padding: 24px clamp(20px, 4vw, 42px) 34px;
+}
+
+@keyframes celebration-reveal {
+  from {
+    opacity: 0.72;
+    transform: translateY(12px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebration-card .confirmed-rank {
+    animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .celebration-main {
+    padding-top: 14px;
+  }
+
+  .celebration-brand-row {
+    align-items: flex-start;
+  }
+
+  .celebration-receipt {
+    margin-top: 7px;
+  }
+
+  .celebration-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .celebration-card .payment-status-header h1 {
+    font-size: clamp(2.8rem, 14vw, 4.3rem);
+  }
+
+  .celebration-card .confirmed-rank {
+    min-height: 230px;
+    text-align: left;
+  }
+
+  .celebration-card .share-controls-featured {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .celebration-card {
+    border-radius: 14px;
+  }
+
+  .celebration-brand-row {
+    gap: 14px;
+    padding-block: 14px;
+  }
+
+  .celebration-receipt {
+    max-width: 120px;
+    font-size: 0.7rem;
+    text-align: right;
+  }
+
+  .celebration-hero {
+    gap: 24px;
+    padding-top: 34px;
+  }
+
+  .celebration-card .payment-summary > div:last-child {
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .celebration-card .share-card-preview {
+    padding: 10px;
+  }
+
+  .share-actions,
+  .share-actions .button {
+    width: 100%;
+  }
+
+  .celebration-card .payment-actions {
+    padding-bottom: 26px;
+  }
 }
 
 .listing-safety-note {

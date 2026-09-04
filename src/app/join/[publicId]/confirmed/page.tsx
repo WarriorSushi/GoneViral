@@ -27,35 +27,79 @@ export default async function ConfirmedPaymentPage({
   const reversed = attempt.state === "reversed";
 
   return (
-    <main id="main-content" className="pending-main">
+    <main id="main-content" className="pending-main celebration-main">
       <section
-        className={`pending-card confirmed-card ${reversed ? "returned-card" : "success-card"}`}
+        className={`pending-card confirmed-card celebration-card ${reversed ? "returned-card" : "success-card"}`}
         aria-labelledby="payment-status-title"
       >
-        <PaymentBrand />
-        <header className="payment-status-header">
-          <span
-            className={
-              reversed ? "pending-mark returned-mark" : "confirmed-mark"
-            }
-            aria-hidden="true"
-          >
-            {reversed ? "↩︎" : "✓"}
+        <div className="celebration-brand-row">
+          <PaymentBrand />
+          <span className="celebration-receipt">
+            <span aria-hidden="true" />
+            {reversed ? "Payment returned" : "Payment confirmed"}
           </span>
-          <p className="eyebrow">
-            {reversed ? "Payment returned" : "Payment complete"}
-          </p>
-          <h1 id="payment-status-title">
-            {reversed
-              ? "This payment was returned."
-              : "You’re on the leaderboard."}
-          </h1>
-          <p>
-            {reversed
-              ? "This payment no longer counts toward the listing’s leaderboard total."
-              : "We received your payment and added it to your listing’s total."}
-          </p>
-        </header>
+        </div>
+        <div className="celebration-hero">
+          <header className="payment-status-header">
+            <span
+              className={
+                reversed ? "pending-mark returned-mark" : "confirmed-mark"
+              }
+              aria-hidden="true"
+            >
+              {reversed ? (
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 7 4 12l5 5M5 12h9a5 5 0 1 1 0 10h-2" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24">
+                  <path d="m5 12 4 4L19 6" />
+                </svg>
+              )}
+            </span>
+            <h1 id="payment-status-title">
+              {reversed
+                ? "This payment was returned."
+                : "You’re on the leaderboard."}
+            </h1>
+            <p>
+              {reversed
+                ? "This payment no longer counts toward the listing’s leaderboard total."
+                : "Your placement is live. Now turn that position into attention."}
+            </p>
+          </header>
+          {reversed ? (
+            <div className="confirmed-rank">
+              <p>{attempt.mainRank ? "Still live" : "Listing status"}</p>
+              <strong>
+                {attempt.mainRank ? `#${attempt.mainRank}` : "Not ranked"}
+              </strong>
+              <p>
+                {attempt.mainRank
+                  ? "Other confirmed payments keep this listing on the leaderboard."
+                  : "Its payment history is safely preserved."}
+              </p>
+            </div>
+          ) : attempt.mainRank ? (
+            <div className="confirmed-rank">
+              <p>Current position</p>
+              <strong>
+                <span aria-hidden="true">#</span>
+                {attempt.mainRank}
+              </strong>
+              <p>
+                Live now. Your checkout rank was an estimate, not a reserved
+                spot.
+              </p>
+            </div>
+          ) : (
+            <div className="confirmed-rank">
+              <p>Payment received</p>
+              <strong>Under review</strong>
+              <p>Your listing will appear after its safety review.</p>
+            </div>
+          )}
+        </div>
         <dl className="payment-summary">
           <div>
             <dt>Listing</dt>
@@ -66,41 +110,17 @@ export default async function ConfirmedPaymentPage({
             <dd>{formatInr(moneyPaise(attempt.amountPaise))}</dd>
           </div>
         </dl>
-        {reversed ? (
-          <div className="confirmed-rank">
-            <p>
-              {attempt.mainRank ? "Listing still live" : "Listing not live"}
-            </p>
-            <strong>
-              {attempt.mainRank ? `#${attempt.mainRank}` : "₹0 total"}
-            </strong>
-            <p>
-              {attempt.mainRank
-                ? "Other confirmed payments still count, so the listing remains on the leaderboard."
-                : "The listing is no longer on the leaderboard. Its payment history is still kept."}
-            </p>
-          </div>
-        ) : attempt.mainRank ? (
-          <div className="confirmed-rank">
-            <p>Your current position</p>
-            <strong>#{attempt.mainRank}</strong>
-            <p>
-              Ranks can change when other listings pay. The position shown at
-              checkout was an estimate, not a reserved spot.
-            </p>
-          </div>
-        ) : (
-          <div className="confirmed-rank">
-            <p>Payment received</p>
-            <strong>Under review</strong>
-            <p>Your listing will appear after its safety review is complete.</p>
-          </div>
-        )}
-        <p className="payment-next-step">
-          {reversed
-            ? "If you did not expect this, contact support and include the payment reference from your original checkout."
-            : "We’re sending an email with your secure link to manage this listing. It may take a few minutes to arrive."}
-        </p>
+        <div className="payment-next-step">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M4 6h16v12H4z" />
+            <path d="m5 7 7 6 7-6" />
+          </svg>
+          <p>
+            {reversed
+              ? "If you did not expect this, contact support and include the payment reference from your original checkout."
+              : "We’re sending an email with your secure management link. It may take a few minutes to arrive."}
+          </p>
+        </div>
         {!reversed && attempt.listingPath ? (
           <>
             {attempt.mainRank ? (
@@ -108,6 +128,7 @@ export default async function ConfirmedPaymentPage({
                 currentRank={attempt.mainRank.toString()}
                 listingName={attempt.listingName}
                 listingPath={attempt.listingPath}
+                showPreview
               />
             ) : null}
           </>

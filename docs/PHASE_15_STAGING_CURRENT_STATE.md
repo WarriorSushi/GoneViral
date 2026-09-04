@@ -1206,3 +1206,49 @@ checks are unchanged. Formatting, lint, TypeScript, 227 unit tests, the
 Production build, and browser secret/source-map inspection pass locally. One
 new required PR run, merge, and Production deployment verification remain
 pending. No Safety Control changed.
+
+Required CI run `33862932706` then exercised the fallback once. npm again timed
+out without a finding; OSV-Scanner parsed the committed `pnpm-lock.yaml`, found
+798 packages, reported `No issues found`, and exited `0`. The full `quality`
+job, repository secret scan, and both Vercel Preview checks passed. Pull request
+`#23` was squash-merged through the normal protected-branch policy as exact
+commit `d2a5d57028d37903cee900c770cd29dbbc897ef2`.
+
+Vercel Production deployment `dpl_4yzXzftFxQrZpv2FbbG4Pesep2Ln` is READY from
+that exact commit and owns `goneviral.in`, `www.goneviral.in`, and the project
+aliases. The apex and `/admin` returned `200`; `www` returned the expected
+permanent redirect to the apex. The owner's next action is a review-only refresh
+of `/admin` to confirm the minimal verification copy and Safety Controls
+navigation. No control should be toggled during that review; Test checkout and
+the other hosted flags remain unchanged.
+
+The owner completed that authenticated Production visual review and confirmed
+the Safety Controls section is good. This closes the admin navigation/copy
+review gate. The confirmation did not authorize or perform a control change;
+Test checkout remains off pending a separate explicit owner instruction.
+
+The owner then explicitly authorized the next gated action: enable only the
+`payments_enabled` / Test checkout control for the Production-shaped Dodo Test
+Mode smoke. Execution remains pending in the owner's authenticated founder
+session. This authorization does not cover provider refunds, read-only mode,
+outbound-link changes, Dodo Live Mode, cleanup, or a real transaction.
+
+The owner used the authenticated audited console and reported Test checkout
+ON. A read-only hosted verification confirmed
+`payments_enabled=true`, with the latest immutable audit event recording
+`operational_flag_updated` by `super_admin` from `false` to `true`. The same
+query confirmed `provider_refunds_enabled=false`, `read_only=false`, and
+`outbound_redirects_enabled=true`. No other control changed. The next business-
+data-producing step is the already scoped synthetic Dodo Test Mode purchase;
+no Live Mode or real transaction is authorized.
+
+The owner completed that synthetic Dodo Test Mode purchase and reported that
+the confirmation email arrived. A read-only hosted verification found the
+latest succeeded attempt at ₹501 with exactly one processed provider event,
+one financial-ledger entry, one confirmation-email outbox record, a matching
+₹501 listing total, and current main rank `#2`. No recipient address or raw
+provider payload is recorded here. The owner then requested a focused premium
+redesign of the successful-payment screen and its generated listing share card,
+including the GoneViral mark and the listing logo when available. This is a
+presentation-only follow-up: payment logic, safety controls, permissions,
+financial data, Dodo mode, and cleanup remain unchanged.
