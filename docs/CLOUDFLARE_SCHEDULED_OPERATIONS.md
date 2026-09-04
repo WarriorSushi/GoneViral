@@ -1,6 +1,6 @@
 # Cloudflare scheduled operations
 
-Last updated: 2026-09-04 (Asia/Kolkata)
+Last updated: 2026-09-05 (Asia/Kolkata)
 
 ## Boundary and status
 
@@ -27,6 +27,25 @@ five-minute trigger fired repeatedly and both `drain-email-outbox` and
 log window. The daily `43 2 * * *` trigger had not yet reached its next
 scheduled time, so daily evidence remains pending rather than failed. No raw
 log output or secret value was provided.
+
+On 2026-09-05 a bounded, read-only Cloudflare GraphQL Analytics query closed
+the daily cadence gate without invoking a route or changing the Worker. It
+found successful scheduled invocations at `02:40:15Z`, `02:43:08Z`, and
+`02:45:15Z` on 2026-09-04. The middle invocation is uniquely the daily
+`43 2 * * *` slot and recorded exactly one request, zero Worker errors, and two
+subrequests, matching the two fixed daily routes. Because the Worker throws if
+either route is non-2xx, redirected, timed out, or failed at the network layer,
+the successful outcome certifies both daily operations. Across the bounded
+Production analytics window beginning 2026-09-03 19:30 UTC, all 331 Worker
+invocations were `success` with zero runtime errors and 638 subrequests.
+
+No naturally occurring failure was present, so actual failure-notification
+delivery is not inferred from the tested fail-closed implementation. The
+documented topology also still has no separate owner-visible missing-run alert;
+a Worker cannot report an invocation that never occurred. Failure-notification
+delivery and stale/missing-run detection therefore remain pending rather than
+failed. No trigger, binding, secret, Worker version, route, or hosted business
+state changed during this evidence query.
 
 After the stable protected Preview alias was updated to application commit
 `b8298a798efce1195b7c5ad38add60d8a54b2fd1`, the next ordinary five-minute
@@ -184,13 +203,13 @@ Current official references:
    routes, schedules, Preview origin, or secret handling. **Deployment
    complete by owner report:** the deployment succeeded and the dashboard guard
    shows exact `true`. Allow up to 15 minutes for trigger propagation.
-8. **Partially complete by owner report:** one bounded observed window confirms
+8. **Complete:** the earlier bounded observed window confirms
    repeated five-minute events and one hourly event, with all three assigned
-   operations returning `200 / ok` and no visible errors. Daily evidence remains
-   pending because its next scheduled time had not arrived.
-9. Later record the daily event and remaining failure/staleness behavior before
-   marking the scheduler fully certified. Do not wait or poll for the daily
-   event; continue other Phase 15 work meanwhile.
+   operations returning `200 / ok`; the later read-only analytics evidence above
+   certifies the natural daily invocation and its two successful subrequests.
+9. Failure-notification delivery and owner-visible missing-run detection remain
+   pending. Do not force a failure, change triggers, redeploy, or poll merely to
+   manufacture that evidence.
 10. Before any future scheduler replacement or production scheduler activation,
     disable this Worker or set its enable binding away from `true` first so two
     schedulers can never target the same environment concurrently.
@@ -202,12 +221,11 @@ credential, or raw deployment output needs to be provided to Codex. Do not
 redeploy or manually invoke any route for certification.
 
 Five-minute and hourly automatic cadence are confirmed by sanitized owner
-report. The daily trigger has not yet reached its next scheduled time and is
-pending, not failed. Do not change or redeploy the scheduler, manually invoke
-routes, wait in this task, or poll for the daily event. Continue the next Phase
-15 workstream and add sanitized daily evidence separately after it naturally
-occurs. Production hosting and plan selection remain a separate owner decision
-immediately before commercial launch.
+report, and the later read-only analytics evidence above certifies daily
+cadence. Do not change or redeploy the scheduler or manually invoke routes for
+certification. Failure-notification delivery and the independent owner-visible
+missing-run monitor remain pending. Production hosting and plan selection
+remain a separate owner decision immediately before commercial launch.
 
 On 2026-09-04 the owner authorized the production-shaped pre-launch topology.
 The same sole Worker was updated in place to target
@@ -223,5 +241,6 @@ routes with `200`, beginning at `2026-09-03T23:55:14.414Z`, and the natural
 hourly reconciliation event returned `200` at
 `2026-09-04T00:17:08.822Z`. Five-minute events continued successfully after
 the application was redeployed to load the rotated Resend webhook secret. The
-previously deferred daily and failure/staleness evidence remains separate and
-must not be manufactured by polling or redeployment.
+later read-only Cloudflare analytics certified daily cadence. Failure-
+notification delivery and missing-run detection remain separate and must not be
+manufactured by polling or redeployment.
