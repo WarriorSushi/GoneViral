@@ -232,25 +232,35 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Pull request `#23` now includes the owner-authorized resilient dependency-audit
-gate: npm remains primary at the moderate threshold, while only explicit npm
-audit-service availability failures invoke a pinned OSV-Scanner scan of the
-committed lockfile; findings and unrecognized failures remain blocking. The
-sanitized npm configuration audit was normal and focused fallback tests pass.
-Run the required CI once, then merge and verify the Production deployment only
-if genuinely green. The owner explicitly authorized changing the sole
-active, non-revoked admin entry from `reviewer` to `super_admin`; the guarded
-hosted update and role/state verification passed, and the owner confirmed the
-real Safety Controls are visible. Do not change another permission or safety
-control. When separately directed through the console, enable only the database
-`payments_enabled` flag. Then run the remaining narrow Production smoke and one
-synthetic Dodo Test Mode purchase. Dodo Test Mode and the new Resend webhook
-target Production; two genuine signed Resend events returned `200`, the old
-Preview webhook is disabled without deletion or rotation, and repeated natural
-five-minute Cloudflare events plus the hourly reconciliation event returned
-`200`. Do not create another Supabase project, upgrade Vercel, use Dodo Live
-Mode, perform cleanup, run a real transaction, issue refunds, or commercially
-launch.
+Pull request `#23` passed required CI run `33862932706` and was squash-merged as
+`d2a5d57028d37903cee900c770cd29dbbc897ef2`. npm again timed out, so the
+owner-authorized pinned OSV fallback scanned all 798 packages represented by the
+committed lockfile and reported no issues; findings and unrecognized failures
+remain blocking. Production deployment `dpl_4yzXzftFxQrZpv2FbbG4Pesep2Ln` is
+READY from that exact commit, owns the apex and `www` aliases, and passed basic
+HTTP checks. The owner should now refresh `/admin` and perform only a visual
+review of the minimal verification copy and Safety Controls navigation without
+toggling a control. That authenticated review is now owner-confirmed good and
+the admin navigation/copy gate is closed. The sole active admin remains verified
+as `super_admin`. Await separate explicit owner authorization before enabling
+only the database `payments_enabled` flag. The owner has now given that exact
+authorization; use the audited console control from the owner's authenticated
+session and verify the resulting state without changing another control. That
+change is now verified: Test checkout is on, its immutable `super_admin` audit
+receipt records `false` to `true`, and refunds/read-only/outbound-link controls
+remain respectively off/off/on. The owner then completed one synthetic Dodo
+Test Mode purchase for ₹501 and reported receiving the confirmation email.
+Read-only hosted evidence confirms exactly one processed provider event, one
+ledger entry, one confirmation-email outbox record, the matching ₹501 listing
+total, and current main rank `#2`. The successful-payment screen and generated
+listing share card are now receiving a focused presentation-only premium
+redesign; no payment logic or control state is in scope. Dodo Test Mode and
+the new Resend webhook target Production; two genuine signed Resend events
+returned `200`, the old Preview webhook is disabled without deletion or
+rotation, and repeated natural five-minute Cloudflare events plus the hourly
+reconciliation event returned `200`. Do not create another Supabase project,
+upgrade Vercel, use Dodo Live Mode, perform cleanup, run a real transaction,
+issue refunds, or commercially launch.
 
 ### Remaining Phase 15 gates
 
