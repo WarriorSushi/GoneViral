@@ -10,7 +10,7 @@
     "head_sampling_rate": 1,
   },
   "vars": {
-    "GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL": "https://goneviral-phase15-preview-warriorsushis-projects.vercel.app",
+    "GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL": "https://goneviral.in",
     "GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED": "true",
   },
   "triggers": {

@@ -44,8 +44,7 @@ describe("Cloudflare scheduled-operations Worker", () => {
       "43 2 * * *",
     ]);
     expect(config.vars).toEqual({
-      GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL:
-        "https://goneviral-phase15-preview-warriorsushis-projects.vercel.app",
+      GONEVIRAL_SCHEDULED_OPERATIONS_BASE_URL: "https://goneviral.in",
       GONEVIRAL_SCHEDULED_OPERATIONS_ENABLED: "true",
     });
     expect(JSON.stringify(config)).not.toMatch(

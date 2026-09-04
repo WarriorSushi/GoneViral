@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { readServerEnv } from "@/config/env/server";
 import { getAdminSession } from "@/server/admin/auth";
 import { hasAdminPermission } from "@/server/admin/permissions";
 import { getAdminDashboard } from "@/server/admin/read-model";
@@ -22,18 +23,80 @@ import {
 
 export const metadata: Metadata = { title: "Operations" };
 
-function ReasonFields({ prefix }: { prefix: string }) {
+const flagGuidance = {
+  payments_enabled: {
+    label: "Test checkout",
+    description:
+      "Allows this deployment to create new Dodo checkouts. The provider remains in Test Mode until Live Mode is separately configured and authorized.",
+    enabledMeaning: "Synthetic Dodo Test Mode checkout is available.",
+    disabledMeaning: "New checkout is safely blocked at the database.",
+    enableLabel: "Enable Test Mode checkout",
+    disableLabel: "Pause checkout",
+  },
+  provider_refunds_enabled: {
+    label: "Provider refund calls",
+    description:
+      "Controls whether the audited two-stage refund workflow may call Dodo. It never edits ledger or ranking rows directly.",
+    enabledMeaning: "Authorized refund submissions may call Dodo.",
+    disabledMeaning: "All provider refund calls remain blocked.",
+    enableLabel: "Allow refund calls",
+    disableLabel: "Block refund calls",
+  },
+  read_only: {
+    label: "Read-only safety mode",
+    description:
+      "Emergency brake for business mutations. Turn it on during an incident when new changes must stop while reads remain available.",
+    enabledMeaning: "Business mutations are paused for incident safety.",
+    disabledMeaning: "Normal authorized business mutations are allowed.",
+    enableLabel: "Pause all changes",
+    disableLabel: "Resume normal changes",
+  },
+  outbound_redirects_enabled: {
+    label: "Outbound listing links",
+    description:
+      "Controls whether visitors can leave GoneViral through a listing link after the destination passes the application safety checks.",
+    enabledMeaning: "Safe outbound listing links are available.",
+    disabledMeaning: "All outbound listing links are paused.",
+    enableLabel: "Allow outbound links",
+    disableLabel: "Pause outbound links",
+  },
+} as const;
+
+const flagOrder = [
+  "payments_enabled",
+  "provider_refunds_enabled",
+  "read_only",
+  "outbound_redirects_enabled",
+] as const;
+
+function ReasonFields({
+  help = "This explanation is saved in the immutable admin audit trail.",
+  prefix,
+}: {
+  help?: string;
+  prefix: string;
+}) {
+  const requestId = `${prefix}:${randomUUID()}`;
+  const reasonId = `reason-${requestId}`;
+  const helpId = `${reasonId}-help`;
   return (
     <>
-      <input
-        type="hidden"
-        name="requestId"
-        value={`${prefix}:${randomUUID()}`}
-      />
-      <label>
-        Operational reason
-        <input name="reason" minLength={8} maxLength={1_000} required />
+      <input type="hidden" name="requestId" value={requestId} />
+      <label htmlFor={reasonId}>
+        Why are you making this change?
+        <input
+          aria-describedby={helpId}
+          id={reasonId}
+          name="reason"
+          minLength={8}
+          maxLength={1_000}
+          placeholder="Write a short, specific reason"
+          required
+        />
       </label>
+      <small className="admin-field-help" id={helpId}>
+        {help}
+      </small>
     </>
   );
 }
@@ -72,21 +135,259 @@ export default async function AdminPage() {
   }
   const { session } = auth;
   const dashboard = await getAdminDashboard(session.role);
+  const environment = readServerEnv();
+  const flagValues = Object.fromEntries(
+    dashboard.flags.map((flag) => [
+      String(flag.key),
+      (flag.value as { enabled?: unknown }).enabled === true,
+    ]),
+  ) as Record<string, boolean>;
+  const paymentsEnabled = flagValues.payments_enabled === true;
+  const refundsEnabled = flagValues.provider_refunds_enabled === true;
+  const readOnly = flagValues.read_only === true;
+  const deploymentPaymentsEnabled = environment.PAYMENTS_ENABLED === "true";
+  const providerMode =
+    environment.DODO_PAYMENTS_ENVIRONMENT === "test_mode"
+      ? "Dodo Test Mode"
+      : environment.DODO_PAYMENTS_ENVIRONMENT === "live_mode"
+        ? "Dodo Live Mode"
+        : "Local mock mode";
+  const issueCount =
+    dashboard.paymentExceptions.length +
+    dashboard.reconciliation.length +
+    dashboard.emails.length;
   return (
     <main id="main-content" className="public-main admin-page">
-      <header className="admin-header">
-        <div>
-          <p className="eyebrow">Restricted operations</p>
-          <h1>Founder console</h1>
-          <p>
-            Signed in as {session.email} · {session.role.replace("_", " ")}
+      <header className="admin-hero">
+        <div className="admin-hero-copy">
+          <p className="eyebrow">Private founder workspace</p>
+          <h1>Operations, without the guesswork.</h1>
+          <p className="admin-hero-lede">
+            See what is safe, what needs attention, and what each control will
+            do before you use it.
           </p>
+          <div className="admin-session-line">
+            <span className="admin-status-dot" aria-hidden="true" />
+            <span>
+              Secure session · {session.role.replace("_", " ")} ·{" "}
+              {session.email}
+            </span>
+          </div>
         </div>
-        <p className="form-notice">
-          Every mutation needs a reason, fresh MFA, and an immutable audit row.
-          Moderation never edits money.
-        </p>
+        <aside className="admin-trust-card" aria-label="Admin safety model">
+          <p className="eyebrow">Protected by design</p>
+          <h2>Every change leaves a receipt.</h2>
+          <p>
+            Sensitive actions require your admin role, fresh authenticator
+            verification, a written reason, and an immutable audit event.
+          </p>
+          <Link href="/manage/security">Review account security</Link>
+        </aside>
       </header>
+
+      <nav className="admin-quick-nav" aria-label="Founder console sections">
+        <a href="#launch-status">Launch status</a>
+        <a href="#controls">Safety controls</a>
+        <a href="#work-queues">Work queues</a>
+        <a href="#service-health">Service health</a>
+      </nav>
+
+      <section
+        className="admin-launch-panel"
+        id="launch-status"
+        aria-labelledby="launch-status-heading"
+      >
+        <div className="admin-launch-copy">
+          <p className="eyebrow">Current pre-launch stage</p>
+          <h2 id="launch-status-heading">Test payments, safely fenced</h2>
+          <p>
+            Production routing is connected, but checkout still needs both the
+            deployment switch and the shared database switch. Live payments and
+            provider refunds remain outside this test gate.
+          </p>
+          <ol className="admin-step-list">
+            <li data-state="complete">
+              <span>1</span>
+              <div>
+                <strong>Production providers connected</strong>
+                <small>
+                  Domain, Auth, email, Dodo Test Mode, and scheduler.
+                </small>
+              </div>
+            </li>
+            <li data-state={paymentsEnabled ? "complete" : "current"}>
+              <span>2</span>
+              <div>
+                <strong>Allow synthetic checkout</strong>
+                <small>
+                  {paymentsEnabled
+                    ? "The database Test Mode switch is on."
+                    : "The database switch is still safely off."}
+                </small>
+              </div>
+            </li>
+            <li data-state={paymentsEnabled ? "current" : "pending"}>
+              <span>3</span>
+              <div>
+                <strong>Run one synthetic purchase</strong>
+                <small>
+                  Then verify webhook, ledger, ranking, and email once.
+                </small>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div className="admin-status-grid" aria-label="Current runtime status">
+          <article>
+            <span>Payment provider</span>
+            <strong>{providerMode}</strong>
+            <small>No real charge in Test Mode</small>
+          </article>
+          <article>
+            <span>Deployment checkout gate</span>
+            <strong>{deploymentPaymentsEnabled ? "Ready" : "Off"}</strong>
+            <small>Vercel Production setting</small>
+          </article>
+          <article>
+            <span>Database checkout gate</span>
+            <strong>{paymentsEnabled ? "Enabled" : "Safely off"}</strong>
+            <small>Shared pre-launch data plane</small>
+          </article>
+          <article>
+            <span>Provider refunds</span>
+            <strong className={refundsEnabled ? "admin-text-danger" : ""}>
+              {refundsEnabled ? "Enabled" : "Blocked"}
+            </strong>
+            <small>Separate authorization required</small>
+          </article>
+          <article>
+            <span>System write mode</span>
+            <strong className={readOnly ? "admin-text-danger" : ""}>
+              {readOnly ? "Read-only" : "Normal"}
+            </strong>
+            <small>Emergency brake status</small>
+          </article>
+        </div>
+      </section>
+
+      {hasAdminPermission(session.role, "flags:manage") ? (
+        <section
+          className="admin-section admin-controls-section"
+          id="controls"
+          aria-labelledby="flags-heading"
+        >
+          <div className="admin-section-heading">
+            <div>
+              <p className="eyebrow">Guardrails</p>
+              <h2 id="flags-heading">Safety controls</h2>
+            </div>
+            <p>
+              These switches affect the shared pre-launch database. Read the
+              plain-language effect and change only the control you intend.
+            </p>
+          </div>
+          <div className="admin-control-grid">
+            {flagOrder.map((key) => {
+              const flag = dashboard.flags.find(
+                (candidate) => String(candidate.key) === key,
+              );
+              if (!flag) return null;
+              const enabled = flagValues[key] === true;
+              const guidance = flagGuidance[key];
+              const dangerousEnable =
+                key === "provider_refunds_enabled" || key === "read_only";
+              return (
+                <form
+                  action={updateFlagAdminAction}
+                  className="admin-control-card admin-action-form"
+                  key={key}
+                >
+                  <div className="admin-control-card-header">
+                    <div>
+                      <p className="admin-control-kicker">System control</p>
+                      <h3>{guidance.label}</h3>
+                    </div>
+                    <span
+                      className={`admin-state-pill ${enabled ? "is-on" : "is-off"}`}
+                    >
+                      {enabled ? "On" : "Off"}
+                    </span>
+                  </div>
+                  <p className="admin-control-effect">
+                    {enabled
+                      ? guidance.enabledMeaning
+                      : guidance.disabledMeaning}
+                  </p>
+                  <details className="admin-explainer">
+                    <summary>What does this control?</summary>
+                    <p>{guidance.description}</p>
+                  </details>
+                  <input type="hidden" name="key" value={key} />
+                  <ReasonFields
+                    prefix={`flag-${key}`}
+                    help="Required for the permanent audit trail. Be specific about the test or incident."
+                  />
+                  <div className="admin-button-row admin-control-actions">
+                    <button
+                      className={dangerousEnable ? "danger-button" : ""}
+                      disabled={enabled}
+                      name="enabled"
+                      value="true"
+                    >
+                      {enabled ? "Currently enabled" : guidance.enableLabel}
+                    </button>
+                    <button
+                      className="secondary-button"
+                      disabled={!enabled}
+                      name="enabled"
+                      value="false"
+                    >
+                      {enabled ? guidance.disableLabel : "Currently disabled"}
+                    </button>
+                  </div>
+                </form>
+              );
+            })}
+          </div>
+          <p className="admin-safety-note">
+            For the current test: enable only <strong>Test checkout</strong>.
+            Keep provider refunds blocked, read-only mode off, and outbound
+            listing links on.
+          </p>
+        </section>
+      ) : null}
+
+      <section
+        className="admin-section admin-overview-section"
+        id="work-queues"
+        aria-labelledby="work-queues-heading"
+      >
+        <div className="admin-section-heading">
+          <div>
+            <p className="eyebrow">At a glance</p>
+            <h2 id="work-queues-heading">Work queues</h2>
+          </div>
+          <p>Open items that may need a human decision.</p>
+        </div>
+        <div className="admin-metric-grid">
+          <article>
+            <strong>{dashboard.moderation.length}</strong>
+            <span>Moderation items</span>
+          </article>
+          <article>
+            <strong>{dashboard.reports.length}</strong>
+            <span>Open reports</span>
+          </article>
+          <article>
+            <strong>{dashboard.changes.length}</strong>
+            <span>Listing changes</span>
+          </article>
+          <article className={issueCount ? "has-attention" : ""}>
+            <strong>{issueCount}</strong>
+            <span>Service exceptions</span>
+          </article>
+        </div>
+      </section>
 
       <section className="admin-section" aria-labelledby="moderation-queue">
         <h2 id="moderation-queue">Moderation queue</h2>
@@ -225,7 +526,11 @@ export default async function AdminPage() {
         ) : null}
       </section>
 
-      <section className="admin-section" aria-labelledby="exceptions-queue">
+      <section
+        className="admin-section"
+        id="service-health"
+        aria-labelledby="exceptions-queue"
+      >
         <h2 id="exceptions-queue">Payment and reconciliation exceptions</h2>
         <div className="admin-grid">
           {dashboard.paymentExceptions.map((item) => (
@@ -302,37 +607,6 @@ export default async function AdminPage() {
           )}
         </div>
       </section>
-
-      {hasAdminPermission(session.role, "flags:manage") ? (
-        <section className="admin-section" aria-labelledby="flags-heading">
-          <h2 id="flags-heading">Emergency controls</h2>
-          <div className="admin-grid">
-            {dashboard.flags.map((flag) => (
-              <form
-                action={updateFlagAdminAction}
-                className="admin-card admin-action-form"
-                key={String(flag.key)}
-              >
-                <h3>{String(flag.key).replaceAll("_", " ")}</h3>
-                <p>
-                  Current:{" "}
-                  {String((flag.value as { enabled?: unknown }).enabled)}
-                </p>
-                <input type="hidden" name="key" value={String(flag.key)} />
-                <ReasonFields prefix="flag" />
-                <div className="admin-button-row">
-                  <button name="enabled" value="true">
-                    Enable
-                  </button>
-                  <button name="enabled" value="false">
-                    Disable
-                  </button>
-                </div>
-              </form>
-            ))}
-          </div>
-        </section>
-      ) : null}
 
       {hasAdminPermission(session.role, "payments:refund") ? (
         <section className="admin-section" aria-labelledby="refund-heading">
