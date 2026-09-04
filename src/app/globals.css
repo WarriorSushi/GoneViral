@@ -3194,6 +3194,26 @@ textarea:focus-visible {
   text-align: right;
 }
 
+.admin-access-notice {
+  max-width: 720px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface-soft);
+}
+
+.admin-access-notice h3 {
+  margin: 6px 0 8px;
+  font-size: 1.2rem;
+  letter-spacing: -0.025em;
+}
+
+.admin-access-notice p:not(.eyebrow) {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--ink-soft);
+}
+
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));

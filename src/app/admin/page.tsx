@@ -121,17 +121,14 @@ export default async function AdminPage() {
             <span />
           </div>
           <p className="eyebrow">One private security step</p>
-          <h1 id="access-heading">Confirm it’s really you.</h1>
+          <h1 id="access-heading">Confirm admin access.</h1>
           <p className="admin-access-lede">
-            You are signed in and allowlisted. Founder controls need a fresh
-            authenticator check before any operational data or action appears.
+            Enter your admin verification code before opening private controls.
           </p>
           <div className="admin-access-facts">
             <div>
               <strong>This does</strong>
-              <span>
-                Protect the founder console with a fresh AAL2 session.
-              </span>
+              <span>Confirms access to the private admin area.</span>
             </div>
             <div>
               <strong>This does not</strong>
@@ -143,15 +140,13 @@ export default async function AdminPage() {
               className="button button-primary admin-access-primary"
               href="/manage/security?reauth=admin"
             >
-              Verify with authenticator
+              Enter admin code
             </Link>
             <Link className="admin-access-secondary" href="/manage">
               Back to your listings
             </Link>
           </div>
-          <small>
-            Keep your QR code, authenticator secret, and six-digit code private.
-          </small>
+          <small>Keep your verification code private.</small>
         </section>
       </main>
     );
@@ -179,6 +174,7 @@ export default async function AdminPage() {
     dashboard.paymentExceptions.length +
     dashboard.reconciliation.length +
     dashboard.emails.length;
+  const canManageFlags = hasAdminPermission(session.role, "flags:manage");
   return (
     <main id="main-content" className="public-main admin-page">
       <header className="admin-hero">
@@ -192,8 +188,7 @@ export default async function AdminPage() {
           <div className="admin-session-line">
             <span className="admin-status-dot" aria-hidden="true" />
             <span>
-              Secure session · {session.role.replace("_", " ")} ·{" "}
-              {session.email}
+              Admin session active · {session.role.replace("_", " ")} access
             </span>
           </div>
         </div>
@@ -201,8 +196,8 @@ export default async function AdminPage() {
           <p className="eyebrow">Protected by design</p>
           <h2>Every change leaves a receipt.</h2>
           <p>
-            Sensitive actions require your admin role, fresh authenticator
-            verification, a written reason, and an immutable audit event.
+            Private controls stay locked until access is confirmed. Important
+            changes require a reason and are recorded.
           </p>
           <Link href="/manage/security">Review account security</Link>
         </aside>
@@ -293,92 +288,114 @@ export default async function AdminPage() {
         </div>
       </section>
 
-      {hasAdminPermission(session.role, "flags:manage") ? (
-        <section
-          className="admin-section admin-controls-section"
-          id="controls"
-          aria-labelledby="flags-heading"
-        >
-          <div className="admin-section-heading">
-            <div>
-              <p className="eyebrow">Guardrails</p>
-              <h2 id="flags-heading">Safety controls</h2>
+      <section
+        className="admin-section admin-controls-section"
+        id="controls"
+        aria-labelledby="flags-heading"
+      >
+        {canManageFlags ? (
+          <>
+            <div className="admin-section-heading">
+              <div>
+                <p className="eyebrow">Guardrails</p>
+                <h2 id="flags-heading">Safety controls</h2>
+              </div>
+              <p>
+                These switches affect the shared pre-launch database. Read the
+                plain-language effect and change only the control you intend.
+              </p>
             </div>
-            <p>
-              These switches affect the shared pre-launch database. Read the
-              plain-language effect and change only the control you intend.
-            </p>
-          </div>
-          <div className="admin-control-grid">
-            {flagOrder.map((key) => {
-              const flag = dashboard.flags.find(
-                (candidate) => String(candidate.key) === key,
-              );
-              if (!flag) return null;
-              const enabled = flagValues[key] === true;
-              const guidance = flagGuidance[key];
-              const dangerousEnable =
-                key === "provider_refunds_enabled" || key === "read_only";
-              return (
-                <form
-                  action={updateFlagAdminAction}
-                  className="admin-control-card admin-action-form"
-                  key={key}
-                >
-                  <div className="admin-control-card-header">
-                    <div>
-                      <p className="admin-control-kicker">System control</p>
-                      <h3>{guidance.label}</h3>
+            <div className="admin-control-grid">
+              {flagOrder.map((key) => {
+                const flag = dashboard.flags.find(
+                  (candidate) => String(candidate.key) === key,
+                );
+                if (!flag) return null;
+                const enabled = flagValues[key] === true;
+                const guidance = flagGuidance[key];
+                const dangerousEnable =
+                  key === "provider_refunds_enabled" || key === "read_only";
+                return (
+                  <form
+                    action={updateFlagAdminAction}
+                    className="admin-control-card admin-action-form"
+                    key={key}
+                  >
+                    <div className="admin-control-card-header">
+                      <div>
+                        <p className="admin-control-kicker">System control</p>
+                        <h3>{guidance.label}</h3>
+                      </div>
+                      <span
+                        className={`admin-state-pill ${enabled ? "is-on" : "is-off"}`}
+                      >
+                        {enabled ? "On" : "Off"}
+                      </span>
                     </div>
-                    <span
-                      className={`admin-state-pill ${enabled ? "is-on" : "is-off"}`}
-                    >
-                      {enabled ? "On" : "Off"}
-                    </span>
-                  </div>
-                  <p className="admin-control-effect">
-                    {enabled
-                      ? guidance.enabledMeaning
-                      : guidance.disabledMeaning}
-                  </p>
-                  <details className="admin-explainer">
-                    <summary>What does this control?</summary>
-                    <p>{guidance.description}</p>
-                  </details>
-                  <input type="hidden" name="key" value={key} />
-                  <ReasonFields
-                    prefix={`flag-${key}`}
-                    help="Required for the permanent audit trail. Be specific about the test or incident."
-                  />
-                  <div className="admin-button-row admin-control-actions">
-                    <button
-                      className={dangerousEnable ? "danger-button" : ""}
-                      disabled={enabled}
-                      name="enabled"
-                      value="true"
-                    >
-                      {enabled ? "Currently enabled" : guidance.enableLabel}
-                    </button>
-                    <button
-                      className="secondary-button"
-                      disabled={!enabled}
-                      name="enabled"
-                      value="false"
-                    >
-                      {enabled ? guidance.disableLabel : "Currently disabled"}
-                    </button>
-                  </div>
-                </form>
-              );
-            })}
-          </div>
-          <p className="admin-safety-note">
-            For the current test: enable only <strong>Test checkout</strong>.
-            Keep provider refunds blocked, read-only mode off, and outbound
-            listing links on.
-          </p>
-        </section>
-      ) : null}
+                    <p className="admin-control-effect">
+                      {enabled
+                        ? guidance.enabledMeaning
+                        : guidance.disabledMeaning}
+                    </p>
+                    <details className="admin-explainer">
+                      <summary>What does this control?</summary>
+                      <p>{guidance.description}</p>
+                    </details>
+                    <input type="hidden" name="key" value={key} />
+                    <ReasonFields
+                      prefix={`flag-${key}`}
+                      help="Required for the permanent audit trail. Be specific about the test or incident."
+                    />
+                    <div className="admin-button-row admin-control-actions">
+                      <button
+                        className={dangerousEnable ? "danger-button" : ""}
+                        disabled={enabled}
+                        name="enabled"
+                        value="true"
+                      >
+                        {enabled ? "Currently enabled" : guidance.enableLabel}
+                      </button>
+                      <button
+                        className="secondary-button"
+                        disabled={!enabled}
+                        name="enabled"
+                        value="false"
+                      >
+                        {enabled ? guidance.disableLabel : "Currently disabled"}
+                      </button>
+                    </div>
+                  </form>
+                );
+              })}
+            </div>
+            <p className="admin-safety-note">
+              For the current test: enable only <strong>Test checkout</strong>.
+              Keep provider refunds blocked, read-only mode off, and outbound
+              listing links on.
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="admin-section-heading">
+              <div>
+                <p className="eyebrow">Guardrails</p>
+                <h2 id="flags-heading">Safety controls</h2>
+              </div>
+              <p>
+                Your account can review status but cannot change these settings.
+              </p>
+            </div>
+            <div className="admin-access-notice" role="status">
+              <p className="eyebrow">View only</p>
+              <h3>No controls are available to this admin account.</h3>
+              <p>
+                You can safely review the current state above. Nothing needs to
+                be fixed, and no setting has changed.
+              </p>
+            </div>
+          </>
+        )}
+      </section>
 
       <section
         className="admin-section admin-overview-section"
