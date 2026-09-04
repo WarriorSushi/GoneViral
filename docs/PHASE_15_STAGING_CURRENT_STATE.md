@@ -1364,3 +1364,18 @@ and hosted state are unchanged. Formatting, lint, TypeScript, 23 focused unit
 tests, the Production build, and focused 1440px/390px browser checks pass. New
 review captures are in `artifacts/homepage-refinement-2026-09-04/`. This remains
 local and uncommitted.
+
+The owner then authorized a presentation-only join-flow continuation. Public
+`Get listed` and `Take #...` client navigations now reuse the existing form in
+an intercepted desktop dialog or mobile full-height sheet; direct `/join`
+visits remain standalone. Target pricing and every existing validation,
+Turnstile, payment, listing, rank, and ownership path are unchanged. The
+backdrop never closes the form, the background is inert and scroll-locked, and
+dirty close, desktop Escape, and Browser Back require explicit discard
+confirmation while untouched close does not prompt. Focused TypeScript, lint,
+nine join-domain unit tests, and local 1440px/390px browser scenarios pass,
+including valid submission to deterministic local mock checkout and no
+horizontal overflow. Captures are in `artifacts/join-overlay-2026-09-05/`.
+The work is approved for the repository's normal landing workflow. At approval
+time, no hosted state, provider configuration, Safety Control, or Production
+deployment had changed.
