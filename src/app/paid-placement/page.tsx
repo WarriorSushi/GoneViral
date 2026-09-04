@@ -5,7 +5,7 @@ import { publicPageMetadata } from "@/config/seo";
 
 export const metadata = publicPageMetadata({
   description:
-    "A plain-language disclosure of how money, adjustments, ties, and Today activity determine GoneViral.in placement.",
+    "A plain-language disclosure of how money, adjustments, ties, and daily activity determine GoneViral.in placement.",
   path: "/paid-placement",
   title: "Paid placement disclosure",
 });
@@ -47,11 +47,11 @@ export default function PaidPlacementPage() {
         </p>
       </section>
       <section>
-        <h2>Ties and Today</h2>
+        <h2>Ties and daily ranking</h2>
         <p>
           Listings with equal effective confirmed totals use the published
           deterministic tie-break fields rather than editorial judgement. The
-          Today view shows eligible activity scoped to the current India
+          Daily view shows eligible activity scoped to the current India
           Standard Time day; it is not a separate purchase and does not rewrite
           the all-time confirmed total.
         </p>

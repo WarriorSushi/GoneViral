@@ -166,17 +166,17 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
               <small>{tier} overall</small>
             </div>
             <div>
-              <span>Today’s leaderboard</span>
+              <span>Daily leaderboard</span>
               <strong>
                 {listing.todayRank ? `#${listing.todayRank}` : "—"}
               </strong>
               <small>
                 {listing.todayNetPaise ? (
                   <>
-                    <Money paise={listing.todayNetPaise} /> net today
+                    <Money paise={listing.todayNetPaise} /> net for current day
                   </>
                 ) : (
-                  "No paid movement today"
+                  "No paid movement in the current IST day"
                 )}
               </small>
             </div>

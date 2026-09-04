@@ -19,8 +19,19 @@ delivery events do not grant ownership.
 
 Financial and administrative transactions insert a versioned row into
 `private.email_outbox` in the same database transaction as the authoritative
-change. The provider call is made later and outside every financial or admin
-transaction.
+change. The outbox row is the durable delivery authority. For an authenticated
+Dodo success webhook, the transaction returns the newly inserted outbox ID only
+after payment, ledger, listing projections, and outbox data have committed. The
+Route Handler then registers a supported Next.js `after()` task and awaits a
+targeted claim/send for that one row. Provider I/O therefore remains outside
+the financial transaction and does not delay the webhook response body, while
+Vercel keeps the task within the Route Handler's bounded lifetime.
+
+Immediate delivery is best effort, not payment authority. A provider or
+database failure in the post-response task is safely logged and leaves the row
+eligible for the normal retry worker. A duplicate Dodo webhook does not insert
+a second outbox row and therefore does not schedule another immediate send.
+There is no detached or un-awaited Promise.
 
 The authenticated `GET /api/cron/drain-email-outbox` worker:
 
@@ -98,8 +109,8 @@ For GoneViral hosted environments, keep the branded transactional From as
 `notifications@updates.goneviral.in` and route application-email replies to the
 public support address `goneviral.in@gmail.com`. Supabase Auth uses the same
 branded sender independently and is not changed by `RESEND_REPLY_TO`.
-The owner-selected Cloudflare Workers Cron scheduler will invoke this worker
-every five minutes. Durable rows wait safely through a delayed or missed
+The owner-selected Cloudflare Workers Cron scheduler invokes this worker every
+minute. Durable rows wait safely through a delayed or missed
 schedule and the next run catches up without changing the worker/outbox
 contract. Configuration, the disabled-by-default guard, manual setup, and
 schedule certification are documented in

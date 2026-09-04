@@ -9,7 +9,10 @@ import { closeDatabase, getSqlClient } from "@/server/db/client";
 import { resumeEmailOutbox } from "@/server/admin/operations";
 import { getAdminDashboard } from "@/server/admin/read-model";
 import { enqueueVerificationDelayIfDue } from "@/server/email/enqueue-verification-delay";
-import { drainEmailOutbox } from "@/server/email/outbox";
+import {
+  deliverEmailOutboxById,
+  drainEmailOutbox,
+} from "@/server/email/outbox";
 import {
   EmailProviderError,
   type EmailDeliveryProvider,
@@ -160,6 +163,29 @@ describe("Phase 12 durable email outbox", () => {
     });
   });
 
+  it("delivers a newly queued payment email immediately and only once", async () => {
+    const id = await insertEmail();
+    const provider: EmailDeliveryProvider = {
+      send: vi.fn().mockResolvedValue({
+        providerMessageId: "resend-immediate-1",
+      }),
+    };
+
+    await expect(deliverEmailOutboxById(id, provider)).resolves.toEqual({
+      claimed: 1,
+      deadLetter: 0,
+      retryable: 0,
+      sent: 1,
+    });
+    await expect(deliverEmailOutboxById(id, provider)).resolves.toEqual({
+      claimed: 0,
+      deadLetter: 0,
+      retryable: 0,
+      sent: 0,
+    });
+    expect(provider.send).toHaveBeenCalledOnce();
+  });
+
   it("retries with the same provider key and bounds retryable failures", async () => {
     const id = await insertEmail();
     const keys: string[] = [];
@@ -174,7 +200,7 @@ describe("Phase 12 durable email outbox", () => {
         return { providerMessageId: "resend-retry-1" };
       },
     };
-    await expect(drainEmailOutbox({ limit: 1, provider })).resolves.toEqual({
+    await expect(deliverEmailOutboxById(id, provider)).resolves.toEqual({
       claimed: 1,
       deadLetter: 0,
       retryable: 1,

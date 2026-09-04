@@ -27,7 +27,7 @@ export function publicRefreshTags(formData: FormData): readonly string[] {
 
   switch (parsed.data.kind) {
     case "main":
-      return [PUBLIC_CACHE_TAGS.main];
+      return [PUBLIC_CACHE_TAGS.main, PUBLIC_CACHE_TAGS.activity];
     case "today":
       return [PUBLIC_CACHE_TAGS.today(parsed.data.businessDate)];
     case "category":

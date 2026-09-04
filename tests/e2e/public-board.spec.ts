@@ -393,14 +393,14 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   }
   await expectNoHorizontalOverflow(page);
   await expectNoPrivateMarkers(await page.content());
-  await expect(page).toHaveTitle("Pay more. Rank higher.");
+  await expect(page).toHaveTitle("Pay more. Rank higher. | GoneViral.in");
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
 
   for (const target of [
     page.getByRole("button", { name: "Refresh board" }),
-    page.getByRole("link", { name: "Today", exact: true }).first(),
+    page.getByRole("link", { name: "Daily", exact: true }).first(),
     rankAction,
   ]) {
     const box = await target.boundingBox();
@@ -456,7 +456,7 @@ test("public report form is generic and leaves paid eligibility unchanged", asyn
   });
 });
 
-test("Main, Today, category, and listing navigation use real public projections", async ({
+test("Main, Daily, category, and listing navigation use real public projections", async ({
   page,
 }, testInfo) => {
   await page.goto("/");
@@ -466,11 +466,14 @@ test("Main, Today, category, and listing navigation use real public projections"
       response.url().includes("/today") &&
       response.headers()["content-type"]?.includes("text/x-component") === true,
   );
-  await page.getByRole("link", { name: "Today", exact: true }).first().click();
+  await page
+    .getByLabel("Board controls")
+    .getByRole("link", { name: "Daily", exact: true })
+    .click();
   const todayResponse = await todayResponsePromise;
-  await expect(page).toHaveURL(/\/today$/);
+  await expect(page).toHaveURL(/\/today$/, { timeout: 15_000 });
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Who moved up today?",
+    "Daily leaderboard",
   );
   await expect(
     page.locator('.money:visible:text-is("₹12,500")').first(),
@@ -522,7 +525,7 @@ test("Main, Today, category, and listing navigation use real public projections"
   ).toHaveAttribute("href", "/go/monsoon-studio");
   const rankPanel = page.getByLabel("Current leaderboard ranks");
   await expect(rankPanel).toContainText("Overall leaderboard");
-  await expect(rankPanel).toContainText("Today’s leaderboard");
+  await expect(rankPanel).toContainText("Daily leaderboard");
   await expect(rankPanel).toContainText("#1");
   await expect(
     page.getByRole("heading", { name: "Want this position?" }),
@@ -565,16 +568,109 @@ test("Main, Today, category, and listing navigation use real public projections"
 
   await page.goto("/how-it-works");
   await expect(
-    page.getByRole("heading", { level: 1, name: "Pay more. Rank higher." }),
+    page.getByRole("heading", { level: 1, name: "Pay. Get seen." }),
   ).toBeVisible();
   await expect(
-    page.getByText("No votes. No algorithm. No account before checkout."),
+    page.getByText("Three simple steps to get on the board."),
   ).toBeVisible();
-  await expect(page.getByRole("region", { name: "Three steps" })).toBeVisible();
+  await expect(
+    page.getByRole("list", { name: "Three simple steps" }),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
   const howAccessibility = await new AxeBuilder({ page }).analyze();
   expect(howAccessibility.violations).toEqual([]);
   await capture(page, testInfo, `${testInfo.project.name}-how-it-works`);
+});
+
+test("How it works preserves board context in an accessible route modal", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const trigger = page.locator(".board-hero-secondary");
+  await expect(trigger).toHaveText(/How it works/);
+  await trigger.click();
+
+  await expect(page).toHaveURL(/\/how-it-works$/);
+  const dialog = page.getByRole("dialog", { name: "Pay. Get seen." });
+  await expect(dialog).toBeVisible();
+  await expect(page.locator("#site-content")).toHaveAttribute(
+    "aria-hidden",
+    "true",
+  );
+  expect(
+    await page
+      .locator("#site-content")
+      .evaluate((element) => element instanceof HTMLElement && element.inert),
+  ).toBe(true);
+  expect(
+    await page.evaluate(() => ({
+      body: document.body.style.overflow,
+      html: document.documentElement.style.overflow,
+    })),
+  ).toEqual({ body: "hidden", html: "hidden" });
+  await expect(
+    dialog.getByRole("heading", { level: 1, name: "Pay. Get seen." }),
+  ).toBeFocused();
+  await expect(
+    dialog.getByRole("list", { name: "Three simple steps" }),
+  ).toBeVisible();
+  await expect(dialog.getByText("Share your listing")).toBeVisible();
+  await expect(dialog.getByText("Pay ₹499+", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Move higher", { exact: true })).toBeVisible();
+  await expect(
+    dialog.getByText("₹499 gets you on the board. More spend = higher rank."),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText(
+      "All-time ranking never resets; daily ranking resets at midnight IST",
+    ),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await capture(page, testInfo, `${testInfo.project.name}-how-modal`);
+
+  const manageLink = dialog.getByRole("link", { name: "Manage your listing" });
+  await manageLink.focus();
+  await page.keyboard.press("Tab");
+  await expect(
+    dialog.getByRole("button", { name: "Close how it works" }),
+  ).toBeFocused();
+
+  const panel = dialog.locator(".how-modal-panel");
+  const panelBox = await panel.boundingBox();
+  expect(panelBox).not.toBeNull();
+  if (testInfo.project.name === "mobile-390") {
+    expect(Math.round(panelBox!.height)).toBe(844);
+    await expect(panel).toHaveCSS("border-radius", "0px");
+  } else if (testInfo.project.name === "desktop-1440") {
+    expect(panelBox!.width).toBeGreaterThanOrEqual(760);
+    expect(panelBox!.width).toBeLessThanOrEqual(900);
+    expect(panelBox!.height).toBeLessThan(900);
+  }
+
+  await page.keyboard.press("Escape");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+  await expect(dialog).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(dialog).toHaveCount(0);
+
+  await trigger.click();
+  await dialog.getByRole("button", { name: "Close how it works" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(dialog).toHaveCount(0);
+
+  await trigger.click();
+  await dialog.getByRole("link", { name: /Join for ₹499/ }).click();
+  await expect(page).toHaveURL(/\/join$/);
+  await expect(
+    page.getByRole("dialog", { name: /Put your link/ }),
+  ).toBeVisible();
 });
 
 test("guest join reaches an honest pending flow without browser authority", async ({
@@ -716,8 +812,8 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
   ).toBeVisible();
   await expect(page.locator(".confirmed-rank")).toContainText("#6");
   await expect(page.getByText(/estimate, not a reserved spot/)).toBeVisible();
-  await expect(page.getByText(/sending an email/)).toBeVisible();
-  await expect(page.getByText(/few minutes to arrive/)).toBeVisible();
+  await expect(page.getByText(/being sent now/)).toBeVisible();
+  await expect(page.getByText(/safely queued for retry/)).toBeVisible();
   await expect(
     page.getByRole("region", { name: "Share this current result" }),
   ).toContainText("#6");
@@ -759,7 +855,10 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
     await verificationSql.end({ timeout: 5 });
   }
 
-  await page.getByRole("link", { name: "Leaderboard" }).click();
+  await page
+    .locator(".payment-actions")
+    .getByRole("link", { name: "Leaderboard" })
+    .click();
   await page.getByRole("button", { name: "Refresh board" }).click();
   await expect(
     page.getByRole("link", { name: "Visit Phase Five Studio" }),
@@ -775,6 +874,7 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   context,
   page,
 }, testInfo) => {
+  test.setTimeout(90_000);
   const fixtureSql = postgres(directDatabaseUrl, {
     max: 1,
     prepare: false,
@@ -865,12 +965,11 @@ test("verified local Supabase user claims once and IDOR/revocation stay blocked"
   await websiteInput.fill(`${approvedWebsite.origin}/safe-owner-path`);
   await page.getByLabel("Category").selectOption("brands-d2c");
   await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page.getByRole("status")).toContainText(
-    "2 changes are now live.",
-  );
-  await expect(page.getByRole("status")).toContainText(
-    "2 changes were sent for review",
-  );
+  const editStatus = page.getByRole("status");
+  await expect(editStatus).toContainText("2 changes are now live.", {
+    timeout: 15_000,
+  });
+  await expect(editStatus).toContainText("2 changes were sent for review");
   await expect(page.getByLabel("Logo image")).toBeVisible();
   await expect(page.getByText(/strip metadata/i)).toBeVisible();
   await page

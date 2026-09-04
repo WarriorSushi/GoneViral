@@ -146,7 +146,7 @@ export default async function ManagePage({ searchParams }: ManagePageProps) {
                   </dd>
                 </div>
                 <div>
-                  <dt>Today</dt>
+                  <dt>Daily</dt>
                   <dd>
                     <Money paise={listing.todayTotalPaise} />
                   </dd>

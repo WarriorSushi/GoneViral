@@ -38,8 +38,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  howModal,
   joinModal,
-}: Readonly<{ children: React.ReactNode; joinModal: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+  howModal: React.ReactNode;
+  joinModal: React.ReactNode;
+}>) {
   return (
     <html lang="en-IN" data-scroll-behavior="smooth">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
@@ -53,6 +58,7 @@ export default function RootLayout({
             <SiteFooter />
           </div>
         </div>
+        {howModal}
         {joinModal}
       </body>
     </html>

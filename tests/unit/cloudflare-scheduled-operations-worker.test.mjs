@@ -31,7 +31,7 @@ describe("Cloudflare scheduled-operations Worker", () => {
     expect(config).not.toHaveProperty("crons");
   });
 
-  it("checks in the exact activated three-trigger configuration", async () => {
+  it("checks in the exact activated four-trigger configuration", async () => {
     const configText = await readFile(configPath, "utf8");
     const config = JSON.parse(configText.replaceAll(/,\s*([}\]])/g, "$1"));
     expect(config.name).toBe("goneviral-scheduled-operations-staging");
@@ -39,6 +39,7 @@ describe("Cloudflare scheduled-operations Worker", () => {
     expect(config.workers_dev).toBe(false);
     expect(config.preview_urls).toBe(false);
     expect(config.triggers.crons).toEqual([
+      "* * * * *",
       "*/5 * * * *",
       "17 * * * *",
       "43 2 * * *",
@@ -54,6 +55,12 @@ describe("Cloudflare scheduled-operations Worker", () => {
 
   it("maps only the five fixed application routes", () => {
     expect(SCHEDULED_OPERATIONS).toEqual({
+      "* * * * *": [
+        {
+          name: "drain-email-outbox",
+          route: "/api/cron/drain-email-outbox",
+        },
+      ],
       "17 * * * *": [
         {
           name: "reconcile-payments",
@@ -71,10 +78,6 @@ describe("Cloudflare scheduled-operations Worker", () => {
         },
       ],
       "*/5 * * * *": [
-        {
-          name: "drain-email-outbox",
-          route: "/api/cron/drain-email-outbox",
-        },
         {
           name: "check-operational-health",
           route: "/api/cron/check-operational-health",

@@ -2,12 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-const { processDodoWebhook, revalidateTag, verifyAndNormalizeDodoWebhook } =
-  vi.hoisted(() => ({
-    processDodoWebhook: vi.fn(),
-    revalidateTag: vi.fn(),
-    verifyAndNormalizeDodoWebhook: vi.fn(),
-  }));
+const {
+  deliverEmailOutboxById,
+  processDodoWebhook,
+  revalidateTag,
+  verifyAndNormalizeDodoWebhook,
+} = vi.hoisted(() => ({
+  deliverEmailOutboxById: vi.fn(),
+  processDodoWebhook: vi.fn(),
+  revalidateTag: vi.fn(),
+  verifyAndNormalizeDodoWebhook: vi.fn(),
+}));
 
 vi.mock("next/cache", () => ({ revalidateTag }));
 vi.mock("@/server/payments/dodo-webhook", () => ({
@@ -20,6 +25,7 @@ vi.mock("@/server/payments/dodo-webhook", () => ({
 vi.mock("@/server/payments/process-dodo-webhook", () => ({
   processDodoWebhook,
 }));
+vi.mock("@/server/email/outbox", () => ({ deliverEmailOutboxById }));
 
 import { handleDodoWebhook } from "@/app/api/webhooks/dodo/route";
 
@@ -41,6 +47,12 @@ beforeEach(() => {
   vi.clearAllMocks();
   verifyAndNormalizeDodoWebhook.mockReturnValue({
     eventType: "payment.succeeded",
+  });
+  deliverEmailOutboxById.mockResolvedValue({
+    claimed: 1,
+    deadLetter: 0,
+    retryable: 0,
+    sent: 1,
   });
 });
 
@@ -88,6 +100,60 @@ describe("Dodo webhook response semantics", () => {
     await expect(result.json()).resolves.toEqual({ status: "processed" });
     expect(processDodoWebhook).toHaveBeenCalledOnce();
     error.mockRestore();
+  });
+
+  it("schedules an immediate post-commit confirmation-email attempt", async () => {
+    processDodoWebhook.mockResolvedValueOnce({
+      emailOutboxId: "outbox-route-test",
+      kind: "processed",
+      listingPublicId: "lst_route_test",
+    });
+    let scheduledTask: (() => Promise<void>) | undefined;
+
+    const result = await handleDodoWebhook(request(), (task) => {
+      scheduledTask = task as () => Promise<void>;
+    });
+
+    expect(result.status).toBe(200);
+    expect(deliverEmailOutboxById).not.toHaveBeenCalled();
+    expect(scheduledTask).toBeTypeOf("function");
+    await scheduledTask?.();
+    expect(deliverEmailOutboxById).toHaveBeenCalledWith("outbox-route-test");
+  });
+
+  it("still acknowledges committed money when immediate delivery fails", async () => {
+    const error = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    processDodoWebhook.mockResolvedValueOnce({
+      emailOutboxId: "outbox-route-test",
+      kind: "processed",
+    });
+    deliverEmailOutboxById.mockRejectedValueOnce(new Error("database offline"));
+    let scheduledTask: (() => Promise<void>) | undefined;
+
+    const result = await handleDodoWebhook(request(), (task) => {
+      scheduledTask = task as () => Promise<void>;
+    });
+    await scheduledTask?.();
+
+    expect(result.status).toBe(200);
+    await expect(result.json()).resolves.toEqual({ status: "processed" });
+    expect(String(error.mock.calls.at(-1)?.[0])).not.toContain(
+      "database offline",
+    );
+    error.mockRestore();
+  });
+
+  it("does not schedule another email for a duplicate webhook", async () => {
+    processDodoWebhook.mockResolvedValueOnce({ kind: "duplicate" });
+    const scheduleAfterResponse = vi.fn();
+
+    const result = await handleDodoWebhook(request(), scheduleAfterResponse);
+
+    expect(result.status).toBe(200);
+    expect(scheduleAfterResponse).not.toHaveBeenCalled();
+    expect(deliverEmailOutboxById).not.toHaveBeenCalled();
   });
 
   it("rejects unauthenticated or malformed requests before processing", async () => {

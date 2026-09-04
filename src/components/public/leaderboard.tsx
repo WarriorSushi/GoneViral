@@ -172,11 +172,11 @@ function EmptyBoard({ today }: { readonly today: boolean }) {
       aria-labelledby="empty-title"
     >
       <h2 id="empty-title">
-        {today ? "Today’s board is wide open." : "No one is here. Yet."}
+        {today ? "The daily board is wide open." : "No one is here. Yet."}
       </h2>
       <p>
         {today
-          ? "The first confirmed payment today takes #1 here."
+          ? "The first confirmed payment of the current IST day takes #1 here."
           : "Get on the leaderboard from ₹499."}
       </p>
       <Link className="button button-primary" href="/join">

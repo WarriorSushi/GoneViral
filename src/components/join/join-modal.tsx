@@ -9,28 +9,10 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-
-const focusableSelector = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled]):not([type='hidden'])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])",
-].join(",");
-
-function focusableElements(root: HTMLElement | null) {
-  if (!root) {
-    return [];
-  }
-
-  return Array.from(
-    root.querySelectorAll<HTMLElement>(focusableSelector),
-  ).filter(
-    (element) =>
-      !element.hidden && element.getAttribute("aria-hidden") !== "true",
-  );
-}
+import {
+  focusableElements,
+  lockRouteModalBackground,
+} from "@/components/route-modal-utils";
 
 export function JoinModal({ children }: { readonly children: ReactNode }) {
   const router = useRouter();
@@ -39,7 +21,6 @@ export function JoinModal({ children }: { readonly children: ReactNode }) {
   const modalContentRef = useRef<HTMLDivElement>(null);
   const confirmationRef = useRef<HTMLDivElement>(null);
   const confirmationReturnFocusRef = useRef<HTMLElement | null>(null);
-  const triggerFocusRef = useRef<HTMLElement | null>(null);
   const dirtyRef = useRef(false);
   const allowNavigationRef = useRef(false);
   const guardAddedRef = useRef(false);
@@ -73,25 +54,7 @@ export function JoinModal({ children }: { readonly children: ReactNode }) {
   }
 
   useEffect(() => {
-    const page = document.getElementById("site-content");
-    const previouslyInert = page?.inert ?? false;
-    const previousAriaHidden = page ? page.getAttribute("aria-hidden") : null;
-    const previousHtmlOverflow = document.documentElement.style.overflow;
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousBodyPaddingRight = document.body.style.paddingRight;
-    const scrollbarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-
-    triggerFocusRef.current = document.activeElement as HTMLElement | null;
-    if (page) {
-      page.inert = true;
-      page.setAttribute("aria-hidden", "true");
-    }
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
+    const restoreBackground = lockRouteModalBackground();
 
     if (window.history.state?.goneViralJoinGuard !== historyGuardId) {
       window.history.pushState(
@@ -141,20 +104,7 @@ export function JoinModal({ children }: { readonly children: ReactNode }) {
     return () => {
       window.removeEventListener("popstate", handlePopState);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      if (page) {
-        page.inert = previouslyInert;
-        if (previousAriaHidden === null) {
-          page.removeAttribute("aria-hidden");
-        } else {
-          page.setAttribute("aria-hidden", previousAriaHidden);
-        }
-      }
-      document.documentElement.style.overflow = previousHtmlOverflow;
-      document.body.style.overflow = previousBodyOverflow;
-      document.body.style.paddingRight = previousBodyPaddingRight;
-      if (triggerFocusRef.current?.isConnected) {
-        triggerFocusRef.current.focus({ preventScroll: true });
-      }
+      restoreBackground();
     };
   }, [historyGuardId]);
 

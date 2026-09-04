@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 const sentry = vi.hoisted(() => ({
+  captureCheckIn: vi.fn(),
   captureMessage: vi.fn(),
   flush: vi.fn(),
   init: vi.fn(),
@@ -20,6 +21,7 @@ vi.mock("@/server/telemetry/logger", () => ({
 }));
 
 import { captureOperationalAlert } from "@/server/telemetry/alerts";
+import { startEmailOutboxCronMonitor } from "@/server/telemetry/cron-monitor";
 import { initializeSentryServer } from "@/server/telemetry/sentry";
 
 beforeEach(() => {
@@ -27,6 +29,7 @@ beforeEach(() => {
   vi.unstubAllEnvs();
   sentry.isInitialized.mockReturnValue(false);
   sentry.flush.mockResolvedValue(true);
+  sentry.captureCheckIn.mockReturnValue("check-in-test-id");
   sentry.withScope.mockImplementation((callback) => callback(sentry.scope));
 });
 
@@ -87,5 +90,47 @@ describe("operational Sentry alerts", () => {
       "warning",
     );
     expect(sentry.flush).toHaveBeenCalledWith(2_000);
+  });
+});
+
+describe("email outbox Sentry cron monitor", () => {
+  it("records in-progress and success check-ins with a jitter-safe schedule", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SENTRY_DSN", "https://public@example.test/1");
+
+    const finish = startEmailOutboxCronMonitor();
+    await finish("ok");
+
+    expect(sentry.captureCheckIn).toHaveBeenNthCalledWith(
+      1,
+      {
+        monitorSlug: "goneviral-email-outbox",
+        status: "in_progress",
+      },
+      expect.objectContaining({
+        checkinMargin: 3,
+        failureIssueThreshold: 1,
+        maxRuntime: 1,
+        recoveryThreshold: 2,
+        schedule: { type: "crontab", value: "* * * * *" },
+        timezone: "Etc/UTC",
+      }),
+    );
+    expect(sentry.captureCheckIn).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        checkInId: "check-in-test-id",
+        monitorSlug: "goneviral-email-outbox",
+        status: "ok",
+      }),
+      expect.any(Object),
+    );
+    expect(sentry.flush).toHaveBeenCalledWith(2_000);
+  });
+
+  it("does not emit check-ins without a configured DSN", async () => {
+    const finish = startEmailOutboxCronMonitor();
+    await finish("error");
+
+    expect(sentry.captureCheckIn).not.toHaveBeenCalled();
   });
 });

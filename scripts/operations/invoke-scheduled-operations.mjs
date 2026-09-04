@@ -11,10 +11,8 @@ export const OPERATION_ROUTES = Object.freeze({
 });
 
 export const SCHEDULE_OPERATIONS = Object.freeze({
-  "*/5 * * * *": Object.freeze([
-    "drain-email-outbox",
-    "check-operational-health",
-  ]),
+  "* * * * *": Object.freeze(["drain-email-outbox"]),
+  "*/5 * * * *": Object.freeze(["check-operational-health"]),
   "17 * * * *": Object.freeze(["reconcile-payments"]),
   "43 2 * * *": Object.freeze(["cleanup-logo-assets", "cleanup-retention"]),
 });
