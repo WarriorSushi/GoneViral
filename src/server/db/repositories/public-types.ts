@@ -65,6 +65,7 @@ export interface PublicActivityItem extends PublicMovement {
 export interface PublicListingDetail extends PublicListingIdentity {
   readonly currentMainRank: string;
   readonly currentTotalReachedAt: string;
+  readonly featuredSince: string;
   readonly movements: readonly PublicMovement[];
   readonly takeoverQuote: PublicTakeoverQuote;
   readonly todayNetPaise: string | null;

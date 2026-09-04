@@ -9,11 +9,15 @@ export function buildShareText(listingName: string, currentRank: string) {
 
 export function ShareControls({
   currentRank,
+  description,
+  heading,
   listingName,
   listingPath,
   showPreview = false,
 }: {
   readonly currentRank: string;
+  readonly description?: string;
+  readonly heading?: string;
   readonly listingName: string;
   readonly listingPath: string;
   readonly showPreview?: boolean;
@@ -75,10 +79,14 @@ export function ShareControls({
       ) : null}
       <div className="share-controls-content">
         <div className="share-controls-copy">
-          <strong>Turn your rank into reach.</strong>
+          <strong>{heading ?? "Turn your rank into reach."}</strong>
           <p>
-            Share your current <b>#{currentRank}</b> position with a ready-made
-            social card.
+            {description ?? (
+              <>
+                Share your current <b>#{currentRank}</b> position with a
+                ready-made social card.
+              </>
+            )}
           </p>
         </div>
         <div className="share-actions">

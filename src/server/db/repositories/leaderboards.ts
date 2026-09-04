@@ -405,6 +405,7 @@ export async function listTodayBoard(input: {
 
 type ListingDetailRow = MainBoardRow &
   Readonly<{
+    featuredSince: Date;
     todayNetPaise: bigint | null;
     todayRank: bigint | null;
   }>;
@@ -493,9 +494,11 @@ export async function getPublicListingDetail(input: {
     )
     select
       m.*,
+      l.first_confirmed_at as "featuredSince",
       t.net_amount_paise as "todayNetPaise",
       t.rank as "todayRank"
     from main_ranked m
+    inner join app.listings l on l.id = m.id
     left join today_ranked t on t.listing_id = m.id
     where m.slug = ${input.slug}
     limit 1
@@ -526,6 +529,7 @@ export async function getPublicListingDetail(input: {
     ...identityFromRow(row),
     currentMainRank: row.rank.toString(),
     currentTotalReachedAt: isoTimestamp(row.currentTotalReachedAt),
+    featuredSince: isoTimestamp(row.featuredSince),
     movements,
     takeoverQuote: takeoverQuote({
       estimatedAt: generatedAt,
