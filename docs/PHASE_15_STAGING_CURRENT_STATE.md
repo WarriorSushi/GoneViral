@@ -1165,3 +1165,44 @@ UI while retaining the existing Supabase MFA flow and server-side role checks.
 Local formatting, lint, TypeScript, 24 focused MFA/auth/permission tests, and the
 Next.js Production build pass. Merge, Production deployment, and owner refresh
 remain pending; the database payment flag is still disabled.
+
+The owner subsequently confirmed that this is a single-founder operation and
+explicitly authorized changing only the sole active, non-revoked admin entry
+from `reviewer` to `super_admin`. A guarded hosted-database update first required
+exactly one eligible row, changed only that row, and then verified
+`role=super_admin`, `is_active=true`, and `revoked_at IS NULL`. No other admin
+user, permission definition, safety control, or security setting changed.
+
+The owner's authenticated Production screenshot then confirmed the
+`super_admin` account can see the real Safety Controls forms. The visible flag
+states remained unchanged: Test checkout off, provider refund calls off,
+read-only safety mode off, and outbound listing links on.
+
+Pull request `#23` contains the focused navigation and minimal-verification-copy
+follow-up. Its Vercel Preview deployment passed, and required CI run
+`33826027048` attempt 3 passed install, formatting, lint, TypeScript, the full
+unit suite, Production build, and browser secret/source-map inspection. The run
+failed solely because `pnpm audit --audit-level=moderate` could not reach
+`https://registry.npmjs.org/-/npm/v1/security/advisories/bulk`: error `23`
+retried twice and ended with `The operation was aborted due to timeout`. No
+vulnerability finding was returned. The subsequent repository secret scan was
+skipped because the preceding audit command failed. Per owner direction, do not
+start more full reruns while that external endpoint is unavailable and do not
+weaken the audit gate. GitHub branch protection therefore blocks the merge; no
+new Production deployment was created.
+
+After another fresh endpoint timeout, the owner authorized a minimal resilient
+fallback. A sanitized configuration audit found no repository or user
+`.npmrc`, no custom registry/proxy/audit URL/redirect, and both npm and pnpm
+resolve to the official `https://registry.npmjs.org/`. The failure is therefore
+the official npm bulk-advisory request timing out, not repository or workstation
+configuration. CI now keeps `pnpm audit --audit-level=moderate` as the primary
+gate, permits fallback only for explicit audit-service timeout/network/5xx
+failures, fails closed on findings or unrecognized errors, and conditionally
+runs a SHA-pinned Google OSV-Scanner against the committed `pnpm-lock.yaml`.
+The repository's selected-action allowlist was extended only for that exact
+scanner action SHA; mandatory SHA pinning, branch protection, and required
+checks are unchanged. Formatting, lint, TypeScript, 227 unit tests, the
+Production build, and browser secret/source-map inspection pass locally. One
+new required PR run, merge, and Production deployment verification remain
+pending. No Safety Control changed.

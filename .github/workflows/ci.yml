@@ -51,7 +51,15 @@ jobs:
         run: pnpm security:verify-build
 
       - name: Audit moderate-and-higher dependency findings
-        run: pnpm audit --audit-level=moderate
+        id: dependency-audit
+        run: node scripts/security/run-dependency-audit.mjs
+
+      - name: Audit dependencies with OSV-Scanner when npm is unavailable
+        if: steps.dependency-audit.outputs.fallback_required == 'true'
+        uses: google/osv-scanner-action/osv-scanner-action@8deb546fdb875b9996d27d4950be7312dac076a1 # v2.5.0
+        with:
+          scan-args: |-
+            --lockfile=pnpm-lock.yaml
 
       - name: Scan repository for secrets
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0

@@ -232,14 +232,18 @@ Exact sanitized evidence and commits are in
 
 ### Next task
 
-Merge and deploy the focused admin UX follow-up on
-`codex/phase-15-prelaunch-evidence`, then have the owner refresh the authenticated
-console and confirm that `Safety controls` reaches a clear read-only section for
-the current `reviewer` role and that the verification copy is appropriately
-minimal. The current role cannot change the database `payments_enabled` flag;
-do not bypass that permission. Resolve the separately controlled owner-level
-authorization step before enabling only that flag. Then run the remaining
-narrow Production smoke and one
+Pull request `#23` now includes the owner-authorized resilient dependency-audit
+gate: npm remains primary at the moderate threshold, while only explicit npm
+audit-service availability failures invoke a pinned OSV-Scanner scan of the
+committed lockfile; findings and unrecognized failures remain blocking. The
+sanitized npm configuration audit was normal and focused fallback tests pass.
+Run the required CI once, then merge and verify the Production deployment only
+if genuinely green. The owner explicitly authorized changing the sole
+active, non-revoked admin entry from `reviewer` to `super_admin`; the guarded
+hosted update and role/state verification passed, and the owner confirmed the
+real Safety Controls are visible. Do not change another permission or safety
+control. When separately directed through the console, enable only the database
+`payments_enabled` flag. Then run the remaining narrow Production smoke and one
 synthetic Dodo Test Mode purchase. Dodo Test Mode and the new Resend webhook
 target Production; two genuine signed Resend events returned `200`, the old
 Preview webhook is disabled without deletion or rotation, and repeated natural
