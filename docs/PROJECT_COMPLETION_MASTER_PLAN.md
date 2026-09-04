@@ -253,14 +253,67 @@ Test Mode purchase for ₹501 and reported receiving the confirmation email.
 Read-only hosted evidence confirms exactly one processed provider event, one
 ledger entry, one confirmation-email outbox record, the matching ₹501 listing
 total, and current main rank `#2`. The successful-payment screen and generated
-listing share card are now receiving a focused presentation-only premium
-redesign; no payment logic or control state is in scope. Dodo Test Mode and
+listing share card were upgraded and shipped through pull request `#24` as
+merge commit `8c2f675274aa2e43659b38159613d32f67f9276c`. Required CI run
+`33867712592` passed, npm's moderate audit responded cleanly, and Vercel
+Production deployment `dpl_5VGgaKDBPhjjwYRyzcPg6rnL64zr` is READY on the apex
+and `www` aliases. Live verification confirms the new confirmation layout and
+the branded 1200×630 card render correctly with the actual listing logo. No
+payment logic or control state changed. Pull request `#25` then redesigned only
+the public listing detail surface and its downloadable card, passed required CI
+run `33872785916`, and squash-merged as exact commit
+`397a037b508a9be240ee3f1446b11cb0ac225dfb`. Production deployment
+`dpl_9Jd3WKBqZw7xA4RjVespCLyYMNE3` is READY on the apex and `www` aliases. Live
+desktop and 390px mobile verification passed without horizontal overflow,
+browser errors, or WCAG A/AA violations. Owner feedback then prompted a
+rank-clarity and density refinement in pull request `#26`. Required CI run
+`33880545146` and both Vercel checks passed; the pull request squash-merged as
+exact commit `0bfd050115a79c3237ab5b9cfd94a1a0432bfc8e`. Production deployment
+`dpl_BW43Ajkxf4gyrAc7Z8fx5mGEFLUu` is READY on the apex and `www` aliases.
+Live inspection confirms that overall and Today's ranks are explicit and side
+by side, the purchase target is a small separate estimate, sharing is above the
+desktop fold, and the softened 1200×630 card renders correctly. The next action
+is owner visual approval of pull request `#26`'s Production result; do not begin
+another Phase 15 task from this gate. Dodo Test Mode and
 the new Resend webhook target Production; two genuine signed Resend events
 returned `200`, the old Preview webhook is disabled without deletion or
 rotation, and repeated natural five-minute Cloudflare events plus the hourly
 reconciliation event returned `200`. Do not create another Supabase project,
 upgrade Vercel, use Dodo Live Mode, perform cleanup, run a real transaction,
 issue refunds, or commercially launch.
+
+The owner has now approved pull request `#26`'s Production presentation and
+chosen to preserve one identical public listing surface for owners and visitors;
+private owner actions remain under authenticated `/manage` routes. The next
+launch-critical workstream is the remaining bounded, non-destructive Production
+certification, beginning with still-outstanding monitoring/alert delivery,
+Turnstile, Storage, backup-freshness, and rollback/pause evidence. This does not
+authorize a Safety Control change, Dodo Live Mode, cleanup, a real transaction,
+or commercial launch.
+
+The owner subsequently authorized a focused public-homepage redesign and made
+two explicit product decisions: clicking a listing card must continue through
+the tracked `/go/[slug]` redirect directly to the listing's website, with no
+separate `Visit website` button, and public leaderboard pages should show at
+most 10 listings before stable cursor pagination. The local implementation now
+uses the premium warm-neutral/burgundy presentation, a compact truthful hero,
+one open-position invitation, four real recent movements, the existing manual
+Refresh behavior, 10-listing repository defaults, and card-wide outbound links
+while retaining separate details and takeover actions. Formatting, lint,
+TypeScript, 23 focused unit tests, 8 public-read-model database tests, the
+Next.js Production build, and focused desktop/390px Production-browser tests
+pass. No hosted data, payment/ranking logic, Safety Control, provider mode, or
+Production deployment changed. Repository review/commit/deployment remain
+pending before the Phase 15 certification workstream resumes.
+
+During visual review, the owner refined the card hierarchy: the whole card must
+remain the dominant tracked website action, while listing detail is intentionally
+secondary. The local implementation therefore replaces the prominent `View
+details` button with a quiet inline `See details` metadata link and changes the
+public label from `tracked clicks` to `clicks` without changing collection,
+deduplication, totals, or redirect behavior. Focused desktop/390px
+Production-browser tests pass with no WCAG violations or horizontal overflow.
+This remains local and uncommitted; Production is unchanged.
 
 ### Remaining Phase 15 gates
 
@@ -341,3 +394,49 @@ The task must begin from the recorded next task, inspect current branch/commit/
 worktree, preserve unrelated owner changes, and avoid repeating settled checks.
 After a coherent workstream, update this file and the checkpoint, commit it
 separately when appropriate, and provide a delta-only continuation prompt.
+
+## 2026-09-04 homepage visual-hierarchy decision
+
+The owner approved the focused homepage polish while preserving the existing
+product and interaction decisions. The local, uncommitted implementation now
+uses a compact premium hero with the public-sponsored-leaderboard eyebrow,
+`Get listed` acquisition wording, a truthful `Live leaderboard` heading paired
+with the exact freshness timestamp and manual refresh, grouped board/category
+filters, and a denser 1180px leaderboard. The first three rank markers are gold,
+silver, and bronze; number one receives a restrained laurel/leader treatment.
+A `Top 3` boundary appears only when a lower-ranked listing follows, and a
+`Top 20` boundary appears only when the board actually continues beyond rank 20. Recent movements and the footer received the same visual hierarchy pass.
+
+The whole card still opens the submitted website through tracked `/go/[slug]`,
+while `See details` and `Take #...` remain independently operable. Public click
+totals, ten-item stable cursor pagination, ranking, payment, tracking, privacy,
+security, and business logic are unchanged. Formatting, lint, TypeScript, 23
+focused unit tests, the Production build, and four focused desktop/mobile
+Production-browser scenarios pass. The captured desktop and 390px review
+artifacts are under `artifacts/homepage-polish-2026-09-04/`. Production and all
+hosted state remain unchanged.
+
+The owner rejected the first polish as still over-explained and directed an
+Outbid-inspired density pass without copying Outbid's identity. Live desktop
+and 390px reference inspection established the responsive rule: only the
+category rail scrolls horizontally; leaderboard and Recent Moves remain compact
+vertical rows. The local homepage now removes the repeated trust/disclosure
+copy from the masthead, uses a lightweight How it works link, shortens the hero,
+replaces the mobile Menu label with an accessible icon, removes control-label
+clutter, gives all three podium ranks one matching laurel family and restrained
+tonal surfaces, composes mobile cards into intentional identity and spend/action
+rows, and compacts the activity/footer treatment. At 390×844, rank #1 begins at
+about 531px; the page and Recent Moves have no horizontal overflow. Ranking,
+payments, tracked `/go/[slug]`, public clicks, details, takeover quotes, activity
+data, cursor pagination, security, database, and hosted state are unchanged.
+Formatting, lint, TypeScript, 23 focused unit tests, the Production build, and
+focused 1440px/390px browser checks pass. The new review captures are under
+`artifacts/homepage-refinement-2026-09-04/`.
+
+A subsequent bounded population-state correction now uses the existing
+minimum-payment rank projection for the homepage acquisition row, suppresses
+Recent Moves when no genuine movement exists, and distinguishes an exhausted
+cursor page from a genuinely empty board. The projection remains explicitly
+non-guaranteed and falls back to rank-neutral copy on failure. Focused unit
+coverage and TypeScript pass; ranking, payment, database schema, hosted state,
+and Production remain unchanged.

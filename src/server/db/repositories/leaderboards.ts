@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { moneyPaise } from "@/domain/money";
 import { INITIAL_SPONSORSHIP_MIN_PAISE, POLICY_VERSION } from "@/domain/policy";
+import { PUBLIC_BOARD_PAGE_SIZE } from "@/domain/public-board";
 import { calculateTakeoverQuote } from "@/domain/ranking";
 import { readPublicEnv } from "@/config/env/public";
 
@@ -29,7 +30,6 @@ function isoTimestamp(value: Date | string): string {
     : new Date(value).toISOString();
 }
 
-const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
 const decimalBigint = z.string().regex(/^\d+$/);
 const isoInstant = z.string().datetime({ offset: true });
@@ -91,7 +91,7 @@ export function parseTodayBoardCursor(
 
 function normalizePageSize(limit: number | undefined): number {
   if (limit === undefined) {
-    return DEFAULT_PAGE_SIZE;
+    return PUBLIC_BOARD_PAGE_SIZE;
   }
 
   if (!Number.isSafeInteger(limit) || limit < 1 || limit > MAX_PAGE_SIZE) {

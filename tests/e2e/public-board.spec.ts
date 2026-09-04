@@ -115,13 +115,10 @@ test("production build renders a truthful empty board", async ({
   ).toBeVisible();
   await expect(page.getByText("NOT LIVE DATA")).toHaveCount(0);
   await expect(page.getByTestId("leaderboard")).toBeVisible();
-  await expect(page.getByTestId("invitation-row")).toHaveCount(10);
+  await expect(page.getByTestId("invitation-row")).toHaveCount(0);
   await expect(
-    page.getByRole("link", { name: "Join the leaderboard" }),
-  ).toHaveCount(10);
-  await expect(
-    page.getByText("Your final rank is set", { exact: false }),
-  ).toHaveCount(10);
+    page.getByTestId("board-empty").getByRole("link", { name: "Get listed" }),
+  ).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await expectNoPrivateMarkers(await page.content());
   expect(consoleErrors).toEqual([]);
@@ -265,21 +262,46 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await page.goto("/");
   await page.getByRole("button", { name: "Refresh board" }).click();
   await expect(page.getByTestId("leaderboard")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Live leaderboard" }),
+  ).toBeVisible();
+  await expect(page.getByText("Board mode", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Category", { exact: true })).toHaveCount(0);
   const monsoonWebsite = page.getByRole("link", {
     name: "Visit Monsoon Studio website",
   });
   await expect(monsoonWebsite).toBeVisible();
   await expect(monsoonWebsite).toHaveAttribute("href", "/go/monsoon-studio");
+  expect(
+    await monsoonWebsite.evaluate((element) => {
+      const overlay = getComputedStyle(element);
+      return {
+        bottom: overlay.bottom,
+        left: overlay.left,
+        position: overlay.position,
+        right: overlay.right,
+        top: overlay.top,
+      };
+    }),
+  ).toEqual({
+    bottom: "0px",
+    left: "0px",
+    position: "absolute",
+    right: "0px",
+    top: "0px",
+  });
   await expect(
-    page.getByRole("link", { name: "More info about Monsoon Studio" }),
+    page.getByRole("link", { name: "See details for Monsoon Studio" }),
   ).toBeVisible();
   await expect(
     page.getByTestId("leaderboard").locator(".leaderboard-list > li"),
-  ).toHaveCount(10);
-  await expect(page.getByTestId("invitation-row")).toHaveCount(5);
+  ).toHaveCount(7);
+  await expect(page.getByTestId("invitation-row")).toHaveCount(1);
   await expect(
-    page.getByRole("link", { name: "Join the leaderboard" }),
-  ).toHaveCount(5);
+    page
+      .getByTestId("invitation-row")
+      .getByRole("link", { name: "Get listed" }),
+  ).toBeVisible();
   await expect(
     page
       .getByTestId("leaderboard")
@@ -289,20 +311,47 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   const firstCard = page
     .locator(".leaderboard-card")
     .filter({ has: monsoonWebsite });
+  await expect(firstCard.getByText("Leader", { exact: true })).toBeVisible();
+  await expect(firstCard.locator(".rank-podium")).toHaveCSS(
+    "color",
+    "rgb(154, 103, 18)",
+  );
+  await expect(page.locator(".leaderboard-card.rank-2 .rank-podium")).toHaveCSS(
+    "color",
+    "rgb(86, 92, 102)",
+  );
+  await expect(page.locator(".leaderboard-card.rank-3 .rank-podium")).toHaveCSS(
+    "color",
+    "rgb(138, 75, 43)",
+  );
+  await expect(page.getByTestId("tier-divider-3")).toContainText("Top 3");
+  await expect(page.getByTestId("tier-divider-20")).toHaveCount(0);
+  expect(
+    await page
+      .getByTestId("tier-divider-3")
+      .evaluate((element) =>
+        element.previousElementSibling?.classList.contains("rank-3"),
+      ),
+  ).toBe(true);
   await expect(
     firstCard.getByText("B2B & Services", { exact: true }),
   ).toBeVisible();
   await expect(
     firstCard.getByText("example.com", { exact: true }),
   ).toBeVisible();
-  await expect(firstCard.getByText("0 tracked clicks")).toBeVisible();
+  await expect(firstCard.getByText("0 clicks", { exact: true })).toBeVisible();
+  const detailsLink = firstCard.getByRole("link", {
+    name: "See details for Monsoon Studio",
+  });
+  await expect(detailsLink).not.toHaveClass(/button/);
+  await expect(detailsLink).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await expect(
-    page.getByRole("heading", { name: "What actually moved" }),
+    page.getByRole("heading", { name: "Recent moves" }),
   ).toBeVisible();
-  await expect(page.getByText("No simulated activity.")).toBeVisible();
+  await expect(page.getByText("Nothing simulated.")).toHaveCount(0);
   const rankAction = firstCard.getByRole("link", { name: /Take #1/ });
   await expect(rankAction).toBeVisible();
-  await expect(rankAction).toHaveCSS("background-color", "rgb(185, 83, 24)");
+  await expect(rankAction).toHaveCSS("background-color", "rgb(159, 45, 54)");
   const rankActionBox = await rankAction.boundingBox();
   expect(rankActionBox).not.toBeNull();
   expect(rankActionBox!.height).toBeGreaterThanOrEqual(44);
@@ -311,7 +360,7 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   const boardBox = await page.getByTestId("leaderboard").boundingBox();
   expect(boardBox).not.toBeNull();
   if (testInfo.project.name === "desktop-1440") {
-    expect(boardBox!.width).toBeLessThanOrEqual(1081);
+    expect(boardBox!.width).toBeLessThanOrEqual(1180);
     const amountFontSize = await firstCard
       .locator(".board-amount > .money")
       .evaluate((element) =>
@@ -322,9 +371,29 @@ test("low-population Main board is first-viewport, accessible, and private-data 
       testInfo.project.use.viewport?.height ?? 900,
     );
   }
+  if (testInfo.project.name === "mobile-390") {
+    const firstCardBox = await firstCard.boundingBox();
+    expect(firstCardBox).not.toBeNull();
+    expect(firstCardBox!.y).toBeLessThan(
+      testInfo.project.use.viewport?.height ?? 844,
+    );
+    expect(
+      await page
+        .locator(".category-tabs")
+        .evaluate((element) => element.scrollWidth > element.clientWidth),
+    ).toBe(true);
+    const activityList = page.locator(".activity-list");
+    if (await activityList.count()) {
+      expect(
+        await activityList.evaluate(
+          (element) => element.scrollWidth > element.clientWidth,
+        ),
+      ).toBe(false);
+    }
+  }
   await expectNoHorizontalOverflow(page);
   await expectNoPrivateMarkers(await page.content());
-  await expect(page).toHaveTitle("Main board");
+  await expect(page).toHaveTitle("Pay more. Rank higher.");
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
@@ -332,7 +401,6 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   for (const target of [
     page.getByRole("button", { name: "Refresh board" }),
     page.getByRole("link", { name: "Today", exact: true }).first(),
-    page.getByRole("link", { name: "More info about Monsoon Studio" }),
     rankAction,
   ]) {
     const box = await target.boundingBox();
@@ -430,7 +498,7 @@ test("Main, Today, category, and listing navigation use real public projections"
   expect(outbound.headers().location).toBe("https://example.com/monsoon");
   expect(outbound.headers()["cache-control"]).toContain("no-store");
   await page
-    .getByRole("link", { name: "More info about Monsoon Studio" })
+    .getByRole("link", { name: "See details for Monsoon Studio" })
     .click();
   await expect(page).toHaveURL(/\/l\/monsoon-studio$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -497,10 +565,10 @@ test("Main, Today, category, and listing navigation use real public projections"
 
   await page.goto("/how-it-works");
   await expect(
-    page.getByRole("heading", { level: 1, name: "Pay. Join the list." }),
+    page.getByRole("heading", { level: 1, name: "Pay more. Rank higher." }),
   ).toBeVisible();
   await expect(
-    page.getByText("No sign-up. No API. No nonsense."),
+    page.getByText("No votes. No algorithm. No account before checkout."),
   ).toBeVisible();
   await expect(page.getByRole("region", { name: "Three steps" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
@@ -696,7 +764,7 @@ test("signed mock webhook moves pending to confirmed and updates the board", asy
   await expect(
     page.getByRole("link", { name: "Visit Phase Five Studio" }),
   ).toBeVisible();
-  await expect(page).toHaveTitle(/Main board/);
+  await expect(page).toHaveTitle(/Pay more\. Rank higher\./);
   await expectNoPrivateMarkers(await page.content());
   await expectNoHorizontalOverflow(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

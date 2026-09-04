@@ -15,6 +15,8 @@ import {
 
 import { PUBLIC_CACHE_TAGS } from "./tags";
 
+const PUBLIC_ACTIVITY_PREVIEW_SIZE = 4;
+
 export async function getCachedPublicCategories() {
   "use cache";
   cacheLife("hours");
@@ -68,7 +70,7 @@ export async function getCachedPublicActivity() {
   "use cache: remote";
   cacheLife({ expire: 300, revalidate: 30, stale: 30 });
   cacheTag(PUBLIC_CACHE_TAGS.activity);
-  return listPublicActivity();
+  return listPublicActivity(PUBLIC_ACTIVITY_PREVIEW_SIZE);
 }
 
 export async function getCachedPublicSitemapEntries() {

@@ -9,7 +9,7 @@ import { readServerEnv } from "@/config/env/server";
 import { listActiveCategories } from "@/server/db/repositories/categories";
 import { listMainBoard } from "@/server/db/repositories/leaderboards";
 
-export const metadata: Metadata = { title: "Join the list" };
+export const metadata: Metadata = { title: "Get listed" };
 export default async function JoinPage({
   searchParams,
 }: {
@@ -33,7 +33,7 @@ export default async function JoinPage({
   return (
     <main id="main-content" className="join-main">
       <header className="join-intro">
-        <p className="eyebrow">Join the leaderboard</p>
+        <p className="eyebrow">Get listed</p>
         <h1>Put your link where people can see it.</h1>
         <p>
           Share the essentials, pay ₹499 or more, then wait while we verify the

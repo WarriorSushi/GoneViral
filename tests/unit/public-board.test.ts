@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import { moneyPaise } from "@/domain/money";
-import { buildPublicBoardCta } from "@/domain/public-board";
+import {
+  buildPublicBoardCta,
+  PUBLIC_BOARD_PAGE_SIZE,
+} from "@/domain/public-board";
 
 describe("Phase 3 public takeover CTA states", () => {
+  it("keeps public leaderboard pages intentionally compact", () => {
+    expect(PUBLIC_BOARD_PAGE_SIZE).toBe(10);
+  });
+
   it("uses the truthful ₹499 minimum for an empty board", () => {
     expect(buildPublicBoardCta({ state: "empty-board" })).toEqual({
       actionLabel: "See how to take the first spot",

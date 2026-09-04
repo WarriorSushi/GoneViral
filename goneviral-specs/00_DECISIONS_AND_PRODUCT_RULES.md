@@ -96,9 +96,11 @@ business, provider, database, and legal terms. Continue to avoid
 auction/bet/win language.
 
 Marketing copy should be short, confident, friendly, and lightly dry. The core
-public promise is: **Pay to be on the GoneViral.in leaderboard. Get seen.** Use
-**No sign-up. No API. No nonsense.** where the no-account first checkout and
-direct website link are being explained. Do not imply guaranteed traffic.
+public statement is: **Pay more. Rank higher.** Explain the mechanics with
+**No votes. No algorithm. No account before checkout.** where the no-account
+first checkout and direct website link are being explained, such as How it
+works and the paid-placement disclosures; do not repeat that explanation in the
+homepage hero. Do not imply guaranteed traffic.
 
 ---
 
