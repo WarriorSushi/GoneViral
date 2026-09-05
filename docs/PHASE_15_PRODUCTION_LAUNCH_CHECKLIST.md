@@ -43,9 +43,10 @@ lawyer or CA pre-approve these policies before launch.
    exactly once through Dodo, the provider event, payment record, immutable
    ledger, projections, board, email, and reconciliation.
 
-The pending Cloudflare daily cadence and remaining failure/staleness evidence
-are recorded separately. Per owner decision, they do not hold this work open
-and must not be polled or trigger a scheduler redeploy.
+Cloudflare daily cadence, the isolated scheduled-failure path, and owner receipt
+of its Sentry email are recorded separately and passed. Independent missing-run
+check-ins are deployed through Sentry; an intentionally missed run was not
+manufactured and does not hold this work open absent a relevant failure.
 
 ## Owner/provider/legal/accounting gates
 
@@ -201,7 +202,7 @@ details.
    later separately authorized Live Mode gate.
 8. Move the sole Cloudflare scheduler target from Preview to the Production
    base URL only after `goneviral.in` is verified and serving. Preserve the same
-   three UTC triggers and five fixed routes, and prevent duplicate Preview plus
+   four UTC triggers and five fixed routes, and prevent duplicate Preview plus
    Production business execution. A separate Worker is not required for this
    pre-launch gate.
 9. Preserve the verified backup architecture, confirm provider refunds remain
@@ -231,8 +232,8 @@ details.
 - external penetration testing and non-launch-critical hosted edge cases;
 - paid Vercel/Supabase upgrades beyond Vercel Pro, unless measured limits or an
   incident create a new launch blocker;
-- the pending Cloudflare daily/failure/staleness evidence, recorded separately
-  without polling or redeployment.
+- direct Sentry monitor-UI inspection and an intentionally missed-run email test;
+  do not manufacture either by breaking or redeploying the real scheduler.
 
 ## Authoritative references reviewed
 

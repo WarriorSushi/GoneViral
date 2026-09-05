@@ -25,17 +25,17 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                      | Status                                            | Evidence/source                                       |
-| ------------------------------------------ | ------------------------------------------------- | ----------------------------------------------------- |
-| Phases 0–14                                | Complete                                          | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging        | Frozen Preview RC; lifecycle verified             | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation       | Complete                                          | restore and 66/66 database evidence in the checkpoint |
-| Pre-launch scheduler hardening             | 1m/5m/hourly/daily deployed; natural 1m/5m passed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
-| Public-repository content audit            | Passed; owner already made repo public            | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Public-repository settings hardening       | Complete                                          | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 production-shaped pre-launch gate | Deployed; bounded certification active            | checkpoint exact resume point                         |
-| Commercial Production launch               | Not authorized/not complete                       | Phase 15 runbook                                      |
-| Phase 16                                   | Not started                                       | implementation plan                                   |
+| Scope                                      | Status                                                | Evidence/source                                       |
+| ------------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                                | Complete                                              | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging        | Frozen Preview RC; lifecycle verified                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation       | Complete                                              | restore and 66/66 database evidence in the checkpoint |
+| Pre-launch scheduler hardening             | Deployed; natural/failure/owner-alert evidence passed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Public-repository content audit            | Passed; owner already made repo public                | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Public-repository settings hardening       | Complete                                              | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 production-shaped pre-launch gate | Deployed; bounded certification active                | checkpoint exact resume point                         |
+| Commercial Production launch               | Not authorized/not complete                           | Phase 15 runbook                                      |
+| Phase 16                                   | Not started                                           | implementation plan                                   |
 
 Active integration branch: `codex/phase-15-staging`.
 
@@ -394,13 +394,12 @@ clean after the merge.
 
 ### Remaining Phase 15 gates
 
-- Cloudflare failure-notification delivery and independent owner-visible
-  stale/missing-run detection. Five-minute and hourly automatic cadence passed
-  by owner report, and daily cadence passed from read-only provider analytics.
-  Worker implementation, account/trigger/secret-name setup, reviewed guard
-  change, and activated deployment are complete. The five manual
-  protected-Preview route certifications are complete and need not be repeated
-  merely because the scheduler changes.
+- Independent missing-run detection is deployed through the Sentry outbox Cron
+  Monitor. Natural one-minute/five-minute cadence, earlier hourly/daily cadence,
+  one isolated scheduled failure, and owner receipt of its Sentry email all
+  passed. An intentionally missed run was not manufactured; provider-monitor UI
+  inspection and an actual missed-run email remain unverified optional evidence,
+  not a current launch blocker absent a relevant failure.
 - Optional deferred exhaustive visual/manual-device, keyboard,
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint. These are not current
@@ -476,9 +475,10 @@ Focused code, database, Worker, accessibility, desktop, and mobile checks pass.
 One isolated natural event then proved Cloudflare's failure status, the
 application's deliberate `503`, and a successful Sentry SDK flush. Its
 disposable Worker, trigger, and one-time secret were deleted immediately; the
-final bounded cleanup removes all temporary repository code. Sentry issue
-creation and owner email receipt remain unclaimed without provider-side or
-owner evidence. Daily automated backup remains deferred for the documented
+final bounded cleanup removes all temporary repository code. The owner then
+confirmed receipt of the expected Sentry email for that isolated event, closing
+the owner-visible failure-notification gate without recording recipient or
+message details. Daily automated backup remains deferred for the documented
 security/runtime reasons; the verified manual encrypted backup process remains
 authoritative. See
 `TRANSACTIONAL_EMAIL_OPERATIONS.md`,

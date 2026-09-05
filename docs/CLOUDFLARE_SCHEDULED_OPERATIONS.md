@@ -235,9 +235,10 @@ hourly and daily behavior. The isolated failure certification ran once at
 and marked the event failed, while Vercel recorded the fixed PII-free event with
 `sentryFlushed: true`. The disposable certification Worker, trigger, and secret
 were then deleted; a read-back confirms that Worker no longer exists. Sentry
-issue creation and owner email receipt remain unclaimed without provider-side
-or owner evidence. Do not change or redeploy the production scheduler merely
-to manufacture more evidence.
+issue creation was not inspected directly, but the owner subsequently confirmed
+receipt of the expected Sentry email for this isolated event. This closes the
+owner-visible failure-notification gate. Do not change or redeploy the
+production scheduler merely to manufacture more evidence.
 
 On 2026-09-04 the owner authorized the production-shaped pre-launch topology.
 The same sole Worker was updated in place to target

@@ -1525,8 +1525,10 @@ scheduled event, while Vercel recorded the fixed PII-free application event
 with `sentryFlushed: true`. The disposable Worker, trigger, and one-time secret
 were deleted immediately, and Cloudflare confirms that Worker no longer exists.
 The final bounded cleanup removes the temporary endpoint, verifier, Worker
-source, and tests. Sentry issue creation and owner email receipt remain
-unclaimed without provider-side or owner evidence.
+source, and tests. The owner subsequently confirmed receipt of the expected
+Sentry email for this isolated event. That owner report closes the owner-visible
+failure-notification gate without recording recipient, subject, link, or
+message contents; an actual deliberately missed Cron run was not manufactured.
 
 Daily backup automation remains explicitly deferred. The proven encrypted job
 requires an interactive passphrase and native dump/archive tooling, and there

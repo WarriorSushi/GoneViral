@@ -115,14 +115,15 @@ temporary internal endpoint, received the deliberate `503`, logged only
 `synthetic_scheduler_certification status=503`, and finished as a failed
 scheduled invocation. Vercel then recorded only the fixed PII-free application
 event with `sentryFlushed: true`. This proves the scheduler-to-application
-failure path and successful SDK flush; it does not by itself prove Sentry issue
-creation or owner email receipt. The disposable Worker had no public route,
-business credentials, storage, or other schedule and could not read or mutate
-payment, listing, email, Supabase, Dodo, Resend, or cleanup state. It and its
-one-time secret were deleted immediately after the event, and Cloudflare now
-reports that the Worker does not exist. The second and final bounded pull
-request removes the temporary endpoint, verifier, Worker source, and focused
-tests from the application repository.
+failure path and successful SDK flush. The owner subsequently confirmed receipt
+of the expected Sentry email, closing the owner-visible notification gate
+without storing recipient or message details. The disposable Worker had no
+public route, business credentials, storage, or other schedule and could not
+read or mutate payment, listing, email, Supabase, Dodo, Resend, or cleanup
+state. It and its one-time secret were deleted immediately after the event, and
+Cloudflare now reports that the Worker does not exist. The second and final
+bounded pull request removes the temporary endpoint, verifier, Worker source,
+and focused tests from the application repository.
 
 The selected Cloudflare Worker's fixed route map, safe logs, disabled guard,
 activation boundary, and missing-run limitation are documented in
