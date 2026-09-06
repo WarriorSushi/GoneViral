@@ -1547,3 +1547,18 @@ The owner subsequently standardized public terminology: the existing `/today`
 URL and internal contracts stay stable, but all visitor-facing labels now say
 `Daily`; the explanatory rule states that all-time ranking never resets and the
 daily ranking resets at midnight IST.
+
+## 2026-09-06 Final Owner UI/UX Polish checkpoint
+
+The owner inserted one final bounded Production UI/UX inspection immediately
+before launch-candidate freeze/certification and destructive pre-live cleanup.
+The owner will review current desktop and mobile Production surfaces and send
+screenshots or concrete comments. Only those requested micro-polish changes may
+be implemented, tested, reviewed, merged, deployed normally, and returned for
+owner re-review. No speculative redesign or architecture work is authorized.
+
+Until the owner explicitly approves the UI, do not freeze the launch candidate,
+start destructive cleanup, configure Dodo Live credentials, enable public live
+payments, upgrade infrastructure for this checkpoint, perform a real payment,
+commercially launch, or begin Phase 16. All existing payment, security, backup,
+rollback, and certification gates remain intact.

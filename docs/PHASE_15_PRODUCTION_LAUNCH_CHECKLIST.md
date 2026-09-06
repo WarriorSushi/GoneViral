@@ -147,10 +147,19 @@ details.
    disclosure. Historical `2026-08-29-v1`
    acceptances and in-flight attempts retain their stored versions; no payment
    or ledger history is reinterpreted or migrated.
-3. Freeze one release candidate after focused tests and the single required CI
+3. **Final Owner UI/UX Polish:** the owner inspects the current Production site
+   on desktop and mobile and supplies screenshots or concrete comments. Make
+   only the requested bounded spacing, sizing, alignment, wording, hierarchy,
+   responsive, card, button, confirmation-page, or similar micro-polish changes.
+   Use normal review, CI, deployment, and owner re-review. Do not redesign,
+   change architecture or product rules, perform pre-live cleanup, switch Dodo
+   to Live Mode, enable public payments, or freeze the release candidate. This
+   gate closes only on explicit owner UI approval and does not replace or weaken
+   any payment, security, backup, rollback, or certification check below.
+4. Freeze one release candidate after focused tests and the single required CI
    boundary. Batch policy, topology, and evidence documentation in that same
    candidate.
-4. Configure the exact Production values without exposing their contents. The
+5. Configure the exact Production values without exposing their contents. The
    owner explicitly permits controlled reuse of the existing Preview Supabase,
    Dodo Test Mode, Resend, Sentry, and scheduler-related values during
    pre-launch. Vercel Production must contain:
@@ -178,14 +187,14 @@ details.
 
 ### Final owner authorization boundary
 
-5. For the authorized pre-launch gate, keep Vercel Hobby and do not purchase or
+6. For the authorized pre-launch gate, keep Vercel Hobby and do not purchase or
    upgrade the plan. Immediately before commercial launch, upgrade the intended
    Vercel team to Pro. Keep one paid deploying seat where
    practical, inventory team-wide projects/add-ons, set the lowest acceptable
    on-demand budget, enable the available hard pause for production deployments,
    and verify web/email/SMS alerts. Record only sanitized plan and control
    evidence.
-6. Preserve and use the existing hosted `goneviral` Supabase project in Mumbai;
+7. Preserve and use the existing hosted `goneviral` Supabase project in Mumbai;
    do not create, reset, or duplicate it. Verify its reviewed migrations,
    schema/Data API boundaries and advisors, set exact
    `https://goneviral.in` Site URL and `/auth/callback`, configure verified
@@ -194,27 +203,27 @@ details.
    backup/staleness procedure. Supabase Free remains an owner-accepted risk:
    possible inactivity pause, no managed PITR, self-managed backup dependence,
    and recovery downtime.
-7. Configure and verify the Production email domain/subdomains, SPF, DKIM, and
+8. Configure and verify the Production email domain/subdomains, SPF, DKIM, and
    DMARC; application Resend webhook; the current Dodo Test Mode webhook and
    dynamic return URL; Turnstile production hostnames; Sentry project,
    source-map upload, environment, safe test event, issue alert, and owner
    notification destination. Replace and re-verify Dodo URLs again only at the
    later separately authorized Live Mode gate.
-8. Move the sole Cloudflare scheduler target from Preview to the Production
+9. Move the sole Cloudflare scheduler target from Preview to the Production
    base URL only after `goneviral.in` is verified and serving. Preserve the same
    four UTC triggers and five fixed routes, and prevent duplicate Preview plus
    Production business execution. A separate Worker is not required for this
    pre-launch gate.
-9. Preserve the verified backup architecture, confirm provider refunds remain
-   off, deploy Production with Dodo Test Mode and payments enabled, then attach
-   and verify `goneviral.in`, TLS,
-   canonical/robots/sitemap behavior, and DNS only under that authorization.
-10. Run the narrow Production-shaped smoke: public/legal pages, Auth magic
+10. Preserve the verified backup architecture, confirm provider refunds remain
+    off, deploy Production with Dodo Test Mode and payments enabled, then attach
+    and verify `goneviral.in`, TLS,
+    canonical/robots/sitemap behavior, and DNS only under that authorization.
+11. Run the narrow Production-shaped smoke: public/legal pages, Auth magic
     link, owner/admin authorization, Storage, Resend delivery/webhook,
     Turnstile, Sentry alert delivery, Dodo webhook authentication without a
     fabricated event, Cloudflare scheduled-route authorization, operational
     health/reconciliation reads, backup freshness, and rollback/pause action.
-11. Before Dodo Live Mode, obtain one destructive-cleanup authorization, use the
+12. Before Dodo Live Mode, obtain one destructive-cleanup authorization, use the
     repository cleanup command to remove all synthetic/Test Mode business data,
     and verify the board and every ranking-affecting Test Mode financial artifact
     are clean while schema, migrations, configuration, secrets, and required
