@@ -745,7 +745,9 @@ The public board contains none of the synthetic listing names and the sitemap
 has no listing URL. The command then hung while repeatedly relisting the one
 intentionally retained Auth user; its exact process tree was terminated after
 the destructive work, and cleanup must not be rerun. The archive hash still
-matches, and the missing verified report now exists beside it. A one-condition
-termination fix prevents recurrence and is the only remaining cleanup-code
-follow-up before merge. Dodo Live Mode and a real transaction remain separately
-gated.
+matches, and the missing verified report now exists beside it. The one-condition
+termination fix preventing recurrence shipped through pull request `#48`, CI
+run `34053260342`, merge
+`6eacd31c16f66e16e5c6f04a3c6017a36d15d08b`, and READY Production deployment
+`dpl_5v7H3YqaMrZKUx3NgHX3yjgPxwD6`. Pre-live cleanup is complete and closed.
+Dodo Live Mode and a real transaction remain separately gated.
