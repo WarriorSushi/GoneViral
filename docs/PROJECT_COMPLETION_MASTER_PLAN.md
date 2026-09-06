@@ -631,10 +631,16 @@ not weakened. Ranking, payments, database, provider, and hosted data are
 unchanged. The owner then approved the resulting Production UI, closing the
 final UI gate and freezing this exact application tree as the launch candidate.
 
-A read-only backup-freshness check immediately after the freeze found five
-encrypted archives. The newest remains
-`D:\GoneViral-Backups\20260904T201904Z-fndssapjkaicxzeruuvv.7z`: its external
-SHA-256 matches, no plaintext backup directory exists, and no matching Windows
-scheduled task exists, but it is 42.7 hours old and therefore outside the
-cleanup command's less-than-24-hour requirement. The next owner-only action is
-one fresh `pnpm ops:backup:hosted` run with the passphrase entered privately.
+A read-only backup-freshness check immediately after the freeze first found the
+newest archive 42.7 hours old. The owner then ran `pnpm ops:backup:hosted` in
+their own terminal and reported successful encrypted-archive verification. The
+new archive
+`D:\GoneViral-Backups\20260906T152908Z-fndssapjkaicxzeruuvv.7z` is 80,512
+bytes and tied to exact source commit
+`932b1694b8072224fe8d18dc45b2844c98510062`. Independent local verification
+found the archive and sidecar present, the recomputed SHA-256 matching, zero
+matching plaintext directories, and freshness inside the cleanup command's
+24-hour requirement. No matching Windows scheduled task exists, so the accepted
+manual cadence remains authoritative. Copying this new archive and sidecar to
+private off-device storage is not yet owner-confirmed; no account, location,
+link, credential, or passphrase is recorded.

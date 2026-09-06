@@ -1629,11 +1629,17 @@ Ranking, payment, database, provider configuration, hosted data, cleanup, and
 Phase 16 remain unchanged. The owner approved the resulting Production UI, so
 this exact application tree is now frozen and the final UI gate is closed.
 
-The first post-freeze backup-freshness check was read-only. Five encrypted
-archives exist; the newest is
-`D:\GoneViral-Backups\20260904T201904Z-fndssapjkaicxzeruuvv.7z`, 77,952 bytes,
-last written `2026-09-04T20:20:18.9970020Z`. Its external SHA-256 matches, zero
-plaintext backup directories exist, and zero matching Windows scheduled tasks
-exist. At 42.7 hours old it fails the cleanup command's less-than-24-hour gate.
-Codex stopped before the interactive backup command; the owner must run it in
-their terminal and keep the passphrase outside chat and shell history.
+The first post-freeze backup-freshness check was read-only and found the newest
+archive 42.7 hours old. Codex stopped before the interactive command. The owner
+then ran `pnpm ops:backup:hosted` in their terminal, entered the passphrase only
+through 7-Zip's masked prompts, and reported `Everything is Ok` plus successful
+encrypted-archive verification. The new archive is
+`D:\GoneViral-Backups\20260906T152908Z-fndssapjkaicxzeruuvv.7z`, 80,512 bytes,
+last written `2026-09-06T15:30:32.3144071Z`, with its matching `.7z.sha256` and
+exact source commit `932b1694b8072224fe8d18dc45b2844c98510062`. An independent
+local check confirmed both files are present, the recomputed SHA-256 matches,
+the corresponding plaintext directory count is zero, and the archive is inside
+the cleanup command's 24-hour freshness requirement. Zero matching Windows
+scheduled tasks exist, so the accepted manual cadence remains authoritative.
+Copying this new pair to private off-device storage is not yet owner-confirmed;
+no account, location, link, credential, or passphrase is recorded.

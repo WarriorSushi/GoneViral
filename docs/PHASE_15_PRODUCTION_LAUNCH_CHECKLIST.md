@@ -208,7 +208,9 @@ details.
    production admin with MFA/AAL2, and establish the accepted encrypted daily
    backup/staleness procedure. Supabase Free remains an owner-accepted risk:
    possible inactivity pause, no managed PITR, self-managed backup dependence,
-   and recovery downtime.
+   and recovery downtime. The 6 September post-freeze encrypted archive and
+   sidecar pass local freshness, integrity, and plaintext-retention checks;
+   owner confirmation of the new pair's private off-device copy remains open.
 8. Configure and verify the Production email domain/subdomains, SPF, DKIM, and
    DMARC; application Resend webhook; the current Dodo Test Mode webhook and
    dynamic return URL; Turnstile production hostnames; Sentry project,
