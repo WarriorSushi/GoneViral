@@ -1590,9 +1590,19 @@ API isolation, database lint/advisors, 27-asset client-build leakage scan, and
 review. The design detector reported only pre-existing symbol font fallbacks
 and the explicitly owner-required gradient treatment.
 
-No hosted database, Production deployment, provider setting, Safety Control,
-credential, synthetic Production listing, scheduler, or cleanup state changed.
-No real payment was made. Dodo remains in Test Mode. Required PR CI, hosted
-migration-before-application ordering, protected merge, Production deployment,
-and owner visual approval remain pending. Cleanup and Phase 16 remain blocked
-until that explicit owner approval.
+The additive hosted migration was applied before the application deployment.
+Pull request `#35` passed required CI run `34034879834`, squash-merged as
+`c9950a394ebb11f528b5185cde1409a91a6d90be`, and reached READY Production
+deployment `dpl_GkUuMckVFKWSdzZMgtBtmR3qpXBc`. Public route smoke checks passed
+and the deployment error scan was clean. No real payment was made; provider
+settings, Safety Controls, credentials, synthetic Production listings,
+schedulers, and cleanup remain unchanged. Dodo remains in Test Mode. Cleanup
+and Phase 16 remain blocked until explicit owner approval.
+
+The owner's first Production review requested white rather than dark text on
+the exact `#E57255` coral buttons. After being shown that Axe measures 3.05:1
+for the resulting small white labels, below the 4.5:1 AA threshold, the owner
+explicitly insisted on the exact combination. The focused CSS correction is
+therefore an informed owner-approved contrast exception. The accessibility
+test remains unchanged and continues to report the exception rather than being
+weakened. Ranking, payment, hosted data, and provider state are unchanged.

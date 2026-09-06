@@ -600,8 +600,15 @@ credential, or cleanup architecture changed.
 Local verification passes: formatting, lint, TypeScript, 251 unit tests, 70
 database tests from all 11 migrations, schema/Data API isolation, database lint
 and advisors, client-build leakage verification, and 36 Production-browser
-checks across 1440×900, 390×844, and 360×800. No real payment or hosted state
-change occurred. Required pull-request CI, the additive hosted migration,
-protected merge, Production deployment, and owner visual approval remain next;
-Dodo remains in Test Mode, synthetic Production listings remain untouched,
-cleanup has not started, and Phase 16 has not started.
+checks across 1440×900, 390×844, and 360×800. The additive hosted migration was
+applied, pull request `#35` passed required CI run `34034879834`, squash-merged
+as `c9950a394ebb11f528b5185cde1409a91a6d90be`, and reached READY Production
+deployment `dpl_GkUuMckVFKWSdzZMgtBtmR3qpXBc`. Dodo remains in Test Mode,
+synthetic Production listings remain untouched, cleanup has not started, and
+Phase 16 has not started.
+
+The owner then requested and explicitly insisted on white text on the exact
+`#E57255` coral buttons after being shown the measured 3.05:1 contrast against
+the 4.5:1 normal-text requirement. This is an informed owner-approved contrast
+exception; the automated accessibility test remains unchanged and continues to
+report it rather than concealing the tradeoff.

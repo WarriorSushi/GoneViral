@@ -980,13 +980,13 @@ textarea:focus-visible {
 .button-primary {
   padding: 10px 17px;
   background: var(--signal);
-  color: #32140f;
+  color: #fff;
   box-shadow: 0 4px 14px rgb(126 48 32 / 0.16);
 }
 
 .button-primary:hover {
   background: var(--signal-hover);
-  color: #32140f;
+  color: #fff;
   transform: translateY(-1px);
 }
 
@@ -2220,14 +2220,14 @@ textarea:focus-visible {
   border-radius: 9px;
   background: var(--rank-action);
   box-shadow: 0 4px 12px rgb(125 32 43 / 0.18);
-  color: #32140f;
+  color: #fff;
   font-size: 0.76rem;
   white-space: nowrap;
 }
 
 .button-quote:hover {
   background: var(--rank-action-hover);
-  color: #200b08;
+  color: #fff;
   box-shadow: 0 7px 18px rgb(126 48 32 / 0.25);
 }
 
@@ -2288,14 +2288,14 @@ textarea:focus-visible {
   border-radius: 9px;
   background: var(--rank-action);
   box-shadow: 0 4px 12px rgb(125 32 43 / 0.16);
-  color: #32140f;
+  color: #fff;
   font-size: 0.76rem;
   white-space: nowrap;
 }
 
 .button-claim-spot:hover {
   background: var(--rank-action-hover);
-  color: #200b08;
+  color: #fff;
   transform: translateY(-1px);
 }
 
