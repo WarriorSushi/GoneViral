@@ -578,3 +578,30 @@ configuration, Safety Control, or Production state had changed. The approved
 implementation later landed through pull request `#28`, passed required CI,
 squash-merged as `3299fef13770f3ce7657ca0045a31540d9a30dbf`, deployed READY
 to Production, and passed the bounded live smoke recorded above.
+
+## 2026-09-06 final pre-launch correction implementation
+
+The owner authorized one bounded backend correction alongside the final UI
+pass: Daily takeover quotes use the target's current Asia/Kolkata business-date
+score, while ordinary All-time raises retain the existing original-sponsorship
+minimum. New-listing Daily quotes use the ₹499 floor and target Daily score plus
+₹1; existing-listing Daily quotes subtract that listing's current Daily score
+before applying the same floor. The server re-resolves the eligible target,
+business date, score, and required amount, and persists immutable scope/date
+snapshots. Confirmed payments still use the existing single ledger path and add
+to both lifetime and current-day totals.
+
+The same focused pass updates the approved public copy, Daily/All-time money
+hierarchy, mobile cards, leaderboard actions, Join and listing-detail paths,
+and the canonical target resolver so eligible targets beyond the first 50 do
+not disappear. No provider, refund, ledger, reconciliation, scheduler, backup,
+credential, or cleanup architecture changed.
+
+Local verification passes: formatting, lint, TypeScript, 251 unit tests, 70
+database tests from all 11 migrations, schema/Data API isolation, database lint
+and advisors, client-build leakage verification, and 36 Production-browser
+checks across 1440×900, 390×844, and 360×800. No real payment or hosted state
+change occurred. Required pull-request CI, the additive hosted migration,
+protected merge, Production deployment, and owner visual approval remain next;
+Dodo remains in Test Mode, synthetic Production listings remain untouched,
+cleanup has not started, and Phase 16 has not started.

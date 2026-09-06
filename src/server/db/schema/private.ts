@@ -117,6 +117,10 @@ export const paymentAttempts = privateSchema.table(
     amountPaise: bigint("amount_paise", { mode: "bigint" }).notNull(),
     currency: text("currency").default("INR").notNull(),
     policyVersion: text("policy_version").notNull(),
+    rankingScope: text("ranking_scope").default("all_time").notNull(),
+    targetBusinessDateSnapshot: date("target_business_date_snapshot", {
+      mode: "string",
+    }),
     minimumRequiredPaiseSnapshot: bigint("minimum_required_paise_snapshot", {
       mode: "bigint",
     }).notNull(),
@@ -191,6 +195,14 @@ export const paymentAttempts = privateSchema.table(
       sql`${table.amountPaise} > 0 and ${table.amountPaise} % 100 = 0`,
     ),
     check("payment_attempts_currency_inr", sql`${table.currency} = 'INR'`),
+    check(
+      "payment_attempts_ranking_scope_valid",
+      sql`${table.rankingScope} in ('all_time', 'daily')`,
+    ),
+    check(
+      "payment_attempts_ranking_scope_snapshot_valid",
+      sql`(${table.rankingScope} = 'all_time' and ${table.targetBusinessDateSnapshot} is null) or (${table.rankingScope} = 'daily' and ${table.targetListingIdSnapshot} is not null and ${table.targetRankSnapshot} is not null and ${table.targetTotalPaiseSnapshot} is not null and ${table.targetBusinessDateSnapshot} is not null)`,
+    ),
     check(
       "payment_attempts_phone_e164",
       sql`${table.customerPhoneE164} is null or ${table.customerPhoneE164} ~ '^\+[1-9][0-9]{7,14}$'`,

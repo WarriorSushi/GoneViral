@@ -87,6 +87,7 @@ function requestHash(input: JoinInput, logoSha256: string | null): string {
         refundPolicyVersion: REFUND_POLICY_VERSION,
         tagline: input.tagline,
         targetSlug: input.targetSlug,
+        targetScope: input.targetScope,
         termsVersion: TERMS_VERSION,
       }),
     )
@@ -259,14 +260,42 @@ export async function createGuestCheckout(input: {
       LIMIT 1
     `;
       if (!category[0]) return { invalidCategory: true } as const;
+      const [clock] = await transactionSql<{ businessDate: string }[]>`
+        SELECT (transaction_timestamp() AT TIME ZONE 'Asia/Kolkata')::date::text
+          AS "businessDate"
+      `;
+      if (!clock) throw new Error("transaction_clock_missing");
       const [target] = input.form.targetSlug
-        ? await transactionSql<{ id: string; rank: bigint; total: bigint }[]>`
+        ? input.form.targetScope === "daily"
+          ? await transactionSql<{ id: string; rank: bigint; total: bigint }[]>`
+            WITH ranked AS (
+              SELECT l.id, l.slug, d.net_amount_paise AS total,
+                row_number() OVER (ORDER BY d.net_amount_paise DESC,
+                  d.total_reached_at ASC, l.id ASC) AS rank
+              FROM app.listing_daily_totals d
+              JOIN app.listings l ON l.id = d.listing_id
+              JOIN app.categories c ON c.id = l.category_id
+              WHERE d.business_date = ${clock.businessDate}
+                AND d.net_amount_paise > 0
+                AND l.lifecycle_status = 'active'
+                AND l.moderation_status = 'clear'
+                AND l.confirmed_total_paise > 0
+                AND l.destination_url ~ '^https://'
+                AND c.is_active = true
+            ) SELECT id, total, rank FROM ranked WHERE slug = ${input.form.targetSlug}
+          `
+          : await transactionSql<{ id: string; rank: bigint; total: bigint }[]>`
           WITH ranked AS (
-            SELECT id, slug, confirmed_total_paise AS total,
-              row_number() OVER (ORDER BY confirmed_total_paise DESC,
-                current_total_reached_at ASC, id ASC) AS rank
-            FROM app.listings WHERE lifecycle_status = 'active'
-              AND moderation_status = 'clear' AND confirmed_total_paise > 0
+            SELECT l.id, l.slug, l.confirmed_total_paise AS total,
+              row_number() OVER (ORDER BY l.confirmed_total_paise DESC,
+                l.current_total_reached_at ASC, l.id ASC) AS rank
+            FROM app.listings l
+            JOIN app.categories c ON c.id = l.category_id
+            WHERE l.lifecycle_status = 'active'
+              AND l.moderation_status = 'clear'
+              AND l.confirmed_total_paise > 0
+              AND l.destination_url ~ '^https://'
+              AND c.is_active = true
           ) SELECT id, total, rank FROM ranked WHERE slug = ${input.form.targetSlug}
         `
         : [];
@@ -342,6 +371,7 @@ export async function createGuestCheckout(input: {
         public_id, application_idempotency_key, provider,
         provider_environment, listing_id, purpose, state, amount_paise,
         currency, policy_version, minimum_required_paise_snapshot,
+        ranking_scope, target_business_date_snapshot,
         listing_total_paise_snapshot, pending_owner_id,
         target_listing_id_snapshot, target_rank_snapshot,
         target_total_paise_snapshot,
@@ -352,7 +382,9 @@ export async function createGuestCheckout(input: {
         ${attemptPublicId}, ${input.form.applicationIdempotencyKey}, 'dodo',
         ${input.provider.environment}, ${listingRows[0].id},
         'initial_sponsorship', 'provider_order_pending', ${input.form.amountPaise},
-        'INR', ${input.form.policyVersion}, ${INITIAL_SPONSORSHIP_MIN_PAISE}, 0,
+        'INR', ${input.form.policyVersion}, ${INITIAL_SPONSORSHIP_MIN_PAISE},
+        ${input.form.targetScope},
+        ${input.form.targetScope === "daily" ? clock.businessDate : null}, 0,
         ${ownerRows[0]!.id}, ${target?.id ?? null}, ${target?.rank ?? null},
         ${target?.total ?? null}, ${intentHash}, ${input.form.phone}, ${TERMS_VERSION},
         ${PRIVACY_VERSION}, ${REFUND_POLICY_VERSION}, ${CONTENT_POLICY_VERSION},

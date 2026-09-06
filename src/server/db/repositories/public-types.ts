@@ -1,3 +1,5 @@
+import type { RankingScope } from "@/domain/ranking";
+
 /** Explicitly browser-safe category shape. Database rows are never exported. */
 export interface PublicCategory {
   readonly name: string;
@@ -20,8 +22,10 @@ export interface PublicListingIdentity {
 }
 
 export interface PublicTakeoverQuote {
+  readonly businessDate: string | null;
   readonly estimatedAt: string;
   readonly policyVersion: string;
+  readonly rankingScope: RankingScope;
   readonly requiredPaymentPaise: string;
   readonly targetRank: string;
   readonly targetTotalPaise: string;

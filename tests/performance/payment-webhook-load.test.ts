@@ -56,6 +56,7 @@ function joinInput(destinationUrl: string): JoinInput {
     policyVersion: POLICY_VERSION,
     tagline: "Strictly local synthetic payment load verification",
     targetSlug: null,
+    targetScope: "all_time",
     turnstileToken: `local-pass-${id}`,
   };
 }

@@ -4,8 +4,12 @@ import { connection } from "next/server";
 
 import { readPublicEnv } from "@/config/env/public";
 import { readServerEnv } from "@/config/env/server";
+import { moneyPaise } from "@/domain/money";
+import { INITIAL_SPONSORSHIP_MIN_PAISE } from "@/domain/policy";
+import { calculateTakeoverQuote, isRankingScope } from "@/domain/ranking";
+import { toIstBusinessDate } from "@/domain/today";
+import { getCachedPublicListingDetail } from "@/server/cache/public-read-model";
 import { listActiveCategories } from "@/server/db/repositories/categories";
-import { listMainBoard } from "@/server/db/repositories/leaderboards";
 
 import { JoinForm } from "./join-form";
 
@@ -14,22 +18,44 @@ export async function JoinPageContent({
   searchParams,
 }: {
   readonly presentation?: "modal" | "page";
-  readonly searchParams: Promise<{ target?: string }>;
+  readonly searchParams: Promise<{ scope?: string; target?: string }>;
 }) {
   await connection();
-  const [categories, publicEnvironment, serverEnvironment, query, board] =
+  const [categories, publicEnvironment, serverEnvironment, query] =
     await Promise.all([
       listActiveCategories(),
       Promise.resolve(readPublicEnv()),
       Promise.resolve(readServerEnv()),
       searchParams,
-      listMainBoard({ cursor: null, limit: 50 }),
     ]);
   const localTurnstileToken =
     serverEnvironment.TURNSTILE_MODE === "mock"
       ? `local-pass-${randomUUID()}`
       : undefined;
-  const target = board.entries.find((entry) => entry.slug === query.target);
+  const targetScope =
+    query.target && query.scope && isRankingScope(query.scope)
+      ? query.scope
+      : "all_time";
+  const target = query.target
+    ? await getCachedPublicListingDetail(
+        query.target,
+        toIstBusinessDate(new Date()),
+      )
+    : null;
+  const targetScore =
+    targetScope === "daily"
+      ? target?.todayNetPaise
+      : target?.confirmedTotalPaise;
+  const targetRank =
+    targetScope === "daily" ? target?.todayRank : target?.currentMainRank;
+  const quote =
+    target && targetScore && targetRank
+      ? calculateTakeoverQuote({
+          listingCurrentTotalPaise: moneyPaise(0n),
+          minimumRequiredPaise: moneyPaise(INITIAL_SPONSORSHIP_MIN_PAISE),
+          targetTotalPaise: moneyPaise(BigInt(targetScore)),
+        })
+      : null;
   const content = (
     <>
       <header
@@ -44,31 +70,28 @@ export async function JoinPageContent({
           id={presentation === "modal" ? "join-dialog-title" : undefined}
           tabIndex={presentation === "modal" ? -1 : undefined}
         >
-          Put your link where people can see it.
+          Get on the board.
         </h1>
         <p>
-          Share the essentials, pay ₹499 or more, then wait while we verify the
-          payment.
+          Add your listing and choose an amount from ₹499. Placement starts
+          after payment is confirmed.
         </p>
       </header>
       <JoinForm
-        key={target?.slug ?? "new-listing"}
+        key={quote ? `${target?.slug}-${targetScope}` : "new-listing"}
         categories={categories}
         idempotencyKey={randomUUID()}
         localTurnstileToken={localTurnstileToken}
         turnstileSiteKey={publicEnvironment.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
         initialAmountRupees={
-          target
-            ? (
-                BigInt(target.takeoverQuote.requiredPaymentPaise) / 100n
-              ).toString()
-            : "499"
+          quote ? (quote.requiredPaymentPaise / 100n).toString() : "499"
         }
-        {...(target
+        {...(target && quote && targetRank
           ? {
               takeoverTarget: {
                 name: target.name,
-                rank: target.rank,
+                rank: targetRank,
+                scope: targetScope,
                 slug: target.slug,
               },
             }

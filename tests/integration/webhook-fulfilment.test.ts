@@ -55,12 +55,14 @@ function joinInput(destinationUrl: string): JoinInput {
     policyVersion: POLICY_VERSION,
     tagline: "Authoritative Dodo webhook integration verification",
     targetSlug: null,
+    targetScope: "all_time",
     turnstileToken: `local-pass-${id}`,
   };
 }
 
 async function createAttempt(
   providerEnvironment: "live_mode" | "mock" | "test_mode" = "mock",
+  amountPaise = 49_900n,
 ) {
   const mockProvider = new MockDodoProvider("http://localhost:3000");
   const provider =
@@ -74,7 +76,10 @@ async function createAttempt(
           retrieveCheckout: mockProvider.retrieveCheckout.bind(mockProvider),
         };
   const checkout = await createGuestCheckout({
-    form: joinInput(`https://phase5-${randomUUID()}.example.com`),
+    form: {
+      ...joinInput(`https://phase5-${randomUUID()}.example.com`),
+      amountPaise: moneyPaise(amountPaise),
+    },
     provider,
     remoteIp: `integration-${randomUUID()}`,
     siteUrl: "http://localhost:3000",
@@ -94,11 +99,12 @@ async function createAttempt(
   return { ...attempt, publicId: checkout.publicId };
 }
 
-async function createOwnedActiveListing() {
-  const initial = await createAttempt();
+async function createOwnedActiveListing(amountPaise = 49_900n) {
+  const initial = await createAttempt("mock", amountPaise);
   await processEvent(
     `evt_${randomUUID()}`,
     paymentEvent({
+      amountPaise,
       orderId: initial.provider_order_id,
       paymentId: `pay_${randomUUID()}`,
       publicId: initial.publicId,
@@ -149,6 +155,7 @@ async function createRaise(
       applicationIdempotencyKey: randomUUID(),
       phone: "+919876543210",
       targetSlug: null,
+      targetScope: "all_time",
     },
     listingSlug: owner.slug,
     provider,
@@ -602,6 +609,131 @@ describe("Phase 5 locked Dodo webhook fulfilment", () => {
     });
   });
 
+  it("prices and fulfils an explicit Daily raise without changing ordinary raise rules", async () => {
+    const target = await createOwnedActiveListing(60_000n);
+    const buyer = await createOwnedActiveListing(49_900n);
+    const provider = new MockDodoProvider("http://localhost:3000");
+    const form = {
+      amountPaise: moneyPaise(49_900n),
+      applicationIdempotencyKey: randomUUID(),
+      phone: "+919876543210",
+      targetScope: "daily" as const,
+      targetSlug: target.slug,
+    };
+
+    await expect(
+      createRaiseCheckout({
+        email: buyer.email,
+        form: { ...form, amountPaise: moneyPaise(49_800n) },
+        listingSlug: buyer.slug,
+        provider,
+        siteUrl: "http://localhost:3000",
+        userId: buyer.userId,
+      }),
+    ).resolves.toMatchObject({ kind: "rejected" });
+
+    const checkout = await createRaiseCheckout({
+      email: buyer.email,
+      form,
+      listingSlug: buyer.slug,
+      provider,
+      siteUrl: "http://localhost:3000",
+      userId: buyer.userId,
+    });
+    expect(checkout.kind).toBe("checkout");
+    if (checkout.kind !== "checkout") return;
+
+    const [attempt] = await getSqlClient()<
+      {
+        id: string;
+        minimum: bigint;
+        provider_order_id: string;
+        ranking_scope: string;
+        target_business_date_snapshot: string;
+        target_total: bigint;
+      }[]
+    >`
+      SELECT id, provider_order_id, ranking_scope,
+             target_business_date_snapshot::text,
+             minimum_required_paise_snapshot AS minimum,
+             target_total_paise_snapshot AS target_total
+      FROM private.payment_attempts WHERE public_id = ${checkout.publicId}
+    `;
+    expect(attempt).toMatchObject({
+      minimum: 49_900n,
+      ranking_scope: "daily",
+      target_total: 60_000n,
+    });
+    expect(attempt?.target_business_date_snapshot).toMatch(
+      /^\d{4}-\d{2}-\d{2}$/,
+    );
+    if (!attempt?.provider_order_id)
+      throw new Error("Daily raise attempt missing.");
+
+    await expect(
+      processEvent(
+        `evt_${randomUUID()}`,
+        paymentEvent({
+          amountPaise: 49_900n,
+          orderId: attempt.provider_order_id,
+          paymentId: `pay_${randomUUID()}`,
+          publicId: checkout.publicId,
+        }),
+      ),
+    ).resolves.toMatchObject({ kind: "processed" });
+
+    const [totals] = await getSqlClient()<
+      { daily: bigint; lifetime: bigint }[]
+    >`
+      SELECT listing.confirmed_total_paise AS lifetime,
+             daily.net_amount_paise AS daily
+      FROM app.listings listing
+      JOIN app.listing_daily_totals daily ON daily.listing_id = listing.id
+      WHERE listing.id = ${buyer.listing_id}
+    `;
+    expect(totals).toEqual({ daily: 99_800n, lifetime: 99_800n });
+  });
+
+  it("re-resolves a Daily target and ignores a new listing's tampered amount", async () => {
+    const target = await createOwnedActiveListing(60_000n);
+    const provider = new MockDodoProvider("http://localhost:3000");
+    const dependencies = {
+      provider,
+      remoteIp: `integration-${randomUUID()}`,
+      siteUrl: "http://localhost:3000",
+      turnstile: new MockTurnstileVerifier(),
+    };
+    const dailyForm = (amountPaise: bigint) => ({
+      ...joinInput(`https://daily-challenger-${randomUUID()}.example.com`),
+      amountPaise: moneyPaise(amountPaise),
+      targetScope: "daily" as const,
+      targetSlug: target.slug,
+    });
+
+    await expect(
+      createGuestCheckout({ ...dependencies, form: dailyForm(60_000n) }),
+    ).resolves.toMatchObject({ kind: "rejected" });
+    const checkout = await createGuestCheckout({
+      ...dependencies,
+      form: dailyForm(60_100n),
+    });
+    expect(checkout.kind).toBe("checkout");
+    if (checkout.kind !== "checkout") return;
+
+    const [attempt] = await getSqlClient()<
+      { minimum: bigint; ranking_scope: string; target_total: bigint }[]
+    >`
+      SELECT ranking_scope, minimum_required_paise_snapshot AS minimum,
+             target_total_paise_snapshot AS target_total
+      FROM private.payment_attempts WHERE public_id = ${checkout.publicId}
+    `;
+    expect(attempt).toEqual({
+      minimum: 49_900n,
+      ranking_scope: "daily",
+      target_total: 60_000n,
+    });
+  });
+
   it("rejects below-minimum raises at creation and fulfilment", async () => {
     const owner = await createOwnedActiveListing();
     const provider = new MockDodoProvider("http://localhost:3000");
@@ -612,6 +744,7 @@ describe("Phase 5 locked Dodo webhook fulfilment", () => {
         applicationIdempotencyKey: randomUUID(),
         phone: "+919876543210",
         targetSlug: null,
+        targetScope: "all_time",
       },
       listingSlug: owner.slug,
       provider,
@@ -654,6 +787,7 @@ describe("Phase 5 locked Dodo webhook fulfilment", () => {
           applicationIdempotencyKey: randomUUID(),
           phone: "+919876543210",
           targetSlug: null,
+          targetScope: "all_time",
         },
         listingSlug: owner.slug,
         provider,

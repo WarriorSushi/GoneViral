@@ -12,6 +12,7 @@ import { publishPreparedGuestLogoForAttempt } from "@/server/storage/guest-logo-
 import { SupabaseLogoStorage } from "@/server/storage/logo-storage";
 import { logger } from "@/server/telemetry/logger";
 import { moneyPaise } from "@/domain/money";
+import { INITIAL_SPONSORSHIP_MIN_PAISE } from "@/domain/policy";
 import { calculateMinimumRaise } from "@/domain/ranking";
 import type { PaymentEnvironment } from "@/server/payments/provider";
 
@@ -52,8 +53,11 @@ type AttemptRow = {
   provider_order_id: string | null;
   public_id: string;
   purpose: string;
+  ranking_scope: string;
   requested_by_user_id: string | null;
   state: string;
+  target_business_date_snapshot: string | null;
+  target_listing_id_snapshot: string | null;
 };
 
 type ProviderPaymentRow = {
@@ -208,7 +212,8 @@ export async function processDodoWebhook(input: {
       SELECT id, public_id, provider, provider_environment, provider_order_id,
              listing_id, purpose, state, amount_paise, currency, policy_version,
              minimum_required_paise_snapshot, pending_owner_id,
-             requested_by_user_id,
+             requested_by_user_id, ranking_scope,
+             target_business_date_snapshot, target_listing_id_snapshot,
              fulfilled_ledger_entry_id
       FROM private.payment_attempts
       WHERE public_id = ${payment.attemptPublicId}
@@ -400,6 +405,7 @@ export async function processDodoWebhook(input: {
       );
     const isInitial = attempt.purpose === "initial_sponsorship";
     const isRaise = attempt.purpose === "raise";
+    const isDailyRaise = isRaise && attempt.ranking_scope === "daily";
     const raiseMinimum =
       listing.original_sponsorship_paise === null
         ? null
@@ -413,8 +419,14 @@ export async function processDodoWebhook(input: {
         (listing.original_sponsorship_paise === null ||
           attempt.requested_by_user_id === null ||
           raiseMinimum === null ||
-          attempt.minimum_required_paise_snapshot !== raiseMinimum ||
-          payment.amountPaise < raiseMinimum))
+          (isDailyRaise
+            ? attempt.target_listing_id_snapshot === null ||
+              attempt.target_business_date_snapshot === null ||
+              attempt.minimum_required_paise_snapshot <
+                INITIAL_SPONSORSHIP_MIN_PAISE
+            : attempt.ranking_scope !== "all_time" ||
+              attempt.minimum_required_paise_snapshot !== raiseMinimum ||
+              payment.amountPaise < raiseMinimum)))
     ) {
       return quarantineEvent(
         isRaise ? "raise_fulfilment_invalid" : "initial_fulfilment_invalid",

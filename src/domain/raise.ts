@@ -1,5 +1,6 @@
 import { parseWholeInr, type MoneyPaise } from "./money";
 import { INITIAL_SPONSORSHIP_MAX_PAISE } from "./policy";
+import { isRankingScope, type RankingScope } from "./ranking";
 
 export type RaiseField = "amount" | "form" | "phone" | "target";
 
@@ -8,6 +9,7 @@ export type RaiseInput = Readonly<{
   applicationIdempotencyKey: string;
   phone: string;
   targetSlug: string | null;
+  targetScope: RankingScope;
 }>;
 
 export type RaiseValidation =
@@ -23,6 +25,7 @@ export function validateRaiseForm(formData: FormData): RaiseValidation {
   const amount = parseWholeInr(value(formData, "amount"));
   const phone = value(formData, "phone");
   const targetSlug = value(formData, "targetSlug") || null;
+  const targetScopeValue = value(formData, "targetScope") || "all_time";
   const applicationIdempotencyKey = value(formData, "idempotencyKey");
   const errors: Partial<Record<RaiseField, string>> = {};
 
@@ -37,6 +40,12 @@ export function validateRaiseForm(formData: FormData): RaiseValidation {
     errors.phone = "Use an international phone number, such as +919876543210.";
   }
   if (targetSlug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(targetSlug)) {
+    errors.target = "Choose a current leaderboard target.";
+  }
+  if (
+    !isRankingScope(targetScopeValue) ||
+    (!targetSlug && targetScopeValue !== "all_time")
+  ) {
     errors.target = "Choose a current leaderboard target.";
   }
   if (
@@ -55,6 +64,7 @@ export function validateRaiseForm(formData: FormData): RaiseValidation {
       applicationIdempotencyKey,
       phone,
       targetSlug,
+      targetScope: targetScopeValue as RankingScope,
     },
   };
 }

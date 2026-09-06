@@ -99,13 +99,16 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
 }
 
 function TakePositionLink({ entry }: { readonly entry: BoardEntry }) {
+  const daily = isTodayEntry(entry);
   return (
     <div className="take-position">
       <Link
         className="button button-quote"
-        href={`/join?target=${encodeURIComponent(entry.slug)}` as Route}
+        href={
+          `/join?target=${encodeURIComponent(entry.slug)}${daily ? "&scope=daily" : ""}` as Route
+        }
       >
-        Take #{entry.rank} ·{" "}
+        Take {daily ? "Daily " : ""}#{entry.rank} ·{" "}
         <Money paise={entry.takeoverQuote.requiredPaymentPaise} />
       </Link>
     </div>
@@ -125,10 +128,13 @@ function BoardAmount({ entry }: { readonly entry: BoardEntry }) {
     return (
       <div className="board-amount">
         <Money paise={entry.todayNetPaise} />
+        <small>today</small>
         <small>
           <Money paise={entry.confirmedTotalPaise} /> all time
         </small>
-        <small className="board-click-count">{entry.uniqueClicks} clicks</small>
+        <small className="board-click-count">
+          {entry.uniqueClicks} total clicks
+        </small>
       </div>
     );
   }
@@ -137,7 +143,9 @@ function BoardAmount({ entry }: { readonly entry: BoardEntry }) {
     <div className="board-amount">
       <Money paise={entry.confirmedTotalPaise} />
       <small>confirmed total</small>
-      <small className="board-click-count">{entry.uniqueClicks} clicks</small>
+      <small className="board-click-count">
+        {entry.uniqueClicks} total clicks
+      </small>
     </div>
   );
 }
@@ -150,7 +158,7 @@ function InvitationRow({ rank }: { readonly rank: string | null }) {
         <strong>
           {rank ? `#${rank} could be yours` : "Your spot could be next"}
         </strong>
-        <p>Get listed from ₹499. Your rank is confirmed after payment.</p>
+        <p>Your rank is confirmed after payment.</p>
       </div>
       <div className="invitation-action">
         <span className="invitation-price">
@@ -164,7 +172,28 @@ function InvitationRow({ rank }: { readonly rank: string | null }) {
   );
 }
 
-function EmptyBoard({ today }: { readonly today: boolean }) {
+function EmptyBoard({
+  category,
+  today,
+}: {
+  readonly category: boolean;
+  readonly today: boolean;
+}) {
+  if (category) {
+    return (
+      <section className="board-empty" data-testid="board-empty">
+        <h2>No listings in this category yet.</h2>
+        <div className="board-empty-actions">
+          <Link className="button button-primary" href="/join">
+            Get listed
+          </Link>
+          <Link className="button button-secondary" href="/">
+            Browse all listings
+          </Link>
+        </div>
+      </section>
+    );
+  }
   return (
     <section
       className="board-empty"
@@ -215,7 +244,9 @@ export function Leaderboard({
   }
 
   if (entries.length === 0 && !fillOpenPositions) {
-    return <EmptyBoard today={today} />;
+    return (
+      <EmptyBoard category={pageHref.startsWith("/category/")} today={today} />
+    );
   }
 
   const showAcquisitionRow =
@@ -227,7 +258,9 @@ export function Leaderboard({
 
   return (
     <div className="leaderboard" data-testid="leaderboard">
-      {entries.length === 0 ? <EmptyBoard today={today} /> : null}
+      {entries.length === 0 ? (
+        <EmptyBoard category={false} today={today} />
+      ) : null}
       <ol className="leaderboard-list" aria-label="Paid leaderboard">
         {entries.map((entry, index) => {
           const hasFollowingEntry = index < entries.length - 1;

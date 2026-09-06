@@ -4,6 +4,7 @@ import { createHash, randomBytes } from "node:crypto";
 
 import { moneyPaise } from "@/domain/money";
 import {
+  INITIAL_SPONSORSHIP_MIN_PAISE,
   PAYMENT_ATTEMPT_EXPIRY_MINUTES,
   POLICY_VERSION,
 } from "@/domain/policy";
@@ -84,21 +85,47 @@ export async function createRaiseCheckout(input: {
     const minimum = calculateMinimumRaise(
       moneyPaise(listing.original_sponsorship_paise),
     );
-    if (input.form.amountPaise < minimum.minimumRequiredPaise) {
-      return { kind: "below", minimum: minimum.minimumRequiredPaise } as const;
-    }
+    const [clock] = await transaction<{ businessDate: string }[]>`
+      SELECT (transaction_timestamp() AT TIME ZONE 'Asia/Kolkata')::date::text
+        AS "businessDate"
+    `;
+    if (!clock) throw new Error("transaction_clock_missing");
 
     const [target] = input.form.targetSlug
-      ? await transaction<{ id: string; rank: bigint; total: bigint }[]>`
+      ? input.form.targetScope === "daily"
+        ? await transaction<{ id: string; rank: bigint; total: bigint }[]>`
           WITH ranked AS (
-            SELECT id, slug, confirmed_total_paise AS total,
+            SELECT l.id, l.slug, d.net_amount_paise AS total,
               row_number() OVER (
-                ORDER BY confirmed_total_paise DESC,
-                         current_total_reached_at ASC, id ASC
+                ORDER BY d.net_amount_paise DESC,
+                         d.total_reached_at ASC, l.id ASC
               ) AS rank
-            FROM app.listings
-            WHERE lifecycle_status = 'active' AND moderation_status = 'clear'
-              AND confirmed_total_paise > 0
+            FROM app.listing_daily_totals d
+            JOIN app.listings l ON l.id = d.listing_id
+            JOIN app.categories c ON c.id = l.category_id
+            WHERE d.business_date = ${clock.businessDate}
+              AND d.net_amount_paise > 0
+              AND l.lifecycle_status = 'active'
+              AND l.moderation_status = 'clear'
+              AND l.confirmed_total_paise > 0
+              AND l.destination_url ~ '^https://'
+              AND c.is_active = true
+          ) SELECT id, total, rank FROM ranked WHERE slug = ${input.form.targetSlug}
+        `
+        : await transaction<{ id: string; rank: bigint; total: bigint }[]>`
+          WITH ranked AS (
+            SELECT l.id, l.slug, l.confirmed_total_paise AS total,
+              row_number() OVER (
+                ORDER BY l.confirmed_total_paise DESC,
+                         l.current_total_reached_at ASC, l.id ASC
+              ) AS rank
+            FROM app.listings l
+            JOIN app.categories c ON c.id = l.category_id
+            WHERE l.lifecycle_status = 'active'
+              AND l.moderation_status = 'clear'
+              AND l.confirmed_total_paise > 0
+              AND l.destination_url ~ '^https://'
+              AND c.is_active = true
           )
           SELECT id, total, rank FROM ranked WHERE slug = ${input.form.targetSlug}
         `
@@ -106,15 +133,34 @@ export async function createRaiseCheckout(input: {
     if (input.form.targetSlug && (!target || target.id === listing.id)) {
       return { kind: "target" } as const;
     }
+    let requiredMinimum = minimum.minimumRequiredPaise;
     if (target) {
+      const [daily] =
+        input.form.targetScope === "daily"
+          ? await transaction<{ total: bigint }[]>`
+              SELECT net_amount_paise AS total
+              FROM app.listing_daily_totals
+              WHERE listing_id = ${listing.id}
+                AND business_date = ${clock.businessDate}
+            `
+          : [];
       const quote = calculateTakeoverQuote({
-        listingCurrentTotalPaise: moneyPaise(listing.confirmed_total_paise),
-        minimumRequiredPaise: minimum.minimumRequiredPaise,
+        listingCurrentTotalPaise: moneyPaise(
+          input.form.targetScope === "daily"
+            ? (daily?.total ?? 0n)
+            : listing.confirmed_total_paise,
+        ),
+        minimumRequiredPaise: moneyPaise(
+          input.form.targetScope === "daily"
+            ? INITIAL_SPONSORSHIP_MIN_PAISE
+            : minimum.minimumRequiredPaise,
+        ),
         targetTotalPaise: moneyPaise(target.total),
       });
-      if (input.form.amountPaise < quote.requiredPaymentPaise) {
-        return { kind: "below", minimum: quote.requiredPaymentPaise } as const;
-      }
+      requiredMinimum = quote.requiredPaymentPaise;
+    }
+    if (input.form.amountPaise < requiredMinimum) {
+      return { kind: "below", minimum: requiredMinimum } as const;
     }
 
     const requestHash = createHash("sha256")
@@ -122,7 +168,10 @@ export async function createRaiseCheckout(input: {
         JSON.stringify({
           amount: input.form.amountPaise.toString(),
           listingId: listing.id,
-          minimum: minimum.minimumRequiredPaise.toString(),
+          minimum: requiredMinimum.toString(),
+          rankingScope: input.form.targetScope,
+          targetBusinessDate:
+            input.form.targetScope === "daily" ? clock.businessDate : null,
           targetId: target?.id ?? null,
           userId: input.userId,
         }),
@@ -166,6 +215,7 @@ export async function createRaiseCheckout(input: {
         public_id, application_idempotency_key, provider, provider_environment,
         listing_id, purpose, state, amount_paise, currency, policy_version,
         minimum_required_paise_snapshot, target_listing_id_snapshot,
+        ranking_scope, target_business_date_snapshot,
         target_rank_snapshot, target_total_paise_snapshot,
         listing_total_paise_snapshot, estimated_rank_snapshot,
         requested_by_user_id, provider_order_request_hash,
@@ -174,7 +224,9 @@ export async function createRaiseCheckout(input: {
         ${publicId}, ${input.form.applicationIdempotencyKey}, 'dodo',
         ${input.provider.environment}, ${listing.id}, 'raise',
         'provider_order_pending', ${input.form.amountPaise}, 'INR', ${POLICY_VERSION},
-        ${minimum.minimumRequiredPaise}, ${target?.id ?? null}, ${target?.rank ?? null},
+        ${requiredMinimum}, ${target?.id ?? null}, ${input.form.targetScope},
+        ${input.form.targetScope === "daily" ? clock.businessDate : null},
+        ${target?.rank ?? null},
         ${target?.total ?? null}, ${listing.confirmed_total_paise}, ${rank?.rank ?? null},
         ${input.userId}, ${requestHash}, ${input.form.phone}, ${expiresAt.toISOString()}
       )

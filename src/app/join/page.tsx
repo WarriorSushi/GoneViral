@@ -8,7 +8,7 @@ export const instant = false;
 export default async function JoinPage({
   searchParams,
 }: {
-  searchParams: Promise<{ target?: string }>;
+  searchParams: Promise<{ scope?: string; target?: string }>;
 }) {
   return <JoinPageContent searchParams={searchParams} />;
 }

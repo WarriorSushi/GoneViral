@@ -9,6 +9,7 @@ import {
   type LogoCropStatus,
 } from "@/components/shared/logo-crop-field";
 import type { PublicCategory } from "@/server/db/repositories/public-types";
+import type { RankingScope } from "@/domain/ranking";
 
 import { submitJoinForm, type JoinActionState } from "@/app/join/actions";
 
@@ -41,7 +42,12 @@ export function JoinForm({
   localTurnstileToken: string | undefined;
   turnstileSiteKey: string | undefined;
   initialAmountRupees?: string;
-  takeoverTarget?: Readonly<{ name: string; rank: string; slug: string }>;
+  takeoverTarget?: Readonly<{
+    name: string;
+    rank: string;
+    scope: RankingScope;
+    slug: string;
+  }>;
 }) {
   const [state, action, pending] = useActionState(submitJoinForm, initialState);
   const [logoStatus, setLogoStatus] = useState<LogoCropStatus>("empty");
@@ -54,11 +60,19 @@ export function JoinForm({
         name="targetSlug"
         value={takeoverTarget?.slug ?? ""}
       />
+      <input
+        type="hidden"
+        name="targetScope"
+        value={takeoverTarget?.scope ?? "all_time"}
+      />
       {takeoverTarget ? (
         <p className="form-notice">
-          Current quote to exceed #{takeoverTarget.rank} ({takeoverTarget.name})
-          by ₹1: <strong>₹{initialAmountRupees}</strong>. The position is not
-          reserved.
+          Current {takeoverTarget.scope === "daily" ? "Daily" : "All time"}{" "}
+          quote to take #{takeoverTarget.rank} from {takeoverTarget.name}:{" "}
+          <strong>₹{initialAmountRupees}</strong>. The position is not reserved
+          {takeoverTarget.scope === "daily"
+            ? " and Daily starts fresh at midnight IST."
+            : "."}
         </p>
       ) : null}
       {localTurnstileToken ? (
@@ -119,6 +133,9 @@ export function JoinForm({
               maxLength={320}
               required
             />
+            <span className="field-help">
+              Tell people what you do in one sentence.
+            </span>
             <FieldError field="tagline" message={state.errors?.tagline} />
           </label>
           <label className="form-wide">
@@ -160,10 +177,10 @@ export function JoinForm({
 
       <fieldset>
         <legend>
-          <span>2</span> Payment contact
+          <span>2</span> Payment details
         </legend>
         <p className="field-help">
-          Private. Used for payment and recovery only.
+          Your email and phone stay private. Your confirmed spend is public.
         </p>
         <div className="form-grid">
           <label>
@@ -281,6 +298,10 @@ export function JoinForm({
         customer transaction, and supplies its invoice. Your listing stays
         pending until payment is verified.{" "}
         <Link href="/contact">Contact or report abuse</Link>.
+      </p>
+      <p className="provider-note">
+        Already listed? <Link href="/manage">Manage your listing</Link> to add
+        more.
       </p>
     </form>
   );

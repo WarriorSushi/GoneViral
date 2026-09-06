@@ -2,17 +2,17 @@ import Link from "next/link";
 
 const steps = [
   {
-    body: "Product, SaaS, service, or business. Add the name, link, and category.",
+    body: "Add your brand, product, profile, or service with a direct website link.",
     number: "01",
     title: "Share your listing",
   },
   {
-    body: "Your confirmed spend gets you on the leaderboard.",
+    body: "Choose an amount from ₹499. Placement begins after payment is confirmed.",
     number: "02",
     title: "Pay ₹499+",
   },
   {
-    body: "Add more later to climb. Higher confirmed spend = higher rank.",
+    body: "Add more later. Your payment counts toward both your lifetime total and today’s total.",
     number: "03",
     title: "Move higher",
   },
@@ -30,7 +30,7 @@ export function HowItWorksContent({
       <header className="how-heading">
         <p className="eyebrow">How GoneViral works</p>
         <h1 id={headingId} tabIndex={presentation === "modal" ? -1 : undefined}>
-          Pay. Get seen.
+          Pay. Get listed.
         </h1>
         <p>Three simple steps to get on the board.</p>
       </header>
@@ -56,32 +56,33 @@ export function HowItWorksContent({
         ))}
       </ol>
 
-      <p className="how-rule-strip">
-        <strong>₹499 gets you on the board.</strong> More spend = higher rank.
-      </p>
-
       <section
         className="how-good-to-know"
         aria-labelledby={`${headingId}-facts`}
       >
         <h2 id={`${headingId}-facts`}>Good to know</h2>
         <ul>
-          <li>Clicks go straight to your website</li>
           <li>
-            All-time ranking never resets; daily ranking resets at midnight IST
+            <strong>All time:</strong> Your cumulative confirmed spend
+            determines your long-term rank.
           </li>
-          <li>Your rank can change as others join or pay more</li>
+          <li>
+            <strong>Daily:</strong> Money applied today determines today&apos;s
+            rank. Daily starts fresh at midnight IST, while your payment still
+            remains part of your lifetime total.
+          </li>
+          <li>Ranks can change and no position is reserved.</li>
         </ul>
         <p>
-          Payment does not guarantee traffic, clicks, sales, or any other
-          result.
+          Payment does not guarantee traffic, clicks, leads, sales, publicity,
+          or business results.
         </p>
       </section>
 
       <div id="join" className="how-actions">
         <div>
           <Link className="button button-primary" href="/join">
-            Join for ₹499 <span aria-hidden="true">→</span>
+            Get listed starting from ₹499 <span aria-hidden="true">→</span>
           </Link>
           <Link className="button button-secondary" href="/">
             See leaderboard
