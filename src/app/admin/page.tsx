@@ -20,19 +20,11 @@ import {
   reviewChangeAdminAction,
   updateFlagAdminAction,
 } from "./actions";
+import { paymentStatus } from "./payment-status";
 
 export const metadata: Metadata = { title: "Operations" };
 
 const flagGuidance = {
-  payments_enabled: {
-    label: "Test checkout",
-    description:
-      "Allows this deployment to create new Dodo checkouts. The provider remains in Test Mode until Live Mode is separately configured and authorized.",
-    enabledMeaning: "Synthetic Dodo Test Mode checkout is available.",
-    disabledMeaning: "New checkout is safely blocked at the database.",
-    enableLabel: "Enable Test Mode checkout",
-    disableLabel: "Pause checkout",
-  },
   provider_refunds_enabled: {
     label: "Provider refund calls",
     description:
@@ -163,13 +155,48 @@ export default async function AdminPage() {
   const paymentsEnabled = flagValues.payments_enabled === true;
   const refundsEnabled = flagValues.provider_refunds_enabled === true;
   const readOnly = flagValues.read_only === true;
-  const deploymentPaymentsEnabled = environment.PAYMENTS_ENABLED === "true";
+  const payment = paymentStatus(
+    environment.DODO_PAYMENTS_ENVIRONMENT,
+    environment.PAYMENTS_ENABLED === "true",
+    paymentsEnabled,
+  );
   const providerMode =
     environment.DODO_PAYMENTS_ENVIRONMENT === "test_mode"
       ? "Dodo Test Mode"
       : environment.DODO_PAYMENTS_ENVIRONMENT === "live_mode"
         ? "Dodo Live Mode"
         : "Local mock mode";
+  const paymentLabel =
+    payment.kind === "live"
+      ? "Customer payments"
+      : payment.kind === "test"
+        ? "Test payments"
+        : "Local payment simulation";
+  const paymentGuidance = {
+    label: paymentLabel,
+    description:
+      payment.kind === "live"
+        ? "Controls whether customers can start a new purchase. In Dodo Live Mode, purchases can charge real money."
+        : payment.kind === "test"
+          ? "Controls whether test purchases can be started in Dodo Test Mode. No real money is charged."
+          : "Controls whether local simulated purchases can be started. No payment provider is called.",
+    enabledMeaning: payment.active
+      ? payment.kind === "live"
+        ? "New customer purchases and real Dodo charges are enabled."
+        : payment.kind === "test"
+          ? "Test purchases are enabled. No real money is charged."
+          : "Local simulated purchases are enabled."
+      : "The database control is on, but the app payment setting still blocks new purchases.",
+    disabledMeaning: "New purchases are paused by the database safety control.",
+    enableLabel:
+      payment.kind === "live"
+        ? "Enable customer payments"
+        : payment.kind === "test"
+          ? "Enable test payments"
+          : "Enable payment simulation",
+    disableLabel:
+      payment.kind === "live" ? "Pause new payments" : "Pause test payments",
+  };
   const issueCount =
     dashboard.paymentExceptions.length +
     dashboard.reconciliation.length +
@@ -216,40 +243,76 @@ export default async function AdminPage() {
         aria-labelledby="launch-status-heading"
       >
         <div className="admin-launch-copy">
-          <p className="eyebrow">Current pre-launch stage</p>
-          <h2 id="launch-status-heading">Test payments, safely fenced</h2>
+          <p className="eyebrow">Current payment status</p>
+          <h2 id="launch-status-heading">
+            {payment.kind === "live"
+              ? `Live payments are ${payment.active ? "enabled" : "paused"}`
+              : payment.kind === "test"
+                ? `Test payments are ${payment.active ? "enabled" : "paused"}`
+                : `Local payment simulation is ${payment.active ? "enabled" : "paused"}`}
+          </h2>
           <p>
-            Production routing is connected, but checkout still needs both the
-            deployment switch and the shared database switch. Live payments and
-            provider refunds remain outside this test gate.
+            {payment.kind === "live"
+              ? payment.active
+                ? "Customers can start a purchase and pay through Dodo. These are real charges."
+                : "Dodo Live Mode is connected, but new payments are paused by one or both payment controls."
+              : payment.kind === "test"
+                ? payment.active
+                  ? "Test purchases are enabled through Dodo Test Mode. No real money is charged."
+                  : "Test purchases are paused by one or both payment controls. No real money is charged."
+                : payment.active
+                  ? "Local simulated purchases are enabled. No payment provider is called."
+                  : "Local simulated purchases are paused."}{" "}
+            Provider refunds are {refundsEnabled ? "enabled" : "blocked"} by a
+            separate control.
           </p>
           <ol className="admin-step-list">
             <li data-state="complete">
               <span>1</span>
               <div>
-                <strong>Production providers connected</strong>
+                <strong>{providerMode} connected</strong>
                 <small>
-                  Domain, Auth, email, Dodo Test Mode, and scheduler.
+                  {payment.kind === "live"
+                    ? "New purchases use the Live account and can charge real money."
+                    : payment.kind === "test"
+                      ? "Test purchases use Dodo Test Mode. No real money is charged."
+                      : "Purchases are simulated locally without calling Dodo."}
                 </small>
               </div>
             </li>
-            <li data-state={paymentsEnabled ? "complete" : "current"}>
+            <li data-state={payment.active ? "complete" : "current"}>
               <span>2</span>
               <div>
-                <strong>Allow synthetic checkout</strong>
+                <strong>
+                  {payment.kind === "live"
+                    ? "Allow customer payments"
+                    : payment.kind === "test"
+                      ? "Allow test payments"
+                      : "Allow local payment simulation"}
+                </strong>
                 <small>
-                  {paymentsEnabled
-                    ? "The database Test Mode switch is on."
-                    : "The database switch is still safely off."}
+                  {payment.active
+                    ? "Both payment controls are on."
+                    : !payment.appEnabled && !paymentsEnabled
+                      ? "The app setting and database control are off."
+                      : !payment.appEnabled
+                        ? "The app payment setting is off."
+                        : "The database payment control is off."}
                 </small>
               </div>
             </li>
-            <li data-state={paymentsEnabled ? "current" : "pending"}>
+            <li data-state={payment.active ? "current" : "pending"}>
               <span>3</span>
               <div>
-                <strong>Run one synthetic purchase</strong>
+                <strong>
+                  {payment.kind === "live"
+                    ? "Verify the first live purchase"
+                    : payment.kind === "test"
+                      ? "Run one test purchase"
+                      : "Run one simulated purchase"}
+                </strong>
                 <small>
-                  Then verify webhook, ledger, ranking, and email once.
+                  Then verify the payment update, record, ranking, and email.
                 </small>
               </div>
             </li>
@@ -259,17 +322,23 @@ export default async function AdminPage() {
           <article>
             <span>Payment provider</span>
             <strong>{providerMode}</strong>
-            <small>No real charge in Test Mode</small>
+            <small>
+              {payment.kind === "live"
+                ? "Real customer charges are possible"
+                : payment.kind === "test"
+                  ? "Test only — no real money is charged"
+                  : "Local simulation — Dodo is not called"}
+            </small>
           </article>
           <article>
-            <span>Deployment checkout gate</span>
-            <strong>{deploymentPaymentsEnabled ? "Ready" : "Off"}</strong>
-            <small>Vercel Production setting</small>
+            <span>App payment setting</span>
+            <strong>{payment.appEnabled ? "Enabled" : "Off"}</strong>
+            <small>Set in Vercel for this deployment</small>
           </article>
           <article>
-            <span>Database checkout gate</span>
+            <span>Database payment control</span>
             <strong>{paymentsEnabled ? "Enabled" : "Safely off"}</strong>
-            <small>Shared pre-launch data plane</small>
+            <small>Shared safety switch for new payments</small>
           </article>
           <article>
             <span>Provider refunds</span>
@@ -301,7 +370,7 @@ export default async function AdminPage() {
                 <h2 id="flags-heading">Safety controls</h2>
               </div>
               <p>
-                These switches affect the shared pre-launch database. Read the
+                These switches affect the shared database. Read the
                 plain-language effect and change only the control you intend.
               </p>
             </div>
@@ -312,7 +381,10 @@ export default async function AdminPage() {
                 );
                 if (!flag) return null;
                 const enabled = flagValues[key] === true;
-                const guidance = flagGuidance[key];
+                const guidance =
+                  key === "payments_enabled"
+                    ? paymentGuidance
+                    : flagGuidance[key];
                 const dangerousEnable =
                   key === "provider_refunds_enabled" || key === "read_only";
                 return (
@@ -353,7 +425,11 @@ export default async function AdminPage() {
                         name="enabled"
                         value="true"
                       >
-                        {enabled ? "Currently enabled" : guidance.enableLabel}
+                        {enabled
+                          ? key === "payments_enabled"
+                            ? "Database control on"
+                            : "Currently enabled"
+                          : guidance.enableLabel}
                       </button>
                       <button
                         className="secondary-button"
@@ -361,7 +437,11 @@ export default async function AdminPage() {
                         name="enabled"
                         value="false"
                       >
-                        {enabled ? guidance.disableLabel : "Currently disabled"}
+                        {enabled
+                          ? guidance.disableLabel
+                          : key === "payments_enabled"
+                            ? "Database control off"
+                            : "Currently disabled"}
                       </button>
                     </div>
                   </form>
@@ -369,9 +449,9 @@ export default async function AdminPage() {
               })}
             </div>
             <p className="admin-safety-note">
-              For the current test: enable only <strong>Test checkout</strong>.
-              Keep provider refunds blocked, read-only mode off, and outbound
-              listing links on.
+              <strong>{paymentLabel}</strong> and provider refunds are separate
+              controls. Pausing new payments does not enable refunds or
+              read-only mode.
             </p>
           </>
         ) : (
