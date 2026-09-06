@@ -300,7 +300,12 @@ disposable writers are stopped. The wrapper also verifies the exact shutdown
 flags and Auth/Storage histories and removes its temporary database dump.
 
 Before staging test-data cleanup, verify that archive again and run
-`pnpm ops:prelaunch-cleanup -- --backup-archive <absolute .7z path>`. The script
+`vercel.cmd env run -e production -- node scripts/operations/prelaunch-cleanup.mjs
+--backup-archive "<absolute .7z path>"` on Windows. Use `vercel.cmd` because the
+PowerShell shim drops Vercel's command separator. The script obtains the linked
+database session and modern Supabase secret key temporarily through the
+authenticated Supabase CLI because Sensitive Vercel values cannot be exported
+locally. The script
 is deliberately restricted to a linked project whose URL and direct database
 identity agree, Dodo `test_mode`, `PAYMENTS_ENABLED=false`, and a matching
 backup less than 24 hours old. It aborts on live/unknown/non-INR/admin-corrected

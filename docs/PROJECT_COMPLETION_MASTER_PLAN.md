@@ -707,11 +707,20 @@ non-INR, or admin-corrected financial records. The database payment Safety
 Control is now off and the Vercel Production `PAYMENTS_ENABLED` value is set to
 false for the next deployment; refunds remain off.
 
-Cleanup has not run yet. Preflight found that the older repository command would
-also delete the sole linked active super-admin and the new live visit counter,
-which were outside the owner's authorization. The command is being corrected to
-preserve those required records while still removing every synthetic listing,
-ranking/payment artifact, non-admin Auth user, and listing Storage object. Run
-the interactive command only after this correction passes review, CI, and
-Production deployment; the owner must enter the archive passphrase and exact
-project-bound deletion phrase in their own terminal.
+Cleanup has not run yet. The correction preserving the sole linked active
+super-admin and live visit counter while removing synthetic business data
+shipped through pull request `#45`, CI run `34048469323`, merge `3650022`, and
+READY Production deployment `dpl_6sSMW24nbkhG1qgxENEMFKsebyJT`. Production
+payments are paused at both the Vercel setting and database Safety Control;
+provider refunds remain off.
+
+Two owner cleanup attempts and one corrected command attempt stopped before any
+archive prompt or hosted mutation: first outside the linked repository, then at
+PowerShell's `vercel.ps1` separator handling, and finally because Vercel
+Sensitive database/API credentials cannot be exported locally. The local
+follow-up now obtains a temporary linked database session and modern secret key
+through the authenticated Supabase CLI, matching the proven backup path, while
+Vercel supplies the readable Production safety settings. A deliberately missing
+archive preflight proves the credentials load and match the linked project
+without deleting data. The focused safety test and syntax check pass; review,
+CI, and merge remain before the owner reruns the interactive command.

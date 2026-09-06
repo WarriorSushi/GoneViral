@@ -13,15 +13,13 @@ const archiveInput =
   archiveArgumentIndex >= 0 ? process.argv[archiveArgumentIndex + 1] : null;
 if (!archiveInput) {
   throw new Error(
-    "Usage: pnpm ops:prelaunch-cleanup -- --backup-archive D:\\GoneViral-Backups\\<timestamp>-<ref>.7z",
+    "Usage: vercel.cmd env run -e production -- node scripts/operations/prelaunch-cleanup.mjs --backup-archive D:\\GoneViral-Backups\\<timestamp>-<ref>.7z",
   );
 }
 
 const requiredEnvironment = {
-  databaseUrl: process.env.DATABASE_DIRECT_URL,
   dodoEnvironment: process.env.DODO_PAYMENTS_ENVIRONMENT,
   paymentsEnabled: process.env.PAYMENTS_ENABLED,
-  supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
 };
 for (const [name, value] of Object.entries(requiredEnvironment)) {
@@ -43,6 +41,63 @@ const linkedRef = (
 if (!/^[a-z]{20}$/.test(linkedRef)) {
   throw new Error("The linked Supabase project ref is missing or malformed.");
 }
+
+function runSupabase(arguments_) {
+  const result = spawnSync("supabase", arguments_, {
+    encoding: "utf8",
+    windowsHide: true,
+  });
+  if (result.status !== 0 || !result.stdout?.trim()) {
+    throw new Error("Could not obtain temporary linked Supabase credentials.");
+  }
+  return result.stdout;
+}
+
+function readTemporaryExport(output, name) {
+  const match = output.match(new RegExp(`export ${name}="([^"]+)"`));
+  if (!match) {
+    throw new Error(`The temporary linked database session omitted ${name}.`);
+  }
+  return match[1];
+}
+
+const temporaryDatabaseSession = runSupabase([
+  "db",
+  "dump",
+  "--linked",
+  "--schema",
+  "auth",
+  "--data-only",
+  "--dry-run",
+]);
+const databaseUrl = new URL(
+  (await readFile(resolve("supabase/.temp/pooler-url"), "utf8")).trim(),
+);
+databaseUrl.username = `${readTemporaryExport(temporaryDatabaseSession, "PGUSER")}.${linkedRef}`;
+databaseUrl.password = readTemporaryExport(
+  temporaryDatabaseSession,
+  "PGPASSWORD",
+);
+databaseUrl.pathname = `/${readTemporaryExport(temporaryDatabaseSession, "PGDATABASE")}`;
+
+const apiKeys = JSON.parse(
+  runSupabase([
+    "projects",
+    "api-keys",
+    "--project-ref",
+    linkedRef,
+    "--reveal",
+    "--output",
+    "json",
+  ]),
+);
+const supabaseSecretKey = apiKeys.find(
+  (key) => key.type === "secret" && key.name === "default",
+)?.api_key;
+if (!supabaseSecretKey) {
+  throw new Error("The linked project has no default modern secret API key.");
+}
+
 const supabaseUrl = new URL(requiredEnvironment.supabaseUrl);
 if (
   supabaseUrl.protocol !== "https:" ||
@@ -52,16 +107,15 @@ if (
     "NEXT_PUBLIC_SUPABASE_URL does not match the linked project ref.",
   );
 }
-const databaseUrl = new URL(requiredEnvironment.databaseUrl);
 if (
   databaseUrl.protocol !== "postgresql:" &&
   databaseUrl.protocol !== "postgres:"
 ) {
-  throw new Error("DATABASE_DIRECT_URL must be PostgreSQL.");
+  throw new Error("The linked database URL must be PostgreSQL.");
 }
-if (!decodeURIComponent(requiredEnvironment.databaseUrl).includes(linkedRef)) {
+if (!decodeURIComponent(databaseUrl.toString()).includes(linkedRef)) {
   throw new Error(
-    "DATABASE_DIRECT_URL does not identify the linked project ref.",
+    "The linked database URL does not identify the linked project ref.",
   );
 }
 
@@ -99,14 +153,14 @@ if (archiveTest.status !== 0) {
   throw new Error("The encrypted backup archive did not pass verification.");
 }
 
-const sql = postgres(requiredEnvironment.databaseUrl, {
+const sql = postgres(databaseUrl.toString(), {
   max: 1,
   prepare: false,
   types: { bigint: postgres.BigInt },
 });
 const supabase = createClient(
   requiredEnvironment.supabaseUrl,
-  requiredEnvironment.supabaseSecretKey,
+  supabaseSecretKey,
   { auth: { autoRefreshToken: false, persistSession: false } },
 );
 const buckets = ["goneviral-logo-staging", "goneviral-logo-public"];

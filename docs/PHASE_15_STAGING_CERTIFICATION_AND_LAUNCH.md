@@ -211,8 +211,14 @@ After staging certification and before any production decision, leave Dodo in
 a new verified backup. Then run:
 
 ```powershell
-pnpm ops:prelaunch-cleanup -- --backup-archive D:\GoneViral-Backups\<timestamp>-<project-ref>.7z
+vercel.cmd env run -e production -- node scripts/operations/prelaunch-cleanup.mjs --backup-archive "D:\GoneViral-Backups\<timestamp>-<project-ref>.7z"
 ```
+
+On Windows, use `vercel.cmd`; PowerShell's `vercel.ps1` shim drops the required
+`--` separator. Vercel supplies the readable Production safety settings while
+the script obtains a temporary linked database session and modern Supabase
+secret key in process memory through the authenticated Supabase CLI. Sensitive
+Vercel variables are intentionally non-exportable and are not required locally.
 
 Review aggregate counts, re-enter the archive passphrase, and type the exact
 project-bound deletion phrase only after confirming the targeted rows and
