@@ -641,6 +641,6 @@ bytes and tied to exact source commit
 found the archive and sidecar present, the recomputed SHA-256 matching, zero
 matching plaintext directories, and freshness inside the cleanup command's
 24-hour requirement. No matching Windows scheduled task exists, so the accepted
-manual cadence remains authoritative. Copying this new archive and sidecar to
-private off-device storage is not yet owner-confirmed; no account, location,
-link, credential, or passphrase is recorded.
+manual cadence remains authoritative. The owner then confirmed copying only
+this new archive and sidecar to private off-device storage. No account,
+location, link, credential, or passphrase is recorded.
