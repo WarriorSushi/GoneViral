@@ -9,7 +9,10 @@ import {
   createSupabaseServerClient,
   isSupabaseAuthConfigured,
 } from "@/lib/supabase/server";
-import { canonicalizeOwnerEmail } from "@/server/auth/claim-owner";
+import {
+  canonicalizeOwnerEmail,
+  canRequestManageLink,
+} from "@/server/auth/claim-owner";
 import {
   buildManageCallbackUrl,
   safeManageRedirect,
@@ -55,23 +58,6 @@ async function consumeManageRateLimit(
   return true;
 }
 
-async function hasManageableListing(email: string): Promise<boolean> {
-  const rows = await getSqlClient()<[{ present: boolean }]>`
-    SELECT EXISTS (
-      SELECT 1
-      FROM private.pending_listing_owners AS pending
-      JOIN private.payment_attempts AS attempt
-        ON attempt.id = pending.created_from_attempt_id
-       AND attempt.pending_owner_id = pending.id
-       AND attempt.state = 'succeeded'
-      WHERE pending.email_hash = ${submissionDigest(email)}
-        AND pending.canonical_email = ${email}
-        AND pending.claim_state IN ('pending', 'claimed')
-    ) AS present
-  `;
-  return rows[0]?.present ?? false;
-}
-
 export async function requestManageLink(
   _state: ManageLinkState,
   formData: FormData,
@@ -90,7 +76,7 @@ export async function requestManageLink(
       requestHeaders.get("x-real-ip") ||
       "unknown";
     const allowed = await consumeManageRateLimit(email, remoteIp);
-    const associated = allowed && (await hasManageableListing(email));
+    const associated = allowed && (await canRequestManageLink(email));
 
     if (associated && isSupabaseAuthConfigured()) {
       const environment = readPublicEnv();

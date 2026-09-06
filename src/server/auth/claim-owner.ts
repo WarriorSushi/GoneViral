@@ -7,6 +7,31 @@ export function canonicalizeOwnerEmail(email: string): string {
   return email.trim().normalize("NFKC").toLowerCase();
 }
 
+export async function canRequestManageLink(email: string): Promise<boolean> {
+  const canonicalEmail = canonicalizeOwnerEmail(email);
+  const rows = await getSqlClient()<[{ present: boolean }]>`
+    SELECT EXISTS (
+      SELECT 1
+      FROM private.pending_listing_owners AS pending
+      JOIN private.payment_attempts AS attempt
+        ON attempt.id = pending.created_from_attempt_id
+       AND attempt.pending_owner_id = pending.id
+       AND attempt.state = 'succeeded'
+      WHERE pending.email_hash = ${submissionDigest(canonicalEmail)}
+        AND pending.canonical_email = ${canonicalEmail}
+        AND pending.claim_state IN ('pending', 'claimed')
+    ) OR EXISTS (
+      SELECT 1
+      FROM private.admin_users AS admin_user
+      JOIN auth.users AS auth_user ON auth_user.id = admin_user.user_id
+      WHERE admin_user.is_active = true
+        AND admin_user.revoked_at IS NULL
+        AND lower(auth_user.email) = ${canonicalEmail}
+    ) AS present
+  `;
+  return rows[0]?.present ?? false;
+}
+
 type PendingOwner = { id: string; listing_id: string };
 
 export async function claimPendingListingsForVerifiedUser(input: {
