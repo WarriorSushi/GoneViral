@@ -612,3 +612,17 @@ The owner then requested and explicitly insisted on white text on the exact
 the 4.5:1 normal-text requirement. This is an informed owner-approved contrast
 exception; the automated accessibility test remains unchanged and continues to
 report it rather than concealing the tradeoff.
+
+The next bounded owner-review correction is implemented on
+`codex/owner-listing-card-polish`. Shared Main/Daily cards now have fixed
+desktop/mobile heights, one-line descriptions with a longer bounded desktop
+measure, larger logos and typography, darker detail/click text, compact pill
+actions on mobile, and laurel-free gold/silver/bronze rank treatments. The
+homepage hero is half-size, single-line, and gradient-free; its secondary link
+uses a real information icon. The footer reuses the header logo/wordmark and
+organizes all existing destinations into three groups. Formatting, lint,
+TypeScript, production browser builds, and responsive layout/overflow checks at
+1440, 390, and 360 pixels pass. The focused browser flow still reports only the
+already owner-approved white-on-coral contrast exception; its Axe assertion was
+not weakened. Ranking, payments, database, provider, and hosted data are
+unchanged.

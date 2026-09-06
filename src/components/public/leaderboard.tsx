@@ -15,21 +15,9 @@ import { Money } from "./money";
 type BoardEntry = PublicMainBoardEntry | PublicTodayBoardEntry;
 
 function RankMark({ rank }: { readonly rank: string }) {
-  const isPodium = rank === "1" || rank === "2" || rank === "3";
-
   return (
     <div className="rank-cluster">
-      {isPodium ? (
-        <span className="rank-podium">
-          <svg aria-hidden="true" viewBox="0 0 52 48">
-            <path d="M22 42C12.5 39 6.4 31.1 7.5 18.2M30 42c9.5-3 15.6-10.9 14.5-23.8" />
-            <path d="m13.2 34.8-5.8-.7 2.8 5.1m-.4-11.3-5.1-2.7 1 5.7m2.1-10.8-3.5-4.3-.9 5.7m7-8.8-1.4-5.4-3.1 4.9m32.9 22.6 5.8-.7-2.8 5.1m.4-11.3 5.1-2.7-1 5.7m-2.1-10.8 3.5-4.3.9 5.7m-7-8.8 1.4-5.4 3.1 4.9" />
-          </svg>
-          <span className="rank">#{rank}</span>
-        </span>
-      ) : (
-        <span className="rank">#{rank}</span>
-      )}
+      <span className="rank">#{rank}</span>
       {rank === "1" ? (
         <span className="rank-leader" aria-hidden="true">
           Leader
@@ -63,7 +51,7 @@ function ListingIdentity({ entry }: { readonly entry: BoardEntry }) {
             alt={`${entry.name} logo`}
             className="listing-logo"
             fill
-            sizes="(max-width: 820px) 48px, 56px"
+            sizes="(max-width: 820px) 75px, 70px"
             src={entry.logoUrl}
           />
         </span>
