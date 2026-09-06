@@ -1606,3 +1606,17 @@ explicitly insisted on the exact combination. The focused CSS correction is
 therefore an informed owner-approved contrast exception. The accessibility
 test remains unchanged and continues to report the exception rather than being
 weakened. Ranking, payment, hosted data, and provider state are unchanged.
+
+The subsequent owner card/hero/footer review is implemented locally on
+`codex/owner-listing-card-polish`. It uses the shared public components and CSS
+only: Main and Daily cards have fixed responsive geometry, bounded one-line
+descriptions, larger logos/type, darker detail and click labels, mobile pill
+actions, and plain tonal top-three ranks without laurels. The homepage hero is
+smaller, single-line, and gradient-free with an information icon; its reserved
+height aligns the leaderboard start with Daily. The footer now matches the
+header logo/wordmark and exposes three complete navigation groups. Formatting,
+lint, TypeScript, the production browser build, and responsive layout checks at
+1440, 390, and 360 pixels pass. Axe continues to report only the previously
+approved white-on-`#E57255` exception; no test was filtered or weakened.
+Ranking, payment, database, provider configuration, hosted data, cleanup, and
+Phase 16 remain unchanged.

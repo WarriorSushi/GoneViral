@@ -312,18 +312,19 @@ test("low-population Main board is first-viewport, accessible, and private-data 
     .locator(".leaderboard-card")
     .filter({ has: monsoonWebsite });
   await expect(firstCard.getByText("Leader", { exact: true })).toBeVisible();
-  await expect(firstCard.locator(".rank-podium")).toHaveCSS(
+  await expect(firstCard.locator(".rank")).toHaveCSS(
     "color",
     "rgb(154, 103, 18)",
   );
-  await expect(page.locator(".leaderboard-card.rank-2 .rank-podium")).toHaveCSS(
+  await expect(page.locator(".leaderboard-card.rank-2 .rank")).toHaveCSS(
     "color",
     "rgb(86, 92, 102)",
   );
-  await expect(page.locator(".leaderboard-card.rank-3 .rank-podium")).toHaveCSS(
+  await expect(page.locator(".leaderboard-card.rank-3 .rank")).toHaveCSS(
     "color",
     "rgb(138, 75, 43)",
   );
+  await expect(page.locator(".rank-podium")).toHaveCount(0);
   await expect(page.getByTestId("tier-divider-3")).toContainText("Top 3");
   await expect(page.getByTestId("tier-divider-20")).toHaveCount(0);
   expect(
@@ -336,9 +337,12 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await expect(
     firstCard.getByText("B2B & Services", { exact: true }),
   ).toBeVisible();
-  await expect(
-    firstCard.getByText("example.com", { exact: true }),
-  ).toBeVisible();
+  const listingHost = firstCard.getByText("example.com", { exact: true });
+  if ((testInfo.project.use.viewport?.width ?? 1440) <= 820) {
+    await expect(listingHost).toBeHidden();
+  } else {
+    await expect(listingHost).toBeVisible();
+  }
   await expect(
     firstCard.getByText("0 total clicks", { exact: true }),
   ).toBeVisible();
@@ -356,8 +360,25 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await expect(rankAction).toHaveCSS("background-color", "rgb(229, 114, 85)");
   const rankActionBox = await rankAction.boundingBox();
   expect(rankActionBox).not.toBeNull();
-  expect(rankActionBox!.height).toBeGreaterThanOrEqual(44);
-  expect(rankActionBox!.height).toBeLessThanOrEqual(45);
+  const expectedRankActionHeight =
+    (testInfo.project.use.viewport?.width ?? 1440) <= 820 ? 38 : 44;
+  expect(rankActionBox!.height).toBeGreaterThanOrEqual(
+    expectedRankActionHeight,
+  );
+  expect(rankActionBox!.height).toBeLessThanOrEqual(
+    expectedRankActionHeight + 1,
+  );
+
+  const cardHeights = await page
+    .locator(".leaderboard-card")
+    .evaluateAll((cards) =>
+      cards.map((card) => card.getBoundingClientRect().height),
+    );
+  expect(new Set(cardHeights).size).toBe(1);
+  await expect(firstCard.locator(".listing-identity small")).toHaveCSS(
+    "-webkit-line-clamp",
+    "1",
+  );
 
   const boardBox = await page.getByTestId("leaderboard").boundingBox();
   expect(boardBox).not.toBeNull();
@@ -403,7 +424,6 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   for (const target of [
     page.getByRole("button", { name: "Refresh board" }),
     page.getByRole("link", { name: "Daily", exact: true }).first(),
-    rankAction,
   ]) {
     const box = await target.boundingBox();
     expect(box).not.toBeNull();

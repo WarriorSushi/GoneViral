@@ -64,7 +64,7 @@ export function BoardPage({
           <h1 id="board-title">
             {isHomepage ? (
               <>
-                Pay more. <span className="hero-rank-higher">Rank higher.</span>
+                Pay more, <span className="hero-rank-higher">rank higher.</span>
               </>
             ) : (
               title
@@ -79,7 +79,11 @@ export function BoardPage({
                   <Money paise={INITIAL_SPONSORSHIP_MIN_PAISE.toString()} />
                 </Link>
                 <Link className="board-hero-secondary" href="/how-it-works">
-                  How it works <span aria-hidden="true">→</span>
+                  <svg aria-hidden="true" viewBox="0 0 20 20">
+                    <circle cx="10" cy="10" r="7.25" />
+                    <path d="M10 9v4M10 6.5h.01" />
+                  </svg>
+                  How it works
                 </Link>
               </div>
             </>

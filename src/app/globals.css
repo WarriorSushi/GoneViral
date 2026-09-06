@@ -1592,12 +1592,14 @@ textarea:focus-visible {
 
 .board-intro {
   display: grid;
+  min-height: 174px;
   place-items: center;
   padding: 8px 0 10px;
   text-align: center;
 }
 
 .board-intro-home {
+  min-height: 198px;
   padding: clamp(10px, 1.4vw, 16px) 0 14px;
 }
 
@@ -1627,36 +1629,16 @@ textarea:focus-visible {
 
 .board-intro-home h1 {
   margin-top: 7px;
-  font-size: clamp(2.75rem, 5.8vw, 4.65rem);
+  font-size: clamp(1.6rem, 2.9vw, 2.325rem);
   font-weight: 790;
   letter-spacing: -0.04em;
+  line-height: 1.05;
   text-wrap: balance;
+  white-space: nowrap;
 }
 
 .hero-rank-higher {
-  background: linear-gradient(
-    180deg,
-    #742f3d 0%,
-    #b85a57 22%,
-    #e57255 43%,
-    #e0a553 64%,
-    #ef9a75 82%,
-    #742f3d 100%
-  );
-  background-size: 100% 300%;
-  background-clip: text;
-  color: transparent;
-  animation: hero-gradient-rise 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-  -webkit-background-clip: text;
-}
-
-@keyframes hero-gradient-rise {
-  from {
-    background-position: 50% 100%;
-  }
-  to {
-    background-position: 50% 0%;
-  }
+  color: var(--rank-action-hover);
 }
 
 .board-hero-copy > p:last-child {
@@ -1681,7 +1663,7 @@ textarea:focus-visible {
   width: 100%;
   max-width: 580px;
   margin: 9px auto 0;
-  font-size: clamp(0.96rem, 1.5vw, 1.08rem);
+  font-size: clamp(0.84rem, 1.25vw, 0.94rem);
   line-height: 1.45;
   text-align: center;
   text-wrap: balance;
@@ -1713,12 +1695,25 @@ textarea:focus-visible {
 }
 
 .board-hero-secondary {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
   padding: 8px 2px;
-  color: var(--ink-soft);
-  font-size: 0.86rem;
-  font-weight: 690;
+  color: var(--ink);
+  font-size: 0.94rem;
+  font-weight: 740;
   text-decoration: none;
   text-underline-offset: 4px;
+}
+
+.board-hero-secondary svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
 }
 
 .board-hero-secondary:hover {
@@ -1907,11 +1902,11 @@ textarea:focus-visible {
 .leaderboard-card {
   position: relative;
   display: grid;
-  min-height: 88px;
+  height: 112px;
   grid-template-columns: 58px minmax(230px, 1fr) auto minmax(126px, 0.22fr);
-  gap: 14px;
+  gap: 18px;
   align-items: center;
-  padding: 12px 14px;
+  padding: 16px 18px;
   border: 1px solid #ded7ce;
   border-radius: 15px;
   background: #fffefa;
@@ -1922,7 +1917,7 @@ textarea:focus-visible {
     background 160ms ease,
     box-shadow 160ms ease;
   content-visibility: auto;
-  contain-intrinsic-size: auto 88px;
+  contain-intrinsic-size: auto 112px;
 }
 
 .leaderboard-card:is(:hover, :focus-within) {
@@ -1970,48 +1965,26 @@ textarea:focus-visible {
   border-radius: 10px;
   background: var(--surface-soft);
   color: var(--ink);
-  font-size: 0.94rem;
-  font-weight: 780;
+  font-size: 1.08rem;
+  font-weight: 840;
   letter-spacing: -0.04em;
 }
 
-.rank-podium {
-  position: relative;
-  display: grid;
-  width: 52px;
-  height: 48px;
-  place-items: center;
-}
-
-.rank-podium svg {
-  position: absolute;
-  width: 52px;
-  height: 48px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.5;
-}
-
-.rank-podium .rank {
-  width: auto;
-  height: auto;
-  border: 0;
-  background: transparent;
-  color: currentColor;
-  font-size: 0.9rem;
-}
-
-.rank-1 .rank-podium {
+.rank-1 .rank {
+  border: 1px solid #d9b664;
+  background: var(--gold-soft);
   color: var(--gold);
 }
 
-.rank-2 .rank-podium {
+.rank-2 .rank {
+  border: 1px solid #c8cdd4;
+  background: var(--silver-soft);
   color: var(--silver);
 }
 
-.rank-3 .rank-podium {
+.rank-3 .rank {
+  border: 1px solid #d7b095;
+  background: var(--bronze-soft);
   color: var(--bronze);
 }
 
@@ -2029,11 +2002,17 @@ textarea:focus-visible {
 .listing-identity {
   display: grid;
   min-width: 0;
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 16px;
   align-items: center;
   padding-block: 2px;
   text-decoration: none;
+}
+
+.listing-identity > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  max-width: min(100%, 56ch);
 }
 
 .leaderboard-card:hover .listing-identity strong {
@@ -2054,8 +2033,8 @@ textarea:focus-visible {
 
 .listing-mark {
   display: grid;
-  width: 56px;
-  height: 56px;
+  width: 70px;
+  height: 70px;
   place-items: center;
   border: 1px solid #ded6ce;
   border-radius: 12px;
@@ -2083,7 +2062,7 @@ textarea:focus-visible {
 }
 
 .listing-identity strong {
-  font-size: 1.02rem;
+  font-size: 1.1rem;
   letter-spacing: -0.02em;
 }
 
@@ -2097,11 +2076,11 @@ textarea:focus-visible {
   display: -webkit-box;
   overflow: hidden;
   margin-top: 2px;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
+  color: #4f4a44;
+  font-size: 0.875rem;
   line-height: 1.32;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
 }
 
 .listing-meta {
@@ -2112,7 +2091,7 @@ textarea:focus-visible {
   overflow: hidden;
   margin-top: 5px;
   color: var(--ink-faint);
-  font-size: 0.64rem;
+  font-size: 0.7rem;
   white-space: nowrap;
 }
 
@@ -2132,9 +2111,9 @@ textarea:focus-visible {
   position: relative;
   z-index: 3;
   flex: 0 0 auto;
-  color: var(--ink-soft);
-  font-size: 0.68rem;
-  font-weight: 720;
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 780;
   text-decoration: none;
 }
 
@@ -2166,8 +2145,9 @@ textarea:focus-visible {
 
 .board-amount .board-click-count {
   margin-top: 1px;
-  color: #938c84;
-  font-size: 0.61rem;
+  color: #514b45;
+  font-size: 0.7rem;
+  font-weight: 680;
 }
 
 .board-amount small .money {
@@ -2217,7 +2197,7 @@ textarea:focus-visible {
   min-width: 168px;
   gap: 5px;
   padding: 7px 12px;
-  border-radius: 9px;
+  border-radius: 999px;
   background: var(--rank-action);
   box-shadow: 0 4px 12px rgb(125 32 43 / 0.18);
   color: #fff;
@@ -3596,7 +3576,7 @@ textarea:focus-visible {
 
 .site-footer {
   display: grid;
-  grid-template-columns: minmax(250px, 1fr) minmax(320px, auto);
+  grid-template-columns: minmax(250px, 0.8fr) minmax(420px, 1.2fr);
   gap: 26px 56px;
   padding: 30px 0 34px;
   border-top: 1px solid var(--line);
@@ -3615,9 +3595,11 @@ textarea:focus-visible {
 }
 
 .site-footer nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
   align-items: flex-start;
   justify-content: flex-end;
-  gap: 48px;
+  gap: 32px;
 }
 
 .footer-link-group {
@@ -3883,6 +3865,11 @@ textarea:focus-visible {
     line-height: 0.96;
   }
 
+  .board-intro-home h1 {
+    font-size: 1.6rem;
+    line-height: 1.05;
+  }
+
   .board-eyebrow {
     font-size: 0.58rem !important;
     letter-spacing: 0.13em;
@@ -3891,7 +3878,7 @@ textarea:focus-visible {
   .board-intro-home .board-hero-copy > p:not(.board-eyebrow) {
     max-width: 315px;
     margin: 8px auto 0;
-    font-size: 0.91rem;
+    font-size: 0.84rem;
     line-height: 1.42;
     text-align: center;
   }
@@ -4004,23 +3991,18 @@ textarea:focus-visible {
   }
 
   .leaderboard-card {
-    min-height: 0;
+    height: 168px;
     grid-template-columns: 38px minmax(0, 1fr) auto;
     column-gap: 9px;
     row-gap: 8px;
-    padding: 11px 12px;
+    padding: 14px;
     border-radius: 15px;
   }
 
   .rank {
-    width: 36px;
-    height: 32px;
-  }
-
-  .rank-podium,
-  .rank-podium svg {
-    width: 44px;
-    height: 42px;
+    width: 38px;
+    height: 36px;
+    font-size: 1.02rem;
   }
 
   .rank-leader {
@@ -4030,32 +4012,53 @@ textarea:focus-visible {
   .listing-identity {
     grid-row: 1;
     grid-column: 2 / -1;
-    grid-template-columns: 60px minmax(0, 1fr);
-    gap: 9px;
+    grid-template-columns: 75px minmax(0, 1fr);
+    gap: 12px;
   }
 
   .listing-mark {
-    width: 60px;
-    height: 60px;
+    width: 75px;
+    height: 75px;
     border-radius: 12px;
   }
 
   .listing-identity strong {
     display: -webkit-box;
-    font-size: 0.96rem;
+    font-size: 1.05rem;
     white-space: normal;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
 
   .listing-identity small {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     line-height: 1.3;
+  }
+
+  .listing-identity > span:last-child {
+    max-width: 100%;
   }
 
   .listing-meta {
     margin-top: 3px;
     font-size: 0.75rem;
+  }
+
+  .listing-meta em {
+    min-width: 0;
+    overflow: hidden;
+    flex: 1 1 auto;
+    text-overflow: ellipsis;
+  }
+
+  .listing-detail-link {
+    margin-left: 4px;
+  }
+
+  .listing-meta em + span,
+  .listing-host,
+  .listing-host + span {
+    display: none;
   }
 
   .leaderboard-card .board-amount {
@@ -4074,10 +4077,17 @@ textarea:focus-visible {
   }
 
   .button-quote {
+    min-height: 38px;
     min-width: 0;
     justify-content: center;
     padding-inline: 10px;
-    font-size: 0.72rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+  }
+
+  .button-claim-spot {
+    min-height: 38px;
+    border-radius: 999px;
   }
 
   .invitation-row {
@@ -4290,9 +4300,17 @@ textarea:focus-visible {
 
   .site-footer nav {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
     justify-content: stretch;
+  }
+
+  .footer-link-group {
+    min-width: 0;
+  }
+
+  .site-footer .footer-link-group a {
+    overflow-wrap: anywhere;
   }
 
   .footer-meta {
