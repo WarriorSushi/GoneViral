@@ -199,7 +199,10 @@ details.
    practical, inventory team-wide projects/add-ons, set the lowest acceptable
    on-demand budget, enable the available hard pause for production deployments,
    and verify web/email/SMS alerts. Record only sanitized plan and control
-   evidence.
+   evidence. The owner's 6 September decision to wait for traction before
+   purchasing Pro does not waive this gate: promotion intended to obtain paying
+   customers and real payment requests cannot be certified on Hobby under
+   Vercel's published commercial-use definition.
 7. Preserve and use the existing hosted `goneviral` Supabase project in Mumbai;
    do not create, reset, or duplicate it. Verify its reviewed migrations,
    schema/Data API boundaries and advisors, set exact

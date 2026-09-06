@@ -414,9 +414,13 @@ clean after the merge.
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint. These are not current
   launch blockers absent a relevant new failure or owner risk decision.
-- Vercel Pro purchase/configuration/cost-control evidence immediately before
-  commercial launch; Hobby is temporarily accepted for non-commercial,
-  production-shaped pre-launch testing.
+- Vercel Pro purchase/configuration/cost-control evidence before commercial
+  use. On 6 September the owner deferred purchase until the site shows traction.
+  That decision does not waive Vercel's published Hobby restriction: the current
+  paid-placement site cannot be certified for promotion intended to obtain
+  paying customers or for real payment requests while it remains on Hobby.
+  Hobby remains accepted only for bounded non-commercial, production-shaped
+  pre-launch testing unless Vercel provides a different written determination.
 - Continuing daily encrypted-backup cadence; the current fresh archive and
   checksum pass, but no GoneViral/Supabase scheduled backup task exists. The
   shared Supabase project remains an explicit owner exception to environment
@@ -644,3 +648,13 @@ matching plaintext directories, and freshness inside the cleanup command's
 manual cadence remains authoritative. The owner then confirmed copying only
 this new archive and sidecar to private off-device storage. No account,
 location, link, credential, or passphrase is recorded.
+
+A same-day traffic-measurement audit found no current website-visit tracking in
+the application. Only outbound listing clicks are counted. The Vercel project
+has a Web Analytics record but the feature is disabled, and the application has
+neither the `@vercel/analytics` dependency nor its root-layout component.
+Vercel Web Analytics can provide private page-view, visitor, route, and referrer
+reporting within Hobby limits. A public lifetime footer total is not currently
+available and would not be reliable from Hobby's one-month guaranteed reporting
+window without separate durable aggregation. No analytics or footer change was
+implemented pending the owner's exact metric/display decision.
