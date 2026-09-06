@@ -678,3 +678,21 @@ post-deployment reload remained at one. The focused Production-browser check
 passed at seven desktop/mobile/tablet browser-viewports. This presentation
 follow-up changed no counter semantics, database, payment, ranking, provider,
 or listing state.
+
+## 2026-09-06 compact mobile-card follow-up
+
+The owner reopened only the mobile listing-card presentation after observing
+that the second card clipped its total-click count and placed its action too
+close to the bottom border. Pull request `#43` passed required CI run
+`34047166728`, squash-merged as
+`289db762ab3d235085eb56e0ea8628716b601beb`, and reached READY Production
+deployment `dpl_6kzDLuRDYQTdMRMwH6voEjC2UxQB`. Mobile Main and Daily cards now
+use fixed 144-pixel geometry with a logo-first, small-rank hierarchy; compact
+single-line identity content; and a protected lower row for money, click totals,
+and pill actions. Automated containment checks pass at 360, 390, and 412
+pixels for both boards, and the canonical 390-pixel Main view visibly shows the
+second card's click total and action with clear bottom spacing. Production Daily
+currently has no eligible entry, so its populated state was verified with the
+local production-shaped seeded fixture. Desktop styling, payment/ranking logic,
+database/provider state, and the owner-approved coral-button contrast exception
+are unchanged. The post-deployment error scan was clean.
