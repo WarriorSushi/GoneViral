@@ -18,6 +18,9 @@ describe("prelaunch cleanup safety boundary", () => {
 
   it("retains the linked active super-admin Auth user", () => {
     expect(cleanup).toContain("retainedAdminUserIds.has(user.id)");
+    expect(cleanup).toContain(
+      "data.users.every((user) => retainedAdminUserIds.has(user.id))",
+    );
     expect(cleanup).toContain("remainingAuthUsers !== 1");
   });
 
