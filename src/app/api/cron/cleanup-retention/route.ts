@@ -1,4 +1,5 @@
 import { readServerEnv } from "@/config/env/server";
+import { deleteExpiredSiteVisitDedupe } from "@/server/analytics/site-visits";
 import { deleteExpiredClickDedupe } from "@/server/clicks/outbound-redirect";
 
 export async function GET(request: Request) {
@@ -10,8 +11,12 @@ export async function GET(request: Request) {
     );
   }
 
+  const [deletedClickDedupe, deletedSiteVisitDedupe] = await Promise.all([
+    deleteExpiredClickDedupe(),
+    deleteExpiredSiteVisitDedupe(),
+  ]);
   return Response.json(
-    { deletedClickDedupe: await deleteExpiredClickDedupe() },
+    { deletedClickDedupe, deletedSiteVisitDedupe },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

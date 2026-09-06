@@ -199,7 +199,11 @@ details.
    practical, inventory team-wide projects/add-ons, set the lowest acceptable
    on-demand budget, enable the available hard pause for production deployments,
    and verify web/email/SMS alerts. Record only sanitized plan and control
-   evidence.
+   evidence. On 6 September the owner explicitly accepted the published
+   commercial-use divergence, directed launch with payments on Hobby, and
+   deferred Pro until traction appears, intending an upgrade within days if it
+   does. Track this as an immediate post-launch exception rather than a launch
+   blocker, and do not represent Hobby as commercially compliant.
 7. Preserve and use the existing hosted `goneviral` Supabase project in Mumbai;
    do not create, reset, or duplicate it. Verify its reviewed migrations,
    schema/Data API boundaries and advisors, set exact

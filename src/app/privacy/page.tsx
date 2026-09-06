@@ -79,7 +79,18 @@ export default function PrivacyPage() {
         </p>
       </section>
       <section>
-        <h2>5. Service providers and disclosures</h2>
+        <h2>5. Website visit count</h2>
+        <p>
+          The footer shows an estimated cumulative visit count. To avoid
+          counting repeated refreshes, the server derives a keyed, one-way
+          identifier from coarse request metadata, scoped to one India Standard
+          Time day. The raw network address is not stored in the visit record.
+          The same visitor may count again on another day, and automated-traffic
+          filtering is not perfect, so this is not a unique-person count.
+        </p>
+      </section>
+      <section>
+        <h2>6. Service providers and disclosures</h2>
         <p>
           We use Supabase for database, authentication, and storage; Vercel for
           hosting and delivery; Resend for transactional email; Sentry for
@@ -102,7 +113,7 @@ export default function PrivacyPage() {
         </p>
       </section>
       <section>
-        <h2>6. International processing</h2>
+        <h2>7. International processing</h2>
         <p>
           Providers may process or store data outside your state or India. We
           select established providers and use contractual, access-control, and
@@ -110,7 +121,7 @@ export default function PrivacyPage() {
         </p>
       </section>
       <section>
-        <h2>7. Retention</h2>
+        <h2>8. Retention</h2>
         <ul>
           <li>
             Public listing records remain while a listing is active and may be
@@ -132,6 +143,11 @@ export default function PrivacyPage() {
             schedule.
           </li>
           <li>
+            One-way daily website-visit identifiers are normally removed after
+            eight days; only the daily aggregate remains in the displayed
+            cumulative total.
+          </li>
+          <li>
             Abandoned staging uploads and incomplete application data are
             removed on a shorter operational schedule where no legal or fraud
             need requires retention.
@@ -139,7 +155,7 @@ export default function PrivacyPage() {
         </ul>
       </section>
       <section>
-        <h2>8. Your choices and requests</h2>
+        <h2>9. Your choices and requests</h2>
         <p>
           Subject to applicable exceptions, you may ask for a summary of your
           data, correction, completion, erasure, withdrawal of consent, or
@@ -150,7 +166,7 @@ export default function PrivacyPage() {
         </p>
       </section>
       <section>
-        <h2>9. Security and children</h2>
+        <h2>10. Security and children</h2>
         <p>
           We use encryption, least-privilege access, private schemas, signed
           owner links, provider signature verification, restricted storage,
@@ -165,7 +181,7 @@ export default function PrivacyPage() {
         </p>
       </section>
       <section>
-        <h2>10. Changes and grievances</h2>
+        <h2>11. Changes and grievances</h2>
         <p>
           Material changes receive a new version and effective date. Contact
           Syed Irfan Ullah Quadri using the details on the{" "}

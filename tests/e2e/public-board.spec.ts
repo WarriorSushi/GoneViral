@@ -119,6 +119,7 @@ test("production build renders a truthful empty board", async ({
   await expect(
     page.getByTestId("board-empty").getByRole("link", { name: "Get listed" }),
   ).toBeVisible();
+  await expect(page.getByText(/^\d[\d,]* visits$/)).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await expectNoPrivateMarkers(await page.content());
   expect(consoleErrors).toEqual([]);

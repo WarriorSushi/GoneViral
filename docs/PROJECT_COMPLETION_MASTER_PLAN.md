@@ -414,9 +414,13 @@ clean after the merge.
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint. These are not current
   launch blockers absent a relevant new failure or owner risk decision.
-- Vercel Pro purchase/configuration/cost-control evidence immediately before
-  commercial launch; Hobby is temporarily accepted for non-commercial,
-  production-shaped pre-launch testing.
+- Owner-accepted Vercel hosting exception: on 6 September the owner explicitly
+  directed commercial launch with payments on Hobby and deferred Pro until
+  traction appears, intending to upgrade within days if it does. This is an
+  acknowledged divergence from Vercel's published commercial-use restriction,
+  not a satisfied provider gate. Under the owner's direction it is tracked as
+  an immediate post-launch follow-up instead of a launch blocker; no one should
+  describe Hobby as commercially compliant.
 - Continuing daily encrypted-backup cadence; the current fresh archive and
   checksum pass, but no GoneViral/Supabase scheduled backup task exists. The
   shared Supabase project remains an explicit owner exception to environment
@@ -644,3 +648,21 @@ matching plaintext directories, and freshness inside the cleanup command's
 manual cadence remains authoritative. The owner then confirmed copying only
 this new archive and sidecar to private off-device storage. No account,
 location, link, credential, or passphrase is recorded.
+
+A same-day traffic-measurement audit found no existing website-visit tracking;
+only outbound listing clicks were counted. The owner selected the no-cost,
+application-owned option instead of Vercel or Cloudflare analytics. The implementation
+uses the existing private Postgres boundary to count at most one visit per
+browser/address estimate per IST day, retains only a keyed one-way daily digest
+for eight days, preserves daily aggregates, and displays their cumulative sum
+in the footer. Preview/non-canonical hosts and common bots/prefetches are
+excluded. The Privacy policy states that this is an estimate, not a unique-
+person count. No ranking, payment, provider, or listing data participates.
+
+Implementation commits `5d930ec` and `45dedc1` are in pull request `#40`.
+Required CI run `34044969047` and the Vercel Preview passed. Hosted migration
+`20260906161947_site_visit_counter` is applied and verified: both private tables
+exist, application privileges are least-privilege, browser roles cannot read
+them, and both tables started empty. Hosted advisors found no counter-specific
+security warning; the expiry index is expectedly unused before traffic. Merge
+and Production verification remain pending.

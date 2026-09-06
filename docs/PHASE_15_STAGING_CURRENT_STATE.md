@@ -1643,3 +1643,35 @@ the cleanup command's 24-hour freshness requirement. Zero matching Windows
 scheduled tasks exist, so the accepted manual cadence remains authoritative.
 The owner then confirmed copying only this new pair to private off-device
 storage. No account, location, link, credential, or passphrase is recorded.
+
+## 2026-09-06 Vercel Pro deferral and traffic-measurement audit
+
+The owner explicitly directed commercial launch with payments on Vercel Hobby,
+intends to promote GoneViral on X, and deferred Pro until traction appears, with
+an intended upgrade within days if it does. The exact live deployment still
+reports `plan: hobby`, while Vercel's published fair-use definition treats
+requesting or processing payment and advertising a product or service for
+financial gain as commercial use. The owner accepts this temporary divergence
+and directed that it no longer block launch. It remains recorded as an immediate
+post-launch follow-up and must not be represented as commercially compliant.
+This decision does not itself authorize destructive cleanup, Dodo Live Mode, a
+real transaction, or Phase 16; their existing boundaries remain.
+
+The initial audit found only privacy-bounded outbound listing clicks; Vercel Web
+Analytics is disabled and its client package is absent. The owner selected an
+independent no-cost counter backed by the existing private Postgres connection.
+The implementation counts at most one visit per browser/address estimate per
+IST day, stores only a keyed one-way daily digest, expires it after eight days,
+preserves daily aggregates, and shows their cumulative sum in the footer.
+Preview/non-canonical hosts and common bots/prefetches are excluded. The Privacy
+policy describes the estimate and retention. This counter is separate from
+listing clicks, ranking, payment, provider, and listing data.
+
+Implementation commits `5d930ec` and `45dedc1` are under pull request `#40`.
+Required CI run `34044969047` and its Vercel Preview passed. Hosted migration
+`20260906161947_site_visit_counter` was then applied to the existing Supabase
+project. Read-only verification found both private tables present, exact
+least-privilege application grants, no browser-role read access, and zero
+starting rows. The post-DDL advisor check found no counter-specific security
+warning; the new expiry index is reported unused as expected before traffic.
+Merge and Production verification remain pending.

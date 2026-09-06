@@ -861,6 +861,44 @@ export const clickDedupe = privateSchema.table(
   ],
 );
 
+export const siteVisitDedupe = privateSchema.table(
+  "site_visit_dedupe",
+  {
+    businessDate: date("business_date", { mode: "string" }).notNull(),
+    visitorHmac: text("visitor_hmac").notNull(),
+    createdAt: createdAt(),
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+      mode: "date",
+    }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.businessDate, table.visitorHmac] }),
+    check(
+      "site_visit_dedupe_expiry_after_creation",
+      sql`${table.expiresAt} > ${table.createdAt}`,
+    ),
+    index("site_visit_dedupe_expiry_idx").on(table.expiresAt),
+  ],
+);
+
+export const siteVisitDailyTotals = privateSchema.table(
+  "site_visit_daily_totals",
+  {
+    businessDate: date("business_date", { mode: "string" }).primaryKey(),
+    uniqueVisits: bigint("unique_visits", { mode: "bigint" })
+      .default(sql`0`)
+      .notNull(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    check(
+      "site_visit_daily_totals_nonnegative",
+      sql`${table.uniqueVisits} >= 0`,
+    ),
+  ],
+);
+
 export const emailOutbox = privateSchema.table(
   "email_outbox",
   {
