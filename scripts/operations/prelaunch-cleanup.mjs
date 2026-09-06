@@ -377,6 +377,7 @@ try {
       );
       if (deletionError) throw deletionError;
     }
+    if (data.users.every((user) => retainedAdminUserIds.has(user.id))) break;
   }
 
   const [categoryCheck] = await sql`

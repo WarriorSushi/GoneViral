@@ -697,7 +697,7 @@ local production-shaped seeded fixture. Desktop styling, payment/ranking logic,
 database/provider state, and the owner-approved coral-button contrast exception
 are unchanged. The post-deployment error scan was clean.
 
-## 2026-09-06 pre-live cleanup authorization and safety correction
+## 2026-09-06 pre-live cleanup completion
 
 The owner explicitly authorized the bounded destructive pre-live cleanup of
 synthetic/Test Mode business data. Preflight resolved the linked hosted project
@@ -730,7 +730,22 @@ run `34052190906`, merge
 The following owner attempt reverified the archive and then stopped before
 aggregate review or deletion confirmation with private-schema permission
 denied. The temporary CLI login can `SET ROLE postgres` but uses `INHERIT FALSE`,
-so it does not receive `postgres` privileges automatically. The cleanup now
-performs the same session-local role switch already proven by the backup path.
-Cleanup still has not run; this bounded role-switch correction requires its
-focused checks, review, and merge before another owner attempt.
+so it does not receive `postgres` privileges automatically. The session-local
+role switch shipped through pull request `#47`, CI run `34052629026`, merge
+`6282cebd0fd566becd75ddfe6bae4006b95ac4ae`, and READY Production deployment
+`dpl_87yxSTEzcjj5687KmQVPD7a6WYWm`.
+
+The final owner run passed archive verification and the exact project-bound
+confirmation, then completed the destructive business-data and Storage cleanup.
+Independent hosted evidence confirms every non-retained application/private
+table is empty, both listing buckets contain zero objects, exactly six active
+categories and one linked active super-admin/Auth user remain, the four-visit
+counter/dedupe state is unchanged, and payment/refund/redirect flags remain off.
+The public board contains none of the synthetic listing names and the sitemap
+has no listing URL. The command then hung while repeatedly relisting the one
+intentionally retained Auth user; its exact process tree was terminated after
+the destructive work, and cleanup must not be rerun. The archive hash still
+matches, and the missing verified report now exists beside it. A one-condition
+termination fix prevents recurrence and is the only remaining cleanup-code
+follow-up before merge. Dodo Live Mode and a real transaction remain separately
+gated.

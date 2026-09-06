@@ -1705,7 +1705,7 @@ local seeded fixture. Desktop presentation, payment/ranking behavior, database,
 provider state, cleanup gates, and the owner-approved coral-button contrast
 exception are unchanged. The new Production deployment error scan was clean.
 
-## 2026-09-06 authorized pre-live cleanup preflight
+## 2026-09-06 authorized pre-live cleanup
 
 The owner explicitly authorized destructive removal of all synthetic/Test Mode
 business data. Read-only hosted preflight found six listings, six financial
@@ -1746,6 +1746,29 @@ stopped before aggregate review, deletion confirmation, or any mutation with
 temporary `cli_login_postgres` session is a member of `postgres` with
 `INHERIT FALSE` and `SET TRUE`: it can assume `postgres` but does not inherit its
 private-schema privileges. The backup path already switches to `postgres`; the
-cleanup script did not. The bounded follow-up adds that same session-local
-`SET ROLE postgres` before all queries. No passphrase or credential was printed
-or stored, and cleanup still has not run.
+cleanup script did not. The bounded session-local `SET ROLE postgres` correction
+shipped through pull request `#47`, required CI run `34052629026`, merge
+`6282cebd0fd566becd75ddfe6bae4006b95ac4ae`, and READY Production deployment
+`dpl_87yxSTEzcjj5687KmQVPD7a6WYWm`.
+
+The final owner run reverified the encrypted archive and printed only aggregate
+pre-cleanup counts. After the owner typed the exact project-bound phrase, it
+deleted all six synthetic listings, associated ranking/payment/provider/audit/
+email/moderation/rate-limit data, and all four public listing Storage objects.
+It preserved all six active categories, the sole linked active super-admin/Auth
+user, four cumulative site visits across two daily rows and four dedupe rows,
+and the four operational flags. The process then looped while relisting the
+intentionally retained Auth user and was stopped without rerunning cleanup.
+
+Independent hosted verification found every non-retained `app`/`private` table
+at zero, both listing Storage buckets empty, exactly one linked active
+super-admin/Auth user, six active categories, the visit aggregate/dedupe exact,
+and `payments_enabled`, `provider_refunds_enabled`, and outbound redirects off;
+`read_only` remains safely false. The canonical homepage contains none of the
+synthetic listing names, and the sitemap contains no listing URL. The exact
+hung cleanup process tree was terminated and zero matching processes remain.
+The missing hash-bound report was written beside the archive as
+`D:\GoneViral-Backups\20260906T152908Z-fndssapjkaicxzeruuvv-cleanup-report.json`;
+its archive SHA-256 matches. Cleanup is complete and must not be rerun. A
+bounded loop-termination correction now exits when a page contains only the
+retained Auth user; its focused verification remains before merge.
