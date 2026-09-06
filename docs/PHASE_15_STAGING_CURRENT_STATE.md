@@ -1717,12 +1717,24 @@ non-INR, or admin-corrected record exists. The encrypted archive
 present, the SHA-256 matches, age is under two hours, no matching plaintext
 directory exists, and no cleanup report exists yet.
 
-Cleanup has not run. The database `payments_enabled` Safety Control is now off,
-and Vercel Production `PAYMENTS_ENABLED` is set to false for the next deployment;
-provider refunds remain off. Preflight discovered that the older cleanup command
-would also remove the required super-admin and the newly introduced live visit
-counter. A bounded safety correction is in progress to preserve those records
-while deleting synthetic listings, payment/ranking artifacts, non-admin Auth
-users, and listing Storage. Because the command prompts for the backup
-passphrase and exact project-bound deletion phrase, only the owner may run it in
-their own terminal after the correction passes review, CI, and Production.
+Cleanup has not run. The database `payments_enabled` Safety Control and Vercel
+Production `PAYMENTS_ENABLED` are both off; provider refunds remain off. The
+bounded correction preserving the required super-admin and live visit counter
+shipped through pull request `#45`, required CI run `34048469323`, merge
+`3650022`, and READY Production deployment
+`dpl_6sSMW24nbkhG1qgxENEMFKsebyJT`. The public join route confirms payments are
+paused and exposes no checkout form.
+
+The owner's first interactive attempt from outside the repository stopped at
+Vercel's project-link check. The second stopped before script startup because
+PowerShell's `vercel.ps1` shim mishandled the command separator. After switching
+to `vercel.cmd`, the script stopped before archive verification or any hosted
+mutation because `DATABASE_DIRECT_URL` and `SUPABASE_SECRET_KEY` are Vercel
+Sensitive values and therefore cannot be exported locally. A local correction
+now reuses the proven backup flow: Vercel supplies only readable Production
+safety settings, while the authenticated Supabase CLI supplies a temporary
+linked database session and modern secret key in process memory. A no-delete
+runtime preflight successfully obtained both credentials and reached the
+deliberately nonexistent archive boundary. Syntax and the focused safety test
+pass. The correction still requires review/CI/merge before the owner reruns the
+interactive cleanup command; no passphrase or credential was printed or stored.

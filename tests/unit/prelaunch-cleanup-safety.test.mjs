@@ -20,4 +20,11 @@ describe("prelaunch cleanup safety boundary", () => {
     expect(cleanup).toContain("retainedAdminUserIds.has(user.id)");
     expect(cleanup).toContain("remainingAuthUsers !== 1");
   });
+
+  it("uses temporary linked credentials instead of exporting Vercel secrets", () => {
+    expect(cleanup).toContain('"db",\n  "dump",\n  "--linked"');
+    expect(cleanup).toContain('"projects",\n    "api-keys"');
+    expect(cleanup).not.toContain("process.env.DATABASE_DIRECT_URL");
+    expect(cleanup).not.toContain("process.env.SUPABASE_SECRET_KEY");
+  });
 });
