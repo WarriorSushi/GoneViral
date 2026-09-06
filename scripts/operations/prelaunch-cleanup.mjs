@@ -110,6 +110,13 @@ const supabase = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } },
 );
 const buckets = ["goneviral-logo-staging", "goneviral-logo-public"];
+const retainedDatabaseTables = new Set([
+  "app.categories",
+  "private.admin_users",
+  "private.operational_flags",
+  "private.site_visit_daily_totals",
+  "private.site_visit_dedupe",
+]);
 
 async function countAuthUsers() {
   let count = 0;
@@ -162,6 +169,33 @@ async function readDatabaseCounts() {
 }
 
 try {
+  const retainedAdminUsers = await sql`
+    SELECT admin.user_id::text AS user_id
+    FROM private.admin_users AS admin
+    JOIN auth.users AS auth_user ON auth_user.id = admin.user_id
+    WHERE admin.role = 'super_admin' AND admin.is_active
+  `;
+  const [adminState] = await sql`
+    SELECT count(*)::bigint AS admin_count
+    FROM private.admin_users
+  `;
+  if (
+    retainedAdminUsers.length !== 1 ||
+    BigInt(adminState.admin_count) !== 1n
+  ) {
+    throw new Error(
+      "Cleanup requires exactly one linked active super_admin to preserve.",
+    );
+  }
+  const retainedAdminUserIds = new Set(
+    retainedAdminUsers.map((row) => row.user_id),
+  );
+  const [visitState] = await sql`
+    SELECT count(*)::bigint AS daily_rows,
+           coalesce(sum(unique_visits), 0)::bigint AS cumulative_visits,
+           (SELECT count(*) FROM private.site_visit_dedupe)::bigint AS dedupe_rows
+    FROM private.site_visit_daily_totals
+  `;
   const [unexpectedFinancial] = await sql`
     SELECT
       count(*) FILTER (WHERE entry_type = 'admin_financial_correction')::bigint AS admin_corrections,
@@ -236,7 +270,15 @@ try {
     FROM pg_tables
     WHERE schemaname IN ('app', 'private')
       AND NOT (schemaname = 'app' AND tablename = 'categories')
-      AND NOT (schemaname = 'private' AND tablename = 'operational_flags')
+      AND NOT (
+        schemaname = 'private'
+        AND tablename IN (
+          'admin_users',
+          'operational_flags',
+          'site_visit_daily_totals',
+          'site_visit_dedupe'
+        )
+      )
     ORDER BY schemaname, tablename
   `;
   for (const row of dataTables) {
@@ -273,6 +315,7 @@ try {
     if (error) throw error;
     if (!data.users.length) break;
     for (const user of data.users) {
+      if (retainedAdminUserIds.has(user.id)) continue;
       const { error: deletionError } = await supabase.auth.admin.deleteUser(
         user.id,
         false,
@@ -288,6 +331,22 @@ try {
   `;
   const remainingDatabaseCounts = await readDatabaseCounts();
   const remainingAuthUsers = await countAuthUsers();
+  const [remainingAdminState] = await sql`
+    SELECT count(*)::bigint AS admin_count,
+           count(*) FILTER (
+             WHERE admin.role = 'super_admin'
+               AND admin.is_active
+               AND auth_user.id IS NOT NULL
+           )::bigint AS linked_active_super_admins
+    FROM private.admin_users AS admin
+    LEFT JOIN auth.users AS auth_user ON auth_user.id = admin.user_id
+  `;
+  const [remainingVisitState] = await sql`
+    SELECT count(*)::bigint AS daily_rows,
+           coalesce(sum(unique_visits), 0)::bigint AS cumulative_visits,
+           (SELECT count(*) FROM private.site_visit_dedupe)::bigint AS dedupe_rows
+    FROM private.site_visit_daily_totals
+  `;
   const remainingStorage = Object.fromEntries(
     await Promise.all(
       buckets.map(async (bucket) => [
@@ -298,13 +357,17 @@ try {
   );
   const nonConfigurationRows = Object.entries(remainingDatabaseCounts).filter(
     ([table, count]) =>
-      !["app.categories", "private.operational_flags"].includes(table) &&
-      BigInt(count) !== 0n,
+      !retainedDatabaseTables.has(table) && BigInt(count) !== 0n,
   );
   if (
     BigInt(categoryCheck.count) !== 6n ||
     BigInt(categoryCheck.active_count) !== 6n ||
-    remainingAuthUsers !== 0 ||
+    remainingAuthUsers !== 1 ||
+    BigInt(remainingAdminState.admin_count) !== 1n ||
+    BigInt(remainingAdminState.linked_active_super_admins) !== 1n ||
+    Object.keys(visitState).some(
+      (key) => BigInt(remainingVisitState[key]) !== BigInt(visitState[key]),
+    ) ||
     Object.values(remainingStorage).some((count) => count !== 0) ||
     nonConfigurationRows.length
   ) {
@@ -318,7 +381,9 @@ try {
     completedAtUtc: new Date().toISOString(),
     projectRef: linkedRef,
     result: "prelaunch_test_data_cleanup_verified",
+    retainedAdminCount: "1",
     retainedCategoryCount: "6",
+    retainedCumulativeVisitCount: String(visitState.cumulative_visits),
   };
   const reportPath = resolve(
     dirname(archivePath),

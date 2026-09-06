@@ -696,3 +696,22 @@ currently has no eligible entry, so its populated state was verified with the
 local production-shaped seeded fixture. Desktop styling, payment/ranking logic,
 database/provider state, and the owner-approved coral-button contrast exception
 are unchanged. The post-deployment error scan was clean.
+
+## 2026-09-06 pre-live cleanup authorization and safety correction
+
+The owner explicitly authorized the bounded destructive pre-live cleanup of
+synthetic/Test Mode business data. Preflight resolved the linked hosted project
+`fndssapjkaicxzeruuvv`, reverified the fresh encrypted archive and matching
+SHA-256 sidecar, found no retained plaintext, and confirmed zero live, unknown,
+non-INR, or admin-corrected financial records. The database payment Safety
+Control is now off and the Vercel Production `PAYMENTS_ENABLED` value is set to
+false for the next deployment; refunds remain off.
+
+Cleanup has not run yet. Preflight found that the older repository command would
+also delete the sole linked active super-admin and the new live visit counter,
+which were outside the owner's authorization. The command is being corrected to
+preserve those required records while still removing every synthetic listing,
+ranking/payment artifact, non-admin Auth user, and listing Storage object. Run
+the interactive command only after this correction passes review, CI, and
+Production deployment; the owner must enter the archive passphrase and exact
+project-bound deletion phrase in their own terminal.

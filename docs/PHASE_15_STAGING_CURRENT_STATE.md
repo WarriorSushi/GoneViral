@@ -1704,3 +1704,25 @@ empty, so its populated-card state was verified against the production-shaped
 local seeded fixture. Desktop presentation, payment/ranking behavior, database,
 provider state, cleanup gates, and the owner-approved coral-button contrast
 exception are unchanged. The new Production deployment error scan was clean.
+
+## 2026-09-06 authorized pre-live cleanup preflight
+
+The owner explicitly authorized destructive removal of all synthetic/Test Mode
+business data. Read-only hosted preflight found six listings, six financial
+ledger entries, one linked active super-admin/Auth user, four listing Storage
+objects, and two cumulative visit-counter visits. All financial/provider safety
+exception counts are zero: no live/unknown environment, unknown provider,
+non-INR, or admin-corrected record exists. The encrypted archive
+`D:\GoneViral-Backups\20260906T152908Z-fndssapjkaicxzeruuvv.7z` and sidecar are
+present, the SHA-256 matches, age is under two hours, no matching plaintext
+directory exists, and no cleanup report exists yet.
+
+Cleanup has not run. The database `payments_enabled` Safety Control is now off,
+and Vercel Production `PAYMENTS_ENABLED` is set to false for the next deployment;
+provider refunds remain off. Preflight discovered that the older cleanup command
+would also remove the required super-admin and the newly introduced live visit
+counter. A bounded safety correction is in progress to preserve those records
+while deleting synthetic listings, payment/ranking artifacts, non-admin Auth
+users, and listing Storage. Because the command prompts for the backup
+passphrase and exact project-bound deletion phrase, only the owner may run it in
+their own terminal after the correction passes review, CI, and Production.

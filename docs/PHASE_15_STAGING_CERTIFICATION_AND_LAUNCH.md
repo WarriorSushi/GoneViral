@@ -215,11 +215,12 @@ pnpm ops:prelaunch-cleanup -- --backup-archive D:\GoneViral-Backups\<timestamp>-
 ```
 
 Review aggregate counts, re-enter the archive passphrase, and type the exact
-project-bound deletion phrase only after confirming every row/object/user is
-test data. The script aborts rather than touching live, unknown, non-INR, or
-admin-corrected financial history. Verify afterward that public boards,
-activity, sitemap listings, Auth users, and both Storage buckets are empty;
-the six categories and safe disabled flags remain. Preserve the non-sensitive
+project-bound deletion phrase only after confirming the targeted rows and
+objects are test data. The script aborts rather than touching live, unknown,
+non-INR, or admin-corrected financial history. Verify afterward that public
+boards, activity, sitemap listings, non-admin Auth users, and both Storage
+buckets are empty; the linked active super-admin, six categories, live visit
+counter/dedupe, and safe disabled flags remain. Preserve the non-sensitive
 cleanup report beside the encrypted backup.
 
 ## Production and live-money hard gates

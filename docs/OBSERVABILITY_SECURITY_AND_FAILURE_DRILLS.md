@@ -306,7 +306,8 @@ identity agree, Dodo `test_mode`, `PAYMENTS_ENABLED=false`, and a matching
 backup less than 24 hours old. It aborts on live/unknown/non-INR/admin-corrected
 financial records, prints counts rather than row content, and requires an exact
 project-bound deletion phrase. It removes both Storage buckets, application
-test data, and Auth users while preserving the exact six categories and safe
+test data, and non-admin Auth users while preserving the linked active
+super-admin, exact six categories, live visit counter/dedupe, and safe
 operational configuration. Any partial failure requires payments-off/read-only
 incident handling and restoration/reconciliation from the verified backup; do
 not rerun blindly.
