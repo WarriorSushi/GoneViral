@@ -30,6 +30,8 @@ const expectedTables = [
   "private.reconciliation_items",
   "private.reconciliation_runs",
   "private.reports",
+  "private.site_visit_daily_totals",
+  "private.site_visit_dedupe",
 ].sort();
 
 const expectedCategories = [
@@ -126,7 +128,11 @@ try {
       has_table_privilege('goneviral_app', 'app.listing_assets', 'DELETE') as app_asset_delete,
       has_table_privilege('goneviral_app', 'private.admin_audit_events', 'DELETE') as app_audit_delete,
       has_table_privilege('goneviral_app', 'private.admin_refund_requests', 'UPDATE') as app_refund_update,
-      has_table_privilege('goneviral_app', 'private.admin_refund_requests', 'DELETE') as app_refund_delete
+      has_table_privilege('goneviral_app', 'private.admin_refund_requests', 'DELETE') as app_refund_delete,
+      has_table_privilege('goneviral_app', 'private.site_visit_dedupe', 'DELETE') as app_visit_dedupe_delete,
+      has_table_privilege('goneviral_app', 'private.site_visit_dedupe', 'UPDATE') as app_visit_dedupe_update,
+      has_table_privilege('goneviral_app', 'private.site_visit_daily_totals', 'UPDATE') as app_visit_total_update,
+      has_table_privilege('goneviral_app', 'private.site_visit_daily_totals', 'DELETE') as app_visit_total_delete
   `;
   assert.deepEqual(privilegeRows[0], {
     anon_app_usage: false,
@@ -138,6 +144,10 @@ try {
     app_refund_delete: false,
     app_refund_update: true,
     app_audit_delete: false,
+    app_visit_dedupe_delete: true,
+    app_visit_dedupe_update: false,
+    app_visit_total_delete: false,
+    app_visit_total_update: true,
   });
 
   const publicPrivileges = await sql`

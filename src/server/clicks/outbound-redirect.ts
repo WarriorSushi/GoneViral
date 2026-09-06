@@ -31,9 +31,7 @@ export type OutboundResolution = Readonly<{
 const BOT_USER_AGENT =
   /(?:bot|crawler|spider|slurp|preview|facebookexternalhit|whatsapp|telegrambot|discordbot|linkedinbot|skypeuripreview|headless|lighthouse|pagespeed)/i;
 
-export function shouldCountOutboundRequest(request: Request): boolean {
-  if (request.method !== "GET") return false;
-
+export function shouldCountBrowserRequest(request: Request): boolean {
   const purpose = `${request.headers.get("purpose") ?? ""} ${request.headers.get("sec-purpose") ?? ""}`;
   if (/prefetch|prerender/i.test(purpose)) return false;
   if (
@@ -45,6 +43,10 @@ export function shouldCountOutboundRequest(request: Request): boolean {
 
   const userAgent = request.headers.get("user-agent")?.trim();
   return Boolean(userAgent && !BOT_USER_AGENT.test(userAgent));
+}
+
+export function shouldCountOutboundRequest(request: Request): boolean {
+  return request.method === "GET" && shouldCountBrowserRequest(request);
 }
 
 export function clientAddress(request: Request): string | null {

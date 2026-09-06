@@ -414,13 +414,13 @@ clean after the merge.
   screen-reader/accessibility, hosted cropper/email edge-case, and safe hosted
   operational coverage recorded in the checkpoint. These are not current
   launch blockers absent a relevant new failure or owner risk decision.
-- Vercel Pro purchase/configuration/cost-control evidence before commercial
-  use. On 6 September the owner deferred purchase until the site shows traction.
-  That decision does not waive Vercel's published Hobby restriction: the current
-  paid-placement site cannot be certified for promotion intended to obtain
-  paying customers or for real payment requests while it remains on Hobby.
-  Hobby remains accepted only for bounded non-commercial, production-shaped
-  pre-launch testing unless Vercel provides a different written determination.
+- Owner-accepted Vercel hosting exception: on 6 September the owner explicitly
+  directed commercial launch with payments on Hobby and deferred Pro until
+  traction appears, intending to upgrade within days if it does. This is an
+  acknowledged divergence from Vercel's published commercial-use restriction,
+  not a satisfied provider gate. Under the owner's direction it is tracked as
+  an immediate post-launch follow-up instead of a launch blocker; no one should
+  describe Hobby as commercially compliant.
 - Continuing daily encrypted-backup cadence; the current fresh archive and
   checksum pass, but no GoneViral/Supabase scheduled backup task exists. The
   shared Supabase project remains an explicit owner exception to environment
@@ -649,12 +649,12 @@ manual cadence remains authoritative. The owner then confirmed copying only
 this new archive and sidecar to private off-device storage. No account,
 location, link, credential, or passphrase is recorded.
 
-A same-day traffic-measurement audit found no current website-visit tracking in
-the application. Only outbound listing clicks are counted. The Vercel project
-has a Web Analytics record but the feature is disabled, and the application has
-neither the `@vercel/analytics` dependency nor its root-layout component.
-Vercel Web Analytics can provide private page-view, visitor, route, and referrer
-reporting within Hobby limits. A public lifetime footer total is not currently
-available and would not be reliable from Hobby's one-month guaranteed reporting
-window without separate durable aggregation. No analytics or footer change was
-implemented pending the owner's exact metric/display decision.
+A same-day traffic-measurement audit found no existing website-visit tracking;
+only outbound listing clicks were counted. The owner selected the no-cost,
+self-hosted option instead of Vercel or Cloudflare analytics. The implementation
+uses the existing private Postgres boundary to count at most one visit per
+browser/address estimate per IST day, retains only a keyed one-way daily digest
+for eight days, preserves daily aggregates, and displays their cumulative sum
+in the footer. Preview/non-canonical hosts and common bots/prefetches are
+excluded. The Privacy policy states that this is an estimate, not a unique-
+person count. No ranking, payment, provider, or listing data participates.

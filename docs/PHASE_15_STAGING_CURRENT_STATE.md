@@ -1646,22 +1646,23 @@ storage. No account, location, link, credential, or passphrase is recorded.
 
 ## 2026-09-06 Vercel Pro deferral and traffic-measurement audit
 
-The owner deferred purchasing Vercel Pro until the site shows traction and
-intends to promote GoneViral on X. This does not waive the existing commercial
-hosting gate. The exact live deployment still reports `plan: hobby`, while
-Vercel's published fair-use definition treats requesting or processing payment
-and advertising a product or service for financial gain as commercial use.
-Promotion intended to obtain paying customers and real payment requests
-therefore cannot be certified on the present plan unless Vercel provides a
-different written determination. Dodo remains in Test Mode; cleanup, Live Mode,
-a real transaction, commercial launch, and Phase 16 remain unauthorized.
+The owner explicitly directed commercial launch with payments on Vercel Hobby,
+intends to promote GoneViral on X, and deferred Pro until traction appears, with
+an intended upgrade within days if it does. The exact live deployment still
+reports `plan: hobby`, while Vercel's published fair-use definition treats
+requesting or processing payment and advertising a product or service for
+financial gain as commercial use. The owner accepts this temporary divergence
+and directed that it no longer block launch. It remains recorded as an immediate
+post-launch follow-up and must not be represented as commercially compliant.
+This decision does not itself authorize destructive cleanup, Dodo Live Mode, a
+real transaction, or Phase 16; their existing boundaries remain.
 
-The application does not currently track website visits. It tracks only
-privacy-bounded outbound listing clicks. Read-only project inspection found a
-Vercel Web Analytics record but `features.webAnalytics: false`; `package.json`
-does not include `@vercel/analytics`, and the root layout does not render its
-tracking component. Vercel Web Analytics could be enabled for private
-page-view, visitor, route, and referrer reporting within Hobby limits. A public
-lifetime footer count would require a separately defined durable metric because
-Hobby guarantees only a one-month analytics reporting window. No provider,
-analytics, database, privacy-page, or footer state was changed.
+The initial audit found only privacy-bounded outbound listing clicks; Vercel Web
+Analytics is disabled and its client package is absent. The owner selected an
+independent no-cost counter backed by the existing private Postgres connection.
+The implementation counts at most one visit per browser/address estimate per
+IST day, stores only a keyed one-way daily digest, expires it after eight days,
+preserves daily aggregates, and shows their cumulative sum in the footer.
+Preview/non-canonical hosts and common bots/prefetches are excluded. The Privacy
+policy describes the estimate and retention. This counter is separate from
+listing clicks, ranking, payment, provider, and listing data.
