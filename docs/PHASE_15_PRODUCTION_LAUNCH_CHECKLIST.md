@@ -1,6 +1,6 @@
 # Phase 15 production launch checklist
 
-Last reviewed: 2026-09-04 (Asia/Kolkata)
+Last reviewed: 2026-09-06 (Asia/Kolkata)
 
 ## Current decision
 
@@ -35,9 +35,12 @@ lawyer or CA pre-approve these policies before launch.
 2. Production Vercel, domain/TLS, Dodo Test Mode, Resend, Turnstile, Sentry,
    Supabase Auth, and Cloudflare target configuration must be certified. The
    shared Supabase exception and controlled credential sharing are authorized.
-3. Exact release candidate `a44649064f2334ecd8340439cec9235481ca34d5`
-   passed required CI. The production-shaped non-destructive smoke and one full
-   synthetic Dodo Test Mode purchase must pass before this gate closes.
+3. Exact frozen application candidate
+   `ca6a0fab257b313099f27596a6949c2846a7c5cd` passed required CI run
+   `34037787272` and reached READY Production deployment
+   `dpl_EGruw1NaXh4y7Hsk322GSR7SJMST`. The latest live smoke passed; the earlier
+   full synthetic Dodo Test Mode purchase remains valid because the later
+   candidate changes did not alter payment/provider logic.
 4. Live payment/refund activation requires a fresh owner authorization after a
    separately authorized founder-owned low-value live transaction reconciles
    exactly once through Dodo, the provider event, payment record, immutable
@@ -155,10 +158,13 @@ details.
    change architecture or product rules, perform pre-live cleanup, switch Dodo
    to Live Mode, enable public payments, or freeze the release candidate. This
    gate closes only on explicit owner UI approval and does not replace or weaken
-   any payment, security, backup, rollback, or certification check below.
+   any payment, security, backup, rollback, or certification check below. This
+   gate closed on 6 September 2026 after pull request `#37` reached Production
+   and the owner approved the result.
 4. Freeze one release candidate after focused tests and the single required CI
-   boundary. Batch policy, topology, and evidence documentation in that same
-   candidate.
+   boundary. Application commit
+   `ca6a0fab257b313099f27596a6949c2846a7c5cd` is frozen; evidence-only
+   documentation after that point does not change its application tree.
 5. Configure the exact Production values without exposing their contents. The
    owner explicitly permits controlled reuse of the existing Preview Supabase,
    Dodo Test Mode, Resend, Sentry, and scheduler-related values during
@@ -202,7 +208,9 @@ details.
    production admin with MFA/AAL2, and establish the accepted encrypted daily
    backup/staleness procedure. Supabase Free remains an owner-accepted risk:
    possible inactivity pause, no managed PITR, self-managed backup dependence,
-   and recovery downtime.
+   and recovery downtime. The 6 September post-freeze encrypted archive and
+   sidecar pass local freshness, integrity, and plaintext-retention checks;
+   owner confirmation of the new pair's private off-device copy remains open.
 8. Configure and verify the Production email domain/subdomains, SPF, DKIM, and
    DMARC; application Resend webhook; the current Dodo Test Mode webhook and
    dynamic return URL; Turnstile production hostnames; Sentry project,

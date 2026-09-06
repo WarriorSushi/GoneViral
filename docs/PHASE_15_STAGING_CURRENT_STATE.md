@@ -1,6 +1,6 @@
 # Phase 15 staging and production-shaped pre-launch current state
 
-Last updated: 2026-09-05 (Asia/Kolkata)
+Last updated: 2026-09-06 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for Phase 15 work
 on `codex/phase-15-staging`. Read the authority
@@ -23,6 +23,11 @@ addresses, or backup passphrases here.
   is expected and must later be removed only through the separately authorized
   safe pre-live cleanup.
 - Dodo remains in Test Mode. The Preview remains protected and noindex.
+- The owner approved the final Production UI on 6 September 2026. Application
+  commit `ca6a0fab257b313099f27596a6949c2846a7c5cd` and READY Production
+  deployment `dpl_EGruw1NaXh4y7Hsk322GSR7SJMST` are the frozen launch-candidate
+  application tree. This approval does not authorize cleanup, Dodo Live Mode, a
+  real transaction, public payment enablement, commercial launch, or Phase 16.
 - The owner chose a risk-based critical path to conserve Codex usage. Prioritize
   money correctness, authorization, data privacy, infrastructure isolation, and
   safe shutdown. Record all other checks honestly as deferred/unverified; do
@@ -1607,8 +1612,10 @@ therefore an informed owner-approved contrast exception. The accessibility
 test remains unchanged and continues to report the exception rather than being
 weakened. Ranking, payment, hosted data, and provider state are unchanged.
 
-The subsequent owner card/hero/footer review is implemented locally on
-`codex/owner-listing-card-polish`. It uses the shared public components and CSS
+The subsequent owner card/hero/footer review shipped through pull request `#37`,
+required CI run `34037787272`, merge
+`ca6a0fab257b313099f27596a6949c2846a7c5cd`, and READY Production deployment
+`dpl_EGruw1NaXh4y7Hsk322GSR7SJMST`. It uses the shared public components and CSS
 only: Main and Daily cards have fixed responsive geometry, bounded one-line
 descriptions, larger logos/type, darker detail and click labels, mobile pill
 actions, and plain tonal top-three ranks without laurels. The homepage hero is
@@ -1619,4 +1626,20 @@ lint, TypeScript, the production browser build, and responsive layout checks at
 1440, 390, and 360 pixels pass. Axe continues to report only the previously
 approved white-on-`#E57255` exception; no test was filtered or weakened.
 Ranking, payment, database, provider configuration, hosted data, cleanup, and
-Phase 16 remain unchanged.
+Phase 16 remain unchanged. The owner approved the resulting Production UI, so
+this exact application tree is now frozen and the final UI gate is closed.
+
+The first post-freeze backup-freshness check was read-only and found the newest
+archive 42.7 hours old. Codex stopped before the interactive command. The owner
+then ran `pnpm ops:backup:hosted` in their terminal, entered the passphrase only
+through 7-Zip's masked prompts, and reported `Everything is Ok` plus successful
+encrypted-archive verification. The new archive is
+`D:\GoneViral-Backups\20260906T152908Z-fndssapjkaicxzeruuvv.7z`, 80,512 bytes,
+last written `2026-09-06T15:30:32.3144071Z`, with its matching `.7z.sha256` and
+exact source commit `932b1694b8072224fe8d18dc45b2844c98510062`. An independent
+local check confirmed both files are present, the recomputed SHA-256 matches,
+the corresponding plaintext directory count is zero, and the archive is inside
+the cleanup command's 24-hour freshness requirement. Zero matching Windows
+scheduled tasks exist, so the accepted manual cadence remains authoritative.
+Copying this new pair to private off-device storage is not yet owner-confirmed;
+no account, location, link, credential, or passphrase is recorded.

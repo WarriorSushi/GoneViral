@@ -1,6 +1,6 @@
 # GoneViral project completion master plan
 
-Last updated: 2026-09-05 (Asia/Kolkata)
+Last updated: 2026-09-06 (Asia/Kolkata)
 
 ## Purpose and authority
 
@@ -33,7 +33,7 @@ contents in this file.
 | Pre-launch scheduler hardening             | Deployed; natural/failure/owner-alert evidence passed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
 | Public-repository content audit            | Passed; owner already made repo public                | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Public-repository settings hardening       | Complete                                              | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 production-shaped pre-launch gate | Deployed; bounded certification active                | checkpoint exact resume point                         |
+| Phase 15 production-shaped pre-launch gate | Application tree frozen; live gates pending           | checkpoint exact resume point                         |
 | Commercial Production launch               | Not authorized/not complete                           | Phase 15 runbook                                      |
 | Phase 16                                   | Not started                                           | implementation plan                                   |
 
@@ -97,6 +97,11 @@ The budget-plan commit pushed before scheduler implementation was
   desktop and mobile. Implement only owner-requested micro-polish through normal
   review, CI, deployment, and owner re-review. Explicit owner UI approval closes
   this gate; it does not weaken any payment, security, backup, or rollback gate.
+- The owner approved the final Production UI on 6 September 2026. Application
+  commit `ca6a0fab257b313099f27596a6949c2846a7c5cd` and READY Production
+  deployment `dpl_EGruw1NaXh4y7Hsk322GSR7SJMST` are the frozen launch-candidate
+  application tree. Later evidence-only documentation does not reopen UI scope
+  or change that application tree.
 
 ## Completed foundation: Phases 0–14
 
@@ -399,10 +404,6 @@ clean after the merge.
 
 ### Remaining Phase 15 gates
 
-- Final Owner UI/UX Polish: owner inspection of current Production, followed
-  only by specifically requested micro-polish, normal verification/deployment,
-  and explicit owner approval before launch-candidate freeze or destructive
-  pre-live cleanup. No speculative redesign or architecture work is authorized.
 - Independent missing-run detection is deployed through the Sentry outbox Cron
   Monitor. Natural one-minute/five-minute cadence, earlier hourly/daily cadence,
   one isolated scheduled failure, and owner receipt of its Sentry email all
@@ -613,8 +614,10 @@ the 4.5:1 normal-text requirement. This is an informed owner-approved contrast
 exception; the automated accessibility test remains unchanged and continues to
 report it rather than concealing the tradeoff.
 
-The next bounded owner-review correction is implemented on
-`codex/owner-listing-card-polish`. Shared Main/Daily cards now have fixed
+The next bounded owner-review correction shipped through pull request `#37`,
+required CI run `34037787272`, merge
+`ca6a0fab257b313099f27596a6949c2846a7c5cd`, and READY Production deployment
+`dpl_EGruw1NaXh4y7Hsk322GSR7SJMST`. Shared Main/Daily cards now have fixed
 desktop/mobile heights, one-line descriptions with a longer bounded desktop
 measure, larger logos and typography, darker detail/click text, compact pill
 actions on mobile, and laurel-free gold/silver/bronze rank treatments. The
@@ -625,4 +628,19 @@ TypeScript, production browser builds, and responsive layout/overflow checks at
 1440, 390, and 360 pixels pass. The focused browser flow still reports only the
 already owner-approved white-on-coral contrast exception; its Axe assertion was
 not weakened. Ranking, payments, database, provider, and hosted data are
-unchanged.
+unchanged. The owner then approved the resulting Production UI, closing the
+final UI gate and freezing this exact application tree as the launch candidate.
+
+A read-only backup-freshness check immediately after the freeze first found the
+newest archive 42.7 hours old. The owner then ran `pnpm ops:backup:hosted` in
+their own terminal and reported successful encrypted-archive verification. The
+new archive
+`D:\GoneViral-Backups\20260906T152908Z-fndssapjkaicxzeruuvv.7z` is 80,512
+bytes and tied to exact source commit
+`932b1694b8072224fe8d18dc45b2844c98510062`. Independent local verification
+found the archive and sidecar present, the recomputed SHA-256 matching, zero
+matching plaintext directories, and freshness inside the cleanup command's
+24-hour requirement. No matching Windows scheduled task exists, so the accepted
+manual cadence remains authoritative. Copying this new archive and sidecar to
+private off-device storage is not yet owner-confirmed; no account, location,
+link, credential, or passphrase is recorded.
