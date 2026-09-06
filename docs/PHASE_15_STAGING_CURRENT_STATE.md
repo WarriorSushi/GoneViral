@@ -1678,5 +1678,12 @@ found no counter-specific security warning; the new expiry index is reported
 unused as expected before traffic. A live canonical visit displayed `1 visit`;
 a reload stayed at one, and the private aggregate/dedupe row counts both
 remained one for the IST day. The owner then directed moving the count from the
-footer into a premium top-bar capsule. Follow-up commit `728fdfd` is under pull
-request `#41`; only placement, presentation, and singular/plural copy change.
+footer into a premium top-bar capsule. Pull request `#41` passed final required
+CI run `34045788136`, squash-merged as
+`850e5e3f36aab4ec3248f4f269d0db11c7370263`, and reached READY Production
+deployment `dpl_2zpWPN5GkKxhHGKPvWRHauixhFRo`. The canonical page visibly shows
+the dark capsule with coral live dot and correct `1 visit` copy in the header;
+a post-deployment reload remained at one. The same header passed the focused
+Production-browser check at seven desktop/mobile/tablet browser-viewports. No
+counter semantics, database, payment, ranking, provider, or listing state
+changed in this presentation follow-up.
