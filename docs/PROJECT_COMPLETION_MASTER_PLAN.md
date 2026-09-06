@@ -651,10 +651,18 @@ location, link, credential, or passphrase is recorded.
 
 A same-day traffic-measurement audit found no existing website-visit tracking;
 only outbound listing clicks were counted. The owner selected the no-cost,
-self-hosted option instead of Vercel or Cloudflare analytics. The implementation
+application-owned option instead of Vercel or Cloudflare analytics. The implementation
 uses the existing private Postgres boundary to count at most one visit per
 browser/address estimate per IST day, retains only a keyed one-way daily digest
 for eight days, preserves daily aggregates, and displays their cumulative sum
 in the footer. Preview/non-canonical hosts and common bots/prefetches are
 excluded. The Privacy policy states that this is an estimate, not a unique-
 person count. No ranking, payment, provider, or listing data participates.
+
+Implementation commits `5d930ec` and `45dedc1` are in pull request `#40`.
+Required CI run `34044969047` and the Vercel Preview passed. Hosted migration
+`20260906161947_site_visit_counter` is applied and verified: both private tables
+exist, application privileges are least-privilege, browser roles cannot read
+them, and both tables started empty. Hosted advisors found no counter-specific
+security warning; the expiry index is expectedly unused before traffic. Merge
+and Production verification remain pending.

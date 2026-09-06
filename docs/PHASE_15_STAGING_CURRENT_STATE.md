@@ -1666,3 +1666,12 @@ preserves daily aggregates, and shows their cumulative sum in the footer.
 Preview/non-canonical hosts and common bots/prefetches are excluded. The Privacy
 policy describes the estimate and retention. This counter is separate from
 listing clicks, ranking, payment, provider, and listing data.
+
+Implementation commits `5d930ec` and `45dedc1` are under pull request `#40`.
+Required CI run `34044969047` and its Vercel Preview passed. Hosted migration
+`20260906161947_site_visit_counter` was then applied to the existing Supabase
+project. Read-only verification found both private tables present, exact
+least-privilege application grants, no browser-role read access, and zero
+starting rows. The post-DDL advisor check found no counter-specific security
+warning; the new expiry index is reported unused as expected before traffic.
+Merge and Production verification remain pending.
