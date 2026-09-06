@@ -177,7 +177,7 @@ test("robots, sitemap, canonicals, and effective legal metadata stay public-safe
       nodes.map((node) => node.getAttribute("content") ?? ""),
     );
   expect(legalRobots.join(",")).not.toMatch(/noindex/i);
-  await expect(page.getByText("Effective owner-approved policy")).toBeVisible();
+  await expect(page.getByText("Policy details")).toBeVisible();
   await expect(page.getByText("2026-09-04-v2")).toBeVisible();
   await expect(page.getByText("4 September 2026")).toBeVisible();
   await expect(
@@ -339,7 +339,9 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await expect(
     firstCard.getByText("example.com", { exact: true }),
   ).toBeVisible();
-  await expect(firstCard.getByText("0 clicks", { exact: true })).toBeVisible();
+  await expect(
+    firstCard.getByText("0 total clicks", { exact: true }),
+  ).toBeVisible();
   const detailsLink = firstCard.getByRole("link", {
     name: "See details for Monsoon Studio",
   });
@@ -351,7 +353,7 @@ test("low-population Main board is first-viewport, accessible, and private-data 
   await expect(page.getByText("Nothing simulated.")).toHaveCount(0);
   const rankAction = firstCard.getByRole("link", { name: /Take #1/ });
   await expect(rankAction).toBeVisible();
-  await expect(rankAction).toHaveCSS("background-color", "rgb(159, 45, 54)");
+  await expect(rankAction).toHaveCSS("background-color", "rgb(229, 114, 85)");
   const rankActionBox = await rankAction.boundingBox();
   expect(rankActionBox).not.toBeNull();
   expect(rankActionBox!.height).toBeGreaterThanOrEqual(44);
@@ -478,8 +480,14 @@ test("Main, Daily, category, and listing navigation use real public projections"
   await expect(
     page.locator('.money:visible:text-is("₹12,500")').first(),
   ).toBeVisible();
+  await expect(page.locator(".category-tabs:visible")).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: /Take Daily #1/ }),
+  ).toHaveAttribute("href", /scope=daily/);
   await expectNoPrivateMarkers(await todayResponse.text());
+  await capture(page, testInfo, `${testInfo.project.name}-daily`);
 
+  await page.getByRole("link", { name: "All time", exact: true }).click();
   await page.getByRole("link", { name: "Tech & Apps", exact: true }).click();
   await expect(page).toHaveURL(/\/category\/tech-apps$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -539,8 +547,11 @@ test("Main, Daily, category, and listing navigation use real public projections"
     page.getByRole("region", { name: "Share this current result" }),
   ).toContainText("#1");
   await expect(
-    page.getByText("Links are safety-checked by GoneViral"),
+    page.getByText("External websites are not endorsed by GoneViral."),
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Outrank this listing/ }),
+  ).toHaveAttribute("href", /\/join\?target=monsoon-studio/);
   const metadataDescription = await page
     .locator('meta[name="description"]')
     .getAttribute("content");
@@ -568,7 +579,7 @@ test("Main, Daily, category, and listing navigation use real public projections"
 
   await page.goto("/how-it-works");
   await expect(
-    page.getByRole("heading", { level: 1, name: "Pay. Get seen." }),
+    page.getByRole("heading", { level: 1, name: "Pay. Get listed." }),
   ).toBeVisible();
   await expect(
     page.getByText("Three simple steps to get on the board."),
@@ -592,7 +603,7 @@ test("How it works preserves board context in an accessible route modal", async 
   await trigger.click();
 
   await expect(page).toHaveURL(/\/how-it-works$/);
-  const dialog = page.getByRole("dialog", { name: "Pay. Get seen." });
+  const dialog = page.getByRole("dialog", { name: "Pay. Get listed." });
   await expect(dialog).toBeVisible();
   await expect(page.locator("#site-content")).toHaveAttribute(
     "aria-hidden",
@@ -610,7 +621,7 @@ test("How it works preserves board context in an accessible route modal", async 
     })),
   ).toEqual({ body: "hidden", html: "hidden" });
   await expect(
-    dialog.getByRole("heading", { level: 1, name: "Pay. Get seen." }),
+    dialog.getByRole("heading", { level: 1, name: "Pay. Get listed." }),
   ).toBeFocused();
   await expect(
     dialog.getByRole("list", { name: "Three simple steps" }),
@@ -619,11 +630,8 @@ test("How it works preserves board context in an accessible route modal", async 
   await expect(dialog.getByText("Pay ₹499+", { exact: true })).toBeVisible();
   await expect(dialog.getByText("Move higher", { exact: true })).toBeVisible();
   await expect(
-    dialog.getByText("₹499 gets you on the board. More spend = higher rank."),
-  ).toBeVisible();
-  await expect(
     dialog.getByText(
-      "All-time ranking never resets; daily ranking resets at midnight IST",
+      /Money applied today determines today.*Daily starts fresh at midnight IST/,
     ),
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
@@ -666,10 +674,12 @@ test("How it works preserves board context in an accessible route modal", async 
   await expect(dialog).toHaveCount(0);
 
   await trigger.click();
-  await dialog.getByRole("link", { name: /Join for ₹499/ }).click();
+  await dialog
+    .getByRole("link", { name: /Get listed starting from ₹499/ })
+    .click();
   await expect(page).toHaveURL(/\/join$/);
   await expect(
-    page.getByRole("dialog", { name: /Put your link/ }),
+    page.getByRole("dialog", { name: /Get on the board/ }),
   ).toBeVisible();
 });
 
@@ -683,7 +693,7 @@ test("guest join reaches an honest pending flow without browser authority", asyn
 
   await page.goto("/join");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Put your link",
+    "Get on the board",
   );
   await page
     .getByRole("button", { name: "Continue to secure checkout" })

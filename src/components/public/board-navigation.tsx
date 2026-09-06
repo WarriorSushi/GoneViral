@@ -6,7 +6,7 @@ export function BoardTabs({ active }: { readonly active: "main" | "today" }) {
   return (
     <nav className="board-tabs" aria-label="Leaderboard views">
       <Link aria-current={active === "main" ? "page" : undefined} href="/">
-        Main
+        All time
       </Link>
       <Link
         aria-current={active === "today" ? "page" : undefined}

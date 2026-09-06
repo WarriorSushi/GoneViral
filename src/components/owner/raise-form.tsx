@@ -30,13 +30,15 @@ function Submit() {
 }
 
 export function RaiseForm({
+  allTimeTargets,
+  dailyTargets,
   minimumRupees,
   slug,
-  targets,
 }: {
+  allTimeTargets: readonly Target[];
+  dailyTargets: readonly Target[];
   minimumRupees: string;
   slug: string;
-  targets: readonly Target[];
 }) {
   const action = useMemo(() => submitRaise.bind(null, slug), [slug]);
   const [state, formAction] = useActionState<RaiseActionState, FormData>(
@@ -44,12 +46,33 @@ export function RaiseForm({
     {},
   );
   const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [scope, setScope] = useState<"all_time" | "daily">("all_time");
   const [targetSlug, setTargetSlug] = useState("");
   const [amount, setAmount] = useState(minimumRupees);
+  const targets = scope === "daily" ? dailyTargets : allTimeTargets;
   const target = targets.find((candidate) => candidate.slug === targetSlug);
   return (
     <form action={formAction} className="join-form owner-raise-form">
       <input name="idempotencyKey" type="hidden" value={idempotencyKey} />
+      <input
+        name="targetScope"
+        type="hidden"
+        value={targetSlug ? scope : "all_time"}
+      />
+      <label>
+        Ranking target
+        <select
+          value={scope}
+          onChange={(event) => {
+            setScope(event.target.value as "all_time" | "daily");
+            setTargetSlug("");
+            setAmount(minimumRupees);
+          }}
+        >
+          <option value="all_time">All time</option>
+          <option value="daily">Daily</option>
+        </select>
+      </label>
       <label>
         Takeover target (optional)
         <select
@@ -63,11 +86,15 @@ export function RaiseForm({
             setAmount(selected?.quoteRupees ?? minimumRupees);
           }}
         >
-          <option value="">Just add to my total</option>
+          <option value="">
+            {scope === "daily"
+              ? "Choose a Daily position"
+              : "Just add to my total"}
+          </option>
           {targets.map((item) => (
             <option key={item.slug} value={item.slug}>
-              Take #{item.rank} · {item.name} ·{" "}
-              {formatWholeRupees(item.quoteRupees)}
+              Take {scope === "daily" ? "Daily " : ""}#{item.rank} · {item.name}{" "}
+              · {formatWholeRupees(item.quoteRupees)}
             </option>
           ))}
         </select>
@@ -75,8 +102,10 @@ export function RaiseForm({
       {target ? (
         <p className="form-notice">
           Server quote: pay at least {formatWholeRupees(target.quoteRupees)} to
-          exceed the target’s current total by ₹1. This is an estimate; the spot
-          is not held.
+          take{" "}
+          {scope === "daily" ? "the target’s Daily" : "the target’s All-time"}{" "}
+          position. The spot is not held
+          {scope === "daily" ? " and Daily starts fresh at midnight IST." : "."}
         </p>
       ) : null}
       <label>

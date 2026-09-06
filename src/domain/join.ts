@@ -13,6 +13,7 @@ import {
   REFUND_POLICY_VERSION,
   TERMS_VERSION,
 } from "../config/legal";
+import { isRankingScope, type RankingScope } from "./ranking";
 
 export {
   CONTENT_POLICY_VERSION,
@@ -55,6 +56,7 @@ export type JoinInput = Readonly<{
   policyVersion: typeof POLICY_VERSION;
   tagline: string;
   targetSlug: string | null;
+  targetScope: RankingScope;
   turnstileToken: string;
 }>;
 
@@ -80,6 +82,7 @@ export function validateJoinForm(formData: FormData): JoinValidation {
   const applicationIdempotencyKey = value(formData, "idempotencyKey");
   const turnstileToken = value(formData, "turnstileToken");
   const targetSlug = value(formData, "targetSlug") || null;
+  const targetScopeValue = value(formData, "targetScope") || "all_time";
   const amount = parseWholeInr(value(formData, "amount"));
   const destination = canonicalizeDestination(value(formData, "destination"));
   const errors: Partial<Record<JoinField, string>> = {};
@@ -100,6 +103,12 @@ export function validateJoinForm(formData: FormData): JoinValidation {
     errors.category = "Choose a category.";
   }
   if (targetSlug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(targetSlug)) {
+    errors.form = "That takeover target is invalid.";
+  }
+  if (
+    !isRankingScope(targetScopeValue) ||
+    (!targetSlug && targetScopeValue !== "all_time")
+  ) {
     errors.form = "That takeover target is invalid.";
   }
   if (!destination.ok) {
@@ -144,6 +153,7 @@ export function validateJoinForm(formData: FormData): JoinValidation {
       policyVersion: POLICY_VERSION,
       tagline,
       targetSlug,
+      targetScope: targetScopeValue as RankingScope,
       turnstileToken,
     },
   };

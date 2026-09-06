@@ -1562,3 +1562,37 @@ start destructive cleanup, configure Dodo Live credentials, enable public live
 payments, upgrade infrastructure for this checkpoint, perform a real payment,
 commercially launch, or begin Phase 16. All existing payment, security, backup,
 rollback, and certification gates remain intact.
+
+## 2026-09-06 final pre-launch correction implementation checkpoint
+
+The bounded implementation is complete locally on
+`codex/final-prelaunch-corrections`. Daily takeover pricing is now genuinely
+Daily: a new listing pays `max(₹499, target Daily + ₹1)`, and an existing
+listing pays `max(₹499, target Daily + ₹1 - buyer Daily)`. Ordinary All-time
+raise pricing is unchanged. Target scope, target, current IST business date,
+score, and price are resolved server-side; the additive eleventh migration
+stores immutable scope/date snapshots without replacing the existing financial
+intent trigger. Payment confirmation continues through the existing shared
+ledger/projection transaction, so each confirmed payment affects both lifetime
+and the confirmation day's Daily total.
+
+The approved UI/copy correction is also complete locally, including the exact
+hero and Join wording, #E57255 leaderboard actions, slow reduced-motion-safe
+`Rank higher.` gradient, All time/Daily toggle, truthful Daily amounts and
+clicks, denser mobile cards, removed header acquisition action, canonical
+#51-and-beyond targeting, direct listing-detail Outrank flow, and bounded legal,
+Manage, empty-state, and How It Works copy.
+
+Evidence is green: formatting, lint, TypeScript, 251/251 unit tests, 70/70
+database tests, all 11 migrations from an empty local database, schema and Data
+API isolation, database lint/advisors, 27-asset client-build leakage scan, and
+36/36 browser tests at 1440×900, 390×844, and 360×800 with manual screenshot
+review. The design detector reported only pre-existing symbol font fallbacks
+and the explicitly owner-required gradient treatment.
+
+No hosted database, Production deployment, provider setting, Safety Control,
+credential, synthetic Production listing, scheduler, or cleanup state changed.
+No real payment was made. Dodo remains in Test Mode. Required PR CI, hosted
+migration-before-application ordering, protected merge, Production deployment,
+and owner visual approval remain pending. Cleanup and Phase 16 remain blocked
+until that explicit owner approval.

@@ -28,6 +28,13 @@ export type PolicyCalculation = Readonly<{
   policyVersion: PolicyVersion;
 }>;
 
+export const RANKING_SCOPES = ["all_time", "daily"] as const;
+export type RankingScope = (typeof RANKING_SCOPES)[number];
+
+export function isRankingScope(value: string): value is RankingScope {
+  return RANKING_SCOPES.includes(value as RankingScope);
+}
+
 export type MinimumRaiseCalculation = PolicyCalculation &
   Readonly<{
     originalSponsorshipPaise: MoneyPaise;

@@ -8,7 +8,6 @@ const menuLinks = [
   { href: "/", label: "Main board" },
   { href: "/today", label: "Daily" },
   { href: "/how-it-works", label: "How it works" },
-  { href: "/join", label: "Get listed" },
   { href: "/manage", label: "Manage my listing" },
 ] as const;
 
@@ -34,11 +33,6 @@ export function SiteHeader() {
           <Link href="/how-it-works">How it works</Link>
           <Link href={"/manage" as Route}>Manage</Link>
         </nav>
-        <div className="header-actions">
-          <Link className="button button-primary" href="/join">
-            Get listed
-          </Link>
-        </div>
         <details className="mobile-menu">
           <summary aria-label="Open navigation menu">
             <svg aria-hidden="true" viewBox="0 0 24 24">

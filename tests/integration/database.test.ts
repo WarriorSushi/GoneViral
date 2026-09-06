@@ -722,6 +722,20 @@ describe("Phase 4 guest checkout constraints", () => {
         `,
       );
 
+      await expectDatabaseError(
+        transaction,
+        "55000",
+        (savepoint) => savepoint`
+          update private.payment_attempts
+          set ranking_scope = 'daily',
+              target_listing_id_snapshot = ${listingId},
+              target_rank_snapshot = 1,
+              target_total_paise_snapshot = 60000,
+              target_business_date_snapshot = current_date
+          where id = ${attempt!.id}
+        `,
+      );
+
       await transaction`
         update private.payment_attempts
         set provider_order_id = ${`session-${suffix}`},

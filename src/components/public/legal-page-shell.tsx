@@ -20,7 +20,7 @@ export function LegalPageShell({
       <h1>{title}</h1>
       <p className="legal-lede">{description}</p>
       <aside aria-label="Policy status" className="legal-policy-status">
-        <strong>Effective owner-approved policy</strong>
+        <strong>Policy details</strong>
         <dl className="legal-version">
           <div>
             <dt>Effective date</dt>

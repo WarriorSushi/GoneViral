@@ -63,7 +63,7 @@ export default async function Home(props: PageProps<"/">) {
       categories={categories}
       entries={board.entries}
       generatedAt={board.generatedAt}
-      helper="Put your brand, product or profile on the board. Higher confirmed spend takes the higher spot."
+      helper="List your brand, product or profile. Your total confirmed spend sets your rank."
       isPaginated={cursor.value !== null}
       nextCursor={board.nextCursor}
       pageHref="/"

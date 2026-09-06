@@ -14,6 +14,23 @@ describe("raise form money boundary", () => {
   it("accepts only whole INR and preserves paise internally", () => {
     const result = validateRaiseForm(form("1001"));
     expect(result.ok && result.value.amountPaise).toBe(100_100n);
+    expect(result.ok && result.value.targetScope).toBe("all_time");
+  });
+
+  it("accepts an explicit Daily target", () => {
+    const data = form("499");
+    data.set("targetSlug", "daily-leader");
+    data.set("targetScope", "daily");
+    expect(validateRaiseForm(data)).toMatchObject({
+      ok: true,
+      value: { targetScope: "daily", targetSlug: "daily-leader" },
+    });
+  });
+
+  it("rejects Daily scope without a target", () => {
+    const data = form("499");
+    data.set("targetScope", "daily");
+    expect(validateRaiseForm(data)).toMatchObject({ ok: false });
   });
 
   it.each(["1000.10", "1e3", "-1000", "+1000"])(

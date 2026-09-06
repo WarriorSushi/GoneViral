@@ -59,20 +59,24 @@ export function BoardPage({
       >
         <div className="board-hero-copy">
           {isHomepage ? (
-            <p className="board-eyebrow">
-              India&apos;s public sponsored leaderboard
-            </p>
+            <p className="board-eyebrow">India&apos;s sponsored leaderboard</p>
           ) : null}
-          <h1 id="board-title">{title}</h1>
+          <h1 id="board-title">
+            {isHomepage ? (
+              <>
+                Pay more. <span className="hero-rank-higher">Rank higher.</span>
+              </>
+            ) : (
+              title
+            )}
+          </h1>
           <p>{helper}</p>
           {isHomepage ? (
             <>
               <div className="board-hero-actions">
                 <Link className="button button-primary" href="/join">
-                  <span>Get listed from</span>
-                  <span className="board-hero-price" aria-label="499 rupees">
-                    <Money paise={INITIAL_SPONSORSHIP_MIN_PAISE.toString()} />
-                  </span>
+                  <span>Get listed starting from</span>
+                  <Money paise={INITIAL_SPONSORSHIP_MIN_PAISE.toString()} />
                 </Link>
                 <Link className="board-hero-secondary" href="/how-it-works">
                   How it works <span aria-hidden="true">→</span>
@@ -130,12 +134,14 @@ export function BoardPage({
           <div className="board-control-group board-mode-group">
             <BoardTabs active={activeBoard} />
           </div>
-          <div className="board-control-group category-group">
-            <CategoryTabs
-              categories={categories}
-              activeSlug={activeCategorySlug}
-            />
-          </div>
+          {activeBoard === "main" ? (
+            <div className="board-control-group category-group">
+              <CategoryTabs
+                categories={categories}
+                activeSlug={activeCategorySlug}
+              />
+            </div>
+          ) : null}
         </div>
 
         <Leaderboard

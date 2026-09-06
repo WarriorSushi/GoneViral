@@ -8,6 +8,7 @@ import { moneyPaise } from "@/domain/money";
 import { INITIAL_SPONSORSHIP_MIN_PAISE, POLICY_VERSION } from "@/domain/policy";
 import { PUBLIC_BOARD_PAGE_SIZE } from "@/domain/public-board";
 import { calculateTakeoverQuote } from "@/domain/ranking";
+import type { RankingScope } from "@/domain/ranking";
 import { readPublicEnv } from "@/config/env/public";
 
 import { getSqlClient } from "../client";
@@ -102,8 +103,10 @@ function normalizePageSize(limit: number | undefined): number {
 }
 
 function takeoverQuote(input: {
+  businessDate?: string;
   estimatedAt: string;
   rank: bigint;
+  rankingScope: RankingScope;
   targetTotalPaise: bigint;
 }): PublicTakeoverQuote {
   const quote = calculateTakeoverQuote({
@@ -113,8 +116,10 @@ function takeoverQuote(input: {
   });
 
   return {
+    businessDate: input.businessDate ?? null,
     estimatedAt: input.estimatedAt,
     policyVersion: quote.policyVersion,
+    rankingScope: input.rankingScope,
     requiredPaymentPaise: quote.requiredPaymentPaise.toString(),
     targetRank: input.rank.toString(),
     targetTotalPaise: input.targetTotalPaise.toString(),
@@ -266,6 +271,7 @@ export async function listMainBoard(input: {
     takeoverQuote: takeoverQuote({
       estimatedAt: generatedAt,
       rank: row.rank,
+      rankingScope: "all_time",
       targetTotalPaise: row.confirmedTotalPaise,
     }),
   }));
@@ -378,9 +384,11 @@ export async function listTodayBoard(input: {
     ...identityFromRow(row),
     rank: row.rank.toString(),
     takeoverQuote: takeoverQuote({
+      businessDate: input.businessDate,
       estimatedAt: generatedAt,
       rank: row.rank,
-      targetTotalPaise: row.confirmedTotalPaise,
+      rankingScope: "daily",
+      targetTotalPaise: row.todayNetPaise,
     }),
     todayNetPaise: row.todayNetPaise.toString(),
     todayTotalReachedAt: isoTimestamp(row.todayTotalReachedAt),
@@ -534,6 +542,7 @@ export async function getPublicListingDetail(input: {
     takeoverQuote: takeoverQuote({
       estimatedAt: generatedAt,
       rank: row.rank,
+      rankingScope: "all_time",
       targetTotalPaise: row.confirmedTotalPaise,
     }),
     todayNetPaise: row.todayNetPaise?.toString() ?? null,

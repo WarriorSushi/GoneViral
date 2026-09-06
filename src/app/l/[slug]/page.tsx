@@ -99,9 +99,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
     },
   );
   const shareDescription =
-    Number.parseInt(listing.currentMainRank, 10) <= 3
-      ? "Let people know this listing is one of the leaderboard’s top picks."
-      : "Turn this live leaderboard position into a ready-made social post.";
+    "Share this listing's current place on the paid leaderboard.";
 
   return (
     <main id="main-content" className="public-main listing-page">
@@ -133,7 +131,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
             <div className="listing-context">
               <span className="listing-category">{listing.category.name}</span>
               <span>
-                Featured since{" "}
+                Listed since{" "}
                 <time dateTime={listing.featuredSince}>{featuredSince}</time>
               </span>
             </div>
@@ -182,7 +180,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
             </div>
           </div>
           <div className="listing-rank-total">
-            <span>Total placement</span>
+            <span>Confirmed total</span>
             <Money paise={listing.confirmedTotalPaise} />
           </div>
         </aside>
@@ -205,7 +203,10 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
           <strong>#{listing.takeoverQuote.targetRank}</strong>
           <small>overall</small>
         </div>
-        <Link className="button button-primary" href="/how-it-works#join">
+        <Link
+          className="button button-primary"
+          href={`/join?target=${encodeURIComponent(listing.slug)}` as Route}
+        >
           Outrank this listing
           <ArrowUpRightIcon />
         </Link>
@@ -225,7 +226,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
       <ShareControls
         currentRank={listing.currentMainRank}
         description={shareDescription}
-        heading={`Share your current #${listing.currentMainRank} position`}
+        heading={`Share this #${listing.currentMainRank} placement`}
         listingName={listing.name}
         listingPath={`/l/${listing.slug}`}
       />
@@ -268,7 +269,7 @@ export default async function ListingPage(props: PageProps<"/l/[slug]">) {
       <footer className="listing-safety-note">
         <span>
           <ShieldIcon />
-          Links are safety-checked by GoneViral
+          External websites are not endorsed by GoneViral.
         </span>
         <Link href={`/l/${slug}/report` as Route}>Report listing</Link>
       </footer>

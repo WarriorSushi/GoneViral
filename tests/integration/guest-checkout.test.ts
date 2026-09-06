@@ -76,6 +76,7 @@ function joinInput(
     policyVersion: POLICY_VERSION,
     tagline: "A deterministic guest checkout integration test",
     targetSlug: null,
+    targetScope: "all_time",
     turnstileToken: `local-pass-${randomUUID()}`,
   };
 }

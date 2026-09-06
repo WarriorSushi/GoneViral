@@ -52,7 +52,23 @@ describe("guest join validation", () => {
       expect(result.value.email).toBe("owner@example.com");
       expect(result.value.amountPaise).toBe(49_900n);
       expect(result.value.phone).toBe("+919876543210");
+      expect(result.value.targetScope).toBe("all_time");
     }
+  });
+
+  it("accepts a validated Daily takeover scope only with a target", () => {
+    const result = validateJoinForm(
+      validForm({ targetScope: "daily", targetSlug: "daily-leader" }),
+    );
+    expect(result.ok && result.value.targetScope).toBe("daily");
+  });
+
+  it.each([
+    { targetScope: "daily" },
+    { targetScope: "invented", targetSlug: "daily-leader" },
+  ])("rejects a tampered takeover scope", (override) => {
+    const result = validateJoinForm(validForm(override));
+    expect(result).toMatchObject({ ok: false });
   });
 
   it.each([

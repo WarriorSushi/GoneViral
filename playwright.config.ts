@@ -54,10 +54,10 @@ export default defineConfig({
       },
     },
     {
-      name: "mobile-320",
+      name: "mobile-360",
       use: {
         ...devices["Desktop Chrome"],
-        viewport: { width: 320, height: 568 },
+        viewport: { width: 360, height: 800 },
       },
     },
     {

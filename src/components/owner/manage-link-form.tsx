@@ -32,7 +32,7 @@ export function ManageLinkForm() {
         type="email"
       />
       <p className="field-help" id="manage-email-help">
-        We send a one-time Supabase sign-in link. There is no password.
+        Sign in with a one-time email link. No password needed.
       </p>
       {state.fieldError ? (
         <p className="field-error" role="alert">

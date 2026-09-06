@@ -96,6 +96,13 @@ describe("Phase 3 public read model", () => {
     expect(board.entries.map((entry) => entry.slug)).not.toContain(
       "plotline-app",
     );
+    const leader = board.entries[0]!;
+    expect(leader.takeoverQuote).toMatchObject({
+      businessDate,
+      rankingScope: "daily",
+      requiredPaymentPaise: (BigInt(leader.todayNetPaise) + 100n).toString(),
+      targetTotalPaise: leader.todayNetPaise,
+    });
   });
 
   it("returns public listing detail and real allowlisted movement only", async () => {
@@ -145,8 +152,10 @@ describe("Phase 3 public read model", () => {
         "slug": "monsoon-studio",
         "tagline": "Independent motion and identity practice from Mumbai.",
         "takeoverQuote": {
+          "businessDate": null,
           "estimatedAt": "__ESTIMATED_AT__",
           "policyVersion": "2026-08-29-v2",
+          "rankingScope": "all_time",
           "requiredPaymentPaise": "2500100",
           "targetRank": "1",
           "targetTotalPaise": "2500000",

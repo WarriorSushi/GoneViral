@@ -6,12 +6,18 @@ import { connection } from "next/server";
 import { BackArrowIcon } from "@/components/icons/back-arrow-icon";
 import { RaiseForm } from "@/components/owner/raise-form";
 import { formatInr, moneyPaise } from "@/domain/money";
+import { INITIAL_SPONSORSHIP_MIN_PAISE } from "@/domain/policy";
 import {
   calculateMinimumRaise,
   calculateTakeoverQuote,
 } from "@/domain/ranking";
 import { getVerifiedAuthUser } from "@/server/auth/session";
-import { listMainBoard } from "@/server/db/repositories/leaderboards";
+import { toIstBusinessDate } from "@/domain/today";
+import {
+  getPublicListingDetail,
+  listMainBoard,
+  listTodayBoard,
+} from "@/server/db/repositories/leaderboards";
 import { requireOwnerListingBySlug } from "@/server/db/repositories/private/owners";
 
 export const metadata: Metadata = {
@@ -28,9 +34,12 @@ export default async function RaisePage({
   const user = await getVerifiedAuthUser();
   if (!user) redirect("/manage?error=session" as Route);
   const { slug } = await params;
-  const [listing, board] = await Promise.all([
+  const businessDate = toIstBusinessDate(new Date());
+  const [listing, board, dailyBoard, publicListing] = await Promise.all([
     requireOwnerListingBySlug(slug, user.id),
     listMainBoard({ cursor: null, limit: 20 }),
+    listTodayBoard({ businessDate, cursor: null, limit: 50 }),
+    getPublicListingDetail({ businessDate, slug }),
   ]);
   if (
     !listing ||
@@ -41,7 +50,7 @@ export default async function RaisePage({
   const minimum = calculateMinimumRaise(
     moneyPaise(BigInt(listing.originalSponsorshipPaise)),
   );
-  const targets = board.entries
+  const allTimeTargets = board.entries
     .filter((target) => target.slug !== slug)
     .map((target) => {
       const quote = calculateTakeoverQuote({
@@ -50,6 +59,22 @@ export default async function RaisePage({
         ),
         minimumRequiredPaise: minimum.minimumRequiredPaise,
         targetTotalPaise: moneyPaise(BigInt(target.confirmedTotalPaise)),
+      });
+      return {
+        name: target.name,
+        quoteRupees: (quote.requiredPaymentPaise / 100n).toString(),
+        rank: target.rank,
+        slug: target.slug,
+      };
+    });
+  const buyerDaily = moneyPaise(BigInt(publicListing?.todayNetPaise ?? "0"));
+  const dailyTargets = dailyBoard.entries
+    .filter((target) => target.slug !== slug)
+    .map((target) => {
+      const quote = calculateTakeoverQuote({
+        listingCurrentTotalPaise: buyerDaily,
+        minimumRequiredPaise: moneyPaise(INITIAL_SPONSORSHIP_MIN_PAISE),
+        targetTotalPaise: moneyPaise(BigInt(target.todayNetPaise)),
       });
       return {
         name: target.name,
@@ -79,9 +104,10 @@ export default async function RaisePage({
       </div>
       <section className="manage-auth-card owner-raise-card">
         <RaiseForm
+          allTimeTargets={allTimeTargets}
+          dailyTargets={dailyTargets}
           minimumRupees={(minimum.minimumRequiredPaise / 100n).toString()}
           slug={slug}
-          targets={targets}
         />
       </section>
     </main>

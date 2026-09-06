@@ -119,6 +119,24 @@ describe("sponsorship and ranking policy", () => {
     expect(floorBoundQuote.requiredPaymentPaise).toBe(inr("1000"));
   });
 
+  it.each([
+    ["0", "600", "499", "601"],
+    ["0", "100", "499", "499"],
+    ["400", "600", "499", "499"],
+    ["400", "2000", "499", "1601"],
+  ])(
+    "quotes Daily payment from buyer ₹%s and target ₹%s with floor ₹%s",
+    (buyer, target, floor, expected) => {
+      expect(
+        calculateTakeoverQuote({
+          listingCurrentTotalPaise: inr(buyer),
+          targetTotalPaise: inr(target),
+          minimumRequiredPaise: inr(floor),
+        }).requiredPaymentPaise,
+      ).toBe(inr(expected));
+    },
+  );
+
   it("orders by total, reached time, then ID", () => {
     const early = new Date("2026-08-28T10:00:00.000Z");
     const late = new Date("2026-08-28T11:00:00.000Z");

@@ -2,22 +2,45 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("server-only", () => ({}));
+
 import { ActivityFeed } from "@/components/public/activity-feed";
 import { Leaderboard } from "@/components/public/leaderboard";
 import type { PublicMainBoardEntry } from "@/server/db/repositories/public-types";
+import type {
+  PublicListingDetail,
+  PublicTodayBoardEntry,
+} from "@/server/db/repositories/public-types";
 
 const mocks = vi.hoisted(() => ({
   estimateNewListingRank: vi.fn(),
   getCachedMainBoard: vi.fn(),
   getCachedPublicActivity: vi.fn(),
   getCachedPublicCategories: vi.fn(),
+  getCachedPublicListingDetail: vi.fn(),
+  listActiveCategories: vi.fn(),
 }));
 
 vi.mock("@/server/cache/public-read-model", () => ({
   getCachedMainBoard: mocks.getCachedMainBoard,
   getCachedPublicActivity: mocks.getCachedPublicActivity,
   getCachedPublicCategories: mocks.getCachedPublicCategories,
+  getCachedPublicListingDetail: mocks.getCachedPublicListingDetail,
 }));
+
+vi.mock("@/server/db/repositories/categories", () => ({
+  listActiveCategories: mocks.listActiveCategories,
+}));
+
+vi.mock("@/config/env/public", () => ({
+  readPublicEnv: () => ({ NEXT_PUBLIC_TURNSTILE_SITE_KEY: undefined }),
+}));
+
+vi.mock("@/config/env/server", () => ({
+  readServerEnv: () => ({ TURNSTILE_MODE: "mock" }),
+}));
+
+vi.mock("next/server", () => ({ connection: vi.fn() }));
 
 vi.mock("@/server/db/repositories/leaderboards", () => ({
   estimateNewListingRank: mocks.estimateNewListingRank,
@@ -36,13 +59,42 @@ const entry: PublicMainBoardEntry = {
   slug: "example",
   tagline: "Example listing",
   takeoverQuote: {
+    businessDate: null,
     estimatedAt: "2026-09-04T10:00:00.000Z",
     policyVersion: "2026-01-01",
+    rankingScope: "all_time",
     requiredPaymentPaise: "50100",
     targetRank: "1",
     targetTotalPaise: "50000",
   },
   uniqueClicks: "0",
+};
+
+const detail: PublicListingDetail = {
+  ...entry,
+  currentMainRank: "87",
+  featuredSince: "2026-09-01T10:00:00.000Z",
+  movements: [],
+  todayNetPaise: "60000",
+  todayRank: "1",
+};
+
+const todayEntry: PublicTodayBoardEntry = {
+  ...entry,
+  confirmedTotalPaise: "5000000",
+  rank: "1",
+  takeoverQuote: {
+    businessDate: "2026-09-06",
+    estimatedAt: "2026-09-06T10:00:00.000Z",
+    policyVersion: "2026-08-29-v2",
+    rankingScope: "daily",
+    requiredPaymentPaise: "60100",
+    targetRank: "1",
+    targetTotalPaise: "60000",
+  },
+  todayNetPaise: "60000",
+  todayTotalReachedAt: "2026-09-06T10:00:00.000Z",
+  uniqueClicks: "42",
 };
 
 describe("public homepage population states", () => {
@@ -56,6 +108,8 @@ describe("public homepage population states", () => {
     });
     mocks.getCachedPublicActivity.mockResolvedValue([]);
     mocks.getCachedPublicCategories.mockResolvedValue([entry.category]);
+    mocks.getCachedPublicListingDetail.mockResolvedValue(detail);
+    mocks.listActiveCategories.mockResolvedValue([entry.category]);
   });
 
   it("uses the authoritative minimum-payment projection for the acquisition row", async () => {
@@ -106,5 +160,56 @@ describe("public homepage population states", () => {
 
     expect(html).toContain("No more positions.");
     expect(html).not.toContain("No one is here. Yet.");
+  });
+
+  it("renders Daily money, clicks, scope, and quote from the Daily entry", () => {
+    const html = renderToStaticMarkup(
+      createElement(Leaderboard, {
+        entries: [todayEntry],
+        nextCursor: null,
+        pageHref: "/today",
+        today: true,
+      }),
+    );
+
+    expect(html).toContain("₹600");
+    expect(html).toContain("today");
+    expect(html).toContain("₹50,000");
+    expect(html).toContain("42 total clicks");
+    expect(html).toContain("Take Daily #1");
+    expect(html).toContain("target=example&amp;scope=daily");
+    expect(html).toContain("₹601");
+  });
+
+  it("resolves a public target beyond #50 and prices its Daily score", async () => {
+    const { JoinPageContent } =
+      await import("@/components/join/join-page-content");
+    const page = await JoinPageContent({
+      searchParams: Promise.resolve({ scope: "daily", target: "example" }),
+    });
+    const html = renderToStaticMarkup(page);
+
+    expect(mocks.getCachedPublicListingDetail).toHaveBeenCalledWith(
+      "example",
+      expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+    );
+    expect(html).toContain('name="targetSlug" value="example"');
+    expect(html).toContain('name="targetScope" value="daily"');
+    expect(html).toContain('name="amount"');
+    expect(html).toContain('min="601"');
+  });
+
+  it("falls back safely when a target is not public-eligible", async () => {
+    mocks.getCachedPublicListingDetail.mockResolvedValueOnce(null);
+    const { JoinPageContent } =
+      await import("@/components/join/join-page-content");
+    const page = await JoinPageContent({
+      searchParams: Promise.resolve({ target: "hidden-listing" }),
+    });
+    const html = renderToStaticMarkup(page);
+
+    expect(html).toContain('name="targetSlug" value=""');
+    expect(html).toContain('name="targetScope" value="all_time"');
+    expect(html).toContain('min="499"');
   });
 });
