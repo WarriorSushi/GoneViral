@@ -210,7 +210,7 @@ details.
    possible inactivity pause, no managed PITR, self-managed backup dependence,
    and recovery downtime. The 6 September post-freeze encrypted archive and
    sidecar pass local freshness, integrity, and plaintext-retention checks;
-   owner confirmation of the new pair's private off-device copy remains open.
+   the owner confirmed the new pair's private off-device copy.
 8. Configure and verify the Production email domain/subdomains, SPF, DKIM, and
    DMARC; application Resend webhook; the current Dodo Test Mode webhook and
    dynamic return URL; Turnstile production hostnames; Sentry project,

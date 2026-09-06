@@ -1641,5 +1641,5 @@ local check confirmed both files are present, the recomputed SHA-256 matches,
 the corresponding plaintext directory count is zero, and the archive is inside
 the cleanup command's 24-hour freshness requirement. Zero matching Windows
 scheduled tasks exist, so the accepted manual cadence remains authoritative.
-Copying this new pair to private off-device storage is not yet owner-confirmed;
-no account, location, link, credential, or passphrase is recorded.
+The owner then confirmed copying only this new pair to private off-device
+storage. No account, location, link, credential, or passphrase is recorded.
