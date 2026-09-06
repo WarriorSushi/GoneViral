@@ -59,6 +59,40 @@ async function expectNoHorizontalOverflow(page: Page) {
   ).toBe(true);
 }
 
+async function expectCompactMobileCards(
+  page: Page,
+  headingName: RegExp | string,
+) {
+  const main = page
+    .getByRole("heading", { level: 1, name: headingName })
+    .locator("xpath=ancestor::main[1]");
+  await expect(main).toBeVisible();
+  const cards = main.locator(".leaderboard-card");
+  expect(await cards.count()).toBeGreaterThan(1);
+
+  for (let index = 0; index < (await cards.count()); index += 1) {
+    const card = cards.nth(index);
+    await card.evaluate((element) =>
+      element.scrollIntoView({ block: "center" }),
+    );
+    await expect(card).toBeVisible();
+    const cardBox = (await card.boundingBox())!;
+    const markBox = (await card.locator(".listing-mark").boundingBox())!;
+    const rankBox = (await card.locator(".rank").boundingBox())!;
+    const clickBox = (await card.locator(".board-click-count").boundingBox())!;
+    const actionBox = (await card.locator(".button-quote").boundingBox())!;
+
+    expect(cardBox.height).toBe(144);
+    expect(markBox.x + markBox.width).toBeLessThanOrEqual(rankBox.x);
+    expect(
+      cardBox.y + cardBox.height - clickBox.y - clickBox.height,
+    ).toBeGreaterThanOrEqual(8);
+    expect(
+      cardBox.y + cardBox.height - actionBox.y - actionBox.height,
+    ).toBeGreaterThanOrEqual(8);
+  }
+}
+
 async function capture(page: Page, testInfo: TestInfo, name: string) {
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
@@ -253,6 +287,29 @@ test("signed-out admin route bypass exposes no operational data", async ({
     await expect(page.getByText("Payment exceptions")).toHaveCount(0);
     await expectNoPrivateMarkers(await page.content());
   }
+});
+
+test("mobile listing cards keep every amount and action visible", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    (testInfo.project.use.viewport?.width ?? 1440) > 680,
+    "mobile layout only",
+  );
+  fixtures("seed");
+  await makeOutboundFixtureSafe();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refresh board" }).click();
+  await expectCompactMobileCards(page, /Pay more/);
+
+  await page
+    .getByLabel("Board controls")
+    .getByRole("link", { name: "Daily", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/today$/);
+  await expectCompactMobileCards(page, "Daily leaderboard");
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, `${testInfo.project.name}-compact-daily`);
 });
 
 test("low-population Main board is first-viewport, accessible, and private-data safe", async ({
