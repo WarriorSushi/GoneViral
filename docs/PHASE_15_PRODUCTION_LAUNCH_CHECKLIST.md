@@ -238,8 +238,9 @@ details.
 12. Before Dodo Live Mode, obtain one destructive-cleanup authorization, use the
     repository cleanup command to remove all synthetic/Test Mode business data,
     and verify the board and every ranking-affecting Test Mode financial artifact
-    are clean while schema, migrations, configuration, secrets, and required
-    system data remain. Then prevent accidental Preview contamination. Only
+    are clean while schema, migrations, configuration, secrets, the linked active
+    super-admin, the live visit counter, and required system data remain. Then
+    prevent accidental Preview contamination. Only
     after that obtain separate immediate authorization for one founder-owned
     low-value live transaction. Verify exactly-once end to end and inspect its
     genuine Dodo invoice/accounting evidence. Only then obtain separate approval
