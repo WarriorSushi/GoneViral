@@ -30,6 +30,17 @@ export function SiteVisitCounter() {
     return () => controller.abort();
   }, []);
 
-  if (total === null) return null;
-  return <span>{visitFormatter.format(BigInt(total))} visits</span>;
+  const formattedTotal =
+    total === null ? "0" : visitFormatter.format(BigInt(total));
+  return (
+    <span
+      aria-hidden={total === null}
+      aria-live="polite"
+      className="site-visit-capsule"
+      data-ready={total !== null}
+      title="Estimated cumulative visits"
+    >
+      {formattedTotal} {total === "1" ? "visit" : "visits"}
+    </span>
+  );
 }

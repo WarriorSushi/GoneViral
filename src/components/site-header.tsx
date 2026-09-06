@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import goneViralLogo from "@/app/GoneViral.in logo.png";
+import { SiteVisitCounter } from "@/components/site-visit-counter";
 
 const menuLinks = [
   { href: "/", label: "Main board" },
@@ -33,6 +34,7 @@ export function SiteHeader() {
           <Link href="/how-it-works">How it works</Link>
           <Link href={"/manage" as Route}>Manage</Link>
         </nav>
+        <SiteVisitCounter />
         <details className="mobile-menu">
           <summary aria-label="Open navigation menu">
             <svg aria-hidden="true" viewBox="0 0 24 24">

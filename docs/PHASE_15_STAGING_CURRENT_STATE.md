@@ -1662,16 +1662,21 @@ Analytics is disabled and its client package is absent. The owner selected an
 independent no-cost counter backed by the existing private Postgres connection.
 The implementation counts at most one visit per browser/address estimate per
 IST day, stores only a keyed one-way daily digest, expires it after eight days,
-preserves daily aggregates, and shows their cumulative sum in the footer.
+preserves daily aggregates, and shows their cumulative sum on the site.
 Preview/non-canonical hosts and common bots/prefetches are excluded. The Privacy
 policy describes the estimate and retention. This counter is separate from
 listing clicks, ranking, payment, provider, and listing data.
 
-Implementation commits `5d930ec` and `45dedc1` are under pull request `#40`.
-Required CI run `34044969047` and its Vercel Preview passed. Hosted migration
-`20260906161947_site_visit_counter` was then applied to the existing Supabase
-project. Read-only verification found both private tables present, exact
-least-privilege application grants, no browser-role read access, and zero
-starting rows. The post-DDL advisor check found no counter-specific security
-warning; the new expiry index is reported unused as expected before traffic.
-Merge and Production verification remain pending.
+Implementation commits `5d930ec` and `45dedc1` shipped through pull request
+`#40`, final required CI run `34045180045`, merge
+`1139efe1eb5ead0bc8e2e1c8292172d142185e57`, and READY Production deployment
+`dpl_H6qFm8s2dWZ7N2f1ayWkzPg2xTp7`. Hosted migration
+`20260906161947_site_visit_counter` is applied. Read-only verification found
+both private tables present, exact least-privilege application grants, no
+browser-role read access, and zero starting rows. The post-DDL advisor check
+found no counter-specific security warning; the new expiry index is reported
+unused as expected before traffic. A live canonical visit displayed `1 visit`;
+a reload stayed at one, and the private aggregate/dedupe row counts both
+remained one for the IST day. The owner then directed moving the count from the
+footer into a premium top-bar capsule. Follow-up commit `728fdfd` is under pull
+request `#41`; only placement, presentation, and singular/plural copy change.

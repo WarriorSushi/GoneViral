@@ -655,14 +655,20 @@ application-owned option instead of Vercel or Cloudflare analytics. The implemen
 uses the existing private Postgres boundary to count at most one visit per
 browser/address estimate per IST day, retains only a keyed one-way daily digest
 for eight days, preserves daily aggregates, and displays their cumulative sum
-in the footer. Preview/non-canonical hosts and common bots/prefetches are
+on the site. Preview/non-canonical hosts and common bots/prefetches are
 excluded. The Privacy policy states that this is an estimate, not a unique-
 person count. No ranking, payment, provider, or listing data participates.
 
-Implementation commits `5d930ec` and `45dedc1` are in pull request `#40`.
-Required CI run `34044969047` and the Vercel Preview passed. Hosted migration
+Implementation commits `5d930ec` and `45dedc1` shipped through pull request
+`#40`, final required CI run `34045180045`, merge
+`1139efe1eb5ead0bc8e2e1c8292172d142185e57`, and READY Production deployment
+`dpl_H6qFm8s2dWZ7N2f1ayWkzPg2xTp7`. Hosted migration
 `20260906161947_site_visit_counter` is applied and verified: both private tables
 exist, application privileges are least-privilege, browser roles cannot read
 them, and both tables started empty. Hosted advisors found no counter-specific
-security warning; the expiry index is expectedly unused before traffic. Merge
-and Production verification remain pending.
+security warning; the expiry index is expectedly unused before traffic. One
+live canonical visit displayed `1 visit`; a reload stayed at one and the private
+aggregate/dedupe row counts both remained one for the IST day. The owner then
+directed moving the count from the footer into a premium top-bar capsule;
+follow-up commit `728fdfd` is under pull request `#41` and changes only its
+placement, presentation, and singular/plural copy.

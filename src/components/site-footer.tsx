@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import goneViralLogo from "@/app/GoneViral.in logo.png";
-import { SiteVisitCounter } from "@/components/site-visit-counter";
 
 const exploreLinks = [
   { href: "/", label: "Leaderboard" },
@@ -76,10 +75,7 @@ export function SiteFooter() {
           ))}
         </div>
       </nav>
-      <p className="footer-meta">
-        <span>© GoneViral.in</span>
-        <SiteVisitCounter />
-      </p>
+      <p className="footer-meta">© GoneViral.in</p>
     </footer>
   );
 }
