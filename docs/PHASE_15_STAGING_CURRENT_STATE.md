@@ -1775,3 +1775,23 @@ retained Auth user; it shipped through pull request `#48`, required CI run
 `34053260342`, merge `6eacd31c16f66e16e5c6f04a3c6017a36d15d08b`, and READY
 Production deployment `dpl_5v7H3YqaMrZKUx3NgHX3yjgPxwD6`. The cleanup
 workstream is closed.
+
+## 2026-09-07 post-cleanup admin login correction
+
+The preserved active super-admin could not request a `/manage` magic link after
+cleanup because the anti-enumeration eligibility query recognized only paid
+listing owners, and cleanup intentionally left zero such rows. Aggregate-only
+hosted evidence confirmed one linked active admin/Auth user and zero manageable
+listing emails. The query now also recognizes an active, non-revoked admin by
+its canonical Auth email while preserving the generic public response and both
+existing rate limits; deactivating the admin removes eligibility immediately.
+
+Pull request `#50` passed required CI run `34058888571`, squash-merged as
+`88e103931fdb30665f95f01fd8689b2b7560caf8`, and reached READY Production
+deployment `dpl_Hp76R8gMAktwk7uZxb64YUpzpNvX`. Local evidence includes the
+focused four-test database file, 263/263 unit tests, formatting, lint,
+TypeScript, and a Production build. The canonical `/manage` route returns 200
+with the secure-link form and the post-deploy Production error scan is clean.
+No database row, schema, email-provider setting, payment flag, Dodo setting, or
+other Safety Control changed. Owner receipt and completion of a fresh magic
+link plus MFA remain the final browser-side confirmation.
