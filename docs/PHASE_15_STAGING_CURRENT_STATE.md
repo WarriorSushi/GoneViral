@@ -1769,6 +1769,9 @@ synthetic listing names, and the sitemap contains no listing URL. The exact
 hung cleanup process tree was terminated and zero matching processes remain.
 The missing hash-bound report was written beside the archive as
 `D:\GoneViral-Backups\20260906T152908Z-fndssapjkaicxzeruuvv-cleanup-report.json`;
-its archive SHA-256 matches. Cleanup is complete and must not be rerun. A
-bounded loop-termination correction now exits when a page contains only the
-retained Auth user; its focused verification remains before merge.
+its archive SHA-256 matches. Cleanup is complete and must not be rerun. The
+bounded loop-termination correction exits when a page contains only the
+retained Auth user; it shipped through pull request `#48`, required CI run
+`34053260342`, merge `6eacd31c16f66e16e5c6f04a3c6017a36d15d08b`, and READY
+Production deployment `dpl_5v7H3YqaMrZKUx3NgHX3yjgPxwD6`. The cleanup
+workstream is closed.
