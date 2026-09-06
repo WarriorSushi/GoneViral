@@ -56,6 +56,12 @@ async function cleanupPhase6Fixtures() {
       await transaction`DELETE FROM app.listings WHERE id = ANY(${listingIds})`;
     }
     await transaction`
+      DELETE FROM private.admin_users
+      WHERE user_id IN (
+        SELECT id FROM auth.users WHERE email LIKE 'phase6-%@example.test'
+      )
+    `;
+    await transaction`
       DELETE FROM auth.users WHERE email LIKE 'phase6-%@example.test'
     `;
   });
@@ -160,6 +166,22 @@ afterAll(async () => {
 });
 
 describe("verified pending-owner claim", () => {
+  it("allows an active admin to request a link without owning a listing", async () => {
+    const email = `phase6-admin-${randomUUID()}@example.test`;
+    const userId = await createVerifiedUser(email);
+    await directSql`
+      INSERT INTO private.admin_users (user_id, role, is_active)
+      VALUES (${userId}, 'super_admin', true)
+    `;
+    const { canRequestManageLink } = await import("@/server/auth/claim-owner");
+
+    await expect(canRequestManageLink(email)).resolves.toBe(true);
+    await directSql`
+      UPDATE private.admin_users SET is_active = false WHERE user_id = ${userId}
+    `;
+    await expect(canRequestManageLink(email)).resolves.toBe(false);
+  });
+
   it("claims the paid sponsorship once for the matching verified email", async () => {
     const email = `phase6-owner-${randomUUID()}@example.test`;
     const userId = await createVerifiedUser(email);
