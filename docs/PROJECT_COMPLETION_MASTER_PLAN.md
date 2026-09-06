@@ -92,6 +92,11 @@ The budget-plan commit pushed before scheduler implementation was
   non-destructive certification are authorized on Vercel Hobby. Dodo Live Mode,
   a real transaction, destructive cleanup, Vercel Pro purchase, commercial
   launch, refunds, and Phase 16 remain separately gated.
+- Before launch-candidate freeze/certification or destructive pre-live cleanup,
+  the owner will perform one bounded final Production UI/UX review across
+  desktop and mobile. Implement only owner-requested micro-polish through normal
+  review, CI, deployment, and owner re-review. Explicit owner UI approval closes
+  this gate; it does not weaken any payment, security, backup, or rollback gate.
 
 ## Completed foundation: Phases 0–14
 
@@ -394,6 +399,10 @@ clean after the merge.
 
 ### Remaining Phase 15 gates
 
+- Final Owner UI/UX Polish: owner inspection of current Production, followed
+  only by specifically requested micro-polish, normal verification/deployment,
+  and explicit owner approval before launch-candidate freeze or destructive
+  pre-live cleanup. No speculative redesign or architecture work is authorized.
 - Independent missing-run detection is deployed through the Sentry outbox Cron
   Monitor. Natural one-minute/five-minute cadence, earlier hourly/daily cadence,
   one isolated scheduled failure, and owner receipt of its Sentry email all
