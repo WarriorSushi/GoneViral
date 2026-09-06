@@ -223,6 +223,7 @@ async function readDatabaseCounts() {
 }
 
 try {
+  await sql`SET ROLE postgres`;
   const retainedAdminUsers = await sql`
     SELECT admin.user_id::text AS user_id
     FROM private.admin_users AS admin

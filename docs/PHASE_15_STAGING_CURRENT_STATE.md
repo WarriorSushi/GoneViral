@@ -1735,6 +1735,17 @@ now reuses the proven backup flow: Vercel supplies only readable Production
 safety settings, while the authenticated Supabase CLI supplies a temporary
 linked database session and modern secret key in process memory. A no-delete
 runtime preflight successfully obtained both credentials and reached the
-deliberately nonexistent archive boundary. Syntax and the focused safety test
-pass. The correction still requires review/CI/merge before the owner reruns the
-interactive cleanup command; no passphrase or credential was printed or stored.
+deliberately nonexistent archive boundary. The credential correction shipped
+through pull request `#46`, required CI run `34052190906`, merge
+`5f2e35f859730a4285bc6bfb03d951b6a2209bcf`, and READY Production deployment
+`dpl_31sVt4qL2TZPW5mRYRGuzCpUD5f2`.
+
+The next owner attempt successfully reverified the encrypted archive, then
+stopped before aggregate review, deletion confirmation, or any mutation with
+`permission denied for schema private`. Read-only role inspection found the
+temporary `cli_login_postgres` session is a member of `postgres` with
+`INHERIT FALSE` and `SET TRUE`: it can assume `postgres` but does not inherit its
+private-schema privileges. The backup path already switches to `postgres`; the
+cleanup script did not. The bounded follow-up adds that same session-local
+`SET ROLE postgres` before all queries. No passphrase or credential was printed
+or stored, and cleanup still has not run.

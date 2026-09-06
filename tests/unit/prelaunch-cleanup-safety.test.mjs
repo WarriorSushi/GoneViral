@@ -27,4 +27,8 @@ describe("prelaunch cleanup safety boundary", () => {
     expect(cleanup).not.toContain("process.env.DATABASE_DIRECT_URL");
     expect(cleanup).not.toContain("process.env.SUPABASE_SECRET_KEY");
   });
+
+  it("assumes the authorized postgres role for private-schema cleanup", () => {
+    expect(cleanup).toContain("await sql`SET ROLE postgres`");
+  });
 });

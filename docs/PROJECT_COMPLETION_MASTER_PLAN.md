@@ -721,6 +721,16 @@ Sensitive database/API credentials cannot be exported locally. The local
 follow-up now obtains a temporary linked database session and modern secret key
 through the authenticated Supabase CLI, matching the proven backup path, while
 Vercel supplies the readable Production safety settings. A deliberately missing
-archive preflight proves the credentials load and match the linked project
-without deleting data. The focused safety test and syntax check pass; review,
-CI, and merge remain before the owner reruns the interactive command.
+archive preflight proved the credentials load and match the linked project
+without deleting data. That correction shipped through pull request `#46`, CI
+run `34052190906`, merge
+`5f2e35f859730a4285bc6bfb03d951b6a2209bcf`, and READY Production deployment
+`dpl_31sVt4qL2TZPW5mRYRGuzCpUD5f2`.
+
+The following owner attempt reverified the archive and then stopped before
+aggregate review or deletion confirmation with private-schema permission
+denied. The temporary CLI login can `SET ROLE postgres` but uses `INHERIT FALSE`,
+so it does not receive `postgres` privileges automatically. The cleanup now
+performs the same session-local role switch already proven by the backup path.
+Cleanup still has not run; this bounded role-switch correction requires its
+focused checks, review, and merge before another owner attempt.
