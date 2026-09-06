@@ -1,6 +1,6 @@
 # Phase 15 staging and production-shaped pre-launch current state
 
-Last updated: 2026-09-06 (Asia/Kolkata)
+Last updated: 2026-09-07 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for Phase 15 work
 on `codex/phase-15-staging`. Read the authority
@@ -12,22 +12,24 @@ addresses, or backup passphrases here.
 
 ## Scope and owner decision
 
-- The owner has authorized a non-commercial, production-shaped Vercel
-  Production environment on Hobby at `goneviral.in`, using Dodo Test Mode with
-  payments enabled. This is not authorization for Dodo Live Mode, a real
-  transaction, refunds, destructive cleanup, Vercel Pro purchase, commercial
-  launch, or Phase 16.
+- The owner has authorized initial commercial Production launch on the existing
+  Vercel Hobby plan at `goneviral.in`. Production uses Dodo Live Mode; its
+  Vercel `PAYMENTS_ENABLED` value and the audited database `payments_enabled`
+  control are both on. New customer purchases can therefore create real Dodo
+  charges. Provider refunds remain blocked and Phase 16 remains separate.
 - The existing hosted Supabase project `fndssapjkaicxzeruuvv` is intentionally
   the single shared pre-launch Database/Auth/Storage data plane for Preview and
-  Production. Do not create another Supabase project. Synthetic Test Mode data
-  is expected and must later be removed only through the separately authorized
-  safe pre-live cleanup.
-- Dodo remains in Test Mode. The Preview remains protected and noindex.
-- The owner approved the final Production UI on 6 September 2026. Application
-  commit `ca6a0fab257b313099f27596a6949c2846a7c5cd` and READY Production
-  deployment `dpl_EGruw1NaXh4y7Hsk322GSR7SJMST` are the frozen launch-candidate
-  application tree. This approval does not authorize cleanup, Dodo Live Mode, a
-  real transaction, public payment enablement, commercial launch, or Phase 16.
+  Production. Do not create another Supabase project. The authorized safe
+  pre-live cleanup is complete and must not be rerun.
+- Preview remains protected and noindex, retains its Dodo Test Mode variables,
+  and has `PAYMENTS_ENABLED=false`. The former Dodo Test webhook targeting the
+  Production URL is disabled, so Test events do not hit Production.
+- Pull request `#52` replaced stale Test Mode/checkout language in the founder
+  console with mode-aware plain language. It passed required CI run
+  `34060023907`, squash-merged as
+  `4f5fef14142c0a5762a233dfb686429038729d5d`, and reached READY Production deployment
+  `dpl_9S73Sgazfe2AvMH6nWBKqoXhHfPr`. The apex and `www` aliases and both health
+  endpoints are healthy.
 - The owner chose a risk-based critical path to conserve Codex usage. Prioritize
   money correctness, authorization, data privacy, infrastructure isolation, and
   safe shutdown. Record all other checks honestly as deferred/unverified; do
@@ -1795,3 +1797,29 @@ with the secure-link form and the post-deploy Production error scan is clean.
 No database row, schema, email-provider setting, payment flag, Dodo setting, or
 other Safety Control changed. Owner receipt and completion of a fresh magic
 link plus MFA remain the final browser-side confirmation.
+
+## 2026-09-07 Live Mode activation and founder-console wording
+
+The owner completed the corrected Production magic-link and MFA flow, split all
+five Dodo variables by Vercel environment, preserved Preview Test Mode values,
+and installed the corresponding Live Mode values for Production without
+exposing them. Preview retains `PAYMENTS_ENABLED=false`; Production has
+`PAYMENTS_ENABLED=true`. The former Dodo Test webhook targeting the Production
+URL is disabled.
+
+The owner then enabled only the database `payments_enabled` control through the
+audited founder console. A read-only hosted check confirms payments on,
+provider refunds off, read-only mode off, and outbound redirects off. Combined
+with Production Dodo Live Mode and the Vercel app setting, new customer
+purchases can now create real charges. No refund or other control was changed in
+this correction task. The first legitimate founder-owned Live Mode purchase and
+its end-to-end reconciliation remain the immediate next verification.
+
+The founder console still displayed hard-coded Test Mode and “checkout” wording
+after activation. Pull request `#52` replaced that stale copy with mode-aware
+Customer payments/Test payments language and reports the effective app plus
+database state. Required CI run `34060023907` passed; merge
+`4f5fef14142c0a5762a233dfb686429038729d5d` reached READY Production deployment
+`dpl_9S73Sgazfe2AvMH6nWBKqoXhHfPr`. The canonical aliases and both health
+endpoints are healthy. Payment behavior, credentials, database rows, refund
+control, and provider settings were not changed by the code deployment.

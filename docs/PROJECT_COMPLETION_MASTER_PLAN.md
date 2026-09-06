@@ -25,17 +25,17 @@ contents in this file.
 
 ## Overall status
 
-| Scope                                      | Status                                                | Evidence/source                                       |
-| ------------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------- |
-| Phases 0–14                                | Complete                                              | Git history and phase documents under `docs/`         |
-| Phase 15 risk-based private staging        | Frozen Preview RC; lifecycle verified                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 isolated backup remediation       | Complete                                              | restore and 66/66 database evidence in the checkpoint |
-| Pre-launch scheduler hardening             | Deployed; natural/failure/owner-alert evidence passed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
-| Public-repository content audit            | Passed; owner already made repo public                | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Public-repository settings hardening       | Complete                                              | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
-| Phase 15 production-shaped pre-launch gate | Application tree frozen; live gates pending           | checkpoint exact resume point                         |
-| Commercial Production launch               | Not authorized/not complete                           | Phase 15 runbook                                      |
-| Phase 16                                   | Not started                                           | implementation plan                                   |
+| Scope                                 | Status                                                | Evidence/source                                       |
+| ------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| Phases 0–14                           | Complete                                              | Git history and phase documents under `docs/`         |
+| Phase 15 risk-based private staging   | Frozen Preview RC; lifecycle verified                 | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 isolated backup remediation  | Complete                                              | restore and 66/66 database evidence in the checkpoint |
+| Pre-launch scheduler hardening        | Deployed; natural/failure/owner-alert evidence passed | `CLOUDFLARE_SCHEDULED_OPERATIONS.md`                  |
+| Public-repository content audit       | Passed; owner already made repo public                | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Public-repository settings hardening  | Complete                                              | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
+| Phase 15 production launch transition | Live payment intake enabled; first purchase pending   | checkpoint exact resume point                         |
+| Commercial Production launch          | Authorized and active on owner-accepted Hobby plan    | Phase 15 checkpoint                                   |
+| Phase 16                              | Not started                                           | implementation plan                                   |
 
 Active integration branch: `codex/phase-15-staging`.
 
@@ -50,8 +50,9 @@ The budget-plan commit pushed before scheduler implementation was
 - The existing hosted Supabase project `fndssapjkaicxzeruuvv` (`goneviral`,
   `ap-south-1`) is the single pre-launch Database/Auth/Storage data plane for
   both protected Preview and Vercel Production. Do not create a second Supabase
-  project. This temporary sharing is owner-accepted while Dodo remains in Test
-  Mode. Preview isolation is post-launch hardening, not a current gate.
+  project. This temporary sharing is owner-accepted for initial launch; Preview
+  keeps Dodo Test Mode credentials but its app payment setting remains off.
+  Preview isolation is post-launch hardening, not a current gate.
 - Staging scheduler: one minimal Cloudflare Worker on Workers Free. GitHub
   automatic scheduling is retired, manually disabled, stripped of its
   automatic trigger, and has no enable variable. Vercel Cron is not selected
@@ -60,9 +61,9 @@ The budget-plan commit pushed before scheduler implementation was
   minutes; reconciliation hourly; cleanup daily. Delayed or
   dropped scheduled runs catch up through durable/idempotent workers.
 - Existing VPS is reserved for OTTR and is out of scope for GoneViral.
-- Do not purchase or require Vercel Pro during staging. Production will use
-  Vercel plus Supabase, with Vercel Pro purchased immediately before commercial
-  launch and its cost, rollback/pause, and operational controls reviewed then.
+- The owner authorized initial commercial launch on the existing Vercel Hobby
+  plan and will reconsider an upgrade after measured traction. Do not reopen
+  that decision as a launch blocker.
 - Cloudflare Workers Cron is the final scheduler topology. Vercel Cron must not
   be registered in Production.
 - The owner confirms Dodo merchant/KYC/business/bank/live capability and the
@@ -87,11 +88,9 @@ The budget-plan commit pushed before scheduler implementation was
   are intentionally separate.
 - Upgrade Supabase/Vercel further only after measured traffic, reliability need,
   or revenue justifies it.
-- The production-shaped Vercel Production deployment, `goneviral.in`
-  attachment, Production configuration, Dodo Test Mode payments, and
-  non-destructive certification are authorized on Vercel Hobby. Dodo Live Mode,
-  a real transaction, destructive cleanup, Vercel Pro purchase, commercial
-  launch, refunds, and Phase 16 remain separately gated.
+- Production uses Dodo Live Mode and Preview retains Dodo Test Mode through
+  separate Vercel environment-variable entries. Production payment intake is
+  authorized and enabled; provider refunds and Phase 16 remain separate gates.
 - Before launch-candidate freeze/certification or destructive pre-live cleanup,
   the owner will perform one bounded final Production UI/UX review across
   desktop and mobile. Implement only owner-requested micro-polish through normal
@@ -425,22 +424,24 @@ clean after the merge.
   checksum pass, but no GoneViral/Supabase scheduled backup task exists. The
   shared Supabase project remains an explicit owner exception to environment
   isolation.
-- Current Dodo live status and exact live business/brand/product/credential/
-  webhook/return/payout-bank verification. Merchant/KYC/business/bank/live
-  capability is owner-confirmed; separate written approval is required only if
-  Dodo requests it.
+- Exact end-to-end verification of the first legitimate Live Mode purchase,
+  including signed webhook processing, payment record, ledger, ranking, email,
+  and Dodo-side payment status. Merchant/KYC/business/bank/live capability is
+  owner-confirmed; separate written approval is required only if Dodo requests
+  it.
 - The redacted public-address decision is complete, with the residual Rule 4(2)
   interpretation risk accepted by the owner. Verification of the Dodo merchant-
   of-record customer invoice plus Indian-business payout/
   reverse-invoice/GST/accounting evidence path. External lawyer and CA review
   are optional, not launch gates.
-- Separately authorized pre-live cleanup of all synthetic/Test Mode business
-  data, followed by proof that the board and financial ranking baseline are
-  clean. Never delete arbitrary financial or ledger rows manually.
-- Pre-live Preview contamination controls before Dodo Live Mode. Preview
-  isolation after commercial launch may be completed as operational hardening.
-- Separately authorized legitimate founder-owned low-value transaction and
-  exact end-to-end reconciliation before payment enablement.
+- Pre-live cleanup is complete and closed; do not rerun it. Preview retains
+  Test Mode credentials with `PAYMENTS_ENABLED=false`, and its old Test webhook
+  to the Production URL is disabled. Preview isolation after launch remains
+  optional operational hardening.
+- Complete the already authorized legitimate founder-owned first Live Mode
+  transaction and exact end-to-end reconciliation. Public payment intake is
+  already enabled, so this is now immediate launch verification rather than a
+  prerequisite to enablement.
 
 The exact sequence and provider-specific configuration inventory are in
 `PHASE_15_PRODUCTION_LAUNCH_CHECKLIST.md`.
@@ -771,3 +772,29 @@ with the secure-link form and the post-deploy Production error scan is clean.
 No database row, schema, email-provider setting, payment flag, Dodo setting, or
 other Safety Control changed. Owner receipt and completion of a fresh magic
 link plus MFA remain the final browser-side confirmation.
+
+## 2026-09-07 Live Mode activation and founder-console wording
+
+The owner completed the corrected Production magic-link and MFA flow, split all
+five Dodo variables by Vercel environment, preserved Preview Test Mode values,
+and installed the corresponding Live Mode values for Production without
+exposing them. Preview retains `PAYMENTS_ENABLED=false`; Production has
+`PAYMENTS_ENABLED=true`. The former Dodo Test webhook targeting the Production
+URL is disabled.
+
+The owner then enabled only the database `payments_enabled` control through the
+audited founder console. A read-only hosted check confirms payments on,
+provider refunds off, read-only mode off, and outbound redirects off. Combined
+with Production Dodo Live Mode and the Vercel app setting, new customer
+purchases can now create real charges. No refund or other control was changed in
+this correction task. The first legitimate founder-owned Live Mode purchase and
+its end-to-end reconciliation remain the immediate next verification.
+
+The founder console still displayed hard-coded Test Mode and “checkout” wording
+after activation. Pull request `#52` replaced that stale copy with mode-aware
+Customer payments/Test payments language and reports the effective app plus
+database state. Required CI run `34060023907` passed; merge
+`4f5fef14142c0a5762a233dfb686429038729d5d` reached READY Production deployment
+`dpl_9S73Sgazfe2AvMH6nWBKqoXhHfPr`. The canonical aliases and both health
+endpoints are healthy. Payment behavior, credentials, database rows, refund
+control, and provider settings were not changed by the code deployment.
