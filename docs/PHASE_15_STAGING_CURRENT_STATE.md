@@ -1823,3 +1823,7 @@ database state. Required CI run `34060023907` passed; merge
 `dpl_9S73Sgazfe2AvMH6nWBKqoXhHfPr`. The canonical aliases and both health
 endpoints are healthy. Payment behavior, credentials, database rows, refund
 control, and provider settings were not changed by the code deployment.
+
+The owner subsequently enabled `outbound_redirects_enabled` through the audited
+founder console. Read-only hosted verification confirms outbound listing links
+and customer payments on, with provider refunds and read-only mode still off.
