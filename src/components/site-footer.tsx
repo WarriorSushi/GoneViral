@@ -6,6 +6,7 @@ import goneViralLogo from "@/app/GoneViral.in logo.png";
 const exploreLinks = [
   { href: "/", label: "Leaderboard" },
   { href: "/today", label: "Daily" },
+  { href: "/about", label: "About" },
   { href: "/how-it-works", label: "How it works" },
 ] as const;
 

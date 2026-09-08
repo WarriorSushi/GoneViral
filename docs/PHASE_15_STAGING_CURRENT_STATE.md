@@ -1,6 +1,6 @@
 # Phase 15 staging and production-shaped pre-launch current state
 
-Last updated: 2026-09-07 (Asia/Kolkata)
+Last updated: 2026-09-08 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for Phase 15 work
 on `codex/phase-15-staging`. Read the authority
@@ -1827,3 +1827,26 @@ control, and provider settings were not changed by the code deployment.
 The owner subsequently enabled `outbound_redirects_enabled` through the audited
 founder console. Read-only hosted verification confirms outbound listing links
 and customer payments on, with provider refunds and read-only mode still off.
+
+## 2026-09-08 social preview and SEO follow-up
+
+The owner supplied a 1200×630 GoneViral.in social banner and requested generic
+social-card and SEO completion. The local candidate publishes the image at the
+stable public path `/goneviral-social-preview.png` and explicitly names its
+canonical absolute URL in Open Graph and X/Twitter large-image metadata for all
+ordinary public pages. Dynamic listing-detail rank cards remain more specific.
+
+The candidate also adds `WebSite` and `Organization` JSON-LD with the existing
+brand icon as organization logo, improves the homepage search title and
+description, and adds one truthful `/about` entity page linked from the footer
+and public sitemap. No thin keyword pages, fabricated claims, production data,
+payment/ranking/provider behavior, credentials, or hosted setting changed.
+
+Local evidence passes formatting, lint, TypeScript, 267/267 unit tests,
+production build, and client-build security scanning. Local served evidence
+returned the requested image as `200 image/png` and showed the expected
+canonical, `og:image`, `twitter:card`, `twitter:image`, and Organization JSON-LD
+tags on `/about`. The dynamic sitemap was not requested with a database because
+the local environment lacked `DATABASE_URL`; its allowlist is unit-checked and
+the production build passed. Deployment and hosted crawler/tag verification
+remain pending.

@@ -107,6 +107,15 @@ checkout/join, pending/return, owner/manage, report, webhook, cron, and health
 surfaces. The sitemap includes only active, clear, positive, HTTPS listings in
 active categories.
 
+Generic public pages explicitly use the owner-supplied 1200×630 social banner
+at `/goneviral-social-preview.png` for Open Graph and X/Twitter large-image
+cards. Listing detail pages retain their listing-specific live-rank cards.
+The homepage exposes `WebSite` JSON-LD; `/about` exposes truthful
+`Organization` JSON-LD with the existing brand icon, public operator identity,
+and support details. The About page is linked from the footer and included in
+the sitemap. Thin search-only landing pages and unverifiable ranking claims are
+deliberately excluded.
+
 Terms, Privacy, Refunds, Content Policy, Paid Placement, Copyright/Trademark,
 and Contact are effective owner-approved public policies at version
 `2026-09-04-v2`, effective 4 September 2026. They are canonical, indexable, and
