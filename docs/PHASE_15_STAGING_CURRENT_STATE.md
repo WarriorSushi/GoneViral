@@ -1848,5 +1848,17 @@ returned the requested image as `200 image/png` and showed the expected
 canonical, `og:image`, `twitter:card`, `twitter:image`, and Organization JSON-LD
 tags on `/about`. The dynamic sitemap was not requested with a database because
 the local environment lacked `DATABASE_URL`; its allowlist is unit-checked and
-the production build passed. Deployment and hosted crawler/tag verification
-remain pending.
+the production build passed.
+
+Pull request `#58` passed required CI run `34228205286`, squash-merged as
+`acc635c85990b4728ba3137d792f32cdbdc321c9`, and reached READY Production
+deployment `dpl_EG76z9mjyzvPbRXWM2HRMNNExeYC`. The deployment owns the apex,
+`www`, and project aliases. Live Twitterbot-shaped checks returned `200` for
+the homepage, `/about`, the exact 910,311-byte PNG, `robots.txt`, `sitemap.xml`,
+and both health endpoints. The homepage exposes its canonical URL, improved
+title, 1200×630 Open Graph dimensions, X/Twitter large image, and `WebSite`
+JSON-LD. `/about` exposes its canonical URL, social image tags, and
+`Organization` JSON-LD; the live sitemap includes `/about`. The bounded Vercel
+error-log query returned no logs. Social-card cache refresh and Search Console
+submission remain owner-side follow-ups; no Google ranking improvement is
+claimed before crawl/index evidence.

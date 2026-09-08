@@ -35,7 +35,7 @@ contents in this file.
 | Public-repository settings hardening  | Complete                                              | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 production launch transition | Live payment intake enabled; first purchase pending   | checkpoint exact resume point                         |
 | Commercial Production launch          | Authorized and active on owner-accepted Hobby plan    | Phase 15 checkpoint                                   |
-| Social preview and SEO follow-up      | Implemented locally; deployment pending               | 2026-09-08 section below                              |
+| Social preview and SEO follow-up      | Deployed and crawler-visible                          | 2026-09-08 section below                              |
 | Phase 16                              | Not started                                           | implementation plan                                   |
 
 Active integration branch: `codex/phase-15-staging`.
@@ -826,6 +826,16 @@ local production server returned `200 image/png` for the 910,311-byte preview
 and rendered the expected canonical, `og:image`, `twitter:card`,
 `twitter:image`, and Organization JSON-LD tags on `/about`. The dynamic local
 sitemap request was not claimed because no local database URL was supplied;
-the production build and sitemap allowlist check passed. Deployment, hosted
-tag/image verification, social-crawler cache refresh, and Search Console
-submission remain pending.
+the production build and sitemap allowlist check passed.
+
+Pull request `#58` passed required CI run `34228205286`, squash-merged as
+`acc635c85990b4728ba3137d792f32cdbdc321c9`, and reached READY Production
+deployment `dpl_EG76z9mjyzvPbRXWM2HRMNNExeYC`. The deployment owns the apex,
+`www`, and project aliases. Live crawler-shaped checks returned `200` for the
+homepage, `/about`, the exact 910,311-byte PNG, `robots.txt`, `sitemap.xml`, and
+both health endpoints. The homepage exposes the expected canonical URL,
+search title, 1200×630 Open Graph image, X/Twitter large image, and `WebSite`
+JSON-LD; `/about` exposes its canonical URL, social images, and `Organization`
+JSON-LD. The live sitemap contains `/about`, and the bounded Vercel error-log
+query returned no logs. Social-crawler cache refresh and Google Search Console
+submission remain owner-side follow-ups; no ranking result is claimed.
