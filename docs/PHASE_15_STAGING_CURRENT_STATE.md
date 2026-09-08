@@ -1925,10 +1925,10 @@ Production Vercel error query returned no logs. One real-iPhone Chrome owner
 confirmation remains advisable because desktop Chromium emulation cannot prove
 iOS browser-chrome behavior.
 
-## 2026-09-08 How it works distillation candidate
+## 2026-09-08 How it works distillation deployment
 
 The owner found the deployed explainer too busy and reported a blue outline on
-its title when the route modal opened. The local refinement removes the repeated
+its title when the route modal opened. The refinement removes the repeated
 rule strip, benefit section, multi-item qualification section, secondary CTA,
 manage link, step numbers, and their dead CSS. It now answers only three buyer
 questions: how to join, how rank is decided, and what the buyer gets. Two clear
@@ -1944,5 +1944,13 @@ and direct-page browser checks at 390×844 and 1440×900 pass. Both sizes have
 zero horizontal overflow; the mobile surface fits in one viewport and both
 directional arrows are visible. The database-backed route-modal Playwright test
 was updated for the shorter copy, visible arrows, and absent title outline but
-was not run locally because local Supabase remains unavailable. Nothing from
-this refinement is committed or deployed yet.
+was not run locally because local Supabase remains unavailable.
+
+PR #62 passed the required `quality` and Vercel checks and was squash-merged as
+`601a50c7d99cf4b16ee972d5801f04a0418f1770`. Production deployment
+`dpl_4zEScAWp3rUGoofVSyaoVWpNzekB` reached Ready and received the canonical
+aliases. Live 390×844 modal verification confirmed one dialog, zero horizontal
+overflow, a fully visible no-scroll flow, two visible directional arrows, the
+title as the accessibility focus target with `outline-style: none`, and the
+single claim CTA. Live/readiness returned `200`; the bounded 10-minute
+Production Vercel error query returned no logs.

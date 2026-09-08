@@ -885,10 +885,10 @@ and no visible residual dialog. Live/readiness returned `200`, and the bounded
 15-minute Production Vercel error query returned no logs. Only real-iPhone
 Chrome confirmation remains as a device-specific owner check.
 
-## 2026-09-08 How it works distillation candidate
+## 2026-09-08 How it works distillation deployment
 
 The owner found the first mobile-first explainer revision too busy and reported
-a transient blue outline around its modal title. The local candidate reduces
+a transient blue outline around its modal title. The implementation reduces
 the surface to three buyer questions connected by visible desktop/mobile arrows,
 one compact truth note, and one primary action. It removes repeated sections,
 secondary actions, step numbers, and their CSS. The noninteractive title remains
@@ -899,5 +899,12 @@ Formatting, lint, TypeScript, 267/267 unit tests, Production build, security
 verification, and 390×844 plus 1440×900 direct-page rendering pass with no
 horizontal overflow. The mobile version fits in one viewport. The updated
 database-backed modal test remains locally unrun because local Supabase is
-unavailable. The candidate is not committed or deployed; next use the normal
-PR, required-CI, deployment, live-mobile, and checkpoint-record path.
+unavailable.
+
+PR #62 passed required `quality` and Vercel checks, squash-merged as
+`601a50c7d99cf4b16ee972d5801f04a0418f1770`, and reached Ready in Production
+deployment `dpl_4zEScAWp3rUGoofVSyaoVWpNzekB`. The live 390×844 modal has zero
+horizontal overflow, needs no scrolling, shows both arrows, preserves the
+focused title for accessibility without an outline, and exposes one primary
+CTA. Live/readiness returned `200`, and the bounded 10-minute Production Vercel
+error query returned no logs.
