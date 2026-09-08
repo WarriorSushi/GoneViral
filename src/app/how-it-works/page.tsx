@@ -5,7 +5,7 @@ import { publicPageMetadata } from "@/config/seo";
 
 export const metadata: Metadata = publicPageMetadata({
   description:
-    "Share your listing, pay ₹499 or more, and move higher as your confirmed spend grows.",
+    "Get onto the public leaderboard from ₹499, move higher with your confirmed total, and share your rank card.",
   path: "/how-it-works",
   title: "How it works",
 });

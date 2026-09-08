@@ -656,14 +656,18 @@ test("Main, Daily, category, and listing navigation use real public projections"
   await capture(page, testInfo, `${testInfo.project.name}-listing`);
 
   await page.goto("/how-it-works");
+  await expect(page.locator('meta[name="viewport"]')).toHaveAttribute(
+    "content",
+    /viewport-fit=cover/,
+  );
   await expect(
-    page.getByRole("heading", { level: 1, name: "Pay. Get listed." }),
+    page.getByRole("heading", { level: 1, name: "Pay more. Rank higher." }),
   ).toBeVisible();
   await expect(
-    page.getByText("Three simple steps to get on the board."),
+    page.getByText(/₹499 gets your brand, product, or profile/),
   ).toBeVisible();
   await expect(
-    page.getByRole("list", { name: "Three simple steps" }),
+    page.getByRole("list", { name: "How to get listed" }),
   ).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
@@ -681,7 +685,9 @@ test("How it works preserves board context in an accessible route modal", async 
   await trigger.click();
 
   await expect(page).toHaveURL(/\/how-it-works$/);
-  const dialog = page.getByRole("dialog", { name: "Pay. Get listed." });
+  const dialog = page.getByRole("dialog", {
+    name: "Pay more. Rank higher.",
+  });
   await expect(dialog).toBeVisible();
   await expect(page.locator("#site-content")).toHaveAttribute(
     "aria-hidden",
@@ -699,18 +705,19 @@ test("How it works preserves board context in an accessible route modal", async 
     })),
   ).toEqual({ body: "hidden", html: "hidden" });
   await expect(
-    dialog.getByRole("heading", { level: 1, name: "Pay. Get listed." }),
+    dialog.getByRole("heading", {
+      level: 1,
+      name: "Pay more. Rank higher.",
+    }),
   ).toBeFocused();
   await expect(
-    dialog.getByRole("list", { name: "Three simple steps" }),
+    dialog.getByRole("list", { name: "How to get listed" }),
   ).toBeVisible();
-  await expect(dialog.getByText("Share your listing")).toBeVisible();
-  await expect(dialog.getByText("Pay ₹499+", { exact: true })).toBeVisible();
-  await expect(dialog.getByText("Move higher", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Add what you want seen")).toBeVisible();
+  await expect(dialog.getByText("Choose your position")).toBeVisible();
+  await expect(dialog.getByText("Move up and show it off")).toBeVisible();
   await expect(
-    dialog.getByText(
-      /Money applied today determines today.*Daily starts fresh at midnight IST/,
-    ),
+    dialog.getByText(/Someone can move above you.*do not replace your listing/),
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -729,6 +736,9 @@ test("How it works preserves board context in an accessible route modal", async 
   if (testInfo.project.name === "mobile-390") {
     expect(Math.round(panelBox!.height)).toBe(844);
     await expect(panel).toHaveCSS("border-radius", "0px");
+    await expect(
+      dialog.getByRole("button", { name: "Close how it works" }),
+    ).toHaveCSS("position", "sticky");
   } else if (testInfo.project.name === "desktop-1440") {
     expect(panelBox!.width).toBeGreaterThanOrEqual(760);
     expect(panelBox!.width).toBeLessThanOrEqual(900);
@@ -753,12 +763,45 @@ test("How it works preserves board context in an accessible route modal", async 
 
   await trigger.click();
   await dialog
-    .getByRole("link", { name: /Get listed starting from ₹499/ })
+    .getByRole("link", { name: /Claim your place from ₹499/ })
     .click();
   await expect(page).toHaveURL(/\/join$/);
   await expect(
-    page.getByRole("dialog", { name: /Get on the board/ }),
+    page.getByRole("heading", { level: 1, name: /Get on the board/ }),
   ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  await page.goto("/");
+  const joinTrigger = page.getByRole("link", {
+    name: /Get listed starting from 499 Indian rupees/,
+  });
+  await joinTrigger.click();
+  const joinDialog = page.getByRole("dialog", { name: /Get on the board/ });
+  await expect(joinDialog).toBeVisible();
+  await joinDialog.getByLabel("Name", { exact: true }).fill("Mobile preview");
+  await joinDialog
+    .getByRole("button", { name: "Close get listed form" })
+    .click();
+  const discardDialog = page.getByRole("alertdialog", {
+    name: "Discard your changes?",
+  });
+  await expect(discardDialog).toBeVisible();
+  await expect(
+    discardDialog.getByRole("button", { name: "Keep editing" }),
+  ).toBeFocused();
+  await discardDialog.getByRole("button", { name: "Keep editing" }).click();
+  await expect(joinDialog.getByLabel("Name", { exact: true })).toHaveValue(
+    "Mobile preview",
+  );
+  await joinDialog
+    .getByRole("button", { name: "Close get listed form" })
+    .click();
+  await discardDialog
+    .getByRole("button", { name: "Discard and leave" })
+    .click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(joinDialog).toHaveCount(0);
+  await expect(joinTrigger).toBeFocused();
 });
 
 test("guest join reaches an honest pending flow without browser authority", async ({

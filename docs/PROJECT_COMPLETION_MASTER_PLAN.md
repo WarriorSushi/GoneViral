@@ -839,3 +839,40 @@ JSON-LD; `/about` exposes its canonical URL, social images, and `Organization`
 JSON-LD. The live sitemap contains `/about`, and the bounded Vercel error-log
 query returned no logs. Social-crawler cache refresh and Google Search Console
 submission remain owner-side follow-ups; no ranking result is claimed.
+
+## 2026-09-08 transient email-outbox monitor miss
+
+The owner forwarded a Sentry `goneviral-email-outbox` missed-check-in alert at
+`11:49:00Z`, whose last recorded success was `11:45:27Z`. This is scheduler
+absence evidence, not evidence that a customer email failed. The exact incident
+window was no longer available in linked Vercel runtime logs when investigated,
+so its cause remains unproved. Current Production evidence is healthy: 15
+consecutive one-minute outbox requests returned `200` with zero due, retryable,
+or dead-letter work, the latest operational-health run returned `200` with zero
+alerts, the one-hour error query was empty, and live and readiness checks
+returned `200`. Cloudflare Worker deployment and trigger state remain unchanged.
+Escalate only on recurrence by correlating Sentry and Cloudflare Past Events
+before changing the three-minute monitor margin.
+
+## 2026-09-08 mobile-first UX refinement candidate
+
+The owner made mobile the primary experience and requested a clearer,
+more persuasive How it works surface after an iOS Chrome exit/discard flow
+felt disorienting. A read-only Production audit covered 14 public routes at
+390 px and 320 px with no horizontal overflow, blank page, or undersized
+primary control. The reproduced defect was the How it works → Get listed
+route chain: both intercepted dialogs remained mounted, and discard returned
+to the previously scrolled explainer.
+
+The local candidate makes the mobile explainer Back control sticky, uses a
+full route transition from its primary CTA so dialogs cannot stack, clarifies
+`Discard and leave`, enables iOS safe-area viewport handling, and rewrites How
+it works around the truthful ₹499 entry point, confirmed-total ranking, direct
+link, and shareable rank card. It does not promise permanent rank, guaranteed
+views/clicks, or immunity from moderation/reversals. Formatting, lint,
+TypeScript, 267/267 unit tests, Production build, and local desktop/mobile
+browser rendering pass. The database-backed Playwright route-modal test was
+expanded for this regression but remains unrun because Docker Desktop/local
+Supabase was unavailable. Nothing is committed, deployed, or changed in
+Production; run the focused mobile matrix after the local database is restored,
+then follow normal review/CI/deployment and real-iPhone confirmation.
