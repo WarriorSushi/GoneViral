@@ -236,7 +236,7 @@ export function JoinModal({ children }: { readonly children: ReactNode }) {
                   className="button button-secondary"
                   onClick={leaveModal}
                 >
-                  Discard
+                  Discard and leave
                 </button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { SiteFooter } from "@/components/site-footer";
@@ -48,6 +48,12 @@ export const metadata: Metadata = {
     images: [SOCIAL_PREVIEW_IMAGE],
     title: "GoneViral.in | Pay more. Rank higher.",
   },
+};
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  viewportFit: "cover",
+  width: "device-width",
 };
 
 export default function RootLayout({

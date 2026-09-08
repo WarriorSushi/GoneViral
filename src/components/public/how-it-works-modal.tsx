@@ -70,9 +70,21 @@ export function HowItWorksModal({
             aria-label="Close how it works"
             onClick={close}
           >
-            <svg aria-hidden="true" viewBox="0 0 24 24">
+            <svg
+              className="how-modal-close-desktop"
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+            >
               <path d="m6 6 12 12M18 6 6 18" />
             </svg>
+            <svg
+              className="how-modal-close-mobile"
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+            >
+              <path d="m15 5-7 7 7 7" />
+            </svg>
+            <span className="how-modal-close-mobile">Back</span>
           </button>
           {children}
         </div>

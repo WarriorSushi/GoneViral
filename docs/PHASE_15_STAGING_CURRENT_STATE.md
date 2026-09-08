@@ -1862,3 +1862,55 @@ JSON-LD. `/about` exposes its canonical URL, social image tags, and
 error-log query returned no logs. Social-card cache refresh and Search Console
 submission remain owner-side follow-ups; no Google ranking improvement is
 claimed before crawl/index evidence.
+
+## 2026-09-08 transient email-outbox monitor miss
+
+The owner received a Sentry regression alert for monitor
+`goneviral-email-outbox` at `2026-09-08T11:49:00Z`. It reported a missed
+check-in, with the last successful check-in at `11:45:27Z`; it did not report a
+failed customer email or outbox-processing error. By the time of investigation,
+the exact alert window was outside the runtime-log window available through the
+linked Vercel project, so the underlying Cloudflare delay or missed invocation
+cannot be proved.
+
+Current read-only Production evidence is healthy: 15 consecutive one-minute
+outbox invocations returned `200`, each with zero claimed, retryable,
+dead-letter, or sent rows; the latest operational-health run returned `200`
+with zero alerts; the preceding one-hour Vercel error query returned no logs;
+and both live and readiness endpoints returned `200`. The deployed
+Cloudflare Worker version and trigger configuration are unchanged. Treat this
+as a recovered transient scheduler/check-in gap and investigate matching
+Sentry and Cloudflare Past Events before changing alert tolerance if it recurs.
+No route was manually invoked and no code, schedule, secret, provider, database,
+payment, or email state changed during this investigation.
+
+## 2026-09-08 mobile-first UX refinement candidate
+
+The owner reported a disorienting exit/discard experience in Chrome on iOS and
+made premium mobile UX the priority. A read-only audit of Production at 390 px
+and 320 px covered `/`, `/today`, one category, `/how-it-works`, `/about`,
+`/paid-placement`, `/join`, `/manage`, `/contact`, and five public policy
+routes. Every route rendered meaningful content without horizontal overflow;
+primary controls met the mobile target-size check. No hosted state changed.
+
+The reproduced failure was a soft navigation from the intercepted How it works
+dialog into the intercepted Get listed dialog. Both dialogs stayed mounted;
+after editing and choosing discard, the browser returned to the explainer at
+its previous lower scroll position. The local candidate prevents that stack
+with a deliberate hard transition from the explainer CTA, keeps a labelled
+mobile Back control sticky while the explainer scrolls, renames the destructive
+action `Discard and leave`, and adds `viewport-fit=cover` plus safe-area
+spacing. How it works now explains the ₹499 entry, higher-confirmed-total rule,
+later raises, direct website link, persistent eligible listing, and shareable
+rank card in plain sales language while preserving rank/change, moderation,
+reversal, and no-results-guarantee truths.
+
+Local formatting, lint, TypeScript, 267/267 unit tests, Production build, and
+desktop/mobile browser rendering pass. The updated database-backed Playwright
+test covers the non-stacking transition, sticky mobile close control, keep-
+editing preservation, discard return, focus restoration, safe-area metadata,
+and accessibility scan. It could not run because Docker Desktop/local Supabase
+was unavailable. The candidate is not committed or deployed. Next: restore the
+local database, run the focused mobile Playwright matrix, inspect the final
+diff, then use the normal PR/CI/deployment path and obtain one real-iPhone
+owner confirmation.
