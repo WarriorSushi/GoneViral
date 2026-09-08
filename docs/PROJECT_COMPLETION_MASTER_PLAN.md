@@ -854,7 +854,7 @@ returned `200`. Cloudflare Worker deployment and trigger state remain unchanged.
 Escalate only on recurrence by correlating Sentry and Cloudflare Past Events
 before changing the three-minute monitor margin.
 
-## 2026-09-08 mobile-first UX refinement candidate
+## 2026-09-08 mobile-first UX refinement deployment
 
 The owner made mobile the primary experience and requested a clearer,
 more persuasive How it works surface after an iOS Chrome exit/discard flow
@@ -864,15 +864,23 @@ primary control. The reproduced defect was the How it works → Get listed
 route chain: both intercepted dialogs remained mounted, and discard returned
 to the previously scrolled explainer.
 
-The local candidate makes the mobile explainer Back control sticky, uses a
+The implementation makes the mobile explainer Back control sticky, uses a
 full route transition from its primary CTA so dialogs cannot stack, clarifies
 `Discard and leave`, enables iOS safe-area viewport handling, and rewrites How
 it works around the truthful ₹499 entry point, confirmed-total ranking, direct
 link, and shareable rank card. It does not promise permanent rank, guaranteed
 views/clicks, or immunity from moderation/reversals. Formatting, lint,
-TypeScript, 267/267 unit tests, Production build, and local desktop/mobile
-browser rendering pass. The database-backed Playwright route-modal test was
-expanded for this regression but remains unrun because Docker Desktop/local
-Supabase was unavailable. Nothing is committed, deployed, or changed in
-Production; run the focused mobile matrix after the local database is restored,
-then follow normal review/CI/deployment and real-iPhone confirmation.
+TypeScript, 267/267 unit tests, Production build, security verification, and
+local desktop/mobile rendering passed. The database-backed Playwright route-
+modal test was expanded but could not run locally because Docker Desktop/local
+Supabase was unavailable.
+
+PR #60 passed the required `quality` and Vercel checks and was squash-merged as
+`45215f10901f6e646127e41432929b321a11fbb8`. Production deployment
+`dpl_BmHPzfNJnCNgVrxc1ZHf3AXgLWPn` reached Ready and serves the apex, `www`,
+and Vercel aliases. Live 390 px verification confirmed the sticky scrolled Back
+control, zero horizontal overflow, no How it works → Get listed dialog stack,
+keep-editing value preservation, clean discard return with focus restoration,
+and no visible residual dialog. Live/readiness returned `200`, and the bounded
+15-minute Production Vercel error query returned no logs. Only real-iPhone
+Chrome confirmation remains as a device-specific owner check.

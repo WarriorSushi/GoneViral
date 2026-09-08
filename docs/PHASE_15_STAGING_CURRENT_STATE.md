@@ -1884,7 +1884,7 @@ Sentry and Cloudflare Past Events before changing alert tolerance if it recurs.
 No route was manually invoked and no code, schedule, secret, provider, database,
 payment, or email state changed during this investigation.
 
-## 2026-09-08 mobile-first UX refinement candidate
+## 2026-09-08 mobile-first UX refinement deployment
 
 The owner reported a disorienting exit/discard experience in Chrome on iOS and
 made premium mobile UX the priority. A read-only audit of Production at 390 px
@@ -1905,12 +1905,22 @@ later raises, direct website link, persistent eligible listing, and shareable
 rank card in plain sales language while preserving rank/change, moderation,
 reversal, and no-results-guarantee truths.
 
-Local formatting, lint, TypeScript, 267/267 unit tests, Production build, and
-desktop/mobile browser rendering pass. The updated database-backed Playwright
-test covers the non-stacking transition, sticky mobile close control, keep-
-editing preservation, discard return, focus restoration, safe-area metadata,
-and accessibility scan. It could not run because Docker Desktop/local Supabase
-was unavailable. The candidate is not committed or deployed. Next: restore the
-local database, run the focused mobile Playwright matrix, inspect the final
-diff, then use the normal PR/CI/deployment path and obtain one real-iPhone
-owner confirmation.
+Local formatting, lint, TypeScript, 267/267 unit tests, Production build,
+security build verification, and desktop/mobile browser rendering passed. The
+updated database-backed Playwright test covers the non-stacking transition,
+sticky mobile close control, keep-editing preservation, discard return, focus
+restoration, safe-area metadata, and accessibility scan; it could not run
+locally because Docker Desktop/local Supabase was unavailable.
+
+PR #60 passed the required `quality` and Vercel checks and was squash-merged as
+`45215f10901f6e646127e41432929b321a11fbb8`. Production deployment
+`dpl_BmHPzfNJnCNgVrxc1ZHf3AXgLWPn` reached Ready and received the
+`goneviral.in`, `www.goneviral.in`, and `goneviral.vercel.app` aliases. A live
+390 px check confirmed zero horizontal overflow, one explainer dialog with a
+sticky visible Back control after scrolling, an explainer CTA transition to the
+standalone `/join` page with no dialog stack, keep-editing value preservation,
+discard return to `/`, no visible residual dialog, and focus restoration to the
+launch CTA. Live and readiness probes returned `200`; the bounded 15-minute
+Production Vercel error query returned no logs. One real-iPhone Chrome owner
+confirmation remains advisable because desktop Chromium emulation cannot prove
+iOS browser-chrome behavior.
