@@ -2376,6 +2376,10 @@ textarea:focus-visible {
   text-wrap: balance;
 }
 
+.how-heading h1:focus {
+  outline: none;
+}
+
 .how-heading > p:last-child {
   margin: 9px 0 0;
   color: var(--ink-soft);
@@ -2385,165 +2389,64 @@ textarea:focus-visible {
 .how-step-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin: 20px 0 0;
+  gap: 52px;
+  margin: 28px 0 0;
   padding: 0;
-  border-block: 1px solid var(--line);
   list-style: none;
 }
 
 .how-step-grid li {
   position: relative;
   min-width: 0;
-  padding: 18px 20px;
-  border-right: 1px solid var(--line);
-}
-
-.how-step-grid li:first-child {
-  padding-left: 0;
-}
-
-.how-step-grid li:last-child {
-  padding-right: 0;
-  border-right: 0;
-}
-
-.how-step-number {
-  display: block;
-  color: var(--signal-hover);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
 }
 
 .how-step-grid h2 {
-  margin: 14px 0 0;
-  font-size: 1rem;
+  margin: 0;
+  color: var(--signal-hover);
+  font-size: 0.82rem;
   letter-spacing: -0.02em;
 }
 
 .how-step-grid p {
-  margin: 6px 0 0;
-  color: var(--ink-soft);
-  font-size: 0.84rem;
-  line-height: 1.45;
+  margin: 7px 0 0;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .how-step-arrow {
   position: absolute;
   z-index: 1;
   top: 50%;
-  right: -25px;
-  width: 28px;
-  height: 16px;
+  right: -41px;
+  width: 30px;
+  height: 18px;
   color: var(--signal);
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.6;
+  stroke-width: 2;
   transform: translateY(-50%);
 }
 
-.how-rule-strip {
-  margin: 20px 0 0;
-  padding: 13px 16px;
-  border-radius: 10px;
-  background: var(--ink);
-  color: var(--surface);
-  font-size: 0.9rem;
-}
-
-.how-value,
-.how-good-to-know {
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: 14px;
-}
-
-.how-value {
-  background: var(--signal-soft);
-}
-
-.how-good-to-know {
-  padding-inline: 0;
+.how-note {
+  max-width: 720px;
+  margin: 28px 0 0;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
-  border-radius: 0;
-  background: transparent;
-}
-
-.how-value h2,
-.how-good-to-know h2 {
-  margin: 0;
-  font-size: 0.92rem;
-  letter-spacing: -0.01em;
-}
-
-.how-value ul,
-.how-good-to-know ul {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px 20px;
-  margin: 10px 0 0;
-  padding: 0;
   color: var(--ink-soft);
   font-size: 0.82rem;
-  list-style: none;
-}
-
-.how-value li,
-.how-good-to-know li {
-  position: relative;
-  padding-left: 13px;
-}
-
-.how-value li::before,
-.how-good-to-know li::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: var(--signal);
-  content: "•";
-}
-
-.how-good-to-know > p {
-  margin: 12px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--line-strong);
-  color: var(--ink-faint);
-  font-size: 0.76rem;
+  line-height: 1.5;
 }
 
 .how-actions {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-  justify-content: space-between;
   margin-top: 18px;
-}
-
-.how-actions > div {
-  display: flex;
-  gap: 10px;
 }
 
 .how-actions .button {
   min-height: 44px;
-}
-
-.how-actions > p {
-  margin: 0;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
-  text-align: right;
-}
-
-.how-actions > p a {
-  color: var(--signal-hover);
-  font-weight: 680;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
 }
 
 .how-modal-layer {
@@ -4314,19 +4217,12 @@ textarea:focus-visible {
 
   .how-step-grid {
     grid-template-columns: 1fr;
-    gap: 0;
-    margin-top: 20px;
+    gap: 42px;
+    margin-top: 26px;
   }
 
   .how-step-grid li {
-    min-height: 0;
-    padding: 16px 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .how-step-grid li:last-child {
-    border-bottom: 0;
+    padding: 0;
   }
 
   .how-step-grid h2 {
@@ -4334,28 +4230,19 @@ textarea:focus-visible {
   }
 
   .how-step-arrow {
-    display: none;
-  }
-
-  .how-value ul,
-  .how-good-to-know ul {
-    grid-template-columns: 1fr;
+    top: auto;
+    right: 50%;
+    bottom: -31px;
+    display: block;
+    transform: translateX(50%) rotate(90deg);
   }
 
   .how-actions {
-    display: grid;
-  }
-
-  .how-actions > div {
-    display: grid;
+    margin-top: 16px;
   }
 
   .how-actions .button {
     width: 100%;
-  }
-
-  .how-actions > p {
-    text-align: left;
   }
 
   .movement-list li {

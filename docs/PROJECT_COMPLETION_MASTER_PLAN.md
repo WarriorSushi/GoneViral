@@ -884,3 +884,20 @@ keep-editing value preservation, clean discard return with focus restoration,
 and no visible residual dialog. Live/readiness returned `200`, and the bounded
 15-minute Production Vercel error query returned no logs. Only real-iPhone
 Chrome confirmation remains as a device-specific owner check.
+
+## 2026-09-08 How it works distillation candidate
+
+The owner found the first mobile-first explainer revision too busy and reported
+a transient blue outline around its modal title. The local candidate reduces
+the surface to three buyer questions connected by visible desktop/mobile arrows,
+one compact truth note, and one primary action. It removes repeated sections,
+secondary actions, step numbers, and their CSS. The noninteractive title remains
+the modal's initial accessibility focus target but no longer displays the
+browser-default outline.
+
+Formatting, lint, TypeScript, 267/267 unit tests, Production build, security
+verification, and 390×844 plus 1440×900 direct-page rendering pass with no
+horizontal overflow. The mobile version fits in one viewport. The updated
+database-backed modal test remains locally unrun because local Supabase is
+unavailable. The candidate is not committed or deployed; next use the normal
+PR, required-CI, deployment, live-mobile, and checkpoint-record path.
