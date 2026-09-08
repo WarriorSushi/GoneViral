@@ -661,10 +661,10 @@ test("Main, Daily, category, and listing navigation use real public projections"
     /viewport-fit=cover/,
   );
   await expect(
-    page.getByRole("heading", { level: 1, name: "Pay more. Rank higher." }),
+    page.getByRole("heading", { level: 1, name: "How GoneViral works" }),
   ).toBeVisible();
   await expect(
-    page.getByText(/₹499 gets your brand, product, or profile/),
+    page.getByText(/Pay ₹499 or more to join the leaderboard/),
   ).toBeVisible();
   await expect(
     page.getByRole("list", { name: "How to get listed" }),
@@ -686,7 +686,7 @@ test("How it works preserves board context in an accessible route modal", async 
 
   await expect(page).toHaveURL(/\/how-it-works$/);
   const dialog = page.getByRole("dialog", {
-    name: "Pay more. Rank higher.",
+    name: "How GoneViral works",
   });
   await expect(dialog).toBeVisible();
   await expect(page.locator("#site-content")).toHaveAttribute(
@@ -707,18 +707,20 @@ test("How it works preserves board context in an accessible route modal", async 
   await expect(
     dialog.getByRole("heading", {
       level: 1,
-      name: "Pay more. Rank higher.",
+      name: "How GoneViral works",
     }),
   ).toBeFocused();
   await expect(
+    dialog.getByRole("heading", { level: 1, name: "How GoneViral works" }),
+  ).toHaveCSS("outline-style", "none");
+  await expect(
     dialog.getByRole("list", { name: "How to get listed" }),
   ).toBeVisible();
-  await expect(dialog.getByText("Add what you want seen")).toBeVisible();
-  await expect(dialog.getByText("Choose your position")).toBeVisible();
-  await expect(dialog.getByText("Move up and show it off")).toBeVisible();
-  await expect(
-    dialog.getByText(/Someone can move above you.*do not replace your listing/),
-  ).toBeVisible();
+  await expect(dialog.getByText("How do I join?")).toBeVisible();
+  await expect(dialog.getByText("How is rank decided?")).toBeVisible();
+  await expect(dialog.getByText("What do I get?")).toBeVisible();
+  await expect(dialog.locator(".how-step-arrow")).toHaveCount(2);
+  await expect(dialog.locator(".how-step-arrow").first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await capture(page, testInfo, `${testInfo.project.name}-how-modal`);
