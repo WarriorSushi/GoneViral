@@ -3,7 +3,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { previewRobotsMetadata } from "@/config/seo";
+import {
+  SITE_ORIGIN,
+  SOCIAL_PREVIEW_IMAGE,
+  previewRobotsMetadata,
+} from "@/config/seo";
 
 import "./globals.css";
 
@@ -18,7 +22,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://goneviral.in"),
+  applicationName: "GoneViral.in",
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: "GoneViral.in | Pay more. Rank higher.",
     template: "%s | GoneViral.in",
@@ -28,12 +33,21 @@ export const metadata: Metadata = {
   openGraph: {
     description:
       "Join India’s public paid leaderboard. Confirmed totals determine the order.",
+    images: [SOCIAL_PREVIEW_IMAGE],
     locale: "en_IN",
     siteName: "GoneViral.in",
     title: "GoneViral.in | Pay more. Rank higher.",
     type: "website",
+    url: SITE_ORIGIN,
   },
   robots: previewRobotsMetadata(process.env.VERCEL_ENV),
+  twitter: {
+    card: "summary_large_image",
+    description:
+      "Join India’s public paid leaderboard. Confirmed totals determine the order.",
+    images: [SOCIAL_PREVIEW_IMAGE],
+    title: "GoneViral.in | Pay more. Rank higher.",
+  },
 };
 
 export default function RootLayout({

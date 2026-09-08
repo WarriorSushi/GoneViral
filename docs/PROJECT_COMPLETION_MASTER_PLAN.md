@@ -1,6 +1,6 @@
 # GoneViral project completion master plan
 
-Last updated: 2026-09-06 (Asia/Kolkata)
+Last updated: 2026-09-08 (Asia/Kolkata)
 
 ## Purpose and authority
 
@@ -35,6 +35,7 @@ contents in this file.
 | Public-repository settings hardening  | Complete                                              | `PHASE_15_STAGING_CURRENT_STATE.md`                   |
 | Phase 15 production launch transition | Live payment intake enabled; first purchase pending   | checkpoint exact resume point                         |
 | Commercial Production launch          | Authorized and active on owner-accepted Hobby plan    | Phase 15 checkpoint                                   |
+| Social preview and SEO follow-up      | Implemented locally; deployment pending               | 2026-09-08 section below                              |
 | Phase 16                              | Not started                                           | implementation plan                                   |
 
 Active integration branch: `codex/phase-15-staging`.
@@ -802,3 +803,29 @@ control, and provider settings were not changed by the code deployment.
 The owner subsequently enabled `outbound_redirects_enabled` through the audited
 founder console. Read-only hosted verification confirms outbound listing links
 and customer payments on, with provider refunds and read-only mode still off.
+
+## 2026-09-08 social preview and SEO follow-up
+
+The owner supplied `GoneViral.in-banner-socials.png` for generic social-link
+previews and requested a complete SEO pass. The local candidate serves the
+1200×630 PNG from a stable public URL and explicitly declares that absolute URL
+for Open Graph and X/Twitter large-image metadata on every ordinary public
+page. Listing detail pages retain their more specific live-rank share cards.
+
+The candidate also adds crawlable `WebSite` and `Organization` JSON-LD, uses
+the existing application icon as the organization logo, strengthens the home
+title and description, and adds one substantive `/about` page with truthful
+product, ranking, operator, and contact information. `/about` is linked from
+the compact footer and included in the public sitemap. No speculative keyword
+pages, fake claims, listing data, ranking logic, payment state, provider state,
+or hosted configuration changed.
+
+Local evidence passes TypeScript, formatting, lint, 267/267 unit tests, a
+Next.js 16.3.3 production build, and client-build security verification. A
+local production server returned `200 image/png` for the 910,311-byte preview
+and rendered the expected canonical, `og:image`, `twitter:card`,
+`twitter:image`, and Organization JSON-LD tags on `/about`. The dynamic local
+sitemap request was not claimed because no local database URL was supplied;
+the production build and sitemap allowlist check passed. Deployment, hosted
+tag/image verification, social-crawler cache refresh, and Search Console
+submission remain pending.

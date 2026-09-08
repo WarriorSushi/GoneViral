@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import sharp from "sharp";
 
 import robots, { buildRobotsFile } from "@/app/robots";
 import {
@@ -7,6 +8,9 @@ import {
   previewRobotsMetadata,
   PUBLIC_STATIC_SITEMAP_PATHS,
   publicPageMetadata,
+  serializeJsonLd,
+  SOCIAL_PREVIEW_IMAGE,
+  WEBSITE_JSON_LD,
 } from "@/config/seo";
 
 describe("public SEO boundaries", () => {
@@ -21,9 +25,14 @@ describe("public SEO boundaries", () => {
       canonical: "https://goneviral.in/today",
     });
     expect(metadata.openGraph).toMatchObject({
+      images: [SOCIAL_PREVIEW_IMAGE],
       locale: "en_IN",
       type: "website",
       url: "https://goneviral.in/today",
+    });
+    expect(metadata.twitter).toMatchObject({
+      card: "summary_large_image",
+      images: [SOCIAL_PREVIEW_IMAGE],
     });
     expect(canonicalUrl("/category/local")).toBe(
       "https://goneviral.in/category/local",
@@ -42,6 +51,7 @@ describe("public SEO boundaries", () => {
     expect(PUBLIC_STATIC_SITEMAP_PATHS).toEqual(
       expect.arrayContaining([
         "/terms",
+        "/about",
         "/privacy",
         "/refunds",
         "/content-policy",
@@ -66,5 +76,21 @@ describe("public SEO boundaries", () => {
       nocache: true,
     });
     expect(previewRobotsMetadata("production")).toBeUndefined();
+  });
+
+  it("publishes a stable site identity and safely serializes JSON-LD", () => {
+    expect(WEBSITE_JSON_LD).toMatchObject({
+      name: "GoneViral.in",
+      url: "https://goneviral.in/",
+    });
+    expect(serializeJsonLd({ value: "<script>" })).toBe(
+      '{"value":"\\u003cscript>"}',
+    );
+  });
+
+  it("ships the requested large social preview image", async () => {
+    await expect(
+      sharp("public/goneviral-social-preview.png").metadata(),
+    ).resolves.toMatchObject({ format: "png", height: 630, width: 1200 });
   });
 });

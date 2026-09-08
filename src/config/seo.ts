@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 
 export const SITE_ORIGIN = "https://goneviral.in";
-export const SPECIFICATION_DATE = "2026-08-29";
+export const SPECIFICATION_DATE = "2026-09-08";
+export const SOCIAL_PREVIEW_IMAGE = {
+  alt: "GoneViral.in — India’s Sponsored Leaderboard",
+  height: 630,
+  url: `${SITE_ORIGIN}/goneviral-social-preview.png`,
+  width: 1200,
+} as const;
 
 export const PRIVATE_ROBOT_PATHS = [
   "/admin",
@@ -17,6 +23,7 @@ export const PRIVATE_ROBOT_PATHS = [
 export const PUBLIC_STATIC_SITEMAP_PATHS = [
   "/",
   "/today",
+  "/about",
   "/how-it-works",
   "/terms",
   "/privacy",
@@ -39,6 +46,18 @@ export function previewRobotsMetadata(
   return { follow: false, index: false, nocache: true };
 }
 
+export const WEBSITE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  alternateName: ["GoneViral", "goneviral.in"],
+  name: "GoneViral.in",
+  url: `${SITE_ORIGIN}/`,
+} as const;
+
+export function serializeJsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
 export function publicPageMetadata(input: {
   description: string;
   path: string;
@@ -51,6 +70,7 @@ export function publicPageMetadata(input: {
     openGraph: {
       description: input.description,
       locale: "en_IN",
+      images: [SOCIAL_PREVIEW_IMAGE],
       siteName: "GoneViral.in",
       title: input.title,
       type: "website",
@@ -60,6 +80,7 @@ export function publicPageMetadata(input: {
     twitter: {
       card: "summary_large_image",
       description: input.description,
+      images: [SOCIAL_PREVIEW_IMAGE],
       title: input.title,
     },
   };
