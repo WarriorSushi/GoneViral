@@ -74,6 +74,6 @@
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "vitest": "4.1.11",
-    "wrangler": "4.128.0"
+    "wrangler": "4.131.1"
   }
 }

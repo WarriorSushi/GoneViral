@@ -5,7 +5,7 @@ import { initializeSentryServer } from "./sentry";
 
 const EMAIL_OUTBOX_MONITOR_SLUG = "goneviral-email-outbox";
 const EMAIL_OUTBOX_MONITOR_CONFIG = {
-  checkinMargin: 3,
+  checkinMargin: 5,
   failureIssueThreshold: 1,
   maxRuntime: 1,
   recoveryThreshold: 2,

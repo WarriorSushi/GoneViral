@@ -1,6 +1,6 @@
 # GoneViral project completion master plan
 
-Last updated: 2026-09-08 (Asia/Kolkata)
+Last updated: 2026-09-13 (Asia/Kolkata)
 
 ## Purpose and authority
 
@@ -908,3 +908,34 @@ horizontal overflow, needs no scrolling, shows both arrows, preserves the
 focused title for accessibility without an outline, and exposes one primary
 CTA. Live/readiness returned `200`, and the bounded 10-minute Production Vercel
 error query returned no logs.
+
+## 2026-09-13 recurring email-outbox monitor follow-up
+
+Owner-provided Sentry evidence contains eight detailed Production regressions
+from September 9–12 (five missed and three timeout check-ins), plus an earlier
+collapsed missed notification. This meets the recurrence threshold from the
+September 8 investigation without proving a customer-email failure. Current
+read-only evidence is healthy: the sole intended Cloudflare Worker version is
+still deployed, GitHub scheduling remains disabled, Vercel has no registered
+Cron, one natural Worker event returned `200` in 400 ms, and recent Vercel
+outbox invocations returned `200` with an empty queue. Historical Vercel logs
+for the incident windows are no longer retained.
+
+A local candidate removes the confirmed timing mismatch by changing Sentry's
+missing-check margin from three to five minutes and limiting each recovery run
+to four sequential sends, whose provider timeout budget fits inside the
+unchanged 45-second Worker request deadline. The one-minute cadence, durable
+outbox semantics, secrets, provider, database, payment state, and hosted
+resources are unchanged. Focused tests pass 9/9; formatting, lint, TypeScript,
+267/267 serial unit tests, Production build, client security scan, dependency
+audit, and diff checks pass. Protected PR/CI, Production deployment, live
+evidence, and Sentry recovery are the exact next actions. See the Phase 15
+checkpoint for the detailed sanitized evidence and parallel-test caveat.
+
+Pull request `#64` produced a Ready Preview, but required CI run `34747803187`
+failed solely because a new high-severity advisory covered Wrangler `4.128.0`'s
+transitive `sharp@0.35.2`. The candidate now pins development-only Wrangler
+`4.131.1`; its updated Miniflare resolves the same patched `sharp@0.35.4`
+already used by the application. The direct audit reports zero findings, Worker
+tests pass 9/9, and the new Wrangler dry run succeeds without deployment. A
+fresh green protected CI run is required before merge.

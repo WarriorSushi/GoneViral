@@ -53,7 +53,7 @@ The authenticated email-outbox cron route uses the existing Sentry project as
 an independent Cron Monitor when the Production DSN is present. It records an
 `in_progress` check-in only after cron authentication, then records `ok` or
 `error` with bounded SDK flush. The monitor expects `* * * * *` in UTC, allows
-three minutes of check-in margin and one minute of runtime, opens an issue on
+five minutes of check-in margin and one minute of runtime, opens an issue on
 the first failure or miss, and requires two successes for recovery. Sentry
 errors cannot fail the outbox route. This is deliberately the single Free-plan
 monitor: it detects absence of the highest-frequency delivery-recovery path

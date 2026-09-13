@@ -1,6 +1,6 @@
 # Phase 15 staging and production-shaped pre-launch current state
 
-Last updated: 2026-09-08 (Asia/Kolkata)
+Last updated: 2026-09-13 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for Phase 15 work
 on `codex/phase-15-staging`. Read the authority
@@ -1954,3 +1954,54 @@ overflow, a fully visible no-scroll flow, two visible directional arrows, the
 title as the accessibility focus target with `outline-style: none`, and the
 single claim CTA. Live/readiness returned `200`; the bounded 10-minute
 Production Vercel error query returned no logs.
+
+## 2026-09-13 recurring email-outbox monitor investigation
+
+The owner supplied eight fully detailed Production Sentry regressions from
+2026-09-09 through 2026-09-12: five missed check-ins and three timeout
+check-ins, plus one earlier collapsed missed-check notification. This proves
+the 2026-09-08 alert was not isolated, but it does not prove that a customer
+email failed. The detailed missed alerts opened at the configured three-minute
+margin after their preceding success. The timeout alerts match the configured
+one-minute runtime ceiling.
+
+Read-only investigation confirmed that the expected Cloudflare Worker version
+`92a7a5a9-1655-4d8d-9657-a3838191600c` remains deployed, the retired GitHub
+workflow remains disabled, `vercel.json` still registers no Vercel Cron, and
+the current Production deployment is Ready. A natural Worker event reached the
+outbox route with HTTP 200 in 400 ms. A bounded recent Vercel sample contained
+only HTTP 200 outbox invocations with zero claimed, retryable, dead-letter, or
+sent rows. The exact alert windows were no longer retained by Vercel, and the
+Cloudflare dashboard required a fresh interactive login, so no historical
+request result is fabricated.
+
+The code nevertheless contains a concrete timing mismatch: one recovery run
+may send ten emails sequentially, each provider request permits eight seconds,
+while Cloudflare aborts the request after 45 seconds and Sentry declares a
+timeout after one minute. The local candidate raises only the missing-check
+margin to five minutes and caps the route at four sequential recovery emails,
+keeping its provider wait inside the unchanged 45-second caller deadline and
+retaining capacity for approximately 240 recovery emails per hour. It changes
+no cadence, secret, provider setting, database row, payment control, or hosted
+resource.
+
+Focused route/monitor tests pass 9/9. Formatting, lint, TypeScript, a serial
+full unit run (49 files, 267 tests), Production build, client-build security
+verification, dependency audit, and diff checks pass. The default parallel
+unit run separately hit only pre-existing five-second dynamic-import timeouts
+in `public-homepage-population.test.ts`; that file passed 7/7 serially. Protected
+PR/CI, Production deployment, live recovery evidence, and Sentry monitor
+recovery remain pending.
+
+Pull request `#64` reached a Ready Vercel Preview, but its first required
+`quality` run `34747803187` failed only at the dependency-audit step after a new
+high-severity advisory identified Wrangler `4.128.0`'s transitive
+`sharp@0.35.2`; the application already used patched `sharp@0.35.4`. The
+candidate therefore updates only the pinned development Wrangler CLI to
+`4.131.1`, whose Miniflare dependency also resolves `sharp@0.35.4`. The lockfile
+now contains one patched Sharp version. The direct moderate-and-higher audit
+reports zero findings, the Cloudflare Worker suite passes 9/9, and a Wrangler
+`4.131.1` dry run bundles successfully without deploying. The audit wrapper's
+local Windows child-process invocation remains unavailable, so Linux CI is the
+authoritative wrapper check. The PR requires a fresh green `quality` run before
+merge.

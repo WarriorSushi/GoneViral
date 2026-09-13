@@ -107,7 +107,7 @@ describe("email outbox Sentry cron monitor", () => {
         status: "in_progress",
       },
       expect.objectContaining({
-        checkinMargin: 3,
+        checkinMargin: 5,
         failureIssueThreshold: 1,
         maxRuntime: 1,
         recoveryThreshold: 2,
