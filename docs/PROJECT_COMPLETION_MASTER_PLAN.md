@@ -939,3 +939,14 @@ transitive `sharp@0.35.2`. The candidate now pins development-only Wrangler
 already used by the application. The direct audit reports zero findings, Worker
 tests pass 9/9, and the new Wrangler dry run succeeds without deployment. A
 fresh green protected CI run is required before merge.
+
+Required CI run `34748105180` then passed. Pull request `#64` squash-merged as
+`2cd251c9b046b293ba6885c85de18a27d6a55c20` and reached Ready Production
+deployment `dpl_DBY33XTzxziwCuEbemCKTkzvDbmG` on the canonical aliases. Live and
+readiness returned `200`, the post-deploy error query was empty, and two natural
+outbox runs completed successfully with an empty queue after awaiting their
+terminal Sentry check-ins. This exercises the updated five-minute configuration
+through the two-success recovery threshold. Direct Sentry UI state was not
+available without a fresh interactive login, so no manual issue-resolution
+claim is recorded. No Worker redeploy, manual route invocation, secret,
+provider, database, payment, or email state changed.
