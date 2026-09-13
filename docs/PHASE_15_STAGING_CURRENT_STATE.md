@@ -1992,3 +1992,16 @@ unit run separately hit only pre-existing five-second dynamic-import timeouts
 in `public-homepage-population.test.ts`; that file passed 7/7 serially. Protected
 PR/CI, Production deployment, live recovery evidence, and Sentry monitor
 recovery remain pending.
+
+Pull request `#64` reached a Ready Vercel Preview, but its first required
+`quality` run `34747803187` failed only at the dependency-audit step after a new
+high-severity advisory identified Wrangler `4.128.0`'s transitive
+`sharp@0.35.2`; the application already used patched `sharp@0.35.4`. The
+candidate therefore updates only the pinned development Wrangler CLI to
+`4.131.1`, whose Miniflare dependency also resolves `sharp@0.35.4`. The lockfile
+now contains one patched Sharp version. The direct moderate-and-higher audit
+reports zero findings, the Cloudflare Worker suite passes 9/9, and a Wrangler
+`4.131.1` dry run bundles successfully without deploying. The audit wrapper's
+local Windows child-process invocation remains unavailable, so Linux CI is the
+authoritative wrapper check. The PR requires a fresh green `quality` run before
+merge.

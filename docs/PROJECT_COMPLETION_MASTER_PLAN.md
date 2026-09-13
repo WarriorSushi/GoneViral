@@ -931,3 +931,11 @@ resources are unchanged. Focused tests pass 9/9; formatting, lint, TypeScript,
 audit, and diff checks pass. Protected PR/CI, Production deployment, live
 evidence, and Sentry recovery are the exact next actions. See the Phase 15
 checkpoint for the detailed sanitized evidence and parallel-test caveat.
+
+Pull request `#64` produced a Ready Preview, but required CI run `34747803187`
+failed solely because a new high-severity advisory covered Wrangler `4.128.0`'s
+transitive `sharp@0.35.2`. The candidate now pins development-only Wrangler
+`4.131.1`; its updated Miniflare resolves the same patched `sharp@0.35.4`
+already used by the application. The direct audit reports zero findings, Worker
+tests pass 9/9, and the new Wrangler dry run succeeds without deployment. A
+fresh green protected CI run is required before merge.
