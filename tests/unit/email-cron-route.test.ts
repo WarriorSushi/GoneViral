@@ -44,6 +44,7 @@ describe("email outbox cron", () => {
       }),
     );
     expect(response.status).toBe(200);
+    expect(drainEmailOutbox).toHaveBeenCalledWith({ limit: 4 });
     expect(finishMonitor).toHaveBeenCalledWith("ok");
     expect(response.headers.get("cache-control")).toContain("no-store");
     await expect(response.json()).resolves.toEqual({

@@ -18,7 +18,9 @@ export async function GET(request: Request) {
   }
   const finishMonitor = startEmailOutboxCronMonitor();
   try {
-    const result = await drainEmailOutbox();
+    // ponytail: four sequential 8s sends fit the 45s scheduler deadline;
+    // add bounded concurrency only if 240 recovery emails/hour is insufficient.
+    const result = await drainEmailOutbox({ limit: 4 });
     await finishMonitor("ok");
     logger.info("email_outbox_drained", { ...result, requestId });
     return Response.json(result, { headers: correlationHeaders(requestId) });
