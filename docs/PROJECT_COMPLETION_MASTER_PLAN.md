@@ -1,6 +1,6 @@
 # GoneViral project completion master plan
 
-Last updated: 2026-09-13 (Asia/Kolkata)
+Last updated: 2026-09-14 (Asia/Kolkata)
 
 ## Purpose and authority
 
@@ -950,3 +950,15 @@ through the two-success recovery threshold. Direct Sentry UI state was not
 available without a fresh interactive login, so no manual issue-resolution
 claim is recorded. No Worker redeploy, manual route invocation, secret,
 provider, database, payment, or email state changed.
+
+## 2026-09-14 ResizeObserver Sentry-noise correction
+
+A single Production client event reported `ResizeObserver loop limit exceeded`
+from the browser global error handler with no stack. The application contains
+no `ResizeObserver` usage, the live page and browser console were healthy, and
+the bounded server-error query was empty. Client Sentry now ignores only that
+exact browser warning; other errors remain reportable. Pull request `#68`
+passed required CI run `34819476893`, squash-merged as `323eefe`, and reached
+Ready Production deployment `dpl_npYgE2a5zrmKAauM3gqyVktvtuAk` on the canonical
+aliases. Both health endpoints returned `200` and the refreshed live browser
+console remained clean.
