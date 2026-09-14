@@ -962,3 +962,13 @@ passed required CI run `34819476893`, squash-merged as `323eefe`, and reached
 Ready Production deployment `dpl_npYgE2a5zrmKAauM3gqyVktvtuAk` on the canonical
 aliases. Both health endpoints returned `200` and the refreshed live browser
 console remained clean.
+
+## 2026-09-14 footer visit-counter refinement
+
+The owner moved the cumulative visit count from the sticky header to the footer
+and replaced its dark capsule with the existing warm-grey surface tokens. Pull
+request `#70` passed required CI run `34831564273`, squash-merged as `8b4461e`,
+and reached Ready Production deployment `dpl_5jjfX8VEuQuSozbhqTrQFNrxE9Gc`.
+Live desktop and 390px checks confirmed footer-only placement, the requested
+grey styling, and no horizontal overflow; both health endpoints returned `200`
+and the bounded error query was empty.
