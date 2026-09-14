@@ -1,6 +1,6 @@
 # Phase 15 staging and production-shaped pre-launch current state
 
-Last updated: 2026-09-13 (Asia/Kolkata)
+Last updated: 2026-09-14 (Asia/Kolkata)
 
 This is a sanitized, non-authoritative certification record for Phase 15 work
 on `codex/phase-15-staging`. Read the authority
@@ -2021,3 +2021,23 @@ Sentry issue-state inspection was unavailable because the dashboard required a
 fresh interactive login; no manual issue resolution or recovery claim based on
 UI state is fabricated. No Cloudflare Worker redeploy, manual route invocation,
 secret, provider setting, database row, payment control, or email state changed.
+
+## 2026-09-14 ResizeObserver Sentry-noise correction
+
+The owner supplied one new Production client event for
+`ResizeObserver loop limit exceeded` on `/`. It came through
+`auto.browser.global_handlers.onerror` with source `app:///` and no stack.
+Read-only inspection found no application `ResizeObserver` usage, no Production
+server errors, a Ready deployment, and a healthy live page with a clean browser
+console. The bounded correction adds Sentry's built-in exact-message filter only
+to client instrumentation, preserving every other error.
+
+Formatting, lint, TypeScript, Production build, client-build security scanning,
+and dependency audit passed locally. Pull request `#68` passed required CI run
+`34819476893` and Vercel Preview, squash-merged as
+`323eefe2538dd6b07dbf53f15c48a813444f9008`, and reached Ready Production
+deployment `dpl_npYgE2a5zrmKAauM3gqyVktvtuAk`. The apex, `www`, and project
+aliases resolve to it; live/readiness returned HTTP 200, the bounded deployment
+error query was empty, and a refreshed canonical browser session remained
+error-free. No database, payment, email, provider, scheduler, secret, or hosted
+setting changed.
