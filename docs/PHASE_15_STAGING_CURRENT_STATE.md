@@ -2041,3 +2041,23 @@ aliases resolve to it; live/readiness returned HTTP 200, the bounded deployment
 error query was empty, and a refreshed canonical browser session remained
 error-free. No database, payment, email, provider, scheduler, secret, or hosted
 setting changed.
+
+## 2026-09-14 footer visit-counter refinement
+
+The owner requested moving the cumulative visit count out of the top bar and
+softening its dark fill. The shared counter now renders beside the footer
+copyright with the existing warm-grey surface, border, and text tokens; the
+mobile header collapses to its natural two-column brand/menu layout. Counting,
+deduplication, retention, privacy wording, and API behavior are unchanged.
+
+Formatting, lint, TypeScript, Production build, client-build security scanning,
+and a bounded desktop/390px shell check passed. The local data-backed page was
+unavailable without `DATABASE_URL`, but the affected shared shell verified
+footer-only placement, computed grey colors, and no horizontal overflow. Pull
+request `#70` passed required CI run `34831564273` and Vercel Preview,
+squash-merged as `8b4461e1e22ab322f51e38481a38f061d4504baa`, and reached Ready
+Production deployment `dpl_5jjfX8VEuQuSozbhqTrQFNrxE9Gc`. Live desktop and
+390px checks showed `27 visits` only in the footer, the requested styling, and
+no overflow. Both health endpoints returned HTTP 200 and the bounded deployment
+error query was empty. No database, payment, provider, email, scheduler, secret,
+or hosted setting changed.
