@@ -927,11 +927,10 @@ textarea:focus-visible {
   justify-self: end;
   gap: 7px;
   padding: 6px 12px 6px 10px;
-  border: 1px solid rgb(255 255 255 / 0.12);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: var(--ink);
-  box-shadow: 0 6px 18px rgb(28 25 23 / 0.14);
-  color: var(--surface);
+  background: var(--surface-soft);
+  color: var(--ink-soft);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.68rem;
   font-weight: 760;
@@ -3604,7 +3603,11 @@ textarea:focus-visible {
 }
 
 .footer-meta {
+  display: flex;
   grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   font-family: var(--font-geist-mono), monospace;
 }
 
@@ -3701,7 +3704,7 @@ textarea:focus-visible {
 
 @media (max-width: 820px) {
   .site-header-inner {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto;
     gap: 10px;
   }
 
